@@ -681,6 +681,29 @@ fn payload_budget_unsupported_guarantees_and_unknown_roots_cannot_enable_upload(
 }
 
 #[test]
+fn ledger_open_contention_is_busy_before_http_and_missing_root_stays_unavailable() {
+    let f = Fixture::new();
+    let before = f.sequence();
+    let blocker = rusqlite::Connection::open(f.root.path().join("ledger/ledger.sqlite")).unwrap();
+    blocker.execute_batch("BEGIN EXCLUSIVE;").unwrap();
+    for action in ["plan", "peak", "status", "apply", "resume"] {
+        failure(f.cli(action), "busy");
+    }
+    assert_eq!(f.server.counts(), (0, 0));
+    f.preserved();
+    blocker.execute_batch("ROLLBACK;").unwrap();
+    assert_eq!(f.sequence(), before);
+    let absent = f.root.path().join("absent-ledger");
+    let mut profile = f.profile.clone();
+    profile["ledger_root"] = json!(absent);
+    write(f.root.path(), "profile.json", &profile);
+    failure(f.cli("status"), "ledger_unavailable");
+    assert!(!absent.exists());
+    assert_eq!(f.server.counts(), (0, 0));
+    f.preserved();
+}
+
+#[test]
 fn concurrent_cli_publishers_preserve_source_and_retry_exact_shared_witnesses() {
     for hold_ledger_reader in [false, true] {
         let f = Fixture::new();

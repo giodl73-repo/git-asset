@@ -20,7 +20,8 @@ native/rename/README records retain their identifiers.
 No runtime wire/hash-domain, historical stream/ref, legacy timing handshake or
 pinned legacy-writer template change. The actual old tool/template bytes match
 66f8b4b exactly. Historical development paths and commit URLs preserve evidence
-locations. The unrelated S3 classification follow-up remains excluded.
+locations. The initial source excluded the S3 classification follow-up. The
+actual CI blocker and its narrowly admitted repair are recorded below.
 
 Keep the qualified partitioned native CI and all exact test names. A single scope
 job admits the README-only path; full changes require all fourteen verification
@@ -74,3 +75,19 @@ tree. Their bytes were checked against that commit before removing the copies;
 Git history and all current contracts/producer records remain. The review digest
 inventory uses one JSON target per line to stay within its existing 128 KiB limit.
 Neither source budget is raised and no runtime/payload record is removed.
+
+## Observed CI blocker and repair
+
+At input a14c6af, hosted run44826084246's Linux workspace failed the existing
+concurrent S3 publisher assertion: ledger_unavailable instead of busy. The CLI
+discarded LedgerError::Busy when opening the ledger. The new deterministic
+exclusive-SQLite fixture reproduces that exact failure on the original mapping.
+The repair preserves Busy at the two S3 CLI open boundaries and keeps all other
+open failures unavailable. It adds no retry, IO, schema or custody authority.
+The fixture covers all five operations, no HTTP calls, unchanged ledger sequence,
+preserved source and missing-root refusal without initialization. All sixteen S3
+integration tests and strict workspace all-feature/all-target Clippy pass after
+the repair; format passes. Source checks and new exact-head hosted results remain
+explicit gates, recorded on PR51. Concurrency/provider producer review finds
+the change restores the existing retry classification rather than relaxing the
+original concurrent test. Production provider qualification remains open.

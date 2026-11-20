@@ -7,7 +7,8 @@ and git-annex. The user requests PR51..60 and README/CI PR62 on main. Owned
 integration work is integrate/open-prs; inputs and gates are in
 specs/OPEN-PR-INTEGRATION.md. Preserve all original commits, existing data
 identifiers and default-off prototype limits. No private controller worktree,
-live cache operation or unrelated S3 patch is included. Read Git/GitHub for exact
+live cache operation is included. The observed CI S3 busy-classification blocker
+is narrowly repaired under specs/OPEN-PR-INTEGRATION.md. Read Git/GitHub for exact
 branch/check/merge state. Imported stack evidence uses EVID-130..139; historical
 source 66f8b4b retains its original EVID-120..129 aliases.
 
