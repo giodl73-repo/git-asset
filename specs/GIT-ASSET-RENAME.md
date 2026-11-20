@@ -57,3 +57,13 @@ are returned unchanged to existing assertions. No production timer, budget,
 clock identity, floor or admission logic changes. Require focused real-clock,
 full serial workspace and strict Clippy qualification. Host trust/sampling
 availability and parallel budget failures remain separate open limits.
+
+Serial-harness follow-up, input 814e898736f48edd12d41dc3784a4bf2d9bbb064:
+WP-004/009/014; existing RUST/PROVIDER fixture scope. The fences integration
+helper now passes libtest --quiet so READY remains a standalone protocol line
+under one test thread. No fence algorithm, assertion or actor count changes.
+The original helper deadlocked because single-thread libtest prefixed READY
+with its test name; terminate only the verified owned hung parent/child, then
+rerun all eleven corrected fence cases. Other completed targets need not be
+repeated for a test-output-only change; full exact-head hosted checks remain
+mandatory. Preserve the interrupted local result in the review.

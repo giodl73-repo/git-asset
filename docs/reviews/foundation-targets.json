@@ -1779,8 +1779,8 @@
     },
     {
       "path": "crates/store/tests/fences.rs",
-      "bytes": 8861,
-      "sha256": "28fabb49c114fdcca4a57ba9f8bb9204d9151d3eea2161276200931694bd8709"
+      "bytes": 8872,
+      "sha256": "dabc976dded4a5bccb12930f4e017ffb7cd6a551e961634e07828d88c85a65b3"
     },
     {
       "path": "crates/store/tests/metadata.rs",
@@ -2384,8 +2384,8 @@
     },
     {
       "path": "docs/reviews/2026-11-20-git-asset-rename.md",
-      "bytes": 6474,
-      "sha256": "e384d788cd0173e00420db55a614565cd76c4f35fa75d75dfacd529a314ec5df"
+      "bytes": 7240,
+      "sha256": "cc34f1fe9ec98f513dad406cee34fa7e25dcc69ce98c60a9ef2bbb66cde98782"
     },
     {
       "path": "docs/reviews/2026-11-20-native-job-protection.md",
@@ -2699,8 +2699,8 @@
     },
     {
       "path": "specs/GIT-ASSET-RENAME.md",
-      "bytes": 4047,
-      "sha256": "1dbaf1f10af7714ef7dadff7f43a9096b0246bcc5fd97bf831269c38aed23379"
+      "bytes": 4725,
+      "sha256": "4b1a03fd6adfb2211fdb53b5ce19ee785342e54d49b5de4cb2218ec45c9a0f32"
     },
     {
       "path": "specs/GIT-LIFECYCLE-RECONCILIATION.md",

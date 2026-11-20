@@ -53,6 +53,17 @@ No production clock policy, floor, admission code or resource budget changes.
 The focused corrected fixture passes in 2.75s, and strict all-feature/all-target
 Clippy passes afterward. Deterministic clock-rejection tests remain unchanged.
 
+The final local serial native-source target passes all 161 runnable cases, with
+one explicitly ignored artifact case. The store library passes 434 cases with
+nine ignored explicit-artifact cases. The later fences integration helper
+deadlocked: single-thread libtest prefixes its READY line with the test name,
+while the parent expects a standalone signal. Stop only the verified owned
+hung parent/child and continue the no-fail-fast run. Add --quiet to that child
+harness; all eleven corrected fence cases pass in 0.51s, and strict Clippy
+passes afterward. This changes test stdout framing only, not production locks
+or assertions. Retain the interrupted original local target as a failure; do
+not label that original complete command an uninterrupted passing run.
+
 Final complete serial-workspace and exact-head hosted Windows/Linux/secrets
 outcomes are recorded on [PR 61](https://github.com/giodl73-repo/git-asset/pull/61).
 They are publication gates separate from this producer review; do not infer their

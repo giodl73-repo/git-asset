@@ -188,7 +188,7 @@ impl Drop for ChildScope {
 }
 fn child(f: &Fixture, mode: &str) -> ChildScope {
     let process = Command::new(std::env::current_exe().unwrap())
-        .args(["--exact", "fence_child", "--nocapture"])
+        .args(["--exact", "fence_child", "--nocapture", "--quiet"])
         .env("GIT_ASSET_FENCE_TEST_ROOT", &f.root)
         .env("GIT_ASSET_FENCE_TEST_MODE", mode)
         .stdin(Stdio::piped())
