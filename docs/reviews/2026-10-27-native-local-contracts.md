@@ -4,7 +4,7 @@ Entryd1f8712da01e908fb1462f841a65e4bcb679d028; parent34/35 qualification require
 Scope/controls/entry/exit/profiles are in specs/NATIVE-LOCAL-CONTRACTS.md before
 code. This producer-applied review grants no independent/human acceptance.
 
-Six-role findings, owner Tig producer:
+Six-role findings, owner git-asset producer:
 
 - Identity/namespace: exact definition/authored schema pins, strict known rule tag
   and dialect, explicit stream/record projections; private checked results bind

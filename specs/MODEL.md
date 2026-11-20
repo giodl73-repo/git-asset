@@ -1,4 +1,4 @@
-# Tig placement model
+# git-asset placement model
 
 Status: proposed requirements, not a released schema or implemented API.
 
@@ -22,7 +22,7 @@ plan + fresh revalidation -> journalled provider actions -> new observations
 
 Git/adapters or the optional typed-asset layer resolve moving names and selectors
 before supplying an exact snapshot to placement. Under docs/UNIFIED-DESIGN.md,
-Art's generic value is planned inside Tig; native media extraction and status
+Art's generic value is planned inside git-asset; native media extraction and status
 vocabulary remain contract/adapter-owned. Labels
 only affect placement through a pinned admitted policy, never by filename magic.
 Place aliases and filesystem paths do not define immutable object identity.

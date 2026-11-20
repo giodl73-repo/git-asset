@@ -3,7 +3,7 @@
 Entry source `81a97d30bd4ea2b54ab5845f213e6eaa92adbe07`;
 WP-005/011/015/016, REQ-001/003/006/010, SPEC-004/007/011/012/015,
 IF-005/008/010/013, PKG-003/004/008; RUST + INTEGRATION profiles.
-Scope: operator stderr diagnostics in `tig-project`, with no changes to restore,
+Scope: operator stderr diagnostics in `git-asset-project`, with no changes to restore,
 planning, providers, journals, permissions or automatic operations.
 
 The existing generic refusal line and exit status 2 remain. An additional bounded

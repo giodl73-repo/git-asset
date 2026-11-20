@@ -36,7 +36,7 @@ Default implementation. The fixture now uses explicit supported bounds; all
 three pass in focused-v2. The locked all-feature workspace suite passes, including
 the existing 500,000-binding persistence regression and native history/publication
 cases. Strict all-feature/all-target Clippy and locked standalone/assets-only
-tig-git checks pass. Final fmt, structure/hash pins and whitespace checks pass
+git-asset checks pass. Final fmt, structure/hash pins and whitespace checks pass
 separately from runtime verification. No dependency pins changed.
 
 ## Intended-use validation

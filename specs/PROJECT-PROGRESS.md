@@ -16,13 +16,13 @@ Exit requires scoped passing evidence and separate producer review/hosted gates.
 
 ```text
 # Preview as before; retain its exact plan hash.
-tig-project local-profile.json profiles/view.json
+git-asset-project local-profile.json profiles/view.json
 
 # An explicit apply creates a fresh private evidence file, never reuses one.
-tig-project --apply --expect-plan SHA256 --progress ABSOLUTE_NEW_LOG local-profile.json profiles/view.json
+git-asset-project --apply --expect-plan SHA256 --progress ABSOLUTE_NEW_LOG local-profile.json profiles/view.json
 
 # Inspect historical progress only; no payload verification or copying.
-tig-project --expect-plan SHA256 --inspect-progress ABSOLUTE_LOG local-profile.json profiles/view.json
+git-asset-project --expect-plan SHA256 --inspect-progress ABSOLUTE_LOG local-profile.json profiles/view.json
 ```
 
 Progress flags precede positional arguments. `--progress` requires explicit apply

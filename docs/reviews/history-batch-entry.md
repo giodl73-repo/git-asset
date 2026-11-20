@@ -5,8 +5,8 @@ Public summary: consumer identifiers generalized; original notes retained privat
 Input `dfdf87013ab5f75e585d3256fe86bc139e0e45ec`. WP-009/010/012/015,
 REQ-001/004/006/009/010, SPEC-007/010/012/014/015, IF-007/008/010/011/013,
 PKG-002/003/004/005/006/008; RUST/PROVIDER/GIT/INTEGRATION profiles. Allowed scope: pure
-`tig-assets::edits::sequence`, its existing captured-source bridge in
-`tig-git::source::native::updates`, an explicit ordered-sequence request in the
+`git-asset-model::edits::sequence`, its existing captured-source bridge in
+`git-asset::source::native::updates`, an explicit ordered-sequence request in the
 existing history service/CLI, synthetic tests and controlled documentation.
 Also applies existing WP-003, REQ-003, SPEC-003, IF-003/004 publication controls.
 No existing identity/format change, new publisher/cache, implicit Git mutation or

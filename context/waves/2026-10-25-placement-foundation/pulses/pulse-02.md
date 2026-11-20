@@ -7,9 +7,9 @@ All 110 cases remain designed, including 60 additional recovery/concurrency/LFS/
 space/bundle/lifecycle walkthroughs with doctrine and owned mitigation links.
 Backend evaluation and contract freeze remain open; no runtime behavior claimed.
 
-Unified-product decision: incorporate Art's generic value in an optional Tig
+Unified-product decision: incorporate Art's generic value in an optional git-asset
 typed-asset layer. docs/UNIFIED-DESIGN.md records boundaries, byte worktrees,
-pointer/merge granularity and parity-first extraction. TIG-R10 remains OPEN;
+pointer/merge granularity and parity-first extraction. GIT-ASSET-R10 remains OPEN;
 additional semantic/parity fixtures are required before any implementation claim.
 
 Byte-worktree design: specs/BYTE-WORKTREE.md defines base/private/sealed/Git-selected

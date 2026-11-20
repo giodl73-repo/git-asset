@@ -7,7 +7,7 @@ Art donor119c6644, variants.rs and14 tests, MIT/same copyright; NOTICE records
 adaptation and root LICENSE retains complete terms. New native wire/domain hashes
 are deliberately not legacy Art compatibility.
 
-Six-role findings, owner Tig producer:
+Six-role findings, owner git-asset producer:
 
 - Identity/namespace: immutable strict raw Object docs, exact source owner/
   definition/selected-index/space/semantics/consumed-axis admission; index entries

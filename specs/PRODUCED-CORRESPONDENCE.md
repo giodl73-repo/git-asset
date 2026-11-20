@@ -7,7 +7,7 @@ RUST/GIT/INTEGRATION: L0 fmt/Clippy/portable/canonical VTRACE; L1 exact byte pin
 strict parsing, duplicate/foreign subjects, parameters/provenance/policy mismatch,
 bounded claims and planned/unproven/stale states; L2 synthetic report and scene-like
 outputs plus actual temporary Git/metadata-store reopen and native context replay.
-Allowed: pure optional tig-assets claim/comparison module, explicit native metadata
+Allowed: pure optional git-asset-model claim/comparison module, explicit native metadata
 replay adapter, synthetic tests and bounded docs. No producer execution, new
 provider/cache, daemon, auto-selection/enrollment, transfer/removal or live runtime
 switch. Art donor 119c66446f2e95129d8d8f143d60ec6220d2813a model freshness tests

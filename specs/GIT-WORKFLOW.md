@@ -1,7 +1,7 @@
 # Git-first operation and state ownership
 
 Status: full-system target with bounded experimental source/LFS components.
-Commands below illustrate an intended general interface; no production Tig CLI,
+Commands below illustrate an intended general interface; no production git-asset CLI,
 hook or complete catalog exists. Explicit source extraction is implemented in
 [GIT-SOURCE-EXTRACTION](GIT-SOURCE-EXTRACTION.md), and download-only transfer in
 [LFS-CACHE-INTEROP](LFS-CACHE-INTEROP.md). Git-only onboarding does not need Art.
@@ -11,7 +11,7 @@ hook or complete catalog exists. Explicit source extraction is implemented in
 | State | Authority and location | Recovery rule |
 | --- | --- | --- |
 | Authored policy | Small reviewable rules in Git; trusted local config binds place IDs to roots/credentials | Restore exact Git policy; do not execute arbitrary repo-provided commands |
-| Logical snapshots | Exact Git commit/tree plus LFS pointers, or explicit immutable Tig manifests | Rebuild bounded indexes from pinned source; missing source is unknown |
+| Logical snapshots | Exact Git commit/tree plus LFS pointers, or explicit immutable git-asset manifests | Rebuild bounded indexes from pinned source; missing source is unknown |
 | Protection and work | Durable admitted claims, active-use records, operation journals and provider retention commitments outside Git | Recover before destructive work; lost authoritative protection state blocks removals |
 | Derived catalog | Object/replica/path/claim indexes and scoped provider observations outside Git | Rebuild incrementally from the above and named providers; stale data is not complete truth |
 
@@ -27,10 +27,10 @@ copy it into every worktree. Backend and on-disk schema remain undecided.
 Conceptual commands:
 
 ```text
-tig init                 # opt-in local registration; no hydration or census
-tig status               # desired / available / missing / surplus / unknown
-tig plan                 # bounded proposed acquisitions and eligible releases
-tig apply <plan-id>      # explicit admitted execution with fresh checks
+git-asset init                 # opt-in local registration; no hydration or census
+git-asset status               # desired / available / missing / surplus / unknown
+git-asset plan                 # bounded proposed acquisitions and eligible releases
+git-asset apply <plan-id>      # explicit admitted execution with fresh checks
 ```
 
 Register the repository using its common Git directory and a durable repo ID;
@@ -77,19 +77,19 @@ tracking refs are an observed source snapshot, not universal remote knowledge.
 
 ## Creation, staging and merge
 
-| Event | Tig responsibility | What must not happen |
+| Event | git-asset responsibility | What must not happen |
 | --- | --- | --- |
 | Producer starts | Admit bounded destination/scratch and active job protection | No full duplicate bundle staging or global render lock |
 | Bytes complete | Hash/verify and publish immutable object with durable ingest protection | No dependency on a later Git hook to prevent immediate eviction |
 | LFS clean/staging | Reconcile selected index pointers; retain uncommitted object admission | Do not assume a committed branch already protects new data |
 | Commit succeeds | Adopt exact committed pointer view under configured policy | Do not release index/job/draft protection prematurely |
-| Merge succeeds | Resolve actual merged tree and advance main desired checkpoint | No second manual Tig content merge or false placement-complete claim |
+| Merge succeeds | Resolve actual merged tree and advance main desired checkpoint | No second manual git-asset content merge or false placement-complete claim |
 | User aborts or resets | Release only explicitly retired claims, report remaining objects | No deleting uncommitted files or shared objects as automatic cleanup |
 
-External Git LFS clean may initially write to LFS's local store rather than Tig.
+External Git LFS clean may initially write to LFS's local store rather than git-asset.
 Account for that store as an admitted source, reconcile staged pointers, and
 require explicit draft/ingest protection before managing its removal. Git-only
-compatibility cannot depend on every producer using a Tig API. A transfer request
+compatibility cannot depend on every producer using a git-asset API. A transfer request
 often lacks branch/lifecycle context: it can satisfy object access and admit
 bounded ingest, but cannot infer a current/history claim solely from an OID.
 
@@ -97,16 +97,16 @@ Partial staging, merge conflicts and a detached HEAD are separate source views.
 Unmerged index stages retain known competing objects until resolved; they do not
 define a successful merged bundle. Unstaged content and newly created files need
 separate job/draft protection; branch inventory alone is not complete coverage.
-Tig never overwrites a user's modified worktree file to satisfy an object request.
+git-asset never overwrites a user's modified worktree file to satisfy an object request.
 
 ## Access and materialization
 
 Support two user experiences behind one object/provider API:
 
 1. Standard Git LFS: its client owns clean/smudge and worktree materialization;
-   Tig supplies/acquires exact objects through an adapter. All extra physical
+   git-asset supplies/acquires exact objects through an adapter. All extra physical
    copies, including LFS's local object store, stay visible in space accounting.
-2. Thin worktree: pointers remain in Git checkout; a Tig-aware consumer opens
+2. Thin worktree: pointers remain in Git checkout; a git-asset-aware consumer opens
    a protected immutable object handle or requests an explicit materialization.
    Art is one such consumer, not the only one.
 
@@ -164,7 +164,7 @@ These supplement T01-T25 and CL01-CL10. All remain designed, not executed.
 | GW03 | Catalog lost but durable job/claim records remain | Rebuild conservatively; no removal before protection recovery |
 | GW04 | Both catalog and an authoritative protection journal are missing | Block removal; do not invent empty protection from branch heads |
 | GW05 | Producer completes before staging or committing | Durable ingest/job protection covers the gap; new bytes are not garbage |
-| GW06 | LFS clean runs outside Tig and creates a new local LFS object | Reconcile explicit source/index and admit protection; no assumed Tig write event |
+| GW06 | LFS clean runs outside git-asset and creates a new local LFS object | Reconcile explicit source/index and admit protection; no assumed git-asset write event |
 | GW07 | Transfer-agent request supplies only OID and size | Resolve exact object, not an invented branch or lifecycle status |
 | GW08 | Merge conflicts leave three index stages | Protect known alternatives; unresolved state is not a merged snapshot |
 | GW09 | Partial staging, detached HEAD and dirty worktree coexist | Separate views and protections; never overwrite user edits |

@@ -26,7 +26,7 @@ the map does not duplicate their contents or create a second asset selection lis
 }
 ```
 
-These are declared links, not verified evidence. Tig does not resolve, open,
+These are declared links, not verified evidence. git-asset does not resolve, open,
 execute or interpret them. Missing local evidence bytes do not fail restoration;
 consumers requiring those checks must perform them and retain their own results.
 Labels carry no built-in authority: a link named approval or custody grants

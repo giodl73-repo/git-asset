@@ -3,7 +3,7 @@
 Goal: Positive/negative synthetic plan fixtures and constraint/coverage behavior.
 
 Status: in progress: 13 pure handoff mechanism tests pass locally. Parent
-TIG-R02/R03/R04/R05/R09, specs/HANDOFF-PROTOTYPE.md. L0: structural checks;
+GIT-ASSET-R02/R03/R04/R05/R09, specs/HANDOFF-PROTOTYPE.md. L0: structural checks;
 L1: fmt, locked tests and all-target Clippy. L2 durable/provider safety is open.
 No IO or actual eviction is implemented; full designed cases remain unexecuted.
 

@@ -1,8 +1,14 @@
-# Tig mission and needs
+# git-asset mission and needs
 
-Baseline input: Tig 0a9a522. Scope: one product with a low-level byte-worktree/
-placement layer and optional generic typed-asset semantics. Design readiness is
-distinct from runtime safety, release readiness and consumer acceptance.
+Coordinate the identity, relationships and lifecycle of large assets over Git
+and git-annex. Git keeps small authored decisions and reviewable history;
+git-annex manages content bytes, copies and native transfer. git-asset supplies
+the asset relationship record, exact version context, job protection, placement
+intent, retention obligations and evidence. The optional typed model does not
+become a mandatory media-specific cache engine.
+
+Design readiness remains distinct from runtime safety, release readiness and
+consumer acceptance. Existing component evidence is scoped in the evidence index.
 
 ## Users and operating context
 

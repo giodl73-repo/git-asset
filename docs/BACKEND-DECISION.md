@@ -1,9 +1,9 @@
-# Existing placement system or separate Tig engine?
+# Existing placement system or separate git-asset engine?
 
 Status: bounded WP-000 discovery recorded; first local publication adapter chosen
 below. Distributed placement/backend acceptance remains OPEN. No service installed.
 
-Tig names the product/interface independently of its implementation. Art consumes
+git-asset names the product/interface independently of its implementation. Art consumes
 resolved bundle/claim and observation/plan contracts, not a backend's mutable
 catalog as a second semantic asset authority.
 
@@ -11,7 +11,7 @@ catalog as a second semantic asset authority.
 | --- | --- | --- |
 | iRODS | Logical namespace, metadata, policy-driven tiering | Deployment/Windows fit, offline mode, catalog recovery, bounded IO and claim adapters |
 | Rucio | File/dataset identifiers, replica rules and metadata subscriptions | Operational footprint, existing-data relabel reconciliation, local stores, custody/deletion semantics |
-| Tig Rust engine | Proposed minimal local-first implementation | Every integrity, concurrency, recovery, capacity and provider obligation remains to be built |
+| git-asset Rust engine | Proposed minimal local-first implementation | Every integrity, concurrency, recovery, capacity and provider obligation remains to be built |
 
 Sources: [iRODS capabilities](https://irods.org/documentation/),
 [iRODS namespace/catalog](https://irods.org/faq/),
@@ -44,7 +44,7 @@ removal. This is a documented choose/defer decision, not a comparative benchmark
 | Initial payload publication | Minimal Rust local adapter in explicit isolated roots; no daemon or server prerequisite |
 | Shared protection/publication protocol | Immutable owned intent before final bytes, completion after verification; retries keyed by exact operation/request |
 | Persistence | Process-restart acknowledgement first; refuse provider/power-loss durability until directory/metadata persistence is established |
-| iRODS | Defer optional adapter: documented metadata/tiering/replication fit; Windows/offline footprint, recovery and Tig claim semantics unmeasured |
+| iRODS | Defer optional adapter: documented metadata/tiering/replication fit; Windows/offline footprint, recovery and git-asset claim semantics unmeasured |
 | Rucio | Defer optional adapter: replication-rule union maps well; server/database deployment and local/offline integration not admitted by this workstation slice |
 | Distributed catalog / locks | Defer; no inferred replacement of proven deployments, no global cache lock |
 | Remote providers / BitTorrent | Defer to provider capability/privacy and transport fixtures |

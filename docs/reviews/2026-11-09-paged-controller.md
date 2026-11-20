@@ -13,7 +13,7 @@ Reviewed target hashes are in foundation-targets.json.
 ## Producer method and findings
 
 One producer applies all six [.roles](../../.roles/ROLE.md) checklists. Owner of
-each finding: Tig maintainer through the named lens. This is neither independent
+each finding: git-asset maintainer through the named lens. This is neither independent
 review nor human acceptance or deletion authority. Challenge actual source and
 provider effects, metadata identity, partial outcomes and old/new operation
 binding; compare persisted decisions with actual receipts and process restarts.
@@ -77,19 +77,19 @@ default/all-feature/final-focus logs remain outside source; pinned old binaries
 are preserved in separate targets.
 
 ```text
-cargo test -p tig-store --lib --locked final_retirement
-cargo test -p tig-store --all-features --lib --locked final_retirement
-cargo test -p tig-store --lib --locked source_claims::subset::tests
-cargo test -p tig-store --lib --locked protection::budget
+cargo test -p git-asset-store --lib --locked final_retirement
+cargo test -p git-asset-store --all-features --lib --locked final_retirement
+cargo test -p git-asset-store --lib --locked source_claims::subset::tests
+cargo test -p git-asset-store --lib --locked protection::budget
 cargo test --workspace --locked
 cargo test --workspace --all-features --locked
-cargo check -p tig-git --no-default-features --locked
+cargo check -p git-asset --no-default-features --locked
 cargo clippy --workspace --all-targets --locked -- -D warnings
 cargo clippy --workspace --all-features --all-targets --locked -- -D warnings
-cargo build -p tig-store --bin tig-storage --locked
-cargo test -p tig-store --lib --locked explicit_cli_bulk -- --ignored
-cargo test -p tig-store --lib --locked explicit_cli_pending_cancellation_qualification -- --ignored
-cargo test -p tig-store --test retirement_cli --locked pre_final_writer_refuses_new_manifest_and_accepts_legacy_control -- --ignored
+cargo build -p git-asset-store --bin git-asset-storage --locked
+cargo test -p git-asset-store --lib --locked explicit_cli_bulk -- --ignored
+cargo test -p git-asset-store --lib --locked explicit_cli_pending_cancellation_qualification -- --ignored
+cargo test -p git-asset-store --test retirement_cli --locked pre_final_writer_refuses_new_manifest_and_accepts_legacy_control -- --ignored
 pwsh -NoProfile -File tools/validate.ps1
 git diff --check
 gitleaks git . --redact --log-opts=--all

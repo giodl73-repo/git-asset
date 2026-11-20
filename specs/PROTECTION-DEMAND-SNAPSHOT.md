@@ -3,7 +3,7 @@
 Input d18afba336f48f8b982ffe83c5b609d1f903c9f7. WP-004/006/008/009;
 REQ-001/002/004/005/007/009; SPEC-002/004/005/006/008;
 IF-002/004/005/006/008; PKG-001/003. RUST/PROVIDER profiles.
-Allowed: tig-store source-journal observation and read-only protection projection
+Allowed: git-asset-store source-journal observation and read-only protection projection
 through existing NodeStore/Tree and pure View ports; synthetic fixtures only.
 Entry: exact journals, strict tree identities and explicit caller enrollment.
 Exit: all registered sources are compared with admitted expected sources, all

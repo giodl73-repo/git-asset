@@ -141,7 +141,7 @@ foreach ($link in $learning.links) {
     Require ($link.owner -match '^[a-z]+(?:-[a-z]+)*$') 'Invalid role owner'
     Require (Test-Path -LiteralPath (Join-Path $repoRoot ".roles/parliament/$($link.owner).md")) 'Missing mitigation owner role'
 }
-foreach ($family in @(@('principles',$principles,'TIG-P-'), @('invariants',$invariants,'TIG-I-'), @('pitfalls',$pitfalls,'TIG-F-'))) {
+foreach ($family in @(@('principles',$principles,'GIT-ASSET-P-'), @('invariants',$invariants,'GIT-ASSET-I-'), @('pitfalls',$pitfalls,'GIT-ASSET-F-'))) {
     foreach ($match in [regex]::Matches($family[1], [regex]::Escape($family[2]) + '\d{2}')) {
         $id = $match.Value
         Require (@($learning.links | Where-Object { $_[$family[0]] -contains $id }).Count -gt 0) "Doctrine has no scenario coverage: $id"
@@ -188,7 +188,7 @@ foreach ($row in $workRows) {
         Require ($cells[6] -eq 'verified-pure') 'WP-002 scope must remain explicitly pure'
         $evidenceText = Get-Content (Join-Path $vtraceRoot 'EVIDENCE.md') -Raw
         Require ($evidenceText.Contains('EVID-009')) 'Missing WP-002 evidence'
-        Require (Test-Path (Join-Path $repoRoot 'crates/tig-core/tests/worktree.rs')) 'Missing WP-002 public-API tests'
+        Require (Test-Path (Join-Path $repoRoot 'crates/core/tests/worktree.rs')) 'Missing WP-002 public-API tests'
     } elseif ($cells[0] -eq 'WP-000') {
         Require ($cells[6] -eq 'discovery-recorded') 'WP-000 records a scoped choose/defer decision only'
         $evidenceText = Get-Content (Join-Path $vtraceRoot 'EVIDENCE.md') -Raw

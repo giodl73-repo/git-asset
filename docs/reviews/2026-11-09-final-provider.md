@@ -21,7 +21,7 @@ no live adoption, format upgrade, bulk workflow or full requirement acceptance.
 
 One producer applies all six .roles checklists; no delegation, independent review,
 human approval or publication/deletion authority is implied. Owner of every row:
-Tig maintainer using the named lens. Severity describes the counterexample before
+git-asset maintainer using the named lens. Severity describes the counterexample before
 the disposition; retained adoption gates remain open.
 
 | Finding / role | Severity | Disposition and evidence | Remaining gate |
@@ -44,7 +44,7 @@ late rollback, cancellation before/after release, missing evidence, exact replay
 fresh same-hash grants, read-only status and ordinary placement integration.
 
 The explicitly executed ignored pre-final artifact test passes against the
-parent-built tig-storage: legacy planning succeeds and final-capable manifest
+parent-built git-asset-storage: legacy planning succeeds and final-capable manifest
 planning refuses, with source/ledger preservation. CI separately builds the
 exact pinned273e639 artifact on Windows/Linux; current-head CI is not local proof.
 Fresh all-feature CLI ordinary-retirement cancellation qualification also passes.

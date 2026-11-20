@@ -2,7 +2,7 @@
 
 Public summary: consumer identifiers generalized; original notes retained privately.
 
-Base Tig a378bf6. Targets: historical consumer-readiness note and pulse-05 (original pinned tree); documentation only,
+Base git-asset a378bf6. Targets: historical consumer-readiness note and pulse-05 (original pinned tree); documentation only,
 WP-010/011/016 status reconciliation. Producer-applied Git/adoption and provider/
 privacy checklists, not independent or human acceptance.
 

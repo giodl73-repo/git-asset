@@ -11,7 +11,7 @@ protocol/process fixtures. Entry/exit and L0/L1/L2 are in
 
 Method: one producer applies all six .roles parliament checklists against
 model/safety, publication/accounted/ledger/orchestration contracts and foundation
-T01/07/08/09/10/12/13/14/15/16/21/25. Owner of each finding: Tig maintainer using
+T01/07/08/09/10/12/13/14/15/16/21/25. Owner of each finding: git-asset maintainer using
 the named lens. No delegation, independent review or human approval is implied.
 
 | Finding / lens | Severity, disposition and remaining qualification |

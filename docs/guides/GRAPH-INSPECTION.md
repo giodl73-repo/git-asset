@@ -3,9 +3,9 @@
 Build the experimental read-only command with:
 
 ```text
-cargo build --locked -p tig-git --features assets --bin tig-graph
-tig-graph inspect PRIVATE_PROFILE NEW_PRIVATE_REPORT
-tig-graph compare BEFORE_PROFILE AFTER_PROFILE NEW_PRIVATE_REPORT
+cargo build --locked -p git-asset --features assets --bin git-asset-graph
+git-asset-graph inspect PRIVATE_PROFILE NEW_PRIVATE_REPORT
+git-asset-graph compare BEFORE_PROFILE AFTER_PROFILE NEW_PRIVATE_REPORT
 ```
 
 Inspection and comparison configure no payload provider. They capture committed
@@ -17,7 +17,7 @@ by Rust callers. It does not implement a separate dependency engine.
 ## Verify the selected input objects in existing stores
 
 ```text
-tig-graph verify GRAPH_PROFILE PRIVATE_BYTE_PROFILE NEW_PRIVATE_REPORT
+git-asset-graph verify GRAPH_PROFILE PRIVATE_BYTE_PROFILE NEW_PRIVATE_REPORT
 ```
 
 This explicit mode captures Git once, extracts complete Production requirements,

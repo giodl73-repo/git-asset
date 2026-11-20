@@ -3,7 +3,7 @@
 Public summary: consumer identifiers generalized; original notes retained privately.
 
 Input and controls: [ASSET-REVISION-HISTORY](../../specs/ASSET-REVISION-HISTORY.md).
-Targets: new `crates/tig-assets/src/revisions.rs`, its integration tests, the
+Targets: new `crates/model/src/revisions.rs`, its integration tests, the
 two-line optional export in `lib.rs` and that contract. This is the revision
 foundation of T1, not delivery-history implementation or a completed migration.
 
@@ -26,9 +26,9 @@ scoped above; the old foundation review does not certify new runtime behavior.
 
 ## Executed local verification
 
-- `cargo test -p tig-assets --features schema --locked`: all package suites pass,
+- `cargo test -p git-asset-model --features schema --locked`: all package suites pass,
   including 16 new revision integration tests and one cycle/diamond unit test.
-- `cargo clippy -p tig-assets --features schema --all-targets --locked -- -D warnings`:
+- `cargo clippy -p git-asset-model --features schema --all-targets --locked -- -D warnings`:
   pass. `cargo fmt --all` applied; repository structural validator and diff check pass.
 - The 1,000-version integration fixture reads exactly 2,000 unique metadata
   documents; payload and opaque witness bytes are deliberately absent from its

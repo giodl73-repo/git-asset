@@ -29,7 +29,7 @@ Reject conflicting digest sizes. Imports never choose arbitrary filesystem paths
 No plain hash implies access permission, independent custody or current approval.
 
 Native design-1 intake is experimental under specs/NATIVE-INTAKE.md; do not rename
-legacy .art/schema domains or replace standard LFS pointers as branding. Git selection and Tig publication
+legacy .art/schema domains or replace standard LFS pointers as branding. Git selection and git-asset publication
 do not share one transaction; durable candidate protection bridges them.
 
 ## Stage review
@@ -49,7 +49,7 @@ record's expected-selection adoption succeeds. Its .tig extension/syntax is
 still proposed. Standard Git LFS pointers remain the alternate direct byte path.
 
 ```text
-Git record/pointer -> exact selected object -> Tig logical working view
+Git record/pointer -> exact selected object -> git-asset logical working view
                                              -> indexed eligible physical copy
 
 Git lifecycle + admitted rule -> owned placement/retention claims
@@ -129,7 +129,7 @@ authority. Default-disabled operator profiles do not authenticate external event
 
 IF-002/004/005/006/008/013 historical subset handoff, input63f2c96:
 [RETAINED-SUBSET](../../specs/RETAINED-SUBSET.md) exposes bounded generic
-source_claims::subset plan/inspect/apply and tig-source subset plan/status/apply/
+source_claims::subset plan/inspect/apply and git-asset-source subset plan/status/apply/
 resume. Atomic Prepare/Adopt/Withdraw publishes same-class survivor predecessor
 protection without exposing artificial active use; transactional revision
 conditions precede original owner retirement. Metadata-offline status separates

@@ -1,6 +1,6 @@
 # Updating one versioned asset
 
-Build `tig-history` with the optional `schema` feature. This command uses existing
+Build `git-asset-history` with the optional `schema` feature. This command uses existing
 LocalStore enrollment; it does not initialize a store or switch a live runtime.
 Other provider hosts reuse the same Rust preparation/publication APIs.
 
@@ -9,11 +9,11 @@ one stable asset file in Git
        |
 exact base + expected record + pinned raw change document
        |
-tig-history check profile.json request.json       reads only
+git-asset-history check profile.json request.json       reads only
        |
-tig-history publish profile.json request.json     acknowledges new metadata
+git-asset-history publish profile.json request.json     acknowledges new metadata
        |
-tig-history propose profile.json request.json     also creates a Git proposal
+git-asset-history propose profile.json request.json     also creates a Git proposal
        |
 git show <proposal-reference>                     review
 git cherry-pick <proposal-commit>                 explicit application

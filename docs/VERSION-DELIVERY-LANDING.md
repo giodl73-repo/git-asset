@@ -1,7 +1,7 @@
 # Finish version and delivery management
 
 Status: implementation plan, producer-reviewed design; not runtime acceptance.
-Input: Tig `1dfa6db6199a226661601e2e829dcbd9ad56c2f1`.
+Input: git-asset `1dfa6db6199a226661601e2e829dcbd9ad56c2f1`.
 The [common delivery review](COMMON-ASSET-DELIVERY-REVIEW.md) supplies the detailed
 delivery model. This plan closes the remaining revision/selection/storage seams.
 It supplements existing VTRACE controls; it does not close their open requirements.
@@ -12,7 +12,7 @@ One real asset keeps one stable ID and one small `.tig` file across edits,
 production runs, selections and deliveries. Its domain definition stays separate.
 An independently editable/exported representation may be a separate asset; another
 delivery destination alone is not another asset. Project status values such as
-`golden` belong to the admitted project vocabulary, never to Tig's field names.
+`golden` belong to the admitted project vocabulary, never to git-asset's field names.
 
 Keep three independent identities:
 
@@ -89,7 +89,7 @@ copies, current claims, scoped authority and fresh plan fences. Measure physical
 reclaim separately from logical bytes. No global writer/render lock; unrelated
 ingest must continue. Nothing in this plan authorizes live removal or final deletion.
 
-## Three bounded Tig PRs
+## Three bounded git-asset PRs
 
 Owners below mean implementation responsibilities, not invented independent people.
 Each PR records its actual input SHA, changed paths, exact test names/results and
@@ -97,8 +97,8 @@ review findings. Do not expand a PR into new UI, transport, renderer or provider
 
 | PR | Owner and allowed scope | Entry | Exit |
 | --- | --- | --- | --- |
-| T1: common contracts | `tig-assets` maintainer; pure optional asset types/readers/history operations, specs, synthetic tests | This plan; current instance/recipe/produced/publication contracts; fixed schema/version/limit vectors | Image, audio and non-media document use one revision/delivery contract; bounded history closure, selection checks, event union/conflict and old-record compatibility pass |
-| T2: explicit operations | Native CLI/Git maintainer; existing `tig-record` family and reusable proposal interfaces and synthetic fixtures | Qualified T1; explicit operation and expected-old-record contract | Validate/inspect, register revision, propose selection and record delivery create immutable bounded history plus sparse Git proposals; stale base refuses; retry is idempotent; no implicit network/Git mutation/cache work |
+| T1: common contracts | `git-asset-model` maintainer; pure optional asset types/readers/history operations, specs, synthetic tests | This plan; current instance/recipe/produced/publication contracts; fixed schema/version/limit vectors | Image, audio and non-media document use one revision/delivery contract; bounded history closure, selection checks, event union/conflict and old-record compatibility pass |
+| T2: explicit operations | Native CLI/Git maintainer; existing `git-asset-record` family and reusable proposal interfaces and synthetic fixtures | Qualified T1; explicit operation and expected-old-record contract | Validate/inspect, register revision, propose selection and record delivery create immutable bounded history plus sparse Git proposals; stale base refuses; retry is idempotent; no implicit network/Git mutation/cache work |
 | T3: lifecycle bridge | Claim/engine maintainer; adapt classified closures to existing claim/handoff/planner/executor seams and temporary-store fixtures | Qualified T2; known closure/coverage and policy generations; explicit scoped authority | Current/draft/history demands map without holding all history hot; old claim handoff recovers; stale/unknown/custody failures refuse removal; unrelated additions continue; actual reclaim measured in temporary stores |
 
 T1/T2 trace WP-010/011/012/015, REQ-001/006/010, SPEC-010/011/012/014/015,
@@ -110,7 +110,7 @@ record any additional impacted controls before code, not after tests.
 
 L0 for every PR: repository validator, whitespace and role/trace review; code also
 fmt. L1: locked all-feature workspace tests and strict all-target Clippy, with
-nonzero named new cases. Preserve standalone Git/LFS by checking `tig-git` without
+nonzero named new cases. Preserve standalone Git/LFS by checking `git-asset` without
 default features. L2: real explicit CLI in isolated temporary Git repositories;
 T3 adds temporary-store interruption, capacity, concurrency and physical reclaim
 checks. No user media/stores or live provider needed to prove these mechanisms.
@@ -159,7 +159,7 @@ closure remains open. No new safety guarantee is claimed by landing this prose.
 
 ## Consumer landing and completion
 
-The consumer owner maintains the private mapping/coverage/cutover plan, not Tig's public fixtures:
+The consumer owner maintains the private mapping/coverage/cutover plan, not git-asset's public fixtures:
 Consumer-specific landing records remain with the project owner.
 Pilot one actual episode/render with its cel/cue and one text asset after T2;
 then batch by real object identity, preserving IDs, pins, rights and approval

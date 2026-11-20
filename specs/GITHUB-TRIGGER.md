@@ -23,7 +23,7 @@ a signed OIDC bearer and an exact commit request; no roots, executable paths,
 credentials, policy, placement destinations or removal flags. Private operator
 enrollment pins GitHub owner/repository immutable IDs and exact names, audience,
 subject, allowed branch/event/workflow and optional immutable reusable workflow,
-plus the exact Tig lifecycle and placement enrollment identities. All execution
+plus the exact git-asset lifecycle and placement enrollment identities. All execution
 permissions remain independently admitted by existing private profiles. Policy
 updates need trusted adoption; a merged workflow cannot expand them.
 
@@ -87,8 +87,8 @@ No request completion grants final archival deletion or tombstone retirement.
 
 ## Operator and Action contract
 
-Build `tig-git` with optional feature `github`. `tig-trigger describe` is static;
-`tig-trigger serve PROFILE` explicitly starts one foreground loopback listener.
+Build `git-asset` with optional feature `github`. `git-asset-trigger describe` is static;
+`git-asset-trigger serve PROFILE` explicitly starts one foreground loopback listener.
 The strict private profile schema is `tig.github-receiver.design-1`: trust,
 enrollment, namespace (root/minimum), metadata_root, metadata_minimum,
 placement_profile, listen, budget, max_connections, allow_receive and
@@ -165,4 +165,4 @@ describes audience/subject/workflow claims; pin the admitted subject rather than
 assuming one default subject format. [Runner guidance](https://docs.github.com/en/actions/reference/security/secure-use)
 explains why workflow code and the executor need separate authority.
 [ring RSA verification](https://docs.rs/ring/0.17.14/ring/signature/struct.RsaPublicKeyComponents.html)
-provides the maintained signature primitive; Tig does not implement RSA.
+provides the maintained signature primitive; git-asset does not implement RSA.

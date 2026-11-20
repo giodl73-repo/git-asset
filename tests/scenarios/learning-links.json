@@ -4,17 +4,17 @@
     {
       "id": "T01",
       "pitfalls": [
-        "TIG-F-02"
+        "GIT-ASSET-F-02"
       ],
       "principles": [
-        "TIG-P-08"
+        "GIT-ASSET-P-08"
       ],
       "invariants": [
-        "TIG-I-04",
-        "TIG-I-10"
+        "GIT-ASSET-I-04",
+        "GIT-ASSET-I-10"
       ],
       "requirements": [
-        "TIG-R05"
+        "GIT-ASSET-R05"
       ],
       "mitigation": "M02",
       "owner": "storage-custody",
@@ -24,20 +24,20 @@
     {
       "id": "T02",
       "pitfalls": [
-        "TIG-F-01"
+        "GIT-ASSET-F-01"
       ],
       "principles": [
-        "TIG-P-03",
-        "TIG-P-04",
-        "TIG-P-09"
+        "GIT-ASSET-P-03",
+        "GIT-ASSET-P-04",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-01",
-        "TIG-I-02"
+        "GIT-ASSET-I-01",
+        "GIT-ASSET-I-02"
       ],
       "requirements": [
-        "TIG-R02",
-        "TIG-R03"
+        "GIT-ASSET-R02",
+        "GIT-ASSET-R03"
       ],
       "mitigation": "M01",
       "owner": "placement-policy",
@@ -47,20 +47,20 @@
     {
       "id": "T03",
       "pitfalls": [
-        "TIG-F-01"
+        "GIT-ASSET-F-01"
       ],
       "principles": [
-        "TIG-P-03",
-        "TIG-P-04",
-        "TIG-P-09"
+        "GIT-ASSET-P-03",
+        "GIT-ASSET-P-04",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-01",
-        "TIG-I-02"
+        "GIT-ASSET-I-01",
+        "GIT-ASSET-I-02"
       ],
       "requirements": [
-        "TIG-R02",
-        "TIG-R03"
+        "GIT-ASSET-R02",
+        "GIT-ASSET-R03"
       ],
       "mitigation": "M01",
       "owner": "placement-policy",
@@ -70,19 +70,19 @@
     {
       "id": "T04",
       "pitfalls": [
-        "TIG-F-06"
+        "GIT-ASSET-F-06"
       ],
       "principles": [
-        "TIG-P-02",
-        "TIG-P-04"
+        "GIT-ASSET-P-02",
+        "GIT-ASSET-P-04"
       ],
       "invariants": [
-        "TIG-I-08",
-        "TIG-I-09"
+        "GIT-ASSET-I-08",
+        "GIT-ASSET-I-09"
       ],
       "requirements": [
-        "TIG-R01",
-        "TIG-R06"
+        "GIT-ASSET-R01",
+        "GIT-ASSET-R06"
       ],
       "mitigation": "M06",
       "owner": "identity-namespace",
@@ -92,19 +92,19 @@
     {
       "id": "T05",
       "pitfalls": [
-        "TIG-F-06"
+        "GIT-ASSET-F-06"
       ],
       "principles": [
-        "TIG-P-02",
-        "TIG-P-04"
+        "GIT-ASSET-P-02",
+        "GIT-ASSET-P-04"
       ],
       "invariants": [
-        "TIG-I-08",
-        "TIG-I-09"
+        "GIT-ASSET-I-08",
+        "GIT-ASSET-I-09"
       ],
       "requirements": [
-        "TIG-R01",
-        "TIG-R06"
+        "GIT-ASSET-R01",
+        "GIT-ASSET-R06"
       ],
       "mitigation": "M06",
       "owner": "identity-namespace",
@@ -114,20 +114,20 @@
     {
       "id": "T06",
       "pitfalls": [
-        "TIG-F-12"
+        "GIT-ASSET-F-12"
       ],
       "principles": [
-        "TIG-P-03",
-        "TIG-P-05"
+        "GIT-ASSET-P-03",
+        "GIT-ASSET-P-05"
       ],
       "invariants": [
-        "TIG-I-02",
-        "TIG-I-03",
-        "TIG-I-11"
+        "GIT-ASSET-I-02",
+        "GIT-ASSET-I-03",
+        "GIT-ASSET-I-11"
       ],
       "requirements": [
-        "TIG-R02",
-        "TIG-R09"
+        "GIT-ASSET-R02",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M12",
       "owner": "git-adoption",
@@ -137,21 +137,21 @@
     {
       "id": "T07",
       "pitfalls": [
-        "TIG-F-07"
+        "GIT-ASSET-F-07"
       ],
       "principles": [
-        "TIG-P-01",
-        "TIG-P-04",
-        "TIG-P-09"
+        "GIT-ASSET-P-01",
+        "GIT-ASSET-P-04",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-01",
-        "TIG-I-02",
-        "TIG-I-06"
+        "GIT-ASSET-I-01",
+        "GIT-ASSET-I-02",
+        "GIT-ASSET-I-06"
       ],
       "requirements": [
-        "TIG-R03",
-        "TIG-R07"
+        "GIT-ASSET-R03",
+        "GIT-ASSET-R07"
       ],
       "mitigation": "M07",
       "owner": "storage-custody",
@@ -161,21 +161,21 @@
     {
       "id": "T08",
       "pitfalls": [
-        "TIG-F-07"
+        "GIT-ASSET-F-07"
       ],
       "principles": [
-        "TIG-P-01",
-        "TIG-P-04",
-        "TIG-P-09"
+        "GIT-ASSET-P-01",
+        "GIT-ASSET-P-04",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-01",
-        "TIG-I-02",
-        "TIG-I-06"
+        "GIT-ASSET-I-01",
+        "GIT-ASSET-I-02",
+        "GIT-ASSET-I-06"
       ],
       "requirements": [
-        "TIG-R03",
-        "TIG-R07"
+        "GIT-ASSET-R03",
+        "GIT-ASSET-R07"
       ],
       "mitigation": "M07",
       "owner": "storage-custody",
@@ -185,21 +185,21 @@
     {
       "id": "T09",
       "pitfalls": [
-        "TIG-F-07"
+        "GIT-ASSET-F-07"
       ],
       "principles": [
-        "TIG-P-01",
-        "TIG-P-04",
-        "TIG-P-09"
+        "GIT-ASSET-P-01",
+        "GIT-ASSET-P-04",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-01",
-        "TIG-I-02",
-        "TIG-I-06"
+        "GIT-ASSET-I-01",
+        "GIT-ASSET-I-02",
+        "GIT-ASSET-I-06"
       ],
       "requirements": [
-        "TIG-R03",
-        "TIG-R07"
+        "GIT-ASSET-R03",
+        "GIT-ASSET-R07"
       ],
       "mitigation": "M07",
       "owner": "storage-custody",
@@ -209,21 +209,21 @@
     {
       "id": "T10",
       "pitfalls": [
-        "TIG-F-07"
+        "GIT-ASSET-F-07"
       ],
       "principles": [
-        "TIG-P-01",
-        "TIG-P-04",
-        "TIG-P-09"
+        "GIT-ASSET-P-01",
+        "GIT-ASSET-P-04",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-01",
-        "TIG-I-02",
-        "TIG-I-06"
+        "GIT-ASSET-I-01",
+        "GIT-ASSET-I-02",
+        "GIT-ASSET-I-06"
       ],
       "requirements": [
-        "TIG-R03",
-        "TIG-R07"
+        "GIT-ASSET-R03",
+        "GIT-ASSET-R07"
       ],
       "mitigation": "M07",
       "owner": "storage-custody",
@@ -233,20 +233,20 @@
     {
       "id": "T11",
       "pitfalls": [
-        "TIG-F-12"
+        "GIT-ASSET-F-12"
       ],
       "principles": [
-        "TIG-P-03",
-        "TIG-P-05"
+        "GIT-ASSET-P-03",
+        "GIT-ASSET-P-05"
       ],
       "invariants": [
-        "TIG-I-02",
-        "TIG-I-03",
-        "TIG-I-11"
+        "GIT-ASSET-I-02",
+        "GIT-ASSET-I-03",
+        "GIT-ASSET-I-11"
       ],
       "requirements": [
-        "TIG-R02",
-        "TIG-R09"
+        "GIT-ASSET-R02",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M12",
       "owner": "git-adoption",
@@ -256,19 +256,19 @@
     {
       "id": "T12",
       "pitfalls": [
-        "TIG-F-04"
+        "GIT-ASSET-F-04"
       ],
       "principles": [
-        "TIG-P-06",
-        "TIG-P-09"
+        "GIT-ASSET-P-06",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-03",
-        "TIG-I-07"
+        "GIT-ASSET-I-03",
+        "GIT-ASSET-I-07"
       ],
       "requirements": [
-        "TIG-R04",
-        "TIG-R07"
+        "GIT-ASSET-R04",
+        "GIT-ASSET-R07"
       ],
       "mitigation": "M04",
       "owner": "concurrency-recovery",
@@ -278,19 +278,19 @@
     {
       "id": "T13",
       "pitfalls": [
-        "TIG-F-04"
+        "GIT-ASSET-F-04"
       ],
       "principles": [
-        "TIG-P-06",
-        "TIG-P-09"
+        "GIT-ASSET-P-06",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-03",
-        "TIG-I-07"
+        "GIT-ASSET-I-03",
+        "GIT-ASSET-I-07"
       ],
       "requirements": [
-        "TIG-R04",
-        "TIG-R07"
+        "GIT-ASSET-R04",
+        "GIT-ASSET-R07"
       ],
       "mitigation": "M04",
       "owner": "concurrency-recovery",
@@ -300,19 +300,19 @@
     {
       "id": "T14",
       "pitfalls": [
-        "TIG-F-03"
+        "GIT-ASSET-F-03"
       ],
       "principles": [
-        "TIG-P-05",
-        "TIG-P-09"
+        "GIT-ASSET-P-05",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-05",
-        "TIG-I-06"
+        "GIT-ASSET-I-05",
+        "GIT-ASSET-I-06"
       ],
       "requirements": [
-        "TIG-R04",
-        "TIG-R09"
+        "GIT-ASSET-R04",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M03",
       "owner": "concurrency-recovery",
@@ -322,17 +322,17 @@
     {
       "id": "T15",
       "pitfalls": [
-        "TIG-F-02"
+        "GIT-ASSET-F-02"
       ],
       "principles": [
-        "TIG-P-08"
+        "GIT-ASSET-P-08"
       ],
       "invariants": [
-        "TIG-I-04",
-        "TIG-I-10"
+        "GIT-ASSET-I-04",
+        "GIT-ASSET-I-10"
       ],
       "requirements": [
-        "TIG-R05"
+        "GIT-ASSET-R05"
       ],
       "mitigation": "M02",
       "owner": "storage-custody",
@@ -342,17 +342,17 @@
     {
       "id": "T16",
       "pitfalls": [
-        "TIG-F-09"
+        "GIT-ASSET-F-09"
       ],
       "principles": [
-        "TIG-P-07"
+        "GIT-ASSET-P-07"
       ],
       "invariants": [
-        "TIG-I-08",
-        "TIG-I-11"
+        "GIT-ASSET-I-08",
+        "GIT-ASSET-I-11"
       ],
       "requirements": [
-        "TIG-R06"
+        "GIT-ASSET-R06"
       ],
       "mitigation": "M09",
       "owner": "provider-privacy",
@@ -362,20 +362,20 @@
     {
       "id": "T17",
       "pitfalls": [
-        "TIG-F-10"
+        "GIT-ASSET-F-10"
       ],
       "principles": [
-        "TIG-P-04",
-        "TIG-P-08"
+        "GIT-ASSET-P-04",
+        "GIT-ASSET-P-08"
       ],
       "invariants": [
-        "TIG-I-02",
-        "TIG-I-10"
+        "GIT-ASSET-I-02",
+        "GIT-ASSET-I-10"
       ],
       "requirements": [
-        "TIG-R01",
-        "TIG-R05",
-        "TIG-R07"
+        "GIT-ASSET-R01",
+        "GIT-ASSET-R05",
+        "GIT-ASSET-R07"
       ],
       "mitigation": "M10",
       "owner": "identity-namespace",
@@ -385,21 +385,21 @@
     {
       "id": "T18",
       "pitfalls": [
-        "TIG-F-11"
+        "GIT-ASSET-F-11"
       ],
       "principles": [
-        "TIG-P-02",
-        "TIG-P-08"
+        "GIT-ASSET-P-02",
+        "GIT-ASSET-P-08"
       ],
       "invariants": [
-        "TIG-I-04",
-        "TIG-I-09",
-        "TIG-I-10"
+        "GIT-ASSET-I-04",
+        "GIT-ASSET-I-09",
+        "GIT-ASSET-I-10"
       ],
       "requirements": [
-        "TIG-R01",
-        "TIG-R05",
-        "TIG-R06"
+        "GIT-ASSET-R01",
+        "GIT-ASSET-R05",
+        "GIT-ASSET-R06"
       ],
       "mitigation": "M11",
       "owner": "provider-privacy",
@@ -409,20 +409,20 @@
     {
       "id": "T19",
       "pitfalls": [
-        "TIG-F-12"
+        "GIT-ASSET-F-12"
       ],
       "principles": [
-        "TIG-P-03",
-        "TIG-P-05"
+        "GIT-ASSET-P-03",
+        "GIT-ASSET-P-05"
       ],
       "invariants": [
-        "TIG-I-02",
-        "TIG-I-03",
-        "TIG-I-11"
+        "GIT-ASSET-I-02",
+        "GIT-ASSET-I-03",
+        "GIT-ASSET-I-11"
       ],
       "requirements": [
-        "TIG-R02",
-        "TIG-R09"
+        "GIT-ASSET-R02",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M12",
       "owner": "git-adoption",
@@ -432,20 +432,20 @@
     {
       "id": "T20",
       "pitfalls": [
-        "TIG-F-12"
+        "GIT-ASSET-F-12"
       ],
       "principles": [
-        "TIG-P-03",
-        "TIG-P-05"
+        "GIT-ASSET-P-03",
+        "GIT-ASSET-P-05"
       ],
       "invariants": [
-        "TIG-I-02",
-        "TIG-I-03",
-        "TIG-I-11"
+        "GIT-ASSET-I-02",
+        "GIT-ASSET-I-03",
+        "GIT-ASSET-I-11"
       ],
       "requirements": [
-        "TIG-R02",
-        "TIG-R09"
+        "GIT-ASSET-R02",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M12",
       "owner": "git-adoption",
@@ -455,17 +455,17 @@
     {
       "id": "T21",
       "pitfalls": [
-        "TIG-F-09"
+        "GIT-ASSET-F-09"
       ],
       "principles": [
-        "TIG-P-07"
+        "GIT-ASSET-P-07"
       ],
       "invariants": [
-        "TIG-I-08",
-        "TIG-I-11"
+        "GIT-ASSET-I-08",
+        "GIT-ASSET-I-11"
       ],
       "requirements": [
-        "TIG-R06"
+        "GIT-ASSET-R06"
       ],
       "mitigation": "M09",
       "owner": "provider-privacy",
@@ -475,21 +475,21 @@
     {
       "id": "T22",
       "pitfalls": [
-        "TIG-F-11"
+        "GIT-ASSET-F-11"
       ],
       "principles": [
-        "TIG-P-02",
-        "TIG-P-08"
+        "GIT-ASSET-P-02",
+        "GIT-ASSET-P-08"
       ],
       "invariants": [
-        "TIG-I-04",
-        "TIG-I-09",
-        "TIG-I-10"
+        "GIT-ASSET-I-04",
+        "GIT-ASSET-I-09",
+        "GIT-ASSET-I-10"
       ],
       "requirements": [
-        "TIG-R01",
-        "TIG-R05",
-        "TIG-R06"
+        "GIT-ASSET-R01",
+        "GIT-ASSET-R05",
+        "GIT-ASSET-R06"
       ],
       "mitigation": "M11",
       "owner": "provider-privacy",
@@ -499,21 +499,21 @@
     {
       "id": "T23",
       "pitfalls": [
-        "TIG-F-07"
+        "GIT-ASSET-F-07"
       ],
       "principles": [
-        "TIG-P-01",
-        "TIG-P-04",
-        "TIG-P-09"
+        "GIT-ASSET-P-01",
+        "GIT-ASSET-P-04",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-01",
-        "TIG-I-02",
-        "TIG-I-06"
+        "GIT-ASSET-I-01",
+        "GIT-ASSET-I-02",
+        "GIT-ASSET-I-06"
       ],
       "requirements": [
-        "TIG-R03",
-        "TIG-R07"
+        "GIT-ASSET-R03",
+        "GIT-ASSET-R07"
       ],
       "mitigation": "M07",
       "owner": "storage-custody",
@@ -523,21 +523,21 @@
     {
       "id": "T24",
       "pitfalls": [
-        "TIG-F-05"
+        "GIT-ASSET-F-05"
       ],
       "principles": [
-        "TIG-P-03",
-        "TIG-P-06",
-        "TIG-P-09"
+        "GIT-ASSET-P-03",
+        "GIT-ASSET-P-06",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-01",
-        "TIG-I-07",
-        "TIG-I-11"
+        "GIT-ASSET-I-01",
+        "GIT-ASSET-I-07",
+        "GIT-ASSET-I-11"
       ],
       "requirements": [
-        "TIG-R02",
-        "TIG-R04"
+        "GIT-ASSET-R02",
+        "GIT-ASSET-R04"
       ],
       "mitigation": "M05",
       "owner": "placement-policy",
@@ -547,17 +547,17 @@
     {
       "id": "T25",
       "pitfalls": [
-        "TIG-F-09"
+        "GIT-ASSET-F-09"
       ],
       "principles": [
-        "TIG-P-07"
+        "GIT-ASSET-P-07"
       ],
       "invariants": [
-        "TIG-I-08",
-        "TIG-I-11"
+        "GIT-ASSET-I-08",
+        "GIT-ASSET-I-11"
       ],
       "requirements": [
-        "TIG-R06"
+        "GIT-ASSET-R06"
       ],
       "mitigation": "M09",
       "owner": "provider-privacy",
@@ -567,20 +567,20 @@
     {
       "id": "CL01",
       "pitfalls": [
-        "TIG-F-10"
+        "GIT-ASSET-F-10"
       ],
       "principles": [
-        "TIG-P-04",
-        "TIG-P-08"
+        "GIT-ASSET-P-04",
+        "GIT-ASSET-P-08"
       ],
       "invariants": [
-        "TIG-I-02",
-        "TIG-I-10"
+        "GIT-ASSET-I-02",
+        "GIT-ASSET-I-10"
       ],
       "requirements": [
-        "TIG-R01",
-        "TIG-R05",
-        "TIG-R07"
+        "GIT-ASSET-R01",
+        "GIT-ASSET-R05",
+        "GIT-ASSET-R07"
       ],
       "mitigation": "M10",
       "owner": "identity-namespace",
@@ -590,21 +590,21 @@
     {
       "id": "CL02",
       "pitfalls": [
-        "TIG-F-07"
+        "GIT-ASSET-F-07"
       ],
       "principles": [
-        "TIG-P-01",
-        "TIG-P-04",
-        "TIG-P-09"
+        "GIT-ASSET-P-01",
+        "GIT-ASSET-P-04",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-01",
-        "TIG-I-02",
-        "TIG-I-06"
+        "GIT-ASSET-I-01",
+        "GIT-ASSET-I-02",
+        "GIT-ASSET-I-06"
       ],
       "requirements": [
-        "TIG-R03",
-        "TIG-R07"
+        "GIT-ASSET-R03",
+        "GIT-ASSET-R07"
       ],
       "mitigation": "M07",
       "owner": "storage-custody",
@@ -614,21 +614,21 @@
     {
       "id": "CL03",
       "pitfalls": [
-        "TIG-F-07"
+        "GIT-ASSET-F-07"
       ],
       "principles": [
-        "TIG-P-01",
-        "TIG-P-04",
-        "TIG-P-09"
+        "GIT-ASSET-P-01",
+        "GIT-ASSET-P-04",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-01",
-        "TIG-I-02",
-        "TIG-I-06"
+        "GIT-ASSET-I-01",
+        "GIT-ASSET-I-02",
+        "GIT-ASSET-I-06"
       ],
       "requirements": [
-        "TIG-R03",
-        "TIG-R07"
+        "GIT-ASSET-R03",
+        "GIT-ASSET-R07"
       ],
       "mitigation": "M07",
       "owner": "storage-custody",
@@ -638,19 +638,19 @@
     {
       "id": "CL04",
       "pitfalls": [
-        "TIG-F-04"
+        "GIT-ASSET-F-04"
       ],
       "principles": [
-        "TIG-P-06",
-        "TIG-P-09"
+        "GIT-ASSET-P-06",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-03",
-        "TIG-I-07"
+        "GIT-ASSET-I-03",
+        "GIT-ASSET-I-07"
       ],
       "requirements": [
-        "TIG-R04",
-        "TIG-R07"
+        "GIT-ASSET-R04",
+        "GIT-ASSET-R07"
       ],
       "mitigation": "M04",
       "owner": "concurrency-recovery",
@@ -660,19 +660,19 @@
     {
       "id": "CL05",
       "pitfalls": [
-        "TIG-F-03"
+        "GIT-ASSET-F-03"
       ],
       "principles": [
-        "TIG-P-05",
-        "TIG-P-09"
+        "GIT-ASSET-P-05",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-05",
-        "TIG-I-06"
+        "GIT-ASSET-I-05",
+        "GIT-ASSET-I-06"
       ],
       "requirements": [
-        "TIG-R04",
-        "TIG-R09"
+        "GIT-ASSET-R04",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M03",
       "owner": "concurrency-recovery",
@@ -682,19 +682,19 @@
     {
       "id": "CL06",
       "pitfalls": [
-        "TIG-F-04"
+        "GIT-ASSET-F-04"
       ],
       "principles": [
-        "TIG-P-06",
-        "TIG-P-09"
+        "GIT-ASSET-P-06",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-03",
-        "TIG-I-07"
+        "GIT-ASSET-I-03",
+        "GIT-ASSET-I-07"
       ],
       "requirements": [
-        "TIG-R04",
-        "TIG-R07"
+        "GIT-ASSET-R04",
+        "GIT-ASSET-R07"
       ],
       "mitigation": "M04",
       "owner": "concurrency-recovery",
@@ -704,20 +704,20 @@
     {
       "id": "CL07",
       "pitfalls": [
-        "TIG-F-08"
+        "GIT-ASSET-F-08"
       ],
       "principles": [
-        "TIG-P-07",
-        "TIG-P-08"
+        "GIT-ASSET-P-07",
+        "GIT-ASSET-P-08"
       ],
       "invariants": [
-        "TIG-I-06",
-        "TIG-I-11",
-        "TIG-I-12"
+        "GIT-ASSET-I-06",
+        "GIT-ASSET-I-11",
+        "GIT-ASSET-I-12"
       ],
       "requirements": [
-        "TIG-R08",
-        "TIG-R09"
+        "GIT-ASSET-R08",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M08",
       "owner": "git-adoption",
@@ -727,20 +727,20 @@
     {
       "id": "CL08",
       "pitfalls": [
-        "TIG-F-08"
+        "GIT-ASSET-F-08"
       ],
       "principles": [
-        "TIG-P-07",
-        "TIG-P-08"
+        "GIT-ASSET-P-07",
+        "GIT-ASSET-P-08"
       ],
       "invariants": [
-        "TIG-I-06",
-        "TIG-I-11",
-        "TIG-I-12"
+        "GIT-ASSET-I-06",
+        "GIT-ASSET-I-11",
+        "GIT-ASSET-I-12"
       ],
       "requirements": [
-        "TIG-R08",
-        "TIG-R09"
+        "GIT-ASSET-R08",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M08",
       "owner": "git-adoption",
@@ -750,17 +750,17 @@
     {
       "id": "CL09",
       "pitfalls": [
-        "TIG-F-02"
+        "GIT-ASSET-F-02"
       ],
       "principles": [
-        "TIG-P-08"
+        "GIT-ASSET-P-08"
       ],
       "invariants": [
-        "TIG-I-04",
-        "TIG-I-10"
+        "GIT-ASSET-I-04",
+        "GIT-ASSET-I-10"
       ],
       "requirements": [
-        "TIG-R05"
+        "GIT-ASSET-R05"
       ],
       "mitigation": "M02",
       "owner": "storage-custody",
@@ -770,20 +770,20 @@
     {
       "id": "CL10",
       "pitfalls": [
-        "TIG-F-12"
+        "GIT-ASSET-F-12"
       ],
       "principles": [
-        "TIG-P-03",
-        "TIG-P-05"
+        "GIT-ASSET-P-03",
+        "GIT-ASSET-P-05"
       ],
       "invariants": [
-        "TIG-I-02",
-        "TIG-I-03",
-        "TIG-I-11"
+        "GIT-ASSET-I-02",
+        "GIT-ASSET-I-03",
+        "GIT-ASSET-I-11"
       ],
       "requirements": [
-        "TIG-R02",
-        "TIG-R09"
+        "GIT-ASSET-R02",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M12",
       "owner": "git-adoption",
@@ -793,20 +793,20 @@
     {
       "id": "GW01",
       "pitfalls": [
-        "TIG-F-08"
+        "GIT-ASSET-F-08"
       ],
       "principles": [
-        "TIG-P-07",
-        "TIG-P-08"
+        "GIT-ASSET-P-07",
+        "GIT-ASSET-P-08"
       ],
       "invariants": [
-        "TIG-I-06",
-        "TIG-I-11",
-        "TIG-I-12"
+        "GIT-ASSET-I-06",
+        "GIT-ASSET-I-11",
+        "GIT-ASSET-I-12"
       ],
       "requirements": [
-        "TIG-R08",
-        "TIG-R09"
+        "GIT-ASSET-R08",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M08",
       "owner": "git-adoption",
@@ -816,17 +816,17 @@
     {
       "id": "GW02",
       "pitfalls": [
-        "TIG-F-09"
+        "GIT-ASSET-F-09"
       ],
       "principles": [
-        "TIG-P-07"
+        "GIT-ASSET-P-07"
       ],
       "invariants": [
-        "TIG-I-08",
-        "TIG-I-11"
+        "GIT-ASSET-I-08",
+        "GIT-ASSET-I-11"
       ],
       "requirements": [
-        "TIG-R06"
+        "GIT-ASSET-R06"
       ],
       "mitigation": "M09",
       "owner": "provider-privacy",
@@ -836,19 +836,19 @@
     {
       "id": "GW03",
       "pitfalls": [
-        "TIG-F-03"
+        "GIT-ASSET-F-03"
       ],
       "principles": [
-        "TIG-P-05",
-        "TIG-P-09"
+        "GIT-ASSET-P-05",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-05",
-        "TIG-I-06"
+        "GIT-ASSET-I-05",
+        "GIT-ASSET-I-06"
       ],
       "requirements": [
-        "TIG-R04",
-        "TIG-R09"
+        "GIT-ASSET-R04",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M03",
       "owner": "concurrency-recovery",
@@ -858,19 +858,19 @@
     {
       "id": "GW04",
       "pitfalls": [
-        "TIG-F-03"
+        "GIT-ASSET-F-03"
       ],
       "principles": [
-        "TIG-P-05",
-        "TIG-P-09"
+        "GIT-ASSET-P-05",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-05",
-        "TIG-I-06"
+        "GIT-ASSET-I-05",
+        "GIT-ASSET-I-06"
       ],
       "requirements": [
-        "TIG-R04",
-        "TIG-R09"
+        "GIT-ASSET-R04",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M03",
       "owner": "concurrency-recovery",
@@ -880,19 +880,19 @@
     {
       "id": "GW05",
       "pitfalls": [
-        "TIG-F-03"
+        "GIT-ASSET-F-03"
       ],
       "principles": [
-        "TIG-P-05",
-        "TIG-P-09"
+        "GIT-ASSET-P-05",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-05",
-        "TIG-I-06"
+        "GIT-ASSET-I-05",
+        "GIT-ASSET-I-06"
       ],
       "requirements": [
-        "TIG-R04",
-        "TIG-R09"
+        "GIT-ASSET-R04",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M03",
       "owner": "concurrency-recovery",
@@ -902,20 +902,20 @@
     {
       "id": "GW06",
       "pitfalls": [
-        "TIG-F-08"
+        "GIT-ASSET-F-08"
       ],
       "principles": [
-        "TIG-P-07",
-        "TIG-P-08"
+        "GIT-ASSET-P-07",
+        "GIT-ASSET-P-08"
       ],
       "invariants": [
-        "TIG-I-06",
-        "TIG-I-11",
-        "TIG-I-12"
+        "GIT-ASSET-I-06",
+        "GIT-ASSET-I-11",
+        "GIT-ASSET-I-12"
       ],
       "requirements": [
-        "TIG-R08",
-        "TIG-R09"
+        "GIT-ASSET-R08",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M08",
       "owner": "git-adoption",
@@ -925,20 +925,20 @@
     {
       "id": "GW07",
       "pitfalls": [
-        "TIG-F-08"
+        "GIT-ASSET-F-08"
       ],
       "principles": [
-        "TIG-P-07",
-        "TIG-P-08"
+        "GIT-ASSET-P-07",
+        "GIT-ASSET-P-08"
       ],
       "invariants": [
-        "TIG-I-06",
-        "TIG-I-11",
-        "TIG-I-12"
+        "GIT-ASSET-I-06",
+        "GIT-ASSET-I-11",
+        "GIT-ASSET-I-12"
       ],
       "requirements": [
-        "TIG-R08",
-        "TIG-R09"
+        "GIT-ASSET-R08",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M08",
       "owner": "git-adoption",
@@ -948,20 +948,20 @@
     {
       "id": "GW08",
       "pitfalls": [
-        "TIG-F-12"
+        "GIT-ASSET-F-12"
       ],
       "principles": [
-        "TIG-P-03",
-        "TIG-P-05"
+        "GIT-ASSET-P-03",
+        "GIT-ASSET-P-05"
       ],
       "invariants": [
-        "TIG-I-02",
-        "TIG-I-03",
-        "TIG-I-11"
+        "GIT-ASSET-I-02",
+        "GIT-ASSET-I-03",
+        "GIT-ASSET-I-11"
       ],
       "requirements": [
-        "TIG-R02",
-        "TIG-R09"
+        "GIT-ASSET-R02",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M12",
       "owner": "git-adoption",
@@ -971,20 +971,20 @@
     {
       "id": "GW09",
       "pitfalls": [
-        "TIG-F-12"
+        "GIT-ASSET-F-12"
       ],
       "principles": [
-        "TIG-P-03",
-        "TIG-P-05"
+        "GIT-ASSET-P-03",
+        "GIT-ASSET-P-05"
       ],
       "invariants": [
-        "TIG-I-02",
-        "TIG-I-03",
-        "TIG-I-11"
+        "GIT-ASSET-I-02",
+        "GIT-ASSET-I-03",
+        "GIT-ASSET-I-11"
       ],
       "requirements": [
-        "TIG-R02",
-        "TIG-R09"
+        "GIT-ASSET-R02",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M12",
       "owner": "git-adoption",
@@ -994,20 +994,20 @@
     {
       "id": "GW10",
       "pitfalls": [
-        "TIG-F-12"
+        "GIT-ASSET-F-12"
       ],
       "principles": [
-        "TIG-P-03",
-        "TIG-P-05"
+        "GIT-ASSET-P-03",
+        "GIT-ASSET-P-05"
       ],
       "invariants": [
-        "TIG-I-02",
-        "TIG-I-03",
-        "TIG-I-11"
+        "GIT-ASSET-I-02",
+        "GIT-ASSET-I-03",
+        "GIT-ASSET-I-11"
       ],
       "requirements": [
-        "TIG-R02",
-        "TIG-R09"
+        "GIT-ASSET-R02",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M12",
       "owner": "git-adoption",
@@ -1017,20 +1017,20 @@
     {
       "id": "GW11",
       "pitfalls": [
-        "TIG-F-08"
+        "GIT-ASSET-F-08"
       ],
       "principles": [
-        "TIG-P-07",
-        "TIG-P-08"
+        "GIT-ASSET-P-07",
+        "GIT-ASSET-P-08"
       ],
       "invariants": [
-        "TIG-I-06",
-        "TIG-I-11",
-        "TIG-I-12"
+        "GIT-ASSET-I-06",
+        "GIT-ASSET-I-11",
+        "GIT-ASSET-I-12"
       ],
       "requirements": [
-        "TIG-R08",
-        "TIG-R09"
+        "GIT-ASSET-R08",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M08",
       "owner": "git-adoption",
@@ -1040,21 +1040,21 @@
     {
       "id": "GW12",
       "pitfalls": [
-        "TIG-F-07"
+        "GIT-ASSET-F-07"
       ],
       "principles": [
-        "TIG-P-01",
-        "TIG-P-04",
-        "TIG-P-09"
+        "GIT-ASSET-P-01",
+        "GIT-ASSET-P-04",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-01",
-        "TIG-I-02",
-        "TIG-I-06"
+        "GIT-ASSET-I-01",
+        "GIT-ASSET-I-02",
+        "GIT-ASSET-I-06"
       ],
       "requirements": [
-        "TIG-R03",
-        "TIG-R07"
+        "GIT-ASSET-R03",
+        "GIT-ASSET-R07"
       ],
       "mitigation": "M07",
       "owner": "storage-custody",
@@ -1064,21 +1064,21 @@
     {
       "id": "GW13",
       "pitfalls": [
-        "TIG-F-11"
+        "GIT-ASSET-F-11"
       ],
       "principles": [
-        "TIG-P-02",
-        "TIG-P-08"
+        "GIT-ASSET-P-02",
+        "GIT-ASSET-P-08"
       ],
       "invariants": [
-        "TIG-I-04",
-        "TIG-I-09",
-        "TIG-I-10"
+        "GIT-ASSET-I-04",
+        "GIT-ASSET-I-09",
+        "GIT-ASSET-I-10"
       ],
       "requirements": [
-        "TIG-R01",
-        "TIG-R05",
-        "TIG-R06"
+        "GIT-ASSET-R01",
+        "GIT-ASSET-R05",
+        "GIT-ASSET-R06"
       ],
       "mitigation": "M11",
       "owner": "provider-privacy",
@@ -1088,17 +1088,17 @@
     {
       "id": "GW14",
       "pitfalls": [
-        "TIG-F-02"
+        "GIT-ASSET-F-02"
       ],
       "principles": [
-        "TIG-P-08"
+        "GIT-ASSET-P-08"
       ],
       "invariants": [
-        "TIG-I-04",
-        "TIG-I-10"
+        "GIT-ASSET-I-04",
+        "GIT-ASSET-I-10"
       ],
       "requirements": [
-        "TIG-R05"
+        "GIT-ASSET-R05"
       ],
       "mitigation": "M02",
       "owner": "storage-custody",
@@ -1108,20 +1108,20 @@
     {
       "id": "GW15",
       "pitfalls": [
-        "TIG-F-12"
+        "GIT-ASSET-F-12"
       ],
       "principles": [
-        "TIG-P-03",
-        "TIG-P-05"
+        "GIT-ASSET-P-03",
+        "GIT-ASSET-P-05"
       ],
       "invariants": [
-        "TIG-I-02",
-        "TIG-I-03",
-        "TIG-I-11"
+        "GIT-ASSET-I-02",
+        "GIT-ASSET-I-03",
+        "GIT-ASSET-I-11"
       ],
       "requirements": [
-        "TIG-R02",
-        "TIG-R09"
+        "GIT-ASSET-R02",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M12",
       "owner": "git-adoption",
@@ -1131,19 +1131,19 @@
     {
       "id": "CR01",
       "pitfalls": [
-        "TIG-F-03"
+        "GIT-ASSET-F-03"
       ],
       "principles": [
-        "TIG-P-05",
-        "TIG-P-09"
+        "GIT-ASSET-P-05",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-05",
-        "TIG-I-06"
+        "GIT-ASSET-I-05",
+        "GIT-ASSET-I-06"
       ],
       "requirements": [
-        "TIG-R04",
-        "TIG-R09"
+        "GIT-ASSET-R04",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M03",
       "owner": "concurrency-recovery",
@@ -1153,19 +1153,19 @@
     {
       "id": "CR02",
       "pitfalls": [
-        "TIG-F-03"
+        "GIT-ASSET-F-03"
       ],
       "principles": [
-        "TIG-P-05",
-        "TIG-P-09"
+        "GIT-ASSET-P-05",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-05",
-        "TIG-I-06"
+        "GIT-ASSET-I-05",
+        "GIT-ASSET-I-06"
       ],
       "requirements": [
-        "TIG-R04",
-        "TIG-R09"
+        "GIT-ASSET-R04",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M03",
       "owner": "concurrency-recovery",
@@ -1175,19 +1175,19 @@
     {
       "id": "CR03",
       "pitfalls": [
-        "TIG-F-03"
+        "GIT-ASSET-F-03"
       ],
       "principles": [
-        "TIG-P-05",
-        "TIG-P-09"
+        "GIT-ASSET-P-05",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-05",
-        "TIG-I-06"
+        "GIT-ASSET-I-05",
+        "GIT-ASSET-I-06"
       ],
       "requirements": [
-        "TIG-R04",
-        "TIG-R09"
+        "GIT-ASSET-R04",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M03",
       "owner": "concurrency-recovery",
@@ -1197,19 +1197,19 @@
     {
       "id": "CR04",
       "pitfalls": [
-        "TIG-F-03"
+        "GIT-ASSET-F-03"
       ],
       "principles": [
-        "TIG-P-05",
-        "TIG-P-09"
+        "GIT-ASSET-P-05",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-05",
-        "TIG-I-06"
+        "GIT-ASSET-I-05",
+        "GIT-ASSET-I-06"
       ],
       "requirements": [
-        "TIG-R04",
-        "TIG-R09"
+        "GIT-ASSET-R04",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M03",
       "owner": "concurrency-recovery",
@@ -1219,19 +1219,19 @@
     {
       "id": "CR05",
       "pitfalls": [
-        "TIG-F-04"
+        "GIT-ASSET-F-04"
       ],
       "principles": [
-        "TIG-P-06",
-        "TIG-P-09"
+        "GIT-ASSET-P-06",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-03",
-        "TIG-I-07"
+        "GIT-ASSET-I-03",
+        "GIT-ASSET-I-07"
       ],
       "requirements": [
-        "TIG-R04",
-        "TIG-R07"
+        "GIT-ASSET-R04",
+        "GIT-ASSET-R07"
       ],
       "mitigation": "M04",
       "owner": "concurrency-recovery",
@@ -1241,21 +1241,21 @@
     {
       "id": "CR06",
       "pitfalls": [
-        "TIG-F-05"
+        "GIT-ASSET-F-05"
       ],
       "principles": [
-        "TIG-P-03",
-        "TIG-P-06",
-        "TIG-P-09"
+        "GIT-ASSET-P-03",
+        "GIT-ASSET-P-06",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-01",
-        "TIG-I-07",
-        "TIG-I-11"
+        "GIT-ASSET-I-01",
+        "GIT-ASSET-I-07",
+        "GIT-ASSET-I-11"
       ],
       "requirements": [
-        "TIG-R02",
-        "TIG-R04"
+        "GIT-ASSET-R02",
+        "GIT-ASSET-R04"
       ],
       "mitigation": "M05",
       "owner": "placement-policy",
@@ -1265,21 +1265,21 @@
     {
       "id": "CR07",
       "pitfalls": [
-        "TIG-F-05"
+        "GIT-ASSET-F-05"
       ],
       "principles": [
-        "TIG-P-03",
-        "TIG-P-06",
-        "TIG-P-09"
+        "GIT-ASSET-P-03",
+        "GIT-ASSET-P-06",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-01",
-        "TIG-I-07",
-        "TIG-I-11"
+        "GIT-ASSET-I-01",
+        "GIT-ASSET-I-07",
+        "GIT-ASSET-I-11"
       ],
       "requirements": [
-        "TIG-R02",
-        "TIG-R04"
+        "GIT-ASSET-R02",
+        "GIT-ASSET-R04"
       ],
       "mitigation": "M05",
       "owner": "placement-policy",
@@ -1289,20 +1289,20 @@
     {
       "id": "CR08",
       "pitfalls": [
-        "TIG-F-12"
+        "GIT-ASSET-F-12"
       ],
       "principles": [
-        "TIG-P-03",
-        "TIG-P-05"
+        "GIT-ASSET-P-03",
+        "GIT-ASSET-P-05"
       ],
       "invariants": [
-        "TIG-I-02",
-        "TIG-I-03",
-        "TIG-I-11"
+        "GIT-ASSET-I-02",
+        "GIT-ASSET-I-03",
+        "GIT-ASSET-I-11"
       ],
       "requirements": [
-        "TIG-R02",
-        "TIG-R09"
+        "GIT-ASSET-R02",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M12",
       "owner": "git-adoption",
@@ -1312,19 +1312,19 @@
     {
       "id": "CR09",
       "pitfalls": [
-        "TIG-F-06"
+        "GIT-ASSET-F-06"
       ],
       "principles": [
-        "TIG-P-02",
-        "TIG-P-04"
+        "GIT-ASSET-P-02",
+        "GIT-ASSET-P-04"
       ],
       "invariants": [
-        "TIG-I-08",
-        "TIG-I-09"
+        "GIT-ASSET-I-08",
+        "GIT-ASSET-I-09"
       ],
       "requirements": [
-        "TIG-R01",
-        "TIG-R06"
+        "GIT-ASSET-R01",
+        "GIT-ASSET-R06"
       ],
       "mitigation": "M06",
       "owner": "identity-namespace",
@@ -1334,19 +1334,19 @@
     {
       "id": "CR10",
       "pitfalls": [
-        "TIG-F-03"
+        "GIT-ASSET-F-03"
       ],
       "principles": [
-        "TIG-P-05",
-        "TIG-P-09"
+        "GIT-ASSET-P-05",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-05",
-        "TIG-I-06"
+        "GIT-ASSET-I-05",
+        "GIT-ASSET-I-06"
       ],
       "requirements": [
-        "TIG-R04",
-        "TIG-R09"
+        "GIT-ASSET-R04",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M03",
       "owner": "concurrency-recovery",
@@ -1356,19 +1356,19 @@
     {
       "id": "RW01",
       "pitfalls": [
-        "TIG-F-04"
+        "GIT-ASSET-F-04"
       ],
       "principles": [
-        "TIG-P-06",
-        "TIG-P-09"
+        "GIT-ASSET-P-06",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-03",
-        "TIG-I-07"
+        "GIT-ASSET-I-03",
+        "GIT-ASSET-I-07"
       ],
       "requirements": [
-        "TIG-R04",
-        "TIG-R07"
+        "GIT-ASSET-R04",
+        "GIT-ASSET-R07"
       ],
       "mitigation": "M04",
       "owner": "concurrency-recovery",
@@ -1378,19 +1378,19 @@
     {
       "id": "RW02",
       "pitfalls": [
-        "TIG-F-04"
+        "GIT-ASSET-F-04"
       ],
       "principles": [
-        "TIG-P-06",
-        "TIG-P-09"
+        "GIT-ASSET-P-06",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-03",
-        "TIG-I-07"
+        "GIT-ASSET-I-03",
+        "GIT-ASSET-I-07"
       ],
       "requirements": [
-        "TIG-R04",
-        "TIG-R07"
+        "GIT-ASSET-R04",
+        "GIT-ASSET-R07"
       ],
       "mitigation": "M04",
       "owner": "concurrency-recovery",
@@ -1400,17 +1400,17 @@
     {
       "id": "RW03",
       "pitfalls": [
-        "TIG-F-02"
+        "GIT-ASSET-F-02"
       ],
       "principles": [
-        "TIG-P-08"
+        "GIT-ASSET-P-08"
       ],
       "invariants": [
-        "TIG-I-04",
-        "TIG-I-10"
+        "GIT-ASSET-I-04",
+        "GIT-ASSET-I-10"
       ],
       "requirements": [
-        "TIG-R05"
+        "GIT-ASSET-R05"
       ],
       "mitigation": "M02",
       "owner": "storage-custody",
@@ -1420,20 +1420,20 @@
     {
       "id": "RW04",
       "pitfalls": [
-        "TIG-F-01"
+        "GIT-ASSET-F-01"
       ],
       "principles": [
-        "TIG-P-03",
-        "TIG-P-04",
-        "TIG-P-09"
+        "GIT-ASSET-P-03",
+        "GIT-ASSET-P-04",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-01",
-        "TIG-I-02"
+        "GIT-ASSET-I-01",
+        "GIT-ASSET-I-02"
       ],
       "requirements": [
-        "TIG-R02",
-        "TIG-R03"
+        "GIT-ASSET-R02",
+        "GIT-ASSET-R03"
       ],
       "mitigation": "M01",
       "owner": "placement-policy",
@@ -1443,17 +1443,17 @@
     {
       "id": "RW05",
       "pitfalls": [
-        "TIG-F-09"
+        "GIT-ASSET-F-09"
       ],
       "principles": [
-        "TIG-P-07"
+        "GIT-ASSET-P-07"
       ],
       "invariants": [
-        "TIG-I-08",
-        "TIG-I-11"
+        "GIT-ASSET-I-08",
+        "GIT-ASSET-I-11"
       ],
       "requirements": [
-        "TIG-R06"
+        "GIT-ASSET-R06"
       ],
       "mitigation": "M09",
       "owner": "provider-privacy",
@@ -1463,21 +1463,21 @@
     {
       "id": "RW06",
       "pitfalls": [
-        "TIG-F-05"
+        "GIT-ASSET-F-05"
       ],
       "principles": [
-        "TIG-P-03",
-        "TIG-P-06",
-        "TIG-P-09"
+        "GIT-ASSET-P-03",
+        "GIT-ASSET-P-06",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-01",
-        "TIG-I-07",
-        "TIG-I-11"
+        "GIT-ASSET-I-01",
+        "GIT-ASSET-I-07",
+        "GIT-ASSET-I-11"
       ],
       "requirements": [
-        "TIG-R02",
-        "TIG-R04"
+        "GIT-ASSET-R02",
+        "GIT-ASSET-R04"
       ],
       "mitigation": "M05",
       "owner": "placement-policy",
@@ -1487,19 +1487,19 @@
     {
       "id": "RW07",
       "pitfalls": [
-        "TIG-F-04"
+        "GIT-ASSET-F-04"
       ],
       "principles": [
-        "TIG-P-06",
-        "TIG-P-09"
+        "GIT-ASSET-P-06",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-03",
-        "TIG-I-07"
+        "GIT-ASSET-I-03",
+        "GIT-ASSET-I-07"
       ],
       "requirements": [
-        "TIG-R04",
-        "TIG-R07"
+        "GIT-ASSET-R04",
+        "GIT-ASSET-R07"
       ],
       "mitigation": "M04",
       "owner": "concurrency-recovery",
@@ -1509,17 +1509,17 @@
     {
       "id": "RW08",
       "pitfalls": [
-        "TIG-F-09"
+        "GIT-ASSET-F-09"
       ],
       "principles": [
-        "TIG-P-07"
+        "GIT-ASSET-P-07"
       ],
       "invariants": [
-        "TIG-I-08",
-        "TIG-I-11"
+        "GIT-ASSET-I-08",
+        "GIT-ASSET-I-11"
       ],
       "requirements": [
-        "TIG-R06"
+        "GIT-ASSET-R06"
       ],
       "mitigation": "M09",
       "owner": "provider-privacy",
@@ -1529,19 +1529,19 @@
     {
       "id": "RW09",
       "pitfalls": [
-        "TIG-F-04"
+        "GIT-ASSET-F-04"
       ],
       "principles": [
-        "TIG-P-06",
-        "TIG-P-09"
+        "GIT-ASSET-P-06",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-03",
-        "TIG-I-07"
+        "GIT-ASSET-I-03",
+        "GIT-ASSET-I-07"
       ],
       "requirements": [
-        "TIG-R04",
-        "TIG-R07"
+        "GIT-ASSET-R04",
+        "GIT-ASSET-R07"
       ],
       "mitigation": "M04",
       "owner": "concurrency-recovery",
@@ -1551,21 +1551,21 @@
     {
       "id": "RW10",
       "pitfalls": [
-        "TIG-F-05"
+        "GIT-ASSET-F-05"
       ],
       "principles": [
-        "TIG-P-03",
-        "TIG-P-06",
-        "TIG-P-09"
+        "GIT-ASSET-P-03",
+        "GIT-ASSET-P-06",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-01",
-        "TIG-I-07",
-        "TIG-I-11"
+        "GIT-ASSET-I-01",
+        "GIT-ASSET-I-07",
+        "GIT-ASSET-I-11"
       ],
       "requirements": [
-        "TIG-R02",
-        "TIG-R04"
+        "GIT-ASSET-R02",
+        "GIT-ASSET-R04"
       ],
       "mitigation": "M05",
       "owner": "placement-policy",
@@ -1575,20 +1575,20 @@
     {
       "id": "LF01",
       "pitfalls": [
-        "TIG-F-08"
+        "GIT-ASSET-F-08"
       ],
       "principles": [
-        "TIG-P-07",
-        "TIG-P-08"
+        "GIT-ASSET-P-07",
+        "GIT-ASSET-P-08"
       ],
       "invariants": [
-        "TIG-I-06",
-        "TIG-I-11",
-        "TIG-I-12"
+        "GIT-ASSET-I-06",
+        "GIT-ASSET-I-11",
+        "GIT-ASSET-I-12"
       ],
       "requirements": [
-        "TIG-R08",
-        "TIG-R09"
+        "GIT-ASSET-R08",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M08",
       "owner": "git-adoption",
@@ -1598,20 +1598,20 @@
     {
       "id": "LF02",
       "pitfalls": [
-        "TIG-F-08"
+        "GIT-ASSET-F-08"
       ],
       "principles": [
-        "TIG-P-07",
-        "TIG-P-08"
+        "GIT-ASSET-P-07",
+        "GIT-ASSET-P-08"
       ],
       "invariants": [
-        "TIG-I-06",
-        "TIG-I-11",
-        "TIG-I-12"
+        "GIT-ASSET-I-06",
+        "GIT-ASSET-I-11",
+        "GIT-ASSET-I-12"
       ],
       "requirements": [
-        "TIG-R08",
-        "TIG-R09"
+        "GIT-ASSET-R08",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M08",
       "owner": "git-adoption",
@@ -1621,17 +1621,17 @@
     {
       "id": "LF03",
       "pitfalls": [
-        "TIG-F-09"
+        "GIT-ASSET-F-09"
       ],
       "principles": [
-        "TIG-P-07"
+        "GIT-ASSET-P-07"
       ],
       "invariants": [
-        "TIG-I-08",
-        "TIG-I-11"
+        "GIT-ASSET-I-08",
+        "GIT-ASSET-I-11"
       ],
       "requirements": [
-        "TIG-R06"
+        "GIT-ASSET-R06"
       ],
       "mitigation": "M09",
       "owner": "provider-privacy",
@@ -1641,20 +1641,20 @@
     {
       "id": "LF04",
       "pitfalls": [
-        "TIG-F-08"
+        "GIT-ASSET-F-08"
       ],
       "principles": [
-        "TIG-P-07",
-        "TIG-P-08"
+        "GIT-ASSET-P-07",
+        "GIT-ASSET-P-08"
       ],
       "invariants": [
-        "TIG-I-06",
-        "TIG-I-11",
-        "TIG-I-12"
+        "GIT-ASSET-I-06",
+        "GIT-ASSET-I-11",
+        "GIT-ASSET-I-12"
       ],
       "requirements": [
-        "TIG-R08",
-        "TIG-R09"
+        "GIT-ASSET-R08",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M08",
       "owner": "git-adoption",
@@ -1664,20 +1664,20 @@
     {
       "id": "LF05",
       "pitfalls": [
-        "TIG-F-08"
+        "GIT-ASSET-F-08"
       ],
       "principles": [
-        "TIG-P-07",
-        "TIG-P-08"
+        "GIT-ASSET-P-07",
+        "GIT-ASSET-P-08"
       ],
       "invariants": [
-        "TIG-I-06",
-        "TIG-I-11",
-        "TIG-I-12"
+        "GIT-ASSET-I-06",
+        "GIT-ASSET-I-11",
+        "GIT-ASSET-I-12"
       ],
       "requirements": [
-        "TIG-R08",
-        "TIG-R09"
+        "GIT-ASSET-R08",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M08",
       "owner": "git-adoption",
@@ -1687,20 +1687,20 @@
     {
       "id": "LF06",
       "pitfalls": [
-        "TIG-F-01"
+        "GIT-ASSET-F-01"
       ],
       "principles": [
-        "TIG-P-03",
-        "TIG-P-04",
-        "TIG-P-09"
+        "GIT-ASSET-P-03",
+        "GIT-ASSET-P-04",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-01",
-        "TIG-I-02"
+        "GIT-ASSET-I-01",
+        "GIT-ASSET-I-02"
       ],
       "requirements": [
-        "TIG-R02",
-        "TIG-R03"
+        "GIT-ASSET-R02",
+        "GIT-ASSET-R03"
       ],
       "mitigation": "M01",
       "owner": "placement-policy",
@@ -1710,20 +1710,20 @@
     {
       "id": "LF07",
       "pitfalls": [
-        "TIG-F-12"
+        "GIT-ASSET-F-12"
       ],
       "principles": [
-        "TIG-P-03",
-        "TIG-P-05"
+        "GIT-ASSET-P-03",
+        "GIT-ASSET-P-05"
       ],
       "invariants": [
-        "TIG-I-02",
-        "TIG-I-03",
-        "TIG-I-11"
+        "GIT-ASSET-I-02",
+        "GIT-ASSET-I-03",
+        "GIT-ASSET-I-11"
       ],
       "requirements": [
-        "TIG-R02",
-        "TIG-R09"
+        "GIT-ASSET-R02",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M12",
       "owner": "git-adoption",
@@ -1733,20 +1733,20 @@
     {
       "id": "LF08",
       "pitfalls": [
-        "TIG-F-12"
+        "GIT-ASSET-F-12"
       ],
       "principles": [
-        "TIG-P-03",
-        "TIG-P-05"
+        "GIT-ASSET-P-03",
+        "GIT-ASSET-P-05"
       ],
       "invariants": [
-        "TIG-I-02",
-        "TIG-I-03",
-        "TIG-I-11"
+        "GIT-ASSET-I-02",
+        "GIT-ASSET-I-03",
+        "GIT-ASSET-I-11"
       ],
       "requirements": [
-        "TIG-R02",
-        "TIG-R09"
+        "GIT-ASSET-R02",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M12",
       "owner": "git-adoption",
@@ -1756,20 +1756,20 @@
     {
       "id": "LF09",
       "pitfalls": [
-        "TIG-F-12"
+        "GIT-ASSET-F-12"
       ],
       "principles": [
-        "TIG-P-03",
-        "TIG-P-05"
+        "GIT-ASSET-P-03",
+        "GIT-ASSET-P-05"
       ],
       "invariants": [
-        "TIG-I-02",
-        "TIG-I-03",
-        "TIG-I-11"
+        "GIT-ASSET-I-02",
+        "GIT-ASSET-I-03",
+        "GIT-ASSET-I-11"
       ],
       "requirements": [
-        "TIG-R02",
-        "TIG-R09"
+        "GIT-ASSET-R02",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M12",
       "owner": "git-adoption",
@@ -1779,17 +1779,17 @@
     {
       "id": "LF10",
       "pitfalls": [
-        "TIG-F-09"
+        "GIT-ASSET-F-09"
       ],
       "principles": [
-        "TIG-P-07"
+        "GIT-ASSET-P-07"
       ],
       "invariants": [
-        "TIG-I-08",
-        "TIG-I-11"
+        "GIT-ASSET-I-08",
+        "GIT-ASSET-I-11"
       ],
       "requirements": [
-        "TIG-R06"
+        "GIT-ASSET-R06"
       ],
       "mitigation": "M09",
       "owner": "provider-privacy",
@@ -1799,17 +1799,17 @@
     {
       "id": "SP01",
       "pitfalls": [
-        "TIG-F-02"
+        "GIT-ASSET-F-02"
       ],
       "principles": [
-        "TIG-P-08"
+        "GIT-ASSET-P-08"
       ],
       "invariants": [
-        "TIG-I-04",
-        "TIG-I-10"
+        "GIT-ASSET-I-04",
+        "GIT-ASSET-I-10"
       ],
       "requirements": [
-        "TIG-R05"
+        "GIT-ASSET-R05"
       ],
       "mitigation": "M02",
       "owner": "storage-custody",
@@ -1819,21 +1819,21 @@
     {
       "id": "SP02",
       "pitfalls": [
-        "TIG-F-11"
+        "GIT-ASSET-F-11"
       ],
       "principles": [
-        "TIG-P-02",
-        "TIG-P-08"
+        "GIT-ASSET-P-02",
+        "GIT-ASSET-P-08"
       ],
       "invariants": [
-        "TIG-I-04",
-        "TIG-I-09",
-        "TIG-I-10"
+        "GIT-ASSET-I-04",
+        "GIT-ASSET-I-09",
+        "GIT-ASSET-I-10"
       ],
       "requirements": [
-        "TIG-R01",
-        "TIG-R05",
-        "TIG-R06"
+        "GIT-ASSET-R01",
+        "GIT-ASSET-R05",
+        "GIT-ASSET-R06"
       ],
       "mitigation": "M11",
       "owner": "provider-privacy",
@@ -1843,21 +1843,21 @@
     {
       "id": "SP03",
       "pitfalls": [
-        "TIG-F-11"
+        "GIT-ASSET-F-11"
       ],
       "principles": [
-        "TIG-P-02",
-        "TIG-P-08"
+        "GIT-ASSET-P-02",
+        "GIT-ASSET-P-08"
       ],
       "invariants": [
-        "TIG-I-04",
-        "TIG-I-09",
-        "TIG-I-10"
+        "GIT-ASSET-I-04",
+        "GIT-ASSET-I-09",
+        "GIT-ASSET-I-10"
       ],
       "requirements": [
-        "TIG-R01",
-        "TIG-R05",
-        "TIG-R06"
+        "GIT-ASSET-R01",
+        "GIT-ASSET-R05",
+        "GIT-ASSET-R06"
       ],
       "mitigation": "M11",
       "owner": "provider-privacy",
@@ -1867,21 +1867,21 @@
     {
       "id": "SP04",
       "pitfalls": [
-        "TIG-F-11"
+        "GIT-ASSET-F-11"
       ],
       "principles": [
-        "TIG-P-02",
-        "TIG-P-08"
+        "GIT-ASSET-P-02",
+        "GIT-ASSET-P-08"
       ],
       "invariants": [
-        "TIG-I-04",
-        "TIG-I-09",
-        "TIG-I-10"
+        "GIT-ASSET-I-04",
+        "GIT-ASSET-I-09",
+        "GIT-ASSET-I-10"
       ],
       "requirements": [
-        "TIG-R01",
-        "TIG-R05",
-        "TIG-R06"
+        "GIT-ASSET-R01",
+        "GIT-ASSET-R05",
+        "GIT-ASSET-R06"
       ],
       "mitigation": "M11",
       "owner": "provider-privacy",
@@ -1891,19 +1891,19 @@
     {
       "id": "SP05",
       "pitfalls": [
-        "TIG-F-03"
+        "GIT-ASSET-F-03"
       ],
       "principles": [
-        "TIG-P-05",
-        "TIG-P-09"
+        "GIT-ASSET-P-05",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-05",
-        "TIG-I-06"
+        "GIT-ASSET-I-05",
+        "GIT-ASSET-I-06"
       ],
       "requirements": [
-        "TIG-R04",
-        "TIG-R09"
+        "GIT-ASSET-R04",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M03",
       "owner": "concurrency-recovery",
@@ -1913,19 +1913,19 @@
     {
       "id": "SP06",
       "pitfalls": [
-        "TIG-F-06"
+        "GIT-ASSET-F-06"
       ],
       "principles": [
-        "TIG-P-02",
-        "TIG-P-04"
+        "GIT-ASSET-P-02",
+        "GIT-ASSET-P-04"
       ],
       "invariants": [
-        "TIG-I-08",
-        "TIG-I-09"
+        "GIT-ASSET-I-08",
+        "GIT-ASSET-I-09"
       ],
       "requirements": [
-        "TIG-R01",
-        "TIG-R06"
+        "GIT-ASSET-R01",
+        "GIT-ASSET-R06"
       ],
       "mitigation": "M06",
       "owner": "identity-namespace",
@@ -1935,21 +1935,21 @@
     {
       "id": "SP07",
       "pitfalls": [
-        "TIG-F-07"
+        "GIT-ASSET-F-07"
       ],
       "principles": [
-        "TIG-P-01",
-        "TIG-P-04",
-        "TIG-P-09"
+        "GIT-ASSET-P-01",
+        "GIT-ASSET-P-04",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-01",
-        "TIG-I-02",
-        "TIG-I-06"
+        "GIT-ASSET-I-01",
+        "GIT-ASSET-I-02",
+        "GIT-ASSET-I-06"
       ],
       "requirements": [
-        "TIG-R03",
-        "TIG-R07"
+        "GIT-ASSET-R03",
+        "GIT-ASSET-R07"
       ],
       "mitigation": "M07",
       "owner": "storage-custody",
@@ -1959,17 +1959,17 @@
     {
       "id": "SP08",
       "pitfalls": [
-        "TIG-F-02"
+        "GIT-ASSET-F-02"
       ],
       "principles": [
-        "TIG-P-08"
+        "GIT-ASSET-P-08"
       ],
       "invariants": [
-        "TIG-I-04",
-        "TIG-I-10"
+        "GIT-ASSET-I-04",
+        "GIT-ASSET-I-10"
       ],
       "requirements": [
-        "TIG-R05"
+        "GIT-ASSET-R05"
       ],
       "mitigation": "M02",
       "owner": "storage-custody",
@@ -1979,17 +1979,17 @@
     {
       "id": "SP09",
       "pitfalls": [
-        "TIG-F-02"
+        "GIT-ASSET-F-02"
       ],
       "principles": [
-        "TIG-P-08"
+        "GIT-ASSET-P-08"
       ],
       "invariants": [
-        "TIG-I-04",
-        "TIG-I-10"
+        "GIT-ASSET-I-04",
+        "GIT-ASSET-I-10"
       ],
       "requirements": [
-        "TIG-R05"
+        "GIT-ASSET-R05"
       ],
       "mitigation": "M02",
       "owner": "storage-custody",
@@ -1999,20 +1999,20 @@
     {
       "id": "SP10",
       "pitfalls": [
-        "TIG-F-01"
+        "GIT-ASSET-F-01"
       ],
       "principles": [
-        "TIG-P-03",
-        "TIG-P-04",
-        "TIG-P-09"
+        "GIT-ASSET-P-03",
+        "GIT-ASSET-P-04",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-01",
-        "TIG-I-02"
+        "GIT-ASSET-I-01",
+        "GIT-ASSET-I-02"
       ],
       "requirements": [
-        "TIG-R02",
-        "TIG-R03"
+        "GIT-ASSET-R02",
+        "GIT-ASSET-R03"
       ],
       "mitigation": "M01",
       "owner": "placement-policy",
@@ -2022,20 +2022,20 @@
     {
       "id": "BN01",
       "pitfalls": [
-        "TIG-F-10"
+        "GIT-ASSET-F-10"
       ],
       "principles": [
-        "TIG-P-04",
-        "TIG-P-08"
+        "GIT-ASSET-P-04",
+        "GIT-ASSET-P-08"
       ],
       "invariants": [
-        "TIG-I-02",
-        "TIG-I-10"
+        "GIT-ASSET-I-02",
+        "GIT-ASSET-I-10"
       ],
       "requirements": [
-        "TIG-R01",
-        "TIG-R05",
-        "TIG-R07"
+        "GIT-ASSET-R01",
+        "GIT-ASSET-R05",
+        "GIT-ASSET-R07"
       ],
       "mitigation": "M10",
       "owner": "identity-namespace",
@@ -2045,20 +2045,20 @@
     {
       "id": "BN02",
       "pitfalls": [
-        "TIG-F-10"
+        "GIT-ASSET-F-10"
       ],
       "principles": [
-        "TIG-P-04",
-        "TIG-P-08"
+        "GIT-ASSET-P-04",
+        "GIT-ASSET-P-08"
       ],
       "invariants": [
-        "TIG-I-02",
-        "TIG-I-10"
+        "GIT-ASSET-I-02",
+        "GIT-ASSET-I-10"
       ],
       "requirements": [
-        "TIG-R01",
-        "TIG-R05",
-        "TIG-R07"
+        "GIT-ASSET-R01",
+        "GIT-ASSET-R05",
+        "GIT-ASSET-R07"
       ],
       "mitigation": "M10",
       "owner": "identity-namespace",
@@ -2068,19 +2068,19 @@
     {
       "id": "BN03",
       "pitfalls": [
-        "TIG-F-06"
+        "GIT-ASSET-F-06"
       ],
       "principles": [
-        "TIG-P-02",
-        "TIG-P-04"
+        "GIT-ASSET-P-02",
+        "GIT-ASSET-P-04"
       ],
       "invariants": [
-        "TIG-I-08",
-        "TIG-I-09"
+        "GIT-ASSET-I-08",
+        "GIT-ASSET-I-09"
       ],
       "requirements": [
-        "TIG-R01",
-        "TIG-R06"
+        "GIT-ASSET-R01",
+        "GIT-ASSET-R06"
       ],
       "mitigation": "M06",
       "owner": "identity-namespace",
@@ -2090,20 +2090,20 @@
     {
       "id": "BN04",
       "pitfalls": [
-        "TIG-F-12"
+        "GIT-ASSET-F-12"
       ],
       "principles": [
-        "TIG-P-03",
-        "TIG-P-05"
+        "GIT-ASSET-P-03",
+        "GIT-ASSET-P-05"
       ],
       "invariants": [
-        "TIG-I-02",
-        "TIG-I-03",
-        "TIG-I-11"
+        "GIT-ASSET-I-02",
+        "GIT-ASSET-I-03",
+        "GIT-ASSET-I-11"
       ],
       "requirements": [
-        "TIG-R02",
-        "TIG-R09"
+        "GIT-ASSET-R02",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M12",
       "owner": "git-adoption",
@@ -2113,19 +2113,19 @@
     {
       "id": "BN05",
       "pitfalls": [
-        "TIG-F-06"
+        "GIT-ASSET-F-06"
       ],
       "principles": [
-        "TIG-P-02",
-        "TIG-P-04"
+        "GIT-ASSET-P-02",
+        "GIT-ASSET-P-04"
       ],
       "invariants": [
-        "TIG-I-08",
-        "TIG-I-09"
+        "GIT-ASSET-I-08",
+        "GIT-ASSET-I-09"
       ],
       "requirements": [
-        "TIG-R01",
-        "TIG-R06"
+        "GIT-ASSET-R01",
+        "GIT-ASSET-R06"
       ],
       "mitigation": "M06",
       "owner": "identity-namespace",
@@ -2135,17 +2135,17 @@
     {
       "id": "BN06",
       "pitfalls": [
-        "TIG-F-09"
+        "GIT-ASSET-F-09"
       ],
       "principles": [
-        "TIG-P-07"
+        "GIT-ASSET-P-07"
       ],
       "invariants": [
-        "TIG-I-08",
-        "TIG-I-11"
+        "GIT-ASSET-I-08",
+        "GIT-ASSET-I-11"
       ],
       "requirements": [
-        "TIG-R06"
+        "GIT-ASSET-R06"
       ],
       "mitigation": "M09",
       "owner": "provider-privacy",
@@ -2155,21 +2155,21 @@
     {
       "id": "BN07",
       "pitfalls": [
-        "TIG-F-07"
+        "GIT-ASSET-F-07"
       ],
       "principles": [
-        "TIG-P-01",
-        "TIG-P-04",
-        "TIG-P-09"
+        "GIT-ASSET-P-01",
+        "GIT-ASSET-P-04",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-01",
-        "TIG-I-02",
-        "TIG-I-06"
+        "GIT-ASSET-I-01",
+        "GIT-ASSET-I-02",
+        "GIT-ASSET-I-06"
       ],
       "requirements": [
-        "TIG-R03",
-        "TIG-R07"
+        "GIT-ASSET-R03",
+        "GIT-ASSET-R07"
       ],
       "mitigation": "M07",
       "owner": "storage-custody",
@@ -2179,21 +2179,21 @@
     {
       "id": "BN08",
       "pitfalls": [
-        "TIG-F-07"
+        "GIT-ASSET-F-07"
       ],
       "principles": [
-        "TIG-P-01",
-        "TIG-P-04",
-        "TIG-P-09"
+        "GIT-ASSET-P-01",
+        "GIT-ASSET-P-04",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-01",
-        "TIG-I-02",
-        "TIG-I-06"
+        "GIT-ASSET-I-01",
+        "GIT-ASSET-I-02",
+        "GIT-ASSET-I-06"
       ],
       "requirements": [
-        "TIG-R03",
-        "TIG-R07"
+        "GIT-ASSET-R03",
+        "GIT-ASSET-R07"
       ],
       "mitigation": "M07",
       "owner": "storage-custody",
@@ -2203,21 +2203,21 @@
     {
       "id": "BN09",
       "pitfalls": [
-        "TIG-F-11"
+        "GIT-ASSET-F-11"
       ],
       "principles": [
-        "TIG-P-02",
-        "TIG-P-08"
+        "GIT-ASSET-P-02",
+        "GIT-ASSET-P-08"
       ],
       "invariants": [
-        "TIG-I-04",
-        "TIG-I-09",
-        "TIG-I-10"
+        "GIT-ASSET-I-04",
+        "GIT-ASSET-I-09",
+        "GIT-ASSET-I-10"
       ],
       "requirements": [
-        "TIG-R01",
-        "TIG-R05",
-        "TIG-R06"
+        "GIT-ASSET-R01",
+        "GIT-ASSET-R05",
+        "GIT-ASSET-R06"
       ],
       "mitigation": "M11",
       "owner": "provider-privacy",
@@ -2227,20 +2227,20 @@
     {
       "id": "BN10",
       "pitfalls": [
-        "TIG-F-12"
+        "GIT-ASSET-F-12"
       ],
       "principles": [
-        "TIG-P-03",
-        "TIG-P-05"
+        "GIT-ASSET-P-03",
+        "GIT-ASSET-P-05"
       ],
       "invariants": [
-        "TIG-I-02",
-        "TIG-I-03",
-        "TIG-I-11"
+        "GIT-ASSET-I-02",
+        "GIT-ASSET-I-03",
+        "GIT-ASSET-I-11"
       ],
       "requirements": [
-        "TIG-R02",
-        "TIG-R09"
+        "GIT-ASSET-R02",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M12",
       "owner": "git-adoption",
@@ -2250,19 +2250,19 @@
     {
       "id": "LC01",
       "pitfalls": [
-        "TIG-F-03"
+        "GIT-ASSET-F-03"
       ],
       "principles": [
-        "TIG-P-05",
-        "TIG-P-09"
+        "GIT-ASSET-P-05",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-05",
-        "TIG-I-06"
+        "GIT-ASSET-I-05",
+        "GIT-ASSET-I-06"
       ],
       "requirements": [
-        "TIG-R04",
-        "TIG-R09"
+        "GIT-ASSET-R04",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M03",
       "owner": "concurrency-recovery",
@@ -2272,21 +2272,21 @@
     {
       "id": "LC02",
       "pitfalls": [
-        "TIG-F-07"
+        "GIT-ASSET-F-07"
       ],
       "principles": [
-        "TIG-P-01",
-        "TIG-P-04",
-        "TIG-P-09"
+        "GIT-ASSET-P-01",
+        "GIT-ASSET-P-04",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-01",
-        "TIG-I-02",
-        "TIG-I-06"
+        "GIT-ASSET-I-01",
+        "GIT-ASSET-I-02",
+        "GIT-ASSET-I-06"
       ],
       "requirements": [
-        "TIG-R03",
-        "TIG-R07"
+        "GIT-ASSET-R03",
+        "GIT-ASSET-R07"
       ],
       "mitigation": "M07",
       "owner": "storage-custody",
@@ -2296,20 +2296,20 @@
     {
       "id": "LC03",
       "pitfalls": [
-        "TIG-F-12"
+        "GIT-ASSET-F-12"
       ],
       "principles": [
-        "TIG-P-03",
-        "TIG-P-05"
+        "GIT-ASSET-P-03",
+        "GIT-ASSET-P-05"
       ],
       "invariants": [
-        "TIG-I-02",
-        "TIG-I-03",
-        "TIG-I-11"
+        "GIT-ASSET-I-02",
+        "GIT-ASSET-I-03",
+        "GIT-ASSET-I-11"
       ],
       "requirements": [
-        "TIG-R02",
-        "TIG-R09"
+        "GIT-ASSET-R02",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M12",
       "owner": "git-adoption",
@@ -2319,20 +2319,20 @@
     {
       "id": "LC04",
       "pitfalls": [
-        "TIG-F-08"
+        "GIT-ASSET-F-08"
       ],
       "principles": [
-        "TIG-P-07",
-        "TIG-P-08"
+        "GIT-ASSET-P-07",
+        "GIT-ASSET-P-08"
       ],
       "invariants": [
-        "TIG-I-06",
-        "TIG-I-11",
-        "TIG-I-12"
+        "GIT-ASSET-I-06",
+        "GIT-ASSET-I-11",
+        "GIT-ASSET-I-12"
       ],
       "requirements": [
-        "TIG-R08",
-        "TIG-R09"
+        "GIT-ASSET-R08",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M08",
       "owner": "git-adoption",
@@ -2342,21 +2342,21 @@
     {
       "id": "LC05",
       "pitfalls": [
-        "TIG-F-07"
+        "GIT-ASSET-F-07"
       ],
       "principles": [
-        "TIG-P-01",
-        "TIG-P-04",
-        "TIG-P-09"
+        "GIT-ASSET-P-01",
+        "GIT-ASSET-P-04",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-01",
-        "TIG-I-02",
-        "TIG-I-06"
+        "GIT-ASSET-I-01",
+        "GIT-ASSET-I-02",
+        "GIT-ASSET-I-06"
       ],
       "requirements": [
-        "TIG-R03",
-        "TIG-R07"
+        "GIT-ASSET-R03",
+        "GIT-ASSET-R07"
       ],
       "mitigation": "M07",
       "owner": "storage-custody",
@@ -2366,20 +2366,20 @@
     {
       "id": "LC06",
       "pitfalls": [
-        "TIG-F-12"
+        "GIT-ASSET-F-12"
       ],
       "principles": [
-        "TIG-P-03",
-        "TIG-P-05"
+        "GIT-ASSET-P-03",
+        "GIT-ASSET-P-05"
       ],
       "invariants": [
-        "TIG-I-02",
-        "TIG-I-03",
-        "TIG-I-11"
+        "GIT-ASSET-I-02",
+        "GIT-ASSET-I-03",
+        "GIT-ASSET-I-11"
       ],
       "requirements": [
-        "TIG-R02",
-        "TIG-R09"
+        "GIT-ASSET-R02",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M12",
       "owner": "git-adoption",
@@ -2389,20 +2389,20 @@
     {
       "id": "LC07",
       "pitfalls": [
-        "TIG-F-01"
+        "GIT-ASSET-F-01"
       ],
       "principles": [
-        "TIG-P-03",
-        "TIG-P-04",
-        "TIG-P-09"
+        "GIT-ASSET-P-03",
+        "GIT-ASSET-P-04",
+        "GIT-ASSET-P-09"
       ],
       "invariants": [
-        "TIG-I-01",
-        "TIG-I-02"
+        "GIT-ASSET-I-01",
+        "GIT-ASSET-I-02"
       ],
       "requirements": [
-        "TIG-R02",
-        "TIG-R03"
+        "GIT-ASSET-R02",
+        "GIT-ASSET-R03"
       ],
       "mitigation": "M01",
       "owner": "placement-policy",
@@ -2412,20 +2412,20 @@
     {
       "id": "LC08",
       "pitfalls": [
-        "TIG-F-12"
+        "GIT-ASSET-F-12"
       ],
       "principles": [
-        "TIG-P-03",
-        "TIG-P-05"
+        "GIT-ASSET-P-03",
+        "GIT-ASSET-P-05"
       ],
       "invariants": [
-        "TIG-I-02",
-        "TIG-I-03",
-        "TIG-I-11"
+        "GIT-ASSET-I-02",
+        "GIT-ASSET-I-03",
+        "GIT-ASSET-I-11"
       ],
       "requirements": [
-        "TIG-R02",
-        "TIG-R09"
+        "GIT-ASSET-R02",
+        "GIT-ASSET-R09"
       ],
       "mitigation": "M12",
       "owner": "git-adoption",
@@ -2435,17 +2435,17 @@
     {
       "id": "LC09",
       "pitfalls": [
-        "TIG-F-02"
+        "GIT-ASSET-F-02"
       ],
       "principles": [
-        "TIG-P-08"
+        "GIT-ASSET-P-08"
       ],
       "invariants": [
-        "TIG-I-04",
-        "TIG-I-10"
+        "GIT-ASSET-I-04",
+        "GIT-ASSET-I-10"
       ],
       "requirements": [
-        "TIG-R05"
+        "GIT-ASSET-R05"
       ],
       "mitigation": "M02",
       "owner": "storage-custody",
@@ -2455,19 +2455,19 @@
     {
       "id": "LC10",
       "pitfalls": [
-        "TIG-F-06"
+        "GIT-ASSET-F-06"
       ],
       "principles": [
-        "TIG-P-02",
-        "TIG-P-04"
+        "GIT-ASSET-P-02",
+        "GIT-ASSET-P-04"
       ],
       "invariants": [
-        "TIG-I-08",
-        "TIG-I-09"
+        "GIT-ASSET-I-08",
+        "GIT-ASSET-I-09"
       ],
       "requirements": [
-        "TIG-R01",
-        "TIG-R06"
+        "GIT-ASSET-R01",
+        "GIT-ASSET-R06"
       ],
       "mitigation": "M06",
       "owner": "identity-namespace",

@@ -1,6 +1,6 @@
 # Preview and apply a source handoff
 
-Build `tig-source` with `cargo build --locked -p tig-store --bin tig-source`.
+Build `git-asset-source` with `cargo build --locked -p git-asset-store --bin git-asset-source`.
 These experimental commands operate on an explicitly enrolled existing journal.
 They do not create a cache or journal, run Git, render, transfer, or remove bytes.
 The caller admits the source/owner and already protected snapshot metadata.
@@ -24,9 +24,9 @@ interrupted/missing receipt:
 ```
 
 ```text
-tig-source plan PRIVATE_PROFILE NEW_PRIVATE_PLAN
-tig-source apply PRIVATE_PLAN NEW_PRIVATE_REQUEST NEW_PRIVATE_RECEIPT
-tig-source acknowledge PRIVATE_REQUEST NEW_PRIVATE_RECOVERY_REPORT
+git-asset-source plan PRIVATE_PROFILE NEW_PRIVATE_PLAN
+git-asset-source apply PRIVATE_PLAN NEW_PRIVATE_REQUEST NEW_PRIVATE_RECEIPT
+git-asset-source acknowledge PRIVATE_REQUEST NEW_PRIVATE_RECOVERY_REPORT
 ```
 
 All new output paths must be absolute, distinct, outside the authority directory

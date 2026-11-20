@@ -1,7 +1,7 @@
-# Tig doctrine
+# git-asset doctrine
 
 | Namespace | Type | File | Owner |
 | --- | --- | --- | --- |
-| tig | principles | [Principles](../docs/doctrine/PRINCIPLES.md) | Tig maintainers |
-| tig | invariants | [Invariants](../docs/doctrine/INVARIANTS.md) | Tig maintainers |
-| tig | pitfalls | [Pitfalls](../docs/doctrine/PITFALLS.md) | Tig maintainers |
+| git-asset | principles | [Principles](../docs/doctrine/PRINCIPLES.md) | git-asset maintainers |
+| git-asset | invariants | [Invariants](../docs/doctrine/INVARIANTS.md) | git-asset maintainers |
+| git-asset | pitfalls | [Pitfalls](../docs/doctrine/PITFALLS.md) | git-asset maintainers |

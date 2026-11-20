@@ -1,6 +1,6 @@
 # Placement, demotion and recovery
 
-Target walkthrough. Tig currently computes pure plans; no file operation below
+Target walkthrough. git-asset currently computes pure plans; no file operation below
 is executed by the prototype.
 
 ## Safe demotion is copy, verify, then eligible release
@@ -61,7 +61,7 @@ copies. Catalog loss cannot erase active-job protection; loss of authoritative
 protection history blocks destructive work until adequate recovery.
 
 Another session can publish a new object or start using an old one while a transfer
-runs. Tig must fence conflicting removals at the relevant scope. No global cache
+runs. git-asset must fence conflicting removals at the relevant scope. No global cache
 lock should pause all rendering. Transfers must not hold catalog transactions for
 their duration. An earlier passing merge gate cannot replace the final safety check.
 

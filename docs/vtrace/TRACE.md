@@ -1,4 +1,4 @@
-# Tig trace
+# git-asset trace
 
 Managed annex reads: WP-004/007/008/009/011;
 REQ-001/003/004/006/007/008/010 -> SPEC-003/004/005/007/008/009/011,
@@ -56,7 +56,7 @@ REQ-001/002/003/004/005/006/007/009/010 ->
 SPEC-002/003/004/005/006/008/009/010/014,
 IF-002/003/004/005/006/008/010/011/012/013,
 PKG-001/002/003/004/006/008/009 -> TEACHING-CATALOGUE.md -> public fixture/oracle,
-tig-sample over existing source/placement/provider adapters and actual catalogue
+git-asset-sample over existing source/placement/provider adapters and actual catalogue
 export -> actual CLI/provider/catalogue/refusal/isolation cases -> EVID-114.
 Local broad/final-focus qualification passes; hosted,
 interactive/full-course, native/provider/lifetime and user validation remain open.
@@ -64,7 +64,7 @@ interactive/full-course, native/provider/lifetime and user validation remain ope
 Held-copy follow-up candidate: WP-003/004/006/007/008/009/015;
 REQ-001/002/003/004/005/006/007/009 -> SPEC-002/003/004/005/008/009/014,
 IF-002/003/004/005/006/008/012/013, PKG-002/003/008/009 ->
-HELD-COPY-FOLLOWUP.md -> paged::control::followup and tig-storage paged followup
+HELD-COPY-FOLLOWUP.md -> paged::control::followup and git-asset-storage paged followup
 over existing current clearance, final providers and accounted witnesses ->
 independent frames, ended-job/recovered-provider, cancellation/proof/scope/race,
 five actual exits and fresh CLI -> EVID-113. Local broad qualification passes;
@@ -74,10 +74,10 @@ native authority, UI/Action, provider/lifetime and full acceptance remain open.
 Paged operator candidate: WP-003/004/006/007/008/009/015;
 REQ-001/002/003/004/005/006/007/009 -> SPEC-002/003/004/005/008/009/014,
 IF-002/003/004/005/006/008/012/013, PKG-002/003/008/009 -> PAGED-OPERATOR.md ->
-tig-storage paged, shared paged::Session and canonical copy-index extension ->
+git-asset-storage paged, shared paged::Session and canonical copy-index extension ->
 EVID-112. The native artifact qualifier additionally uses WP-010/REQ-010/
 SPEC-010/IF-010/PKG-004/006 through the existing optional adapter, without a
-typed/Git dependency in tig-store. Verification, synthetic rehearsal and producer
+typed/Git dependency in git-asset-store. Verification, synthetic rehearsal and producer
 review remain separate from held-copy follow-up, full intended use and acceptance.
 
 Manual paged execution: WP-003/004/006/007/008/009/013/015;
@@ -111,7 +111,7 @@ Recorded historical age: WP-003/004/006/007/008/009/010/013/015;
 REQ-001/002/003/004/005/006/007/009/010 ->
 SPEC-002/003/004/005/008/009/010/013/014, IF-002/004/005/006/008/010/012/013,
 PKG-002/003/004/006/008/009 -> AGE-WITNESSES.md -> source_claims::age,
-subset::historical_survivor, tig-storage age, tig-retirement select-aged ->
+subset::historical_survivor, git-asset-storage age, git-asset-retirement select-aged ->
 EVID-106/implementation1a344fc. [Review](../reviews/2026-11-09-age-witnesses.md)
 separates implementation, focused verification, synthetic validation and six
 producer lenses from final broad/artifact checks and complete user acceptance.
@@ -121,7 +121,7 @@ REQ-001/002/003/004/005/006/007/009/010 ->
 SPEC-002/003/004/005/008/009/010/013/014, IF-002/004/005/006/008/010/012/013,
 PKG-001/003/004/006/008/009 -> NATIVE-RETIREMENT-BINDINGS.md ->
 Graph::storage_objects, native::retirement build/build_from_archive/inspect/select,
-tig-retirement -> eight native entries, one framing entry/four independent cases,
+git-asset-retirement -> eight native entries, one framing entry/four independent cases,
 real Git/CLI/1000 roots and actual bulk byte effects -> EVID-105,
 implementation00c229d. [Review](../reviews/2026-11-09-native-retirement-bindings.md)
 keeps implementation, verification, synthetic validation and six producer lenses
@@ -150,7 +150,7 @@ live trust/authority/restore/lifetime, mutation integration and acceptance.
 Bulk operator inspection: WP-003/004/007/008/009/015;
 REQ-001/003/004/005/007/009 -> SPEC-003/004/005/008/009/014,
 IF-003/004/005/006/008/012, PKG-002/003/008/009 -> BULK-OPERATOR.md ->
-bulk::Inspection/shared control/report, tig-storage bulk, ledger checkpoint getter
+bulk::Inspection/shared control/report, git-asset-storage bulk, ledger checkpoint getter
 and explicit CLI CI qualifier -> seventeen focused entries, actual fresh-artifact
 offline phase/hold/binding/privacy/no-command/no-provider-effects qualification ->
 EVID-102, implementation29e87e7. [Review](../reviews/2026-11-09-bulk-inspection.md)
@@ -216,7 +216,7 @@ Exact object selection does not infer delivery, custody or eviction authority.
 
 WP-005/011/015/016 / REQ-001/003/006/007/010 -> SPEC-004/007/011/012/015,
 IF-005/008/010/013, PKG-003/004/008 -> PROJECT-PARTIALS.md -> project/partials.rs,
-project admission and tig-project flags -> project_restore.rs -> EVID-074.
+project admission and git-asset-project flags -> project_restore.rs -> EVID-074.
 Filename candidates and observed lengths grant no ownership or disposal authority.
 
 WP-005/011/015/016 / REQ-001/003/006/010 -> SPEC-004/007/011/012/015,
@@ -240,7 +240,7 @@ fixtures -> EVID-070. Required identities/thresholds, estimates and observations
 stay distinct; source/copy protection and consumer render admission are separate.
 
 WP-005/011/015 / REQ-001/003/006/010 -> PROJECT-PROGRESS.md ->
-project/progress.rs + tig-project flags -> project_restore.rs recovery/CLI
+project/progress.rs + git-asset-project flags -> project_restore.rs recovery/CLI
 fixtures -> EVID-069. Logs bind observations to an exact plan; current byte
 verification, custody and consumer adoption stay distinct.
 
@@ -250,17 +250,17 @@ project_restore.rs and restore_cli.rs -> EVID-068. No new byte cache engine or
 global lock; operator custody/adoption and persistent recovery remain open.
 
 WP-010/011/015 / REQ-001/006/010 -> PUBLICATION-EVIDENCE.md ->
-tig-assets::publication + tig-publication -> publication.rs fixtures -> EVID-067.
+git-asset-model::publication + git-asset-publication -> publication.rs fixtures -> EVID-067.
 Exact receipt binding stays distinct from provider currentness, payload custody
 and the separately planned project-restore orchestration improvements.
 
 Selected-object restoration: the same WP-005/011/015 controls below ->
-EXPLICIT-RESTORE.md `--selected` -> tig-restore.rs + restore_cli.rs -> EVID-066.
+EXPLICIT-RESTORE.md `--selected` -> git-asset-restore.rs + restore_cli.rs -> EVID-066.
 No duplicate stream is required; selector identity stays separate from placement.
 
 Explicit restoration: WP-005/011/015, REQ-001/003/006/010 ->
 SPEC-004/007/011, IF-005/008/010/013, PKG-003/004/008 ->
-specs/EXPLICIT-RESTORE.md -> tig-restore.rs + restore_cli.rs and the explicit
+specs/EXPLICIT-RESTORE.md -> git-asset-restore.rs + restore_cli.rs and the explicit
 project operator helper/path fixtures -> EVID-065. Consumer rehearsal evidence
 stays in the consumer repositories; no source retirement or custody follows.
 
@@ -274,16 +274,16 @@ All requirements are OPEN; scenario coverage below is designed, not proof.
 
 | Requirement | Obligation | Spec | Planned cases | Owner |
 | --- | --- | --- | --- | --- |
-| TIG-R01 | Exact identity and snapshot-qualified logical paths | specs/MODEL.md | T01/T04/T05/T21 | Identity |
-| TIG-R02 | Explicit constraints and complete conservative demand | specs/MODEL.md | T03/T06/T19/T20/T24 | Policy |
-| TIG-R03 | Independent custody and fresh safe removal | specs/SAFETY.md | T07-T10/T12/T23 | Custody |
-| TIG-R04 | Concurrent recovery without a global lock | specs/SAFETY.md | T11-T14 | Recovery |
-| TIG-R05 | Bounded incremental manifests, transfers and physical accounting | specs/MODEL.md | T15/T17/T18/T22 | Store |
-| TIG-R06 | Honest portable providers and private generic integration | specs/SAFETY.md | T16/T21/T25 | Provider |
-| TIG-R07 | Indexed shared lookup, incremental publication and honest stale/offline state | specs/CACHE-AND-LFS.md | CL01-CL06 | Store/recovery |
-| TIG-R08 | Standard Git LFS pointer/transfer integration without Art, with full copy accounting | specs/CACHE-AND-LFS.md | CL07-CL10 | Git/provider |
-| TIG-R09 | Git/worktree source transitions and recoverable durable protection independent of derived indexes | specs/GIT-WORKFLOW.md | GW01-GW15 | Git/recovery |
-| TIG-R10 | Optional typed assets incorporate Art value without duplicating identity/storage or requiring typed records for Git/LFS | docs/UNIFIED-DESIGN.md | Art parity and semantic cases planned; T25/BN10 cover generic boundary intent only | Core/adoption |
+| GIT-ASSET-R01 | Exact identity and snapshot-qualified logical paths | specs/MODEL.md | T01/T04/T05/T21 | Identity |
+| GIT-ASSET-R02 | Explicit constraints and complete conservative demand | specs/MODEL.md | T03/T06/T19/T20/T24 | Policy |
+| GIT-ASSET-R03 | Independent custody and fresh safe removal | specs/SAFETY.md | T07-T10/T12/T23 | Custody |
+| GIT-ASSET-R04 | Concurrent recovery without a global lock | specs/SAFETY.md | T11-T14 | Recovery |
+| GIT-ASSET-R05 | Bounded incremental manifests, transfers and physical accounting | specs/MODEL.md | T15/T17/T18/T22 | Store |
+| GIT-ASSET-R06 | Honest portable providers and private generic integration | specs/SAFETY.md | T16/T21/T25 | Provider |
+| GIT-ASSET-R07 | Indexed shared lookup, incremental publication and honest stale/offline state | specs/CACHE-AND-LFS.md | CL01-CL06 | Store/recovery |
+| GIT-ASSET-R08 | Standard Git LFS pointer/transfer integration without Art, with full copy accounting | specs/CACHE-AND-LFS.md | CL07-CL10 | Git/provider |
+| GIT-ASSET-R09 | Git/worktree source transitions and recoverable durable protection independent of derived indexes | specs/GIT-WORKFLOW.md | GW01-GW15 | Git/recovery |
+| GIT-ASSET-R10 | Optional typed assets incorporate Art value without duplicating identity/storage or requiring typed records for Git/LFS | docs/UNIFIED-DESIGN.md | Art parity and semantic cases planned; T25/BN10 cover generic boundary intent only | Core/adoption |
 
 Need: small versioned logical records, predictable storage, recoverable parallel
 operations, independent backend choice and explicit adoption from Art/other clients.
@@ -295,14 +295,14 @@ and event-driven proximity/replication lifecycle. See
 [review learnings](../scenarios/LEARNINGS.md) and [mitigations](../scenarios/MITIGATIONS.md).
 These extend planned coverage, not verified requirement dispositions.
 
-specs/BYTE-WORKTREE.md refines TIG-R01/R04/R05/R09/R10 with pinned-base overlay,
+specs/BYTE-WORKTREE.md refines GIT-ASSET-R01/R04/R05/R09/R10 with pinned-base overlay,
 explicit removals, immutable candidates, Git selection and same-path conflict
 rules. Related existing cases and required new executable fixtures are listed
 there; no overlay or tree-merge behavior is yet verified.
 
 ## Complete V chain
 
-REQ aliases map one-to-one to the stable TIG-R table above. Every full requirement
+REQ aliases map one-to-one to the stable GIT-ASSET-R table above. Every full requirement
 is OPEN. Implementation/evidence columns distinguish a partial current mechanism
 from target packages; designed acceptance is not a verified product disposition.
 
@@ -485,7 +485,7 @@ original context/parameter replay and unsigned recipe correspondence remain
 distinct from producer execution, output integrity, authority and storage custody.
 Canonical root correction: WP-004/005/011, REQ-001/003/004/007/008/010 ->
 SPEC-003/004/007/009/011, IF-004/005/009/010/012, PKG-002/003/004/008 ->
-EXISTING-BYTE-READ.md -> tig-store existing root_spelling/directories and
+EXISTING-BYTE-READ.md -> git-asset-store existing root_spelling/directories and
 existing-reader fixtures -> EVID-046. This corrects path interoperability;
 full provider publication, job/custody coverage and eviction stay separate.
 
@@ -506,7 +506,7 @@ global coverage and consumer cutover remain separate open obligations.
 Verified-cache proposal CLI: WP-005/008/009/010/011/016,
 REQ-001/004/006/007/008/009/010 -> SPEC-005/006/007/009/010/011,
 IF-005/007/008/009, PKG-004/005/008 -> GIT-PROPOSAL-CLI.md ->
-source/proposal.rs + bin/tig-propose.rs + tests/proposal_cli.rs -> EVID-049.
+source/proposal.rs + bin/git-asset-propose.rs + tests/proposal_cli.rs -> EVID-049.
 Native semantics and managed lifecycle adoption remain separate requirements.
 
 Deferred catch-up: WP-010/011/012, REQ-001/006/009/010 -> SPEC-010/011/012,
@@ -522,8 +522,8 @@ current subjects and externally admitted original context remain distinct; a
 malformed/unavailable claim is blocked, not an absent historical receipt.
 
 Authored schema execution: WP-010/011, REQ-001/006/009/010 -> SPEC-010/011,
-IF-010/011, PKG-004/006/008 -> NATIVE-SCHEMA-VALIDATION.md -> tig-assets/schema.rs,
-tig-record validate and native/schema.rs + pure/CLI/native fixtures -> EVID-052.
+IF-010/011, PKG-004/006/008 -> NATIVE-SCHEMA-VALIDATION.md -> git-asset-model/schema.rs,
+git-asset-record validate and native/schema.rs + pure/CLI/native fixtures -> EVID-052.
 Exact authored validation remains separate from stream/native semantics, actual
 consumption, producer execution, source selection, approval and custody.
 
@@ -575,7 +575,7 @@ reservation expiry, journal pruning or expanded resource limit follows.
 
 Checked metadata copy: WP-001/008/009, REQ-001/005/007/009 ->
 SPEC-002/005/006/008, IF-002/005/008, PKG-002/003/008 ->
-METADATA-PROVIDER-COPY.md -> metadata/copy.rs, tig-metadata.rs,
+METADATA-PROVIDER-COPY.md -> metadata/copy.rs, git-asset-metadata.rs,
 metadata/copy/tests.rs and metadata_copy_cli.rs -> EVID-083.
 Exact provider snapshot verification is separate from capacity admission,
 source-journal authority, provider adoption, latest-source coverage and custody.
@@ -583,7 +583,7 @@ source-journal authority, provider adoption, latest-source coverage and custody.
 Storage orchestration: WP-003/004/006/007/008, REQ-001/002/003/004/005/007/009 ->
 SPEC-002/003/004/005/008/009, IF-002/003/004/005/006/012, PKG-002/003 plus
 PKG-008 CLI -> STORAGE-ORCHESTRATION.md -> orchestration.rs, optional accounted
-context binding, exact ledger/retention inspection and tig-storage -> 15 library
+context binding, exact ledger/retention inspection and git-asset-storage -> 15 library
 entries / five process CLI fixtures -> EVID-084. Scoped verification and intended-use
 validation dispositions are separate. Full packages and complete removal authority
 remain open; no added dependency on optional typed assets.
@@ -625,7 +625,7 @@ scenario is closed; live/current-authority and remaining roadmap gates persist.
 Retirement operator/agent: WP-003/004/006/007/008/009/015,
 REQ-001/002/003/004/005/006/007/008/009 -> SPEC-002/003/004/005/006/007/008/009/013,
 IF-002/003/004/005/006/008/012/013, PKG-002/003/008 -> RETIREMENT-AGENT-CLI.md ->
-tig-storage retire and retirement::status/canonical plans -> eight CLI process
+git-asset-storage retire and retirement::status/canonical plans -> eight CLI process
 cases, 24 kernel regression entries with additional status assertions and separately
 executed real-child pending-intent CLI cancellation -> EVID-089,
 implementation19346c4. PKG-009 covers explicit cross-artifact CI qualification and
@@ -637,7 +637,7 @@ S3 publication: WP-003/005/006/007/014/015,
 REQ-001/003/004/005/006/007/009 -> SPEC-002/003/004/007/008/009/013,
 IF-002/003/004/005/006/012/013, PKG-002/003/004/008 -> S3-PUBLICATION.md ->
 optional s3::Client/Plan/Execution/status, existing accounted local witness and
-guarded reader ports, explicit tig-storage s3 -> 15 HTTP/process cases with
+guarded reader ports, explicit git-asset-storage s3 -> 15 HTTP/process cases with
 conditional/readback, lost-reply restart, exact-peer contention, unrelated-job
 progress and refusal tests -> EVID-090, implementation4fc3060. Verification,
 synthetic validation and six-role producer review close separately. Full cloud/
@@ -646,7 +646,7 @@ LFS/provider/adoption requirements and remaining roadmap milestones remain open.
 Standalone LFS upload: WP-003/005/006/007/014/015,
 REQ-001/003/004/005/006/007/008/009 -> SPEC-002/003/004/005/007/008/009/013,
 IF-002/003/004/005/006/008/009/012/013, PKG-002/003/004/007/008 -> LFS-UPLOAD.md ->
-optional tig-git upload backend, standard upload protocol/CLI, existing verified
+optional git-asset upload backend, standard upload protocol/CLI, existing verified
 reader and shared accounted witnesses -> 13 HTTP/actual Git LFS/CLI/killed-process
 cases plus 15 S3 compatibility regressions -> EVID-091, implementation2f1173b.
 Verification, synthetic intended-use rehearsal and all six producer lenses close
@@ -656,7 +656,7 @@ Git lifecycle, bulk final-deletion and metadata-retirement delivery remain open.
 Committed-ref lifecycle selection: WP-003/004/005/006/008/009/011/012/015,
 REQ-001/002/003/004/005/006/007/008/009 -> SPEC-002/003/004/005/006/007/008/009/013,
 IF-002/003/004/005/006/008/009/012/013, PKG-002/003/004/008/009 ->
-GIT-LIFECYCLE-RECONCILIATION.md -> lifecycle library/tig-lifecycle, existing
+GIT-LIFECYCLE-RECONCILIATION.md -> lifecycle library/git-asset-lifecycle, existing
 Namespace::select/Prepare/Adopt and finished metadata reader -> nine real Git/CLI
 cases, six added admission pair cases and separate pinned pre-pair reader test ->
 EVID-092, implementationfc3c57f. Verification, synthetic intended-use rehearsal
@@ -667,7 +667,7 @@ Local placement reconciliation: WP-003/004/005/006/007/008/009/015,
 REQ-001/002/003/004/005/006/007/008/009 -> SPEC-002/003/004/005/006/007/008/009/013,
 IF-002/003/004/005/006/008/009/012/013, PKG-002/003/004/008/009 ->
 PLACEMENT-RECONCILIATION.md -> readonly namespace requirements, generic bounded
-placement executor and explicit tig-lifecycle reconcile over existing effect ports
+placement executor and explicit git-asset-lifecycle reconcile over existing effect ports
 -> sixteen placement entries, two projection cases, twelve Git/CLI entries and
 separate artifact qualifications -> EVID-093, implementation7432739. Verification,
 synthetic intended-use rehearsal and six producer lenses close separately. Full
@@ -679,7 +679,7 @@ Trusted GitHub intake: WP-004/005/007/008/009/013/015,
 REQ-001/002/003/004/005/006/007/008/009 -> SPEC-002/003/004/005/006/007/008/009/013,
 IF-002/003/004/005/006/008/009/012/013, PKG-002/003/004/007/008/009 ->
 GITHUB-TRIGGER.md -> optional RS256/intake/source/coordinator, CommittedSource,
-tig-trigger and inert Action client -> sixteen library/eight authentication/
+git-asset-trigger and inert Action client -> sixteen library/eight authentication/
 thirteen Git lifecycle entries, real hosted issuer empty-scope qualification and
 separate broader checks -> EVID-094, implementation503adca/fixb3aced0. Verification,
 synthetic validation and six producer lenses remain distinct. Full lifecycle,
@@ -689,7 +689,7 @@ acceptance remain open; source availability does not install automation.
 Staged-index lifecycle: WP-004/005/008/009/015,
 REQ-001/002/004/005/007/008/009 -> SPEC-002/004/005/006/007/008/009,
 IF-002/004/005/006/008/009/013, PKG-002/003/004/008/009 -> INDEX-LIFECYCLE.md ->
-lifecycle::index, tig-lifecycle index, existing Repository/metadata/Namespace::select
+lifecycle::index, git-asset-lifecycle index, existing Repository/metadata/Namespace::select
 and placement executor -> fifteen focused entries including two actual child
 exits, linked worktrees and actual CLI/store job-end/no-op demotion -> EVID-095,
 implementation51dd2b2. Broader verification, synthetic validation and six producer
@@ -700,7 +700,7 @@ Owned settlement: WP-003/004/005/006/007/008/009/015;
 REQ-001/002/003/004/005/007/008/009 -> SPEC-002/004/005/006/007/008/009,
 IF-002/004/005/006/008/013, PKG-002/003/004/008/009 -> SOURCE-SETTLEMENT.md ->
 bounded transactional SourceCondition, exact ref lookup, lifecycle::settlement,
-tig-lifecycle settle/shared local placement and current-source convergence ->
+git-asset-lifecycle settle/shared local placement and current-source convergence ->
 twelve settlement/three condition/one signed-source-withdrawal cases plus regression
 and explicit old-reader/artifact checks -> EVID-096, implementation51c5acc.
 Verification, synthetic validation and producer review are separate from full
@@ -736,3 +736,11 @@ vectors, explicit old-writer refusal/legacy control and public reconciliation ->
 EVID-099, implementation9f5e8c0. Inherited S3 contention fixture additionally uses
 WP-005/014 and SPEC-007. Verification, synthetic validation and six producer
 lenses close separately from full bulk/authority/provider/lifetime acceptance.
+
+## Product rename trace
+
+GIT-ASSET-RENAME.md controls -> current crate/service/docs naming, bounded
+front door, .asset/.tig compatibility and immutable-input identity audit ->
+front_door.rs/native_source.rs/check_branding.py -> EVID-123 and separate
+verification, intended-use validation and six producer lenses. Full native
+retained-publication and provider acceptance remain open.

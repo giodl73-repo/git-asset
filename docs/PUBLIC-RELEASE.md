@@ -1,6 +1,6 @@
 # Public experimental source baseline
 
-Tig's canonical public repository is https://github.com/giodl73-repo/tig.
+git-asset's canonical public repository is https://github.com/giodl73-repo/git-asset.
 It began with a clean root snapshot; the original private Git/hosting history
 was preserved separately. It was not made public by changing its visibility.
 Current public history and current source are the release surface.

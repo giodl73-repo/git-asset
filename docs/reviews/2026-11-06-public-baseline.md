@@ -50,7 +50,7 @@ No independent validation or acceptance is claimed.
 CI annotations also exposed deprecated Node 20 checkout/Python actions. Replace
 them with official stable Node 24 releases pinned to verified commits; hosted
 validation must pass those exact pins before merge. This is build tooling, not
-a runtime/dependency update to Tig.
+a runtime/dependency update to git-asset.
 
 Review: producer-applied identity, placement, custody, concurrency, privacy and
 adoption checks completed. No open high finding is accepted for public exposure.

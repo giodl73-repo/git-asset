@@ -1,4 +1,4 @@
-# Tig controlled specification baseline
+# git-asset controlled specification baseline
 
 SPEC-002/003/004/005/008/009/010/013/014 native selection prerequisite:
 [native historical bindings](../../specs/NATIVE-RETIREMENT-BINDINGS.md), EVID-105

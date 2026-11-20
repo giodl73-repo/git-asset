@@ -15,7 +15,7 @@ map of the requested IDs to source states or explicit nulls. Each state belongs
 to that checkpoint. Existing single-source behavior remains unchanged.
 
 ```text
-tig-source inspect-many PRIVATE_PROFILE NEW_PRIVATE_REPORT
+git-asset-source inspect-many PRIVATE_PROFILE NEW_PRIVATE_REPORT
 ```
 
 The strict profile schema is

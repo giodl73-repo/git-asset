@@ -6,7 +6,7 @@ WP-003/009/010/011/012/015; REQ-001/003/004/006/009/010;
 SPEC-003/007/010/011/012/014/015; IF-003/004/007/008/010/011/013;
 PKG-002/003/004/006/008. RUST/PROVIDER/GIT/INTEGRATION profiles.
 
-Scope: optional native helper over existing `tig_store::publish` and
+Scope: optional native helper over existing `git_asset_store::publish` and
 `PublicationBackend`, bounded synthetic provider/Git fixtures. No new cache
 engine, provider, file-copy logic, root discovery, live IO or automatic retries.
 Entry: an opaque pure `edits::Prepared`, explicit operation/owner/ack level and

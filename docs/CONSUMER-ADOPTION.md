@@ -31,6 +31,6 @@ Acceptance must separately establish:
 
 The generic component evidence register is [EVIDENCE.md](vtrace/EVIDENCE.md).
 Its results close only their named scopes. Project labels, native mappings,
-store locations and private qualification results are not Tig source constants.
+store locations and private qualification results are not git-asset source constants.
 Full producer/closure, job/custody coverage and removal acceptance remain open
 unless the owning project records evidence for its complete selected scope.

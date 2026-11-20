@@ -1,8 +1,8 @@
-# Learn Tig through one sample catalogue
+# Learn git-asset through one sample catalogue
 
 Delivery contract: [TEACHING-CATALOGUE](../../specs/TEACHING-CATALOGUE.md).
 The first runnable rehearsal covers seven ordinary lifecycle checkpoints using
-real Git, source journals and provider operations. The catalogue's **Learn Tig ·
+real Git, source journals and provider operations. The catalogue's **Learn git-asset ·
 sample lessons** view reads their actual sealed reports. The complete teaching
 course, failure rehearsals and final-retirement/lifetime lessons remain in development.
 
@@ -12,9 +12,9 @@ directory** outside every Git checkout. Replace `ABSOLUTE_NEW_OUTPUT` below with
 that path; its parent must exist.
 
 ```text
-cargo run -p tig-git --features schema --bin tig-sample --locked -- rehearse-ordinary ABSOLUTE_NEW_OUTPUT
-cargo run -p tig-git --features schema --bin tig-catalogue --locked -- check ABSOLUTE_NEW_OUTPUT/catalogue.json
-cargo run -p tig-git --features schema --bin tig-catalogue --locked -- serve ABSOLUTE_NEW_OUTPUT/catalogue.json 8801
+cargo run -p git-asset --features schema --bin git-asset-sample --locked -- rehearse-ordinary ABSOLUTE_NEW_OUTPUT
+cargo run -p git-asset --features schema --bin git-asset-catalogue --locked -- check ABSOLUTE_NEW_OUTPUT/catalogue.json
+cargo run -p git-asset --features schema --bin git-asset-catalogue --locked -- serve ABSOLUTE_NEW_OUTPUT/catalogue.json 8801
 ```
 
 The rehearsal commits v1, branches to fix the data, merges v2 and removes the
@@ -28,7 +28,7 @@ fixture identity.
 For the local Git exchange lesson, choose another fresh root and run:
 
 ```text
-cargo run -p tig-git --features schema --bin tig-sample --locked -- rehearse-exchange ABSOLUTE_NEW_OUTPUT
+cargo run -p git-asset --features schema --bin git-asset-sample --locked -- rehearse-exchange ABSOLUTE_NEW_OUTPUT
 ```
 
 This includes the ordinary seven checkpoints, then adds **publish v2**, **pull
@@ -38,10 +38,10 @@ local bare remote and observer checkout inside that root; no account or network
 endpoint is used. `exchange.json` records actual commit identities and the dirty
 pull refusal; the CLI result pins its exact hash and size.
 
-| Command / trigger | Checked result | Tig copy evidence |
+| Command / trigger | Checked result | git-asset copy evidence |
 | --- | --- | --- |
 | `git push`, `git clone --no-local --no-hardlinks` | Observer selects the published commit and small records; selected payload seeds are absent from its tracked tree | Existing F/D/M copies remain; this checkpoint streams zero payload bytes |
-| `git fetch --no-tags` | Remote-tracking ref advances; observer HEAD remains unchanged | Fetch itself requests no Tig action |
+| `git fetch --no-tags` | Remote-tracking ref advances; observer HEAD remains unchanged | Fetch itself requests no git-asset action |
 | `git pull --ff-only` with an overlapping local edit | Git refuses because the edit would be overwritten; edit, HEAD and all managed copies remain unchanged | No adoption or placement call runs for this failed pull |
 | Repair the exact fixture edit, then `git pull --ff-only` | Observer selects the exact v1 record | Explicit fixture source adoption/reconciliation brings original to F+M and fixed to D+M |
 | Push/fetch/pull the return to v2 | Observer selects exact v2 | Explicit reconciliation returns fixed to F+M and original to D+M |
@@ -54,7 +54,7 @@ command/failure course remain separate obligations.
 For linked worktree and index lessons, choose another fresh output root:
 
 ```text
-cargo run -p tig-git --features schema --bin tig-sample --locked -- rehearse-worktree ABSOLUTE_NEW_OUTPUT
+cargo run -p git-asset --features schema --bin git-asset-sample --locked -- rehearse-worktree ABSOLUTE_NEW_OUTPUT
 ```
 
 Its twelve recorded checkpoints include the ordinary seven, then **worktree open
@@ -81,7 +81,7 @@ writer integration and complete command/failure/retirement lessons remain open.
 For backup unavailability, choose another fresh output root:
 
 ```text
-cargo run -p tig-git --features schema --bin tig-sample --locked -- rehearse-backup-outage ABSOLUTE_NEW_OUTPUT
+cargo run -p git-asset --features schema --bin git-asset-sample --locked -- rehearse-backup-outage ABSOLUTE_NEW_OUTPUT
 ```
 
 This produces nine recorded checkpoints. M's configured path becomes unavailable
@@ -110,7 +110,7 @@ No real drive is disconnected and no existing cache is changed.
 For a protection change between planning and applying, use another fresh root:
 
 ```text
-cargo run -p tig-git --features schema --bin tig-sample --locked -- rehearse-stale-plan ABSOLUTE_NEW_OUTPUT
+cargo run -p git-asset --features schema --bin git-asset-sample --locked -- rehearse-stale-plan ABSOLUTE_NEW_OUTPUT
 ```
 
 This records ten checkpoints. After the old job ends, the fixture plans demotion,
@@ -130,7 +130,7 @@ equal before/after copy snapshots. A later equivalent desired set does not reviv
 an earlier plan's authority. The new job is explicit fixture admission; this does
 not qualify arbitrary native writers, crash recovery or final deletion.
 
-In the catalogue, choose **Learn Tig · sample lessons**. Use the lesson selector
+In the catalogue, choose **Learn git-asset · sample lessons**. Use the lesson selector
 or Previous/Next to compare each object's earlier recorded copies, the plan's
 desired roles and the freshly verified copies recorded after that step. Follow
 the original through **merge v2 job active**, **job ended** and **revert v1**:
@@ -159,7 +159,7 @@ does not change main's adopted selection. Drafts have their own explicit protect
 The same assets carry through the course: a shared input used by two works and
 an asset with an original and a fixed version. Working, history and backup are
 configuration roles. Every lesson will show Git references, exact object identity,
-Tig's plan and verified physical copies together.
+git-asset's plan and verified physical copies together.
 
 [The public input/oracle](lifecycle.design-1.json) freezes three exact UTF-8 byte
 seeds, two works, twenty-two specified checkpoints and seven baseline counterexamples.
@@ -190,7 +190,7 @@ old job frees its working placement; it does not remove the retained backup.
 The backup keeps growing across replacements until a separately authorized
 final-retirement lesson removes eligible old managed copies.
 
-| Lesson | Git activity | Tig result to demonstrate | Counterexample / visible explanation |
+| Lesson | Git activity | git-asset result to demonstrate | Counterexample / visible explanation |
 | --- | --- | --- | --- |
 | 01 Start | init / clone | Create explicit isolated sample enrollment; no implicit discovery | Opening a project cannot start transfers or removal |
 | 02 Add | add / status / diff | Admit new bytes and show draft versus committed selection | An uncommitted change cannot replace the committed view |

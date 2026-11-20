@@ -9,7 +9,7 @@ service and keep a thin LocalStore binary. No REEL dependency or new provider.
 Entry: captured preparation, supported publication acknowledgements and explicit
 source/proposal preflight. Exit: a compiled trusted host supplies its existing
 PublicationBackend through a typed factory; all source/request/Git/publication
-logic stays in Tig. Factory invocation happens only after validation and Git
+logic stays in git-asset. Factory invocation happens only after validation and Git
 preflight, never for check/no-op. JSON settings are data for that admitted host,
 not executable hooks or automatic provider discovery.
 

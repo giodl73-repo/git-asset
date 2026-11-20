@@ -36,7 +36,7 @@ collisions may conservatively contend; there is no global cache lock.
 
 ## Pool enrollment and reads
 
-Enable existing `tig-git/annex-read`; use `annex::managed::Reader` when participating
+Enable existing `git-asset/annex-read`; use `annex::managed::Reader` when participating
 pruners must be fenced. Its pure constructor accepts the existing annex Profile,
 a canonical store_protection::Binding, and exact namespace locations/minimum
 checkpoints. It admits exactly the Binding's full roster (1..16 authorities) and

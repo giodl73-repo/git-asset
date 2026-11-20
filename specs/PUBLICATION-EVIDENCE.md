@@ -4,7 +4,7 @@ WP-010/011/015 bounded slice; REQ-001/006/010, SPEC-010/012/015,
 IF-010/011/013, PKG-006/008, RUST + INTEGRATION profiles. Entry source is
 `46feb03a434ef2b7226884194359273ddcb00b6d`; documentation-only feedback main
 `cb40af0` is integrated without changing that code baseline. Allowed changes: optional pure
-`tig-assets` checker, explicit read-only diagnostic CLI, synthetic fixtures and
+`git-asset-model` checker, explicit read-only diagnostic CLI, synthetic fixtures and
 trace/review documentation. No provider, placement or production binding changes.
 
 An instance/definition/schema binding and successful authored-schema execution
@@ -50,10 +50,10 @@ remain independent of the optional asset layer.
 ## Explicit local command and policy
 
 ```text
-tig-publication INSTANCE DEFINITION AUTHORED_SCHEMA 2020-12 POLICY RECEIPT
+git-asset-publication INSTANCE DEFINITION AUTHORED_SCHEMA 2020-12 POLICY RECEIPT
 ```
 
-Build with `cargo build --locked -p tig-assets --features schema --bin tig-publication`.
+Build with `cargo build --locked -p git-asset-model --features schema --bin git-asset-publication`.
 All six arguments are explicit local inputs except the dialect. The command
 reads no payload or provider and writes only its local result to stdout. Errors
 are fixed and omit paths, selectors and raw parser details. Result object pins
@@ -90,7 +90,7 @@ pointer is declared, an absent/null/fractional/string value refuses.
 `receipt_selector` selects one immediate member below a declared root. Array
 indices use canonical unsigned decimal spelling. JSON Pointer escaping is
 decoded exactly, without URI decoding or Unicode/path normalization. Targets
-use Tig's portable `LogicalPath` admission. The opaque declared-target digest
+use git-asset's portable `LogicalPath` admission. The opaque declared-target digest
 uses provider/scope/target path, not the receipt revision; it is not a verified
 provider file ID. Multiple revisions can describe the same declared target.
 No one-record success establishes complete shelf coverage or chooses which
@@ -182,7 +182,7 @@ An array/object row may use
 `fields.target: {"kind":"opaque-locator","pointer":"/path"}`. The row value
 must be a nonblank string of at most 4,096 UTF-8 bytes without control characters.
 Its exact bytes are an uninterpreted provider locator: a file ID, URI or historical
-mount address. It is **not** a Tig LogicalPath and never becomes a filesystem,
+mount address. It is **not** a git-asset LogicalPath and never becomes a filesystem,
 network, materialization or transfer argument. The checker still opens only the
 explicit local metadata inputs and emits no locator value.
 

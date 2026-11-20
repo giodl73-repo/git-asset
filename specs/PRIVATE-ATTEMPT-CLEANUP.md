@@ -51,7 +51,7 @@ Full VAL-002/003/004 and upstream package prerequisites remain OPEN.
 ## Implemented evidence
 
 EVID-017: 23 new entries including a subprocess helper; workspace total 189.
-Commands: cargo test -p tig-store --lib --locked accounted::cleanup::tests;
+Commands: cargo test -p git-asset-store --lib --locked accounted::cleanup::tests;
 cargo test --workspace --locked; fmt/all-target Clippy. Temporary-store tests
 cover exact preview/authorization, file/read limits, changed/missing/new files,
 damaged binding/intent, final-object refusal, same-attempt contention, stale

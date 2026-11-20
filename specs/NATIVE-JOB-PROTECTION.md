@@ -18,15 +18,15 @@ acceptance remain separate.
 L0: source/scope/roles, fmt, structure/hash pins and diff. L1: deterministic
 projection, exact membership/context, substitution/missing/corrupt metadata and
 aggregate read/write/count budgets; locked focused/workspace all-feature tests,
-strict all-target Clippy and standalone tig-git check. L2: temporary real Git,
+strict all-target Clippy and standalone git-asset check. L2: temporary real Git,
 finished/reopened metadata and actual guarded Namespace restart/retry/stale/
 cancellation fixtures. No live caches or renders. Producer review is not
 independent or human approval.
 
 ## Contract
 
-Consume `tig_git::source::native::job::protection` through the optional
-`tig-git/assets` Rust surface; schema/history callers may keep their existing
+Consume `git_asset::source::native::job::protection` through the optional
+`git-asset/assets` Rust surface; schema/history callers may keep their existing
 features. No new CLI or consumer-specific dependency is introduced.
 Byte-only jobs may use their admitted flat Tree and Namespace directly; this
 adapter does not require them to construct a typed native JobContext.

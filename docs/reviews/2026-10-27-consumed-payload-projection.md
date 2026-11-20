@@ -5,7 +5,7 @@ Public summary: consumer identifiers generalized; original notes retained privat
 Entry81965c724085ff2a09126d84b9be1cf6e6c0e1ca. Pre-code controls, scope and
 L0/L1/L2 are in specs/CONSUMED-PAYLOAD-PROJECTION.md. No dependencies or production
 cache/media operations. This is producer-applied six-role review, not independent
-or human acceptance. Owner: Tig producer.
+or human acceptance. Owner: git-asset producer.
 
 - Identity: every admitted definition has an explicit unique exact-pin payload
   consumption policy. Requested selected/named stream bindings must be captured
@@ -28,14 +28,14 @@ or human acceptance. Owner: Tig producer.
   requirements still apply. This narrows neither roots nor source/job ownership
   and cannot mark an ignored control as surplus or authorize eviction.
 - Custody/producer: excluding raw control bytes requires a separately qualified
-  producer semantic projection in fields/operation parameters. Tig cannot prove
+  producer semantic projection in fields/operation parameters. git-asset cannot prove
   that extraction or actual execution. Native authoring fingerprints alone omit
   delivery/profile/request/runtime meaning. Actual consumer adoption stays open.
 
 Initial evidence: five pure cases and one native Git/store/context/job/claim case
 pass. Additional checks cover group changes, output-as-primary rejection and
 legacy/projected replay in both directions. The initial fixture helper referenced
-an unavailable error alias; corrected to the public tig_core::identity::Error
+an unavailable error alias; corrected to the public git_asset_core::identity::Error
 without a production API change. Final full regression/qualification follows.
 
 Learning: object-set subset checks lose slot/role semantics when two streams share

@@ -5,7 +5,7 @@ consumer-resolution prerequisite; REQ-001/006/008/009/010, SPEC-007/010/011,
 ARCH-004/005, IF-008/010/013, DES-007/009, PKG-004/006/008. GIT/INTEGRATION
 profiles: L0 structural/fmt/Clippy/VTRACE, L1 malformed/bounded resolution,
 L2 real temporary Git commits/index/branches and an explicit CLI consumer.
-Scope: optional tig-git native source, generic tig-assets resolver port and tests.
+Scope: optional git-asset native source, generic git-asset-model resolver port and tests.
 No REEL renderer, cache operation, hook/config installation or private test data.
 
 REEL should consume AssetResolver, not infer cache paths, newest files or Git
@@ -35,7 +35,7 @@ global source/job protection, custody and reversible production adoption stay OP
 
 ## Consumer contract
 
-REEL can receive &dyn tig_assets::resolve::AssetResolver. resolve_id(id) returns
+REEL can receive &dyn git_asset_model::resolve::AssetResolver. resolve_id(id) returns
 an immutable metadata view: record/checkpoint, exact definition pin, authored
 fields, selected object and ordered stream bindings (slot/role/group/object).
 Authored values stay accessible in-process; Debug and the CLI omit them. Stream
@@ -54,18 +54,18 @@ and new Git views to retain their own status despite identical payload identity.
 Example (inside a caller returning Result):
 
 ```rust
-use tig_assets::resolve::AssetResolver;
+use git_asset_model::resolve::AssetResolver;
 let cel = assets.resolve_id("scene/04/cel/b")?;
 let image = cel.stream("image")?.clone();
 // Check cel.definition(), then give image to the existing verified byte provider.
 ```
 
-The Git implementation is opt-in with tig-git feature assets. Low-level Git/LFS
+The Git implementation is opt-in with git-asset feature assets. Low-level Git/LFS
 builds remain usable without that dependency. CI tests/lints all features so the
 optional adapter cannot silently skip tests. The explicit metadata-only CLI is:
 
 ```text
-tig-resolve LOCAL_PROFILE ASSET_ID [STREAM_SLOT]
+git-asset-resolve LOCAL_PROFILE ASSET_ID [STREAM_SLOT]
 ```
 
 The local profile is machine configuration, not a second authored asset inventory:

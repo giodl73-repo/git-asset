@@ -1,13 +1,13 @@
 # Explicit annex read adapter
 
-Input public Tig 21a70f5abc4340582cda3a075a3c5fe1cee13e40. Controls
+Input public git-asset 21a70f5abc4340582cda3a075a3c5fe1cee13e40. Controls
 WP-004/005/007/011; REQ-001/003/004/006/007/008/010;
 SPEC-003/004/007/009/011; IF-004/005/009/010/012; PKG-002/003/004/008.
 PROVIDER/GIT/INTEGRATION profiles. Producer review is not independent approval.
 
 Scope: additive provider-issued file reads and an optional read-only annex
 adapter. Preserve all existing layouts, schema/history APIs and defaults.
-Do not import the private archive's controller/index or replace public Tig's
+Do not import the private archive's controller/index or replace public git-asset's
 admission, placement, publication or retention engines.
 
 Entry: public existing-byte guard contract and qualified prototype read semantics.
@@ -57,8 +57,8 @@ supported; consumers may enroll a separate initialized ordinary or bare pool.
 
 Publication, durable job/owner registration, slot lifecycle, shared protection
 enrollment, custody and removal remain unsupported by this adapter. REEL keeps
-its existing public Tig history APIs; the native lifecycle bridge is subsequent
-integration work and must honor public Tig's current admission contracts.
+its existing public git-asset history APIs; the native lifecycle bridge is subsequent
+integration work and must honor public git-asset's current admission contracts.
 
 The [git-annex plumbing contract](https://git-annex.branchable.com/git-annex-contentlocation/)
 defines local content lookup without acquisition. Only a quiet exit 1 is treated
@@ -69,7 +69,7 @@ authored logical paths retain their strict parsers.
 
 ## Consumption and retry
 
-Enable `tig-git/annex-read` and consume `annex::Reader` through Rust. Its `open`
+Enable `git-asset/annex-read` and consume `annex::Reader` through Rust. Its `open`
 keeps typed configuration versus payload failures; its existing `ByteSource`
 implementation deliberately projects these into the older byte-port taxonomy.
 There is no new CLI, daemon or enrollment discovery. `VerifiedRead` owns the

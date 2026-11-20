@@ -1,6 +1,6 @@
-# One Tig product, optional asset semantics
+# One git-asset product, optional asset semantics
 
-Decision: incorporate Art's generic asset-management value into Tig's design.
+Decision: incorporate Art's generic asset-management value into git-asset's design.
 This supersedes the earlier proposed separate Art-product/adapter boundary.
 Pure identity/variant slices and optional native/graph/history facilities now
 exist. Broader tables below describe target capabilities; see the implemented
@@ -22,7 +22,7 @@ Git versions small authored records and standard LFS pointers
                               |
                   exact snapshot + placement claims
                               |
-                  Tig byte worktree and storage
+                  git-asset byte worktree and storage
                   lookup / ingest / reconcile
                               |
                   admitted providers and producers
@@ -35,7 +35,7 @@ layer must remain usable independently through a small Rust API.
 
 ## What to bring from Art
 
-| Capability | Value inside Tig | Boundary to preserve |
+| Capability | Value inside git-asset | Boundary to preserve |
 | --- | --- | --- |
 | Canonical records and contracts | Bounded meaningful Git manifests with exact locks | Separate raw blob hash from domain-separated semantic identity |
 | Asset graph and coverage | Explain dependencies, impact and incomplete native extraction | Evidence/authority/build/storage edges have different purposes |
@@ -45,12 +45,12 @@ layer must remain usable independently through a small Rust API.
 | Review and delivery lifecycle | Scoped rubric/gates, triage and desired/observed delivery | Technical success is not human authority or verified remote publication |
 
 These are generic capabilities. Media meaning, native scene extraction and
-rendering remain adapter/producer responsibilities; Tig must not hard-code cels,
+rendering remain adapter/producer responsibilities; git-asset must not hard-code cels,
 cues, language names, drive letters or media approval vocabulary.
 
 ## Git pointers and file granularity
 
-Standard LFS pointers remain a supported direct path. Native Tig manifests can
+Standard LFS pointers remain a supported direct path. Native git-asset manifests can
 also bind exact immutable objects/trees; typed records add useful authoring fields
 and selected results. Asset semantics do not require a second handwritten byte
 inventory. Derive bundle membership from the single admitted source of references.
@@ -105,11 +105,11 @@ admitted policy, with independently verified placement and retention.
    depend on semantic assets. Avoid two canonicalizers or two cache engines.
 4. Port a bounded pure slice with old/new parity fixtures, then its documentation
    and applicable role/pitfall/trace evidence. Do not claim the Art test suite
-   already runs in Tig.
+   already runs in git-asset.
 5. Rehearse .art/native record and consumer migration privately. Keep unrelated
    media and existing cache safeguards out of the product repo.
 
 No Art repo deletion, history rewrite, runtime pin switch or consumer conversion
 is implied. Its source remains available as provenance during consolidation.
-Donor tests and planned features are not additional Tig implementation evidence.
+Donor tests and planned features are not additional git-asset implementation evidence.
 The current evidence register records each extracted slice separately.

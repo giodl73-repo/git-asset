@@ -1,6 +1,6 @@
-# Inert consumer example. Copy request.mjs to tools/tig-request.mjs and this file
-# to .github/workflows/tig-placement.yml only after independent enrollment.
-name: Tig placement
+# Inert consumer example. Copy request.mjs to tools/git-asset-request.mjs and this file
+# to .github/workflows/git-asset-placement.yml only after independent enrollment.
+name: git-asset placement
 on:
   push:
     branches: [main]
@@ -9,7 +9,7 @@ permissions:
   contents: read
   id-token: write
 concurrency:
-  group: tig-placement-${{ github.repository_id }}-${{ github.ref }}
+  group: git-asset-placement-${{ github.repository_id }}-${{ github.ref }}
   cancel-in-progress: false
 jobs:
   reconcile:
@@ -21,9 +21,9 @@ jobs:
           persist-credentials: false
           lfs: false
           sparse-checkout-cone-mode: false
-          sparse-checkout: tools/tig-request.mjs
+          sparse-checkout: tools/git-asset-request.mjs
       - name: Request enrolled placement reconciliation
         env:
-          TIG_ENDPOINT: ${{ vars.TIG_ENDPOINT }}
-          TIG_AUDIENCE: ${{ vars.TIG_AUDIENCE }}
-        run: node tools/tig-request.mjs
+          GIT_ASSET_ENDPOINT: ${{ vars.GIT_ASSET_ENDPOINT }}
+          GIT_ASSET_AUDIENCE: ${{ vars.GIT_ASSET_AUDIENCE }}
+        run: node tools/git-asset-request.mjs

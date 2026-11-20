@@ -195,7 +195,7 @@ A synthetic demonstration can validate the synthetic workflow within its scope;
 it does not automatically accept a private production project. Private migration
 requires its owning session's approved exact mapping, byte/recovery/rollback
 checks and scoped operator acceptance. No screenshots/private payloads move into
-Tig to manufacture evidence. Consent/publication and storage safety stay distinct.
+git-asset to manufacture evidence. Consent/publication and storage safety stay distinct.
 
 WP-001 supplies the pure identity/tree component of VAL-001 through EVID-007/008.
 It does not change that intended-use run's planned status: Git/LFS, byte worktree,
@@ -538,3 +538,10 @@ and unverified current presence. This validates a bounded 8 MiB/process-restart
 library slice, not full bulk F/D/M, actual provider/clock/authority/large-file,
 metadata lifetime, operator UX or human acceptance. See
 ../reviews/2026-11-09-final-provider.md; full product acceptance remains open.
+
+## Product rename intended use
+
+EVID-123: the team overview explains the CRM-like asset relationship/lifecycle
+layer over Git and git-annex. Synthetic command discovery and unchanged legacy
+record identity demonstrate naming/reader compatibility, not cache migration,
+complete native publication or production acceptance.

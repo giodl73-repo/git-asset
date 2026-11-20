@@ -1,33 +1,54 @@
-# Tig
+# git-asset
 
-**Version references in Git. Manage the bytes with Tig.**
+**The asset relationship and lifecycle layer for git-annex.**
 
-Tig is experimental Rust infrastructure for projects with large assets and
-multiple working copies. Git keeps small authored records and Git LFS pointers;
-Tig resolves exact bytes, records storage obligations, and helps review where
-copies belong. Project schemas, names and storage locations are configuration.
+git-asset is a CRM-like extension of git-annex: it keeps the record around an
+asset—its identity, versions, relationships, candidates, selection, usage, jobs,
+retention obligations and observed storage locations. Here CRM means a durable record of an asset's relationships and lifecycle.
 
-    Git commit / index
-           |
-    small records or LFS pointers
-           |
-    exact object: hash + length
-           |
-           +--------------------------+
-           |                          |
-    existing byte reader      placement / retention
-           |                 desired -> plan -> observed
-           |                          |
-           +------ admitted places ---+
-                   local stores
-                optional providers
+Git versions small authored definitions, references and decisions. git-annex
+manages large file contents, native copies, remotes and transfers. git-asset
+connects those two layers so a team can understand what an asset is, what uses
+it, which version is selected and what storage policy requires.
 
-Objects can belong to several branches or bundles without a copy for each.
-Replacing one asset changes its reference; unchanged bytes stay shared.
-Another branch, retained version or active job may still need old bytes.
+```text
+Git commits: definitions, references, selections and review
+                         |
+                      git-asset
+       identity / versions / relationships / jobs / policy
+                         |
+                      git-annex
+          immutable file bytes / copies / remotes
+```
+
+A new candidate does not silently become the selected version. Selecting a new
+version does not erase the old one. Losing a label, ending a job or expiring a
+request does not authorize deleting the last copy. Desired placement, planned
+operations and verified observations are separate.
+
+Start with the [team overview](docs/TEAM-OVERVIEW.md),
+[current architecture](docs/ARCHITECTURE.md) and
+[roadmap](PRODUCT_PLAN.md). The product is experimental. The native adapter is
+currently qualified for explicit guarded local reads; native ingress, retained
+publication and participating-pruner execution are still being integrated.
+Existing local/LFS components remain interoperability and qualification tools.
+This rename does not claim that every native-annex lifecycle operation is ready.
+
+The front door is `git asset` (or `git-asset`):
+
+```text
+git asset describe
+git asset query describe
+git asset sample describe
+```
+
+Build the workspace binaries together using the commands below. Existing data
+formats retain their exact identifiers and hashes; see
+[compatibility and migration](docs/COMPATIBILITY.md). No cache is initialized,
+hydrated, moved or pruned merely by opening a repository or requesting help.
 
 Experimental partial history settlement is specified in
-[retained-subset handoff](specs/RETAINED-SUBSET.md). `tig-source subset` previews
+[retained-subset handoff](specs/RETAINED-SUBSET.md). `git-asset-source subset` previews
 and explicitly settles an owner's selected historical binding paths while
 preserving unselected members. It performs no payload deletion.
 Dropping a reference **does not authorize deletion**.
@@ -62,20 +83,20 @@ delete assets. Registration does not prove a remote copy exists.
 Read the [safety promise](docs/SAFETY-PROMISE.md).
 
 The [Git lifecycle selection interface](specs/GIT-LIFECYCLE-RECONCILIATION.md)
-adds `tig-lifecycle describe`, then explicit plan/status/apply/resume for an
+adds `git-asset-lifecycle describe`, then explicit plan/status/apply/resume for an
 enrolled committed ref. It verifies persisted immutable metadata before atomic
 desired-claim adoption, preserves predecessors, and separates historical receipts
 from current ref observations. Those commands keep storage convergence unknown.
 The subsequent [local placement command](specs/PLACEMENT-RECONCILIATION.md),
-`tig-lifecycle reconcile PROFILE REQUEST PLACEMENT_PROFILE [CURSOR]`, composes
+`git-asset-lifecycle reconcile PROFILE REQUEST PLACEMENT_PROFILE [CURSOR]`, composes
 copy, retained backup, handoff, ordinary cache eviction and exact-byte
 reacquisition in explicitly enrolled local stores. It processes one bounded page
 with private permissions and separate physical observations. A trusted GitHub
 trigger, production provider/large-file qualification and full lifecycle coverage
 remain required; no runner, hook or live cache is installed automatically.
 
-The optional `tig-git/upload` feature adds [Git LFS upload](specs/LFS-UPLOAD.md)
-through `tig-lfs upload describe` and an explicitly configured standalone agent.
+The optional `git-asset/upload` feature adds [Git LFS upload](specs/LFS-UPLOAD.md)
+through `git-asset-lfs upload describe` and an explicitly configured standalone agent.
 It authorizes exact OIDs, preserves verified local source bytes and uses bounded
 Batch/PUT/verify/full-download readback with existing accounted witnesses.
 Private scopes admit credentials; plans contain none. Uploaded availability is
@@ -87,21 +108,21 @@ reacquisition with retained-survivor and incarnation fences in synthetic stores.
 It does not enable live caches, automatic merge actions or final-copy deletion.
 
 The explicit [retirement CLI/agent interface](specs/RETIREMENT-AGENT-CLI.md)
-exposes the same mechanism through `tig-storage retire describe`, then
+exposes the same mechanism through `git-asset-storage retire describe`, then
 plan/status/apply/resume/cancel and explicit reacquisition. Existing managed
 roots, reserved capacity and independently admitted private profiles are required;
 eviction, cancellation and reacquisition are separately disabled by default.
 Historical retirement and current byte availability are reported separately.
 
 The optional [native historical selector](docs/guides/NATIVE-RETIREMENT.md)
-uses `tig-retirement bind/select` to map exact native blocks and admitted
+uses `git-asset-retirement bind/select` to map exact native blocks and admitted
 definition categories to existing bulk selections. Shared objects retain separate
 asset bindings. Binding writes metadata only; source adoption and final deletion
 need their separate authority. Age filtering is not inferred or enabled.
 
 An optional [S3 upload interface](specs/S3-PUBLICATION.md) uses private presigned
 access, conditional PUT and full hash/length readback while preserving the local
-source. Build with the tig-store `s3` feature and start with `tig-storage s3 describe`.
+source. Build with the git-asset-store `s3` feature and start with `git-asset-storage s3 describe`.
 Local intent/completion reuse existing accounted publication. Verified remote
 availability does not establish retained backup custody or source-eviction authority.
 
@@ -116,10 +137,10 @@ qualification toolchain; no minimum supported Rust version is fixed yet.
 Windows and Linux run in CI. Install Git LFS before integration tests.
 No crates.io package or prebuilt installer is published by this repository.
 
-    git clone https://github.com/giodl73-repo/tig.git
-    cd tig
+    git clone https://github.com/giodl73-repo/git-asset.git
+    cd git-asset
     cargo build --workspace --all-features --bins --locked
-    cargo test -p tig-git --features schema --test catalogue --locked
+    cargo test -p git-asset --features schema --test catalogue --locked
 
 The catalogue tests create synthetic Git repositories and temporary stores.
 They need no personal project, credentials or existing cache. Building/testing
@@ -130,13 +151,13 @@ using [the catalogue contract](specs/CATALOGUE.md) and
 [resolver profile](specs/NATIVE-GIT-RESOLUTION.md). Keep local paths and credentials
 outside the source repository. Then run:
 
-    target/debug/tig-catalogue check /absolute/path/to/enrollment.json
-    target/debug/tig-catalogue serve /absolute/path/to/enrollment.json 8799
+    target/debug/git-asset-catalogue check /absolute/path/to/enrollment.json
+    target/debug/git-asset-catalogue serve /absolute/path/to/enrollment.json 8799
 
 Compare recorded selected objects across two enrolled projects without rehashing
 media or running the server:
 
-    target/debug/tig-catalogue shared /absolute/path/to/enrollment.json project-a project-b /absolute/path/to/new-report.json
+    target/debug/git-asset-catalogue shared /absolute/path/to/enrollment.json project-a project-b /absolute/path/to/new-report.json
 
 The private report groups shared SHA-256/length identities with their asset IDs
 and pinned commits. An optional final category argument narrows the query.
@@ -148,8 +169,8 @@ byte equality and dependency changes, see [meta operations](docs/META-OPERATIONS
 
 Agents can use one versioned interface for these operations:
 
-    target/debug/tig-query describe
-    target/debug/tig-query run /absolute/path/to/request.json
+    target/debug/git-asset-query describe
+    target/debug/git-asset-query run /absolute/path/to/request.json
 
 See [agent queries](docs/AGENT-QUERIES.md) for request shapes, coverage, exit codes,
 snapshot/interpretation fencing and the Rust library interface.
@@ -201,16 +222,16 @@ OIDC intake and bounded placement coordination under private enrollment. Its
 Action example is opt-in; external ingress, executor isolation and live provider
 adoption require separate qualification.
 Explicit [staged-index protection](specs/INDEX-LIFECYCLE.md) adds
-`tig-lifecycle index` plan/status/apply/resume/reconcile. Conflict alternatives
+`git-asset-lifecycle index` plan/status/apply/resume/reconcile. Conflict alternatives
 remain draft byte obligations, with no merged-version or storage-convergence claim.
-Explicit [source settlement](specs/SOURCE-SETTLEMENT.md) adds `tig-lifecycle settle`
+Explicit [source settlement](specs/SOURCE-SETTLEMENT.md) adds `git-asset-lifecycle settle`
 for owned branch-end and staged-to-committed handoff, preserving retained history.
 
 ## Learn and contribute
 
 - [Architecture](docs/ARCHITECTURE.md): crates, feature gates, data flow and boundaries.
 - [Roadmap](PRODUCT_PLAN.md): implemented slices and remaining milestones.
-- [Git-to-Tig guide](docs/guides/GIT-TO-TIG.md), [theory](docs/THEORY.md) and
+- [Git-to-git-asset guide](docs/guides/GIT-TO-GIT-ASSET.md), [theory](docs/THEORY.md) and
   [capacity](docs/guides/STORAGE-AND-CAPACITY.md): ASCII walkthroughs.
 - [Catalogue](specs/CATALOGUE.md), [Git LFS](specs/LFS-CACHE-INTEROP.md) and
   [existing-byte reads](specs/EXISTING-BYTE-READ.md): implemented contracts.
@@ -218,5 +239,5 @@ for owned branch-end and staged-to-committed handoff, preserving retained histor
 - [Public source review](docs/PUBLIC-RELEASE.md): six-role findings and ongoing release checks.
 - [Contributing](CONTRIBUTING.md) and [security](SECURITY.md).
 
-Original Tig code and ordinary technical documentation are MIT licensed.
+Original git-asset code and ordinary technical documentation are MIT licensed.
 See [LICENSE](LICENSE) and [third-party provenance](NOTICE.md).

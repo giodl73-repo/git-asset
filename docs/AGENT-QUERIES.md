@@ -1,13 +1,13 @@
 # Agent queries
 
-Use Rust `tig-query` to discover and query enrolled assets. No project-specific
+Use Rust `git-asset-query` to discover and query enrolled assets. No project-specific
 script, media hashing, daemon or catalogue server is required. Build with:
 
 ```text
-cargo build -p tig-git --features schema --bin tig-query --locked
-tig-query describe
-tig-query run /absolute/request.json
-tig-query run /absolute/request.json --out /absolute/new-report.json
+cargo build -p git-asset --features schema --bin git-asset-query --locked
+git-asset-query describe
+git-asset-query run /absolute/request.json
+git-asset-query run /absolute/request.json --out /absolute/new-report.json
 ```
 
 Describe emits request/result JSON Schemas, limits and exit meanings without
@@ -15,7 +15,7 @@ opening a project. Run emits one JSON document on stdout; stderr has no normal
 diagnostics. With --out it atomically installs a new full report without
 overwriting existing files and prints a compact JSON acknowledgement.
 
-The library is `tig_git::catalogue::query`; existing captured catalogues can call
+The library is `git_asset::catalogue::query`; existing captured catalogues can call
 `Catalogue::agent_query`, reusing their loaded native metadata. The CLI loads only
 the projects requested by the operation. It never chooses main or a dirty file.
 Supply a machine-local [catalogue enrollment](../specs/CATALOGUE.md) with exact

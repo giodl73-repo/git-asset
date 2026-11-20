@@ -12,7 +12,7 @@ provider, media cache, hook or production Python. Cargo.lock records dependencie
 the standalone Git/LFS graph must remain free of the optional schema engine.
 Primary documentation: https://docs.rs/jsonschema/0.60.2/jsonschema/ .
 
-Producer-applied six-role post-code findings, owner Tig producer:
+Producer-applied six-role post-code findings, owner git-asset producer:
 
 - Identity/namespace: compile under exact definition/schema/dialect and check only
   the same definition. Root dialect mismatch refuses; policy bytes bind engine,
@@ -42,13 +42,13 @@ external-resource nonretrieval and schema-validated resolver/freshness compositi
 
 Disposition: component pass_with_risk pending final local/hosted qualification.
 No independent/human review or full intended-use acceptance is claimed. Medium
-residuals (owner Tig producer): operational hard CPU/memory isolation, custom
+residuals (owner git-asset producer): operational hard CPU/memory isolation, custom
 stream/native semantics, full variants/consumption and actual private adoption
 remain open. Unknown annotation keywords retain standard JSON Schema behavior;
 no project extension is claimed executed merely because the schema passes.
 
 Final local verification: full workspace all-feature suite passes513 entries;
-default-feature tig-assets passes99 entries (including early no-engine refusal).
+default-feature git-asset-model passes99 entries (including early no-engine refusal).
 Clippy then requests one equivalent nested-if collapse in the dialect guard;
 fixed without changing validation behavior. Final affected package runs pass106
 asset entries and55 native-source entries; workspace all-feature/all-target

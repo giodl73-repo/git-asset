@@ -14,7 +14,7 @@ A source archive and a loose input list are insufficient to reconstruct an owned
 job. Freeze from an actual AssetSnapshot, exact Production query, caller-admitted
 profiles and an opaque job descriptor (at most 65,536 bytes). Resolve against that
 snapshot again before writes; do not accept externally constructed object sets.
-The descriptor can carry producer/request identity; Tig stores exact bytes but
+The descriptor can carry producer/request identity; git-asset stores exact bytes but
 neither executes it nor infers dependencies hidden inside it. The producer must
 account for every external input in its admitted query and validate its semantics.
 Credentials remain outside descriptors. Canonical source dependencies and optional

@@ -50,7 +50,7 @@ and restart fixtures. Full VAL-002/003/004 and package exits remain OPEN.
 ## Implemented evidence
 
 EVID-018 adds 20 entries including a subprocess helper; workspace total 209.
-Commands: cargo test -p tig-store --lib --locked replica::tests; locked workspace,
+Commands: cargo test -p git-asset-store --lib --locked replica::tests; locked workspace,
 fmt and warnings-denied all-target Clippy. Real temporary fixtures cover exact
 records/hash/length including empty and multi-buffer payloads, no-write verification, missing/corrupt evidence, bounds,
 acknowledgement levels, duplicate stores/domains, stale and invalidated sessions,

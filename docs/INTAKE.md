@@ -1,6 +1,6 @@
 # Dependency intake
 
-Tig builds as a standalone Cargo workspace. No portfolio checkout, absolute
+git-asset builds as a standalone Cargo workspace. No portfolio checkout, absolute
 machine path, renderer or project repo is a runtime dependency. Optional typed
 assets depend on byte identity; basic Git/LFS remains independent.
 

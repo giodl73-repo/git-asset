@@ -1,6 +1,6 @@
 # Verified reads from existing byte stores
 
-The explicit `tig-graph verify` adapter batches complete declared Production
+The explicit `git-asset-graph verify` adapter batches complete declared Production
 primary/control objects through this same reader. It pins the graph profile,
 admits count/byte/report limits before IO, deduplicates objects and releases each
 guard before reporting. These independent observations do not establish
@@ -10,8 +10,8 @@ simultaneous protection, independent custody or removal authority. See the
 Entry af567dc723e34d237c600e5321faa4b27d4f0034. Bounded WP-004/005/007/011
 consumer-read slice; REQ-001/003/004/006/007/008/010, SPEC-003/004/007/009/011,
 IF-004/005/009/010/012, PKG-002/003/004/008; PROVIDER/INTEGRATION profiles.
-Scope: generic tig-store existing-layout reader, compatible Layout re-export in
-tig-git and explicit opt-in resolver verification. L0 fmt/structure/Clippy/VTRACE;
+Scope: generic git-asset-store existing-layout reader, compatible Layout re-export in
+git-asset and explicit opt-in resolver verification. L0 fmt/structure/Clippy/VTRACE;
 L1 bounded/corrupt/unsupported vectors; L2 temporary real files, actual child-exit
 guard release and asset-ID-to-byte-reader integration. No production binding change.
 
@@ -48,11 +48,11 @@ close. Default limits are 8 GiB/object, 32 GiB verified bytes, 1,024 requests,
 1 TiB, 65,536 requests, 1,024 live readers and 300 seconds. Bounds are per reader
 provider instance, not global resource or physical-volume admission.
 
-The explicit CLI extension is tig-resolve --verify PROFILE ID [STREAM_SLOT].
+The explicit CLI extension is git-asset-resolve --verify PROFILE ID [STREAM_SLOT].
 It requires a byte_source profile with ordered places, layout and required
 protection, then holds the verified reader through result emission. Ordinary
 metadata lookup does not touch bytes. No raw path is printed. Existing Profile
-JSON and tig-git::cache::Layout names retain compatibility through re-export.
+JSON and git-asset::cache::Layout names retain compatibility through re-export.
 
 ```rust
 let asset = assets.resolve_id("scene/04/cel/b")?;
@@ -61,7 +61,7 @@ let mut input = cache.open_verified(asset.stream("image")?)?;
 ```
 
 REEL e8fb31c6b21d74f111700d72076bb2a9d2d18176 read/demotion code (MIT) informs
-sharing semantics; preserve Tig's no-unsafe implementation. Concrete platform
+sharing semantics; preserve git-asset's no-unsafe implementation. Concrete platform
 proof and stated limitations precede production adoption. Full provider enrollment,
 job protection, final eviction and native REEL render qualification remain OPEN.
 

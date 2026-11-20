@@ -7,7 +7,7 @@ from restore_project import parents, relative
 
 class Paths(unittest.TestCase):
     def test_portable_paths(self):
-        self.assertEqual(relative(".local/tig-cache/objects/sha256/aa/aabb"), ".local/tig-cache/objects/sha256/aa/aabb")
+        self.assertEqual(relative(".local/git-asset-cache/objects/sha256/aa/aabb"), ".local/git-asset-cache/objects/sha256/aa/aabb")
         for path in ("../outside", "/absolute", "C:/drive", "a\\b", "a//b", "a/./b", ".git/config", ".GiT/config", "a/NUL.txt", "a/trailing. "):
             with self.subTest(path=path), self.assertRaises(ValueError):
                 relative(path)

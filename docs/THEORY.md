@@ -1,9 +1,9 @@
-# Tig theory
+# git-asset theory
 
-Tig separates the identity of content from its physical placement. Git can version
-the authored records that choose content; Tig can reconcile copies without
+git-asset separates the identity of content from its physical placement. Git can version
+the authored records that choose content; git-asset can reconcile copies without
 rewriting those versions. Art's semantic asset/dependency value is now planned
-as an optional layer of Tig under the [unified design](UNIFIED-DESIGN.md),
+as an optional layer of git-asset under the [unified design](UNIFIED-DESIGN.md),
 superseding the earlier separate-product boundary. This is target theory with
 bounded Rust mechanism/provider adapters, not a released storage protocol.
 See [current evidence](vtrace/VERIFICATION.md) and the
@@ -128,11 +128,11 @@ physical bytes. Measure payload, metadata, scratch and allocated storage separat
 | System | Responsibility |
 | --- | --- |
 | Git | Versions authored trees and references |
-| Tig typed-asset layer, optional | Resolves semantic asset IDs, variants, dependencies and lifecycle roots; planned consolidation from Art |
-| Tig byte/placement layer | Resolves exact bundle paths/objects, claims and physical placement/access |
+| git-asset typed-asset layer, optional | Resolves semantic asset IDs, variants, dependencies and lifecycle roots; planned consolidation from Art |
+| git-asset byte/placement layer | Resolves exact bundle paths/objects, claims and physical placement/access |
 | Provider | Performs capability-declared local or remote operations |
 
-Tig can accept a plain LFS object request without a typed asset record. Typed
+git-asset can accept a plain LFS object request without a typed asset record. Typed
 scene references resolve through the optional semantic layer to exact object/bundle requests.
 No provider is allowed to choose a more convenient content revision.
 

@@ -1,5 +1,5 @@
 name: Bug report
-description: Report a reproducible Tig problem using synthetic data.
+description: Report a reproducible git-asset problem using synthetic data.
 body:
   - type: markdown
     attributes:
@@ -7,7 +7,7 @@ body:
   - type: input
     id: version
     attributes:
-      label: Tig commit and platform
+      label: git-asset commit and platform
     validations:
       required: true
   - type: textarea

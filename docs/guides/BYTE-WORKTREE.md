@@ -1,4 +1,4 @@
-# A Tig worktree for bytes
+# A git-asset worktree for bytes
 
 Target user experience with a tested pure binding-state subset: 22 worktree API
 tests cover isolated edits, candidates and conflicts. Mounts, payload publication,
@@ -20,7 +20,7 @@ or standard LFS pointer. It does not automatically commit, approve or publish.
 ## Git carries the choices
 
 ```text
-Small Git records                 Tig byte worktree
+Small Git records                 git-asset byte worktree
   scene definition -----------+      base snapshot
   cel-a selection ------------+----> shared A1
   cel-b selection ------------+----> B1, then adopted B2
@@ -68,8 +68,8 @@ git cherry-pick <P>                ordinary three-way Git application
                                    (conflicts stop for resolution)
 ```
 
-The Rust API also backs the explicit `tig-propose check PROFILE` and
-`tig-propose create PROFILE` commands, with verified existing-cache byte pins.
+The Rust API also backs the explicit `git-asset-propose check PROFILE` and
+`git-asset-propose create PROFILE` commands, with verified existing-cache byte pins.
 It is not an installed hook. Actual commit IDs
 replace the illustrative `<P>`. The proposal's base is frozen; a late render never
 substitutes today's working files for its expected old records. Git performs

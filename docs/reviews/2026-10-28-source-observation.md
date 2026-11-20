@@ -19,7 +19,7 @@ refusals and concurrent writer snapshot coherence. L2 existing real-Git/source
 journal and process-exit regressions. Producer roles: concurrency/recovery,
 provider/privacy and Git/adoption; independent review remains unclaimed.
 
-The explicit `tig-source inspect` CLI keeps this capability usable without REEL
+The explicit `git-asset-source inspect` CLI keeps this capability usable without REEL
 or typed assets. It reads an explicit bounded private profile, emits only counts
 and an observed revision/null, and writes detailed roots/owner/checkpoint state
 to a bounded private report outside the authority directory. Synced owned temp

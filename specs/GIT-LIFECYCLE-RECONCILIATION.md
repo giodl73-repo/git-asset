@@ -22,7 +22,7 @@ Golden/released terms and working/history/backup places remain configuration.
 
 The first checkpoint implements exact committed-ref selection and atomic desired
 protection through the existing namespace, not the full provider orchestration
-exit above. `tig-lifecycle describe` advertises `selection_only:true` and
+exit above. `git-asset-lifecycle describe` advertises `selection_only:true` and
 `storage_converged:null` (unknown). The same distinction applies to library results.
 Copy/retention/eviction integration, a trusted GitHub trigger boundary, branch
 withdrawal and draft/index lifecycle integration remain required subsequent work.
@@ -35,10 +35,10 @@ now advertises the separate physical command. Neither command authenticates an
 external event or installs a runner. Bulk/final deletion remains unavailable.
 
 ```text
-tig-lifecycle plan PROFILE REQUEST
-tig-lifecycle status PROFILE PLAN
-tig-lifecycle apply PROFILE PLAN
-tig-lifecycle resume PROFILE PLAN
+git-asset-lifecycle plan PROFILE REQUEST
+git-asset-lifecycle status PROFILE PLAN
+git-asset-lifecycle apply PROFILE PLAN
+git-asset-lifecycle resume PROFILE PLAN
 ```
 
 All arguments are absolute bounded regular JSON files. `plan` emits a canonical
@@ -73,10 +73,10 @@ explicit pointer extraction is required. Native/opaque roots need their own
 admitted flat-byte closure; selected manifests do not imply payload coverage.
 Public library enrollment is trusted caller configuration, not authentication.
 
-Compatibility qualification builds the pre-pair `tig-source` at pinned input
+Compatibility qualification builds the pre-pair `git-asset-source` at pinned input
 d81cabe662e0efb976f9ac1c230a1de2ace8e23f into a separate external target directory.
-Set `TIG_BASELINE_SOURCE_CLI` to that artifact, then explicitly run
-`cargo test -p tig-store --lib --locked source_claims::admission::tests::baseline_cli_replays_atomic_pairs_without_format_migration -- --ignored --exact`.
+Set `GIT_ASSET_BASELINE_SOURCE_CLI` to that artifact, then explicitly run
+`cargo test -p git-asset-store --lib --locked source_claims::admission::tests::baseline_cli_replays_atomic_pairs_without_format_migration -- --ignored --exact`.
 The ordinary ignored entry is not executed evidence. Both hosted targets require
 this qualification; old source inspects new pairs and recovers both original
 command receipts. No other checkout/cache/runtime is changed by the fixture.

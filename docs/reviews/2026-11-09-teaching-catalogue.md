@@ -10,7 +10,7 @@ integration tests and teaching/current-state documentation.
 
 ## Implementation
 
-Schema-gated tig-sample rehearse-ordinary creates an explicit fresh external
+Schema-gated git-asset-sample rehearse-ordinary creates an explicit fresh external
 root, exact small native Git records, fixture-owned source namespaces and three
 providers. It calls existing capture/schema, metadata/source admission and
 placement/provider ports. The independent literal oracle supplies expectations,
@@ -30,7 +30,7 @@ No source merge, deployment or production/native admission is implied.
 
 Focused chain45958 passes two actual CLI/provider/catalogue tests and strict
 schema bin/test Clippy. Fresh persistent CLI rehearsal20389 also passes all seven
-checkpoints followed by the real tig-catalogue check. It is read-only with zero
+checkpoints followed by the real git-asset-catalogue check. It is read-only with zero
 payload opens during enrollment validation. Tests independently reopen reports,
 verify their object pins, assert old-job hold/demotion/revert outcomes and inspect
 the actual catalogue's two works/three objects/two observed copies each. Refusal

@@ -11,7 +11,7 @@ PKG-001/006. RUST/INTEGRATION: L0 fmt/Clippy/portable/canonical VTRACE;
 L1 pure native vectors, unknown/missing/substituted/budget cases; L2 synthetic
 non-media and scene-like graphs, shared/frozen revisions and existing temporary
 Git/archive replay. PKG-004 is included for that native integration test only.
-Allowed: optional tig-assets recipe module, scoped tests and bounded docs.
+Allowed: optional git-asset-model recipe module, scoped tests and bounded docs.
 No provider, cache IO, native consumer/runtime switch, automatic build/selection,
 new instance format, source/job admission or eviction. Art donor
 119c66446f2e95129d8d8f143d60ec6220d2813a (MIT) model.rs planning/freshness tests
@@ -47,7 +47,7 @@ fields, qualified
 payload bindings and ordered outgoing Production edge pointers/child fingerprints.
 Root fingerprints plus operation/semantics/producer/parameters determine the
 recipe. Hash
-framing is TIG-NUL-native-recipe-{base,node,root}-NUL-experimental-1-NUL with the
+framing is GIT-ASSET-NUL-native-recipe-{base,node,root}-NUL-experimental-1-NUL with the
 existing length-prefixed canonical item feed and counted collections. Never use
 raw reference hashes, checkpoint, full definition/schema pins, status vocabulary,
 metadata, stream provenance or frozen/selected addressing mode in the recipe.

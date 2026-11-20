@@ -14,7 +14,7 @@ expanded pinned older-writer qualifier. Reviewed hashes: foundation-targets.json
 ## Method and six producer lenses
 
 One producer applies all six [.roles checklists](../../.roles/ROLE.md), without
-delegation or independent/human approval. Owner of every finding: Tig maintainer
+delegation or independent/human approval. Owner of every finding: git-asset maintainer
 using the named lens. The proposed local-clock implementation does not establish
 user adoption of OS time or enroll live roots.
 
@@ -66,21 +66,21 @@ separate and pending; PR #34 is draft against #33.
 
 ```text
 cargo fmt --all -- --check
-cargo test -p tig-store --lib clock --locked
-cargo test -p tig-store --lib final_retirement::provider --locked
-cargo test -p tig-store --lib final_retirement::bulk --locked
+cargo test -p git-asset-store --lib clock --locked
+cargo test -p git-asset-store --lib final_retirement::provider --locked
+cargo test -p git-asset-store --lib final_retirement::bulk --locked
 cargo test --workspace --locked
 cargo build --workspace --all-features --bins --locked
 cargo test --workspace --all-features --locked
 cargo clippy --workspace --all-features --all-targets --locked -- -D warnings
-cargo check -p tig-git --no-default-features --locked
-cargo test -p tig-store --lib --locked retirement::tests::explicit_cli_pending_cancellation_qualification -- --ignored --exact
-cargo test -p tig-store --lib --locked final_retirement::bulk::tests::explicit_cli_bulk_inspection_qualification -- --ignored --exact
-cargo test -p tig-store --test retirement_cli --locked pre_final_writer_refuses_new_manifest_and_accepts_legacy_control -- --ignored --exact
+cargo check -p git-asset --no-default-features --locked
+cargo test -p git-asset-store --lib --locked retirement::tests::explicit_cli_pending_cancellation_qualification -- --ignored --exact
+cargo test -p git-asset-store --lib --locked final_retirement::bulk::tests::explicit_cli_bulk_inspection_qualification -- --ignored --exact
+cargo test -p git-asset-store --test retirement_cli --locked pre_final_writer_refuses_new_manifest_and_accepts_legacy_control -- --ignored --exact
 ```
 
-TIG_RETIREMENT_CLI/TIG_BULK_CLI name the fresh external all-feature artifact;
-TIG_PRE_FINAL_CLI names pinned273e639. Ordinary ignored output is not explicit
+GIT_ASSET_RETIREMENT_CLI/GIT_ASSET_BULK_CLI name the fresh external all-feature artifact;
+GIT_ASSET_PRE_FINAL_CLI names pinned273e639. Ordinary ignored output is not explicit
 artifact qualification. Source pre-pair artifact, frontend and restore evidence
 is historical unless rerun. External target/temp roots contain all build/runtime
 fixtures; no media, private roots or operational journals are added to Git.

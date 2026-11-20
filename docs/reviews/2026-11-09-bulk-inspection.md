@@ -7,14 +7,14 @@ Controls, entry/exit and RUST/PROVIDER L0/L1/L2:
 WP-003/004/007/008/009/015; REQ-001/003/004/005/007/009;
 SPEC-003/004/005/008/009/014; IF-003/004/005/006/008/012;
 PKG-002/003/008/009.
-Targets: bulk::Inspection/shared control/report, tig-storage bulk adapter and
+Targets: bulk::Inspection/shared control/report, git-asset-storage bulk adapter and
 discovery, ledger checkpoint identity accessor, explicit CLI qualifier, workflow
 invocation and operator guide. Reviewed hashes: foundation-targets.json.
 
 ## Method and six producer lenses
 
 One producer applies all six [.roles checklists](../../.roles/ROLE.md), without
-delegation or independent/human acceptance. Owner of all findings: Tig maintainer
+delegation or independent/human acceptance. Owner of all findings: git-asset maintainer
 using the named lens. This is operator inspection only. Full apply/resume/cancel,
 native selection, clock/current authority and lifetime requirements stay open.
 
@@ -30,7 +30,7 @@ native selection, clock/current authority and lifetime requirements stay open.
 ## Verification
 
 Seventeen focused bulk entries pass; the new ignored CLI qualifier is executed
-separately rather than counted from ordinary ignored output. A fresh tig-storage
+separately rather than counted from ordinary ignored output. A fresh git-asset-storage
 artifact reproduces the exact plan, previews missing copies, computes metadata
 peak and reports fresh/intent/completed states with source metadata unavailable.
 It exercises unavailable source/provider/witness, wrong context/capacity/provider,
@@ -57,19 +57,19 @@ exact-head hosted success remains separate and pending at local closeout.
 
 ```text
 cargo fmt --all -- --check
-cargo test -p tig-store --lib final_retirement::bulk --locked
+cargo test -p git-asset-store --lib final_retirement::bulk --locked
 cargo test --workspace --locked
 cargo build --workspace --all-features --bins --locked
 cargo test --workspace --all-features --locked
 cargo clippy --workspace --all-features --all-targets --locked -- -D warnings
-cargo check -p tig-git --no-default-features --locked
-cargo test -p tig-store --lib --locked final_retirement::bulk::tests::explicit_cli_bulk_inspection_qualification -- --ignored --exact
-cargo test -p tig-store --lib --locked retirement::tests::explicit_cli_pending_cancellation_qualification -- --ignored --exact
-cargo test -p tig-store --test retirement_cli --locked pre_final_writer_refuses_new_manifest_and_accepts_legacy_control -- --ignored --exact
+cargo check -p git-asset --no-default-features --locked
+cargo test -p git-asset-store --lib --locked final_retirement::bulk::tests::explicit_cli_bulk_inspection_qualification -- --ignored --exact
+cargo test -p git-asset-store --lib --locked retirement::tests::explicit_cli_pending_cancellation_qualification -- --ignored --exact
+cargo test -p git-asset-store --test retirement_cli --locked pre_final_writer_refuses_new_manifest_and_accepts_legacy_control -- --ignored --exact
 ```
 
-TIG_BULK_CLI and TIG_RETIREMENT_CLI name the fresh external all-feature artifact;
-TIG_PRE_FINAL_CLI names pinned273e639's external artifact. Ignored entries in the
+GIT_ASSET_BULK_CLI and GIT_ASSET_RETIREMENT_CLI name the fresh external all-feature artifact;
+GIT_ASSET_PRE_FINAL_CLI names pinned273e639's external artifact. Ignored entries in the
 ordinary suite are not these passing explicit qualification invocations.
 
 An initial CLI test expected a nested error code; the existing interface uses a

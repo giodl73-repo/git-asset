@@ -1,13 +1,13 @@
 # Preserve acknowledged bytes by default
 
-This is Tig's governing design principle and acceptance obligation, not a claim
+This is git-asset's governing design principle and acceptance obligation, not a claim
 that production storage safety is already implemented. The pure core performs
 no IO; a bounded local publication adapter is tested in explicit temporary roots.
 An opt-in [managed local profile](../specs/MANAGED-REPLICA-RETIREMENT.md) adds
 bounded ordinary replica eviction/cancellation and explicit reacquisition in
-synthetic fixtures. Production adoption and full-system invariant TIG-I-01 remain OPEN.
+synthetic fixtures. Production adoption and full-system invariant GIT-ASSET-I-01 remain OPEN.
 
-**Tig must not silently overwrite or make acknowledged managed content
+**git-asset must not silently overwrite or make acknowledged managed content
 unrecoverable through its own publication, replacement, movement, cleanup or
 recovery operations.** Retiring content requires explicit admitted retention/
 deletion policy and current authority, not an inferred lack of references.
@@ -44,10 +44,10 @@ producer finishing or a Git push succeeding does not establish independent
 backup. Real durability requires provider-appropriate flush/commit behavior,
 integrity, retention and recoverability; a catalog row alone is not proof.
 
-Tig cannot promise survival of every device/site/key loss. It must state its
+git-asset cannot promise survival of every device/site/key loss. It must state its
 failure-domain assumptions and redundancy policy, verify what it can, and report
 unsatisfied protection honestly. That limit must never be used to justify a
-Tig-controlled last-copy loss or a misleading durability acknowledgement.
+git-asset-controlled last-copy loss or a misleading durability acknowledgement.
 
 ## Proof required before live removal
 

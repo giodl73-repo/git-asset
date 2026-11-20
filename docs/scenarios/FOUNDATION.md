@@ -1,4 +1,4 @@
-# Tig foundation scenarios
+# git-asset foundation scenarios
 
 This ledger remains design-only; none of its rows is closed by component tests
 alone. Scoped runtime tests are recorded separately in

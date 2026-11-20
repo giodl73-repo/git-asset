@@ -1,13 +1,13 @@
 # Public annex read adapter producer review
 
-Input: public Tig 21a70f5abc4340582cda3a075a3c5fe1cee13e40.
+Input: public git-asset 21a70f5abc4340582cda3a075a3c5fe1cee13e40.
 Owned lane: feat/native-annex-adapter. EVID-120.
 [Contract](../../specs/ANNEX-READ-ADAPTER.md) names controls, scope, entry/exit
 and L0/L1/L2. This is producer review, not independent or human approval.
 
 ## Implementation
 
-Add an optional `tig-git/annex-read` Rust provider while retaining public Tig's
+Add an optional `git-asset/annex-read` Rust provider while retaining public git-asset's
 existing schema/history APIs, default features, Layout variants and profile JSON.
 The new explicit provider-file port shares the existing guarded-open machinery.
 Annex reads require an exact configuration pin, repository UUID, format 10,
@@ -19,7 +19,7 @@ There is no new CLI, scan, hydration, publication, deletion, persistent job leas
 or retention enrollment. REEL should retain its current history surface and use
 this Rust provider only for the supported byte-read operation. Long-running job
 protection and retained-publication integration remain separate work against
-public Tig's current contracts.
+public git-asset's current contracts.
 
 ## Verification
 
@@ -37,7 +37,7 @@ path escape, request/live-reader/IO budgets, output overflow, timeout, descendan
 termination and refusal inside an entered Tokio runtime. Strict workspace
 all-feature/all-target Clippy passes. The full locked all-feature workspace suite
 passes, including existing schema/history/native publication tests and the
-500,000-binding persistence regression. The locked no-default-features tig-git
+500,000-binding persistence regression. The locked no-default-features git-asset
 check passes. Final structure/pin/fmt/diff checks pass separately from runtime
 verification. The explicit native fixture remains opt-in in ordinary test runs.
 Lockfile audit preserves every existing registry package version and checksum;

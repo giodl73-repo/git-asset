@@ -2,11 +2,11 @@
 
 Input195bd0a, implementation51dd2b2. Controls, allowed scope and GIT/PROVIDER
 entry/exit/L0/L1/L2 are in specs/INDEX-LIFECYCLE.md. Targets: lifecycle::index,
-tig-lifecycle index, shared placement error mapping, strict profile/plan/status
+git-asset-lifecycle index, shared placement error mapping, strict profile/plan/status
 documents and fifteen focused Git/CLI/store entries. No new event encoding,
 provider, hook, enrollment discovery or final-deletion capability is introduced.
 Method: one producer applying all six .roles checklists; this is not independent
-review or human approval. Owner of every row: Tig maintainer using the named lens.
+review or human approval. Owner of every row: git-asset maintainer using the named lens.
 
 | Finding / role | Severity and disposition | Evidence and remaining limitation |
 | --- | --- | --- |

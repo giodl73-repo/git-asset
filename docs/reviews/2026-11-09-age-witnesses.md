@@ -14,7 +14,7 @@ are authorized by this review.
 
 One producer applies all six [.roles](../../.roles/ROLE.md) checklists. These are
 technical lenses, not delegated people, independent review or human acceptance.
-Owner of every finding: Tig maintainer using the named lens. Read the safety/model
+Owner of every finding: git-asset maintainer using the named lens. Read the safety/model
 contracts and existing native/bulk/source/clock boundaries; compare new behavior
 with exact-source tests. Do not extend these results to a complete native writer,
 trusted global clock, current authority or whole-product deletion guarantee.
@@ -75,13 +75,13 @@ No merge, deployment or live adoption follows; runtime remains1a344fc.
 Commands (external build/temp roots and finite test threads required):
 
 ```text
-cargo test -p tig-store --lib --locked source_claims::age::tests
-cargo test -p tig-store --test age_cli --test storage_cli --locked
-cargo test -p tig-git --features schema --test native_source --locked retirement_cases
+cargo test -p git-asset-store --lib --locked source_claims::age::tests
+cargo test -p git-asset-store --test age_cli --test storage_cli --locked
+cargo test -p git-asset --features schema --test native_source --locked retirement_cases
 cargo clippy --workspace --all-features --all-targets --locked -- -D warnings
 cargo test --workspace --locked
 cargo test --workspace --all-features --locked
-cargo check -p tig-git --no-default-features --locked
+cargo check -p git-asset --no-default-features --locked
 pwsh -NoProfile -File tools/validate.ps1
 git diff --check
 ```
@@ -96,7 +96,7 @@ REQ-001/002/003/004/005/006/007/009/010 ->
 SPEC-002/003/004/005/008/009/010/013/014,
 IF-002/004/005/006/008/010/012/013,
 PKG-002/003/004/006/008/009 -> AGE-WITNESSES -> source_claims::age,
-subset::historical_survivor, tig-storage age, tig-retirement select-aged -> EVID-106.
+subset::historical_survivor, git-asset-storage age, git-asset-retirement select-aged -> EVID-106.
 
 Disposition: pass_with_risk for the bounded mechanism under independently admitted
 private writers/clock/minima; local broad/artifact and hosted exact-head qualification

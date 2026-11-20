@@ -12,7 +12,7 @@ journal atomic composition, metadata readback, compatibility and synthetic tests
 
 Method: one producer reapplying all six .roles checklists against model/safety,
 foundation scenarios and current source/admission/metadata/provider contracts.
-Owner of every row: Tig maintainer using the named lens. This is not independent
+Owner of every row: git-asset maintainer using the named lens. This is not independent
 review, human acceptance or authority to attach a live store/runner.
 
 | Finding / role | Severity | Disposition / evidence | Remaining work |
@@ -22,7 +22,7 @@ review, human acceptance or authority to attach a live store/runner.
 | GS-03 Storage and Custody | High, corrected and retained gate | Desired selection is not a provider observation. Storage convergence is unknown/null; current ref sampling and historical receipts are distinct. Persist/read back metadata before claim admission. Existing copy destination retention requires authorized handoff before working eviction. | Automatic copy/retention/eviction composition, backup outage/restore, real custody and final-deletion claim settlement. |
 | GS-04 Concurrency and Recovery | High, resolved for bounded selection | Existing Prepare/Adopt bodies commit together under compiled before/after subject admission. Observers see old or fully adopted state; three actual child exits recover both or neither command. Last-slot fixture refuses a pair without consuming the remaining single slot. Replays cannot replace later admitted selection; ref drift remains visible. | Provider composition races, complete current-authority restore/epoch handoff, sustained journal continuation and metadata expiry. |
 | GS-05 Provider and Privacy | High, retained trust boundary | Explicit trusted operator invocation, profiles outside authored Git, bounded source/policy scopes and static redacted errors. Request JSON does not authenticate a webhook or grant authority. Unknown/malformed roots refuse initialization; offline status uses the namespace only. | Independently authenticated GitHub trigger/service boundary, native/large-source/provider qualification and live enrollment. |
-| GS-06 Git and Adoption | Medium, resolved for client seam | Actual Git merge/revert/catch-up, stale/duplicate events, real CLI and offline historical status pass. Pinned pre-pair tig-source at d81cabe reads new history and recovers both receipts; no source event/schema migration. Default Git remains independent of HTTP/typed assets. | Full priority-6 workflow, consumer/UX acceptance and installation; hosted current-head qualification remains separate. |
+| GS-06 Git and Adoption | Medium, resolved for client seam | Actual Git merge/revert/catch-up, stale/duplicate events, real CLI and offline historical status pass. Pinned pre-pair git-asset-source at d81cabe reads new history and recovers both receipts; no source event/schema migration. Default Git remains independent of HTTP/typed assets. | Full priority-6 workflow, consumer/UX acceptance and installation; hosted current-head qualification remains separate. |
 
 L0 format, validator, hashes, links/budget and diff checks pass. L1 includes 26
 active admission entries (six added pair cases), 35 existing journal entries,

@@ -18,7 +18,7 @@ L1 profile roundtrip/strict unknown fields, gap/shape/budget/output-as-input and
 bounded report refusal. L2 real temporary Git commits: independent Spanish edit
 changes English dependency closure without English/parent edits; historical view
 remains exact, declared history/evidence do not become current primary demand.
-Actual private consumer rehearsal stays outside Tig. Hosted Linux/Windows required.
+Actual private consumer rehearsal stays outside git-asset. Hosted Linux/Windows required.
 Producer identity/privacy/Git/adoption review only; independent acceptance open.
 
 Four actual CLI cases pass (final 5.77 seconds), including strictly decoded

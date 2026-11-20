@@ -11,7 +11,7 @@ restore/retry, linked directories/entries and actual CLI. Exit requires passing
 scoped tests, producer review and separate exact-head hosted qualification.
 
 ```text
-tig-project --expect-plan SHA256 --inspect-partials LOCAL_PROFILE MANIFEST_PATH
+git-asset-project --expect-plan SHA256 --inspect-partials LOCAL_PROFILE MANIFEST_PATH
 ```
 
 This mode requires an expected plan and excludes apply/progress/inspect-progress.
@@ -34,7 +34,7 @@ the declared parents, file-content reads or unbounded inventories are introduced
 An entry bound is not an interruptible filesystem deadline; slow or unavailable
 filesystems retain the existing explicit local-IO limitations.
 
-Only the exact current private-name syntax `.tig-restore-<32 lowercase hex>.partial`
+Only the exact current private-name syntax `.git-asset-restore-<32 lowercase hex>.partial`
 is reported. Other names count toward scan limits but are not treated as managed
 data. Ordinary matching files are `unassociated-private-partial` with observed
 logical lengths. Matching non-files are `non-file-refused`; links/reparses,
@@ -42,7 +42,7 @@ vanished or unreadable matching entries are `unverified-entry` with unknown size
 No entry is followed, hashed, selected, removed or adopted. Sorting is by exact
 relative logical path. Reports contain private paths and belong asset-side.
 
-Names do not prove Tig created a file, which plan/attempt owns it, whether a writer
+Names do not prove git-asset created a file, which plan/attempt owns it, whether a writer
 is active, or whether it is disposable. A live writer or another plan can use the
 same parent. The result explicitly denies ownership, active-writer knowledge,
 payload verification, atomic-snapshot and cleanup/eviction authority. Logical

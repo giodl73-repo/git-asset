@@ -79,7 +79,7 @@ coverage, final deletion, metadata expiry and live adoption remain open.
 
 ## Explicit operator interface
 
-`tig-source subset plan PROFILE REQUEST` emits exact canonical plan bytes to
+`git-asset-source subset plan PROFILE REQUEST` emits exact canonical plan bytes to
 stdout without a newline; save those bytes outside Git. `status PROFILE PLAN`
 inspects receipts/source state without opening metadata. `apply PROFILE PLAN`
 and `resume PROFILE PLAN` perform the same resumable steps. Strict private

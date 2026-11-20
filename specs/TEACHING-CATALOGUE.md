@@ -31,7 +31,7 @@ rehearsal. Producer review is not independent or human acceptance.
 Use the same small assets through init, add, status/diff, commit, branch/worktree,
 publish, merge, checkout/revert, history/restore, branch removal, ordinary eviction,
 final retirement and metadata lifetime. Each lesson names its real Git command,
-Tig intent/plan/observations, expected result, failure case and catalogue view.
+git-asset intent/plan/observations, expected result, failure case and catalogue view.
 Keep source acceptance distinct from storage convergence at every step.
 
 The core sample has two works, one shared unchanged object, and old/new versions

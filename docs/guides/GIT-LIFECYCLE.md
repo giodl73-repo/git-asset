@@ -1,8 +1,8 @@
-# Git file versions, Tig byte-copy lifecycle
+# Git file versions, git-asset byte-copy lifecycle
 
-Target design, not an installed Git integration. Git versions file trees; Tig
+Target design, not an installed Git integration. Git versions file trees; git-asset
 manages the bytes behind those versions and the lifecycle of their copies.
-Tig does not create a competing semantic version history or choose new content.
+git-asset does not create a competing semantic version history or choose new content.
 
 ## One project namespace, several physical places
 
@@ -17,7 +17,7 @@ project namespace + exact snapshot + assets/arrival.png
          for active branches      for recovery / long-term use
 ```
 
-An admitted Tig directory associates project-relative paths with this logical
+An admitted git-asset directory associates project-relative paths with this logical
 namespace. It is not permission to put arbitrary absolute paths into manifests.
 A producer can write into a managed staging/working area and seal completed bytes;
 an import can adopt an existing file under explicit policy. A write watcher may
@@ -46,7 +46,7 @@ A render writes only its new outputs into a unique bounded job area, preferably
 on the configured destination device. It reads shared inputs through protected
 handles; it does not copy the entire previous artifact directory. The job area
 and logical path need not have the same physical spelling. A new Git branch or
-worktree per render is optional, not a Tig requirement.
+worktree per render is optional, not a git-asset requirement.
 
 Seal the completed bytes before adopting the new path binding. The old object
 is never overwritten in place. Validate the expected source/selection when
@@ -54,9 +54,9 @@ adopting so a stale job cannot replace a newer accepted result. Art can perform
 that semantic adoption; a Git-only workflow stages the new standard LFS pointer.
 Neither job completion nor byte registration implies approval or delivery.
 
-Git snapshots keep the historical path-to-pointer mapping. Tig keeps its bytes
+Git snapshots keep the historical path-to-pointer mapping. git-asset keeps its bytes
 under admitted retention; Git history alone cannot recover bytes that every store
-deleted. If two attempts produce identical bytes, they share one Tig object.
+deleted. If two attempts produce identical bytes, they share one git-asset object.
 Separate attempt/provenance records can still distinguish the productions; no
 duplicate payload is needed just to give a render another version label.
 
@@ -72,7 +72,7 @@ local new -> staged -> local commit -> pushed branch -> PR -> merged selection
      +----------+-----------+----------------+-----------+----------+
                             event/source reconciliation
                                         |
-                           durable desired Tig claims
+                           durable desired git-asset claims
                                         |
                     acquire missing -> verify -> observe
                                         |
@@ -81,7 +81,7 @@ local new -> staged -> local commit -> pushed branch -> PR -> merged selection
                     retained custody -> eligible hot release
 ```
 
-| Source transition | Intended Tig lifecycle response |
+| Source transition | Intended git-asset lifecycle response |
 | --- | --- |
 | New uncommitted file | Protect bounded ingest/draft and close access; expose pending replication |
 | Staging/local commit | Bind exact index/commit objects and retain independently active jobs/drafts |
@@ -138,7 +138,7 @@ unrelated rendering or admitted additions to continue; no global cache pause.
 
 ## What this adds around Git LFS
 
-Standard pointers and transfer interfaces are the integration surface. Tig adds
+Standard pointers and transfer interfaces are the integration surface. git-asset adds
 explicit source-owned retention/proximity claims, indexed cross-place lookup,
 replication observations and lifecycle reconciliation around them. Its custom
 transfer agent cannot infer those facts from an OID alone and cannot by itself

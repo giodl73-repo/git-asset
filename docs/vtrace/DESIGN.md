@@ -20,7 +20,7 @@ their parentage, algorithms and required counterexamples without duplicating the
 
 ## Recovery invariants
 
-TIG-P-09/TIG-I-01 govern every mutable surface. Uncertain protection or incomplete
+GIT-ASSET-P-09/GIT-ASSET-I-01 govern every mutable surface. Uncertain protection or incomplete
 coverage allows safe positive acquisition but blocks absence-based removal.
 Expired rows, lost replies and successful hooks are not independent deletion
 authority. Final archival deletion stays a separate admitted policy operation.

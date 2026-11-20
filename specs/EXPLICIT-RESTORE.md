@@ -9,10 +9,10 @@ fixtures, dry run, restored hash, retry, conflicting destination, corrupt/missin
 source and destination path refusal. Consumer rehearsals stay in consumer repos.
 
 ```
-tig-restore PROFILE ID STREAM_SLOT ABSOLUTE_DESTINATION
-tig-restore --apply PROFILE ID STREAM_SLOT ABSOLUTE_DESTINATION
-tig-restore --selected PROFILE ID ABSOLUTE_DESTINATION
-tig-restore --apply --selected PROFILE ID ABSOLUTE_DESTINATION
+git-asset-restore PROFILE ID STREAM_SLOT ABSOLUTE_DESTINATION
+git-asset-restore --apply PROFILE ID STREAM_SLOT ABSOLUTE_DESTINATION
+git-asset-restore --selected PROFILE ID ABSOLUTE_DESTINATION
+git-asset-restore --apply --selected PROFILE ID ABSOLUTE_DESTINATION
 ```
 
 `--selected` chooses the exact selected Object instead of a stream. The flags
@@ -22,7 +22,7 @@ It works for a primary whose streams array is empty. A literal stream named
 An unselected/planned record refuses; it never falls back to another stream.
 The shared verified copy, destination and publication rules below are unchanged.
 
-The resolver profile is the same experimental-1 profile used by tig-resolve,
+The resolver profile is the same experimental-1 profile used by git-asset-resolve,
 with required byte_source. Default verifies source and previews without writing.
 Apply holds the verified source reader through copy, rechecks SHA-256/size while
 writing a private sibling, syncs it, and publishes by an atomic no-replace hard
@@ -31,7 +31,7 @@ verified and reported already-present; different files and link/reparse paths
 refuse. Unsupported hard links refuse rather than weakening publication.
 
 Normal failures clean only the invocation's private partial. Abrupt termination
-may leave a .tig-restore-*.partial; it is never a selected object or automatic
+may leave a .git-asset-restore-*.partial; it is never a selected object or automatic
 cleanup target. The source and Git state are unchanged. This is not a journalled
 multi-file transaction, quota reservation, portable crash-durability guarantee,
 or custody/eviction authority. A lost reply can retry; a verified existing target
@@ -43,14 +43,14 @@ exact pinned byte bound, but no interruptible filesystem deadline.
 
 Before publication the synced private file is independently reread and checked.
 `tools/restore_project.py` is explicit operator orchestration, not a provider or
-installed runtime. It reads `tig/project.json` and each listed record from one
+installed runtime. It reads `git-asset/project.json` and each listed record from one
 exact Git commit, admits 1..1024 records and at most 8 GiB, checks portable paths
-and declared destination prefixes, and invokes tig-resolve for all requested
+and declared destination prefixes, and invokes git-asset-resolve for all requested
 objects before creating any consumer directories. Apply then delegates every
-copy to tig-restore. Failure midway leaves earlier verified files available for
+copy to git-asset-restore. Failure midway leaves earlier verified files available for
 retry; no multi-file rollback, complete dependency-closure or consumer semantic
-validation is claimed. Definitions/records remain under tig/definitions and
-tig/records. Machine paths and the temporary resolver profile stay outside Git.
+validation is claimed. Definitions/records remain under git-asset/definitions and
+git-asset/records. Machine paths and the temporary resolver profile stay outside Git.
 On Unix cooperating immutable writers are required; strict Windows protection
 is used on Windows. Git, Python 3.10+ and explicitly supplied CLI binaries are
 prerequisites. No automatic install, transfer, Git adoption or deletion occurs.
