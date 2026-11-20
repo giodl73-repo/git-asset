@@ -586,3 +586,5 @@ EVID-140: preserve the existing synthetic teaching/history/continuation scope
 while reconciling current public naming. No live cache rollout, private controller,
 physical metadata admission, native publication or complete product acceptance
 follows from code inclusion. See the separate producer record and exact PR checks.
+
+EVID-141: synthetic metadata adoption; REEL production profile acceptance stays open.

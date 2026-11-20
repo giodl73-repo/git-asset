@@ -794,3 +794,5 @@ OPEN-PR-INTEGRATION.md -> original PR51..60 contracts and aliases EVID-130..139
 plus current main interfaces -> reconciled source/partitioned CI -> main891 and
 stack1030 audits, locked check and exact-source qualification -> EVID-140.
 No runtime format migration or operational activation is introduced.
+
+METADATA-CAPACITY.md -> metadata::capacity/tests/legacy fixture -> EVID-141.

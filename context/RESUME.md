@@ -1,6 +1,11 @@
 # git-asset resume state
 
-## Current integration lane
+## Issue64 active
+
+PR51/66 are on main. Owned feat/metadata-capacity; read specs/METADATA-CAPACITY.md
+and EVID-141. SDK/NTFS fixtures pass; hosted/consumer adoption remain open.
+
+## Historical integration lane
 
 The canonical public product is git-asset, coordinating asset lifecycle over Git
 and git-annex. The user requests PR51..60 and README/CI PR62 on main. Owned
