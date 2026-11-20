@@ -1,5 +1,10 @@
 # Tig trace
 
+Annex read: WP-004/005/007/011; REQ-001/003/004/006/007/008/010 ->
+SPEC-003/004/007/009/011, IF-004/005/009/010/012, PKG-002/003/004/008 ->
+ANNEX-READ-ADAPTER.md -> shared provider guards, optional annex reader, bounded
+process and synthetic/native fixtures -> EVID-120. Durable lifecycle remains open.
+
 Stale-plan teaching: WP-004/008/009/010/015/016;
 REQ-001/005/006/007/009/010 -> SPEC-002/005/008/010/014,
 IF-002/005/008/010/011/013, PKG-002/003/004/006/008 -> TEACHING-STALE-PLAN.md ->

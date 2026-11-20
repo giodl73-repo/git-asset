@@ -9,6 +9,7 @@ publish = false
 [features]
 assets = ["dep:tig-assets"]
 schema = ["assets", "tig-assets/schema", "dep:regex", "dep:flate2"]
+annex-read = ["dep:process-wrap", "dep:tokio"]
 upload = ["tig-store/upload-witness", "dep:ureq"]
 github = ["dep:base64", "dep:ring", "dep:ureq"]
 
@@ -24,6 +25,8 @@ getrandom = "=0.4.3"
 fs2 = "=0.4.3"
 regex = { version = "=1.13.1", optional = true }
 flate2 = { version = "=1.1.9", optional = true }
+process-wrap = { version = "=10.0.1", default-features = false, features = ["tokio1", "job-object", "kill-on-drop", "creation-flags"], optional = true }
+tokio = { version = "=1.54.1", default-features = false, features = ["rt", "process", "io-util", "time"], optional = true }
 ureq = { version = "=3.5.1", default-features = false, features = ["rustls"], optional = true }
 base64 = { version = "=0.22.1", optional = true }
 ring = { version = "=0.17.14", optional = true }

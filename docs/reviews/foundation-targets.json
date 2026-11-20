@@ -79,8 +79,8 @@
     },
     {
       "path": "Cargo.lock",
-      "bytes": 35173,
-      "sha256": "0b3806db6bada9d28e1b60a1cd902905c6d71de1000cf43ac5f89b0fa8c2b845"
+      "bytes": 42487,
+      "sha256": "8193a6967d6f82956cb66113c8fe118dc4832b828839945448b7482796197ca5"
     },
     {
       "path": "Cargo.toml",
@@ -304,8 +304,8 @@
     },
     {
       "path": "docs/vtrace/EVIDENCE.md",
-      "bytes": 109581,
-      "sha256": "141e073e1443a9324fdf4929418934d20c359ae0a3321e51a5365043abb88ed2"
+      "bytes": 109981,
+      "sha256": "8c00d35ac57ef59b48f5c073b55657222d9305fb35b969412e979c8aaa5075c9"
     },
     {
       "path": "docs/vtrace/IMPLEMENTATION_PLAN.md",
@@ -359,8 +359,8 @@
     },
     {
       "path": "docs/vtrace/REVIEW.md",
-      "bytes": 131028,
-      "sha256": "7409ebf26878a1c834e4a52239c6ca96c0f1606ee83a5f72316a1834f3e16ee8"
+      "bytes": 131069,
+      "sha256": "8c73cddd0e14019e60566b396e9b040f57e19fab165c129800425ba916558cbb"
     },
     {
       "path": "docs/vtrace/RISKS.md",
@@ -379,18 +379,18 @@
     },
     {
       "path": "docs/vtrace/TRACE.md",
-      "bytes": 49464,
-      "sha256": "a360ec8fa11613a1ad67dc01ac1c161e16abe093cff50074acd64c3b3f018ca5"
+      "bytes": 49768,
+      "sha256": "be06f64276cc7bdff494895726f03536f197590c540ed147d75a5ad31c23f3c6"
     },
     {
       "path": "docs/vtrace/VALIDATION.md",
-      "bytes": 34946,
-      "sha256": "ac5b2901a47e9bdf9ea47f165cfae7ef4bf78f86308d44e9703ab03032d2fb82"
+      "bytes": 35310,
+      "sha256": "799e9e23917026cec6e6a3f793cd75f9600f8d130e677367e7a966fb2c7d7bd2"
     },
     {
       "path": "docs/vtrace/VERIFICATION.md",
-      "bytes": 59618,
-      "sha256": "9d4ea1ea33e98ab0329476b794656e0126f6a745a9e4682052b2fe66c6425729"
+      "bytes": 60110,
+      "sha256": "0cce6cca3bcfe2ebac70da1f85a7c2069caf4a49d37fec3715f7567715c5b56a"
     },
     {
       "path": "docs/vtrace/WORK_PACKAGES.md",
@@ -414,8 +414,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 12715,
-      "sha256": "6ab1dd07beb4f2d388014a5768bb4751896ba86891e3291bf5cd86cc20371dfc"
+      "bytes": 12914,
+      "sha256": "f40c80c289a26246e695be3f77c4bc9249ce2de31920bc80433b2a46420bd7e0"
     },
     {
       "path": "specs/BYTE-WORKTREE.md",
@@ -734,8 +734,8 @@
     },
     {
       "path": "crates/tig-git/Cargo.toml",
-      "bytes": 2059,
-      "sha256": "95ba8c2a4b72a82b840320465b8cf4c523f2dc900a6c2ed3c3b3a9bd78df9f3f"
+      "bytes": 2383,
+      "sha256": "8213a0a3221e81317e1182f60418ee53878ae6f18b5c05b58d9d0e20dd8e7431"
     },
     {
       "path": "crates/tig-git/src/bin/tig-lfs.rs",
@@ -749,8 +749,8 @@
     },
     {
       "path": "crates/tig-git/src/lib.rs",
-      "bytes": 510,
-      "sha256": "98bfc3025c594175b09d48be4098d2f799c06f38abb46224662a235d4e3c196f"
+      "bytes": 556,
+      "sha256": "80f8738e1b1c093d3509adc64c88126a33510ba678b92d23b03c20118c1fe200"
     },
     {
       "path": "crates/tig-git/src/pointer.rs",
@@ -904,8 +904,8 @@
     },
     {
       "path": "crates/tig-store/src/existing.rs",
-      "bytes": 15011,
-      "sha256": "1e699871050a38c56aca34ff5caad7d644b5ef15570d6f938ccc9ff5cfda9033"
+      "bytes": 15911,
+      "sha256": "84f24bde9c3976e5341f5fc0749379e1fe63dd2ecb6ff8828622d3580cd5d858"
     },
     {
       "path": "crates/tig-store/tests/existing.rs",
@@ -1848,9 +1848,9 @@
       "sha256": "03ae7ab0cc4ee374e6b0a5ecaaace6f304c85c34aeb1be9af5e9622033fe20b8"
     },
     {
-      "bytes": 78655,
+      "bytes": 79842,
       "path": "context/RESUME.md",
-      "sha256": "ea2dba53d7c0ec96fb6f2e6bd45f2069329fc57c9f067aaf4d7217acab4ca000"
+      "sha256": "5333de7feaefe7cdf84a4eb3cadf1142583d9d9038f7e0f35868d49678e41496"
     },
     {
       "bytes": 16453,
@@ -2901,6 +2901,36 @@
       "path": "specs/TEACHING-STALE-PLAN.md",
       "bytes": 3293,
       "sha256": "f686294b7132cbf6cefa74b9cdee4512a0e7bc0886ad25867cf23445e197c7e7"
+    },
+    {
+      "path": "crates/tig-git/src/annex.rs",
+      "bytes": 8741,
+      "sha256": "38c68232368d9f0291afd975d079caccae180a722b62855a6d217a7995d51ed1"
+    },
+    {
+      "path": "crates/tig-git/src/annex/process.rs",
+      "bytes": 4724,
+      "sha256": "9ce15f1234cd71821b74f24fb963f0a1d24fd92172e221c5582ef6b6d8a5b732"
+    },
+    {
+      "path": "crates/tig-git/src/annex/tests.rs",
+      "bytes": 13392,
+      "sha256": "98a5beb70d4706c1e6459482da7bdd0eb66958b76b6361924ffe736a407348ae"
+    },
+    {
+      "path": "crates/tig-store/src/existing/provider.rs",
+      "bytes": 5977,
+      "sha256": "9ef8f34c390ee3e369c240f9f65633e558c9f2b164b4a0fcb6df235d19598f67"
+    },
+    {
+      "path": "docs/reviews/2026-11-20-annex-read-adapter.md",
+      "bytes": 4805,
+      "sha256": "cc5f3a8c0cb484c298446077329e35719587ab255cd3f2fb18b3011f45a8e332"
+    },
+    {
+      "path": "specs/ANNEX-READ-ADAPTER.md",
+      "bytes": 5606,
+      "sha256": "b6e1ba61128027d62939b792957d614326aceb30861fd5f966aecfc5b141ba80"
     }
   ]
 }

@@ -1,5 +1,7 @@
 # Foundation review
 
+EVID-120: see EVIDENCE.md (annex read).
+
 EVID-119: [producer lenses](../reviews/2026-11-10-teaching-stale-plan.md).
 Local checks pass; hosted/human gates open.
 

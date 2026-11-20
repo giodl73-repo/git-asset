@@ -2,6 +2,8 @@
 #![forbid(unsafe_code)]
 #[cfg(test)]
 extern crate self as tig_git;
+#[cfg(feature = "annex-read")]
+pub mod annex;
 pub mod cache;
 #[cfg(feature = "schema")]
 pub mod catalogue;

@@ -13,6 +13,8 @@ use std::{
     time::{Duration, Instant},
 };
 use tig_core::{Digest, Object};
+mod provider;
+pub use provider::ProviderPath;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
@@ -123,8 +125,11 @@ pub struct ReadCache {
 }
 impl ReadCache {
     pub fn new(profile: Profile) -> Result<Self> {
+        Self::configured(profile, true)
+    }
+    fn configured(profile: Profile, require_places: bool) -> Result<Self> {
         let l = profile.limits;
-        if profile.places.is_empty()
+        if (require_places && profile.places.is_empty())
             || profile.places.len() > 16
             || l.object_bytes == 0
             || l.object_bytes > 64 * 1024 * 1024 * 1024
@@ -159,9 +164,8 @@ impl ReadCache {
         self.active.load(Ordering::Acquire)
     }
 }
-impl ByteSource for ReadCache {
-    type Reader = VerifiedRead;
-    fn open_verified(&mut self, object: &Object) -> Result<VerifiedRead> {
+impl ReadCache {
+    fn admit(&mut self, object: &Object) -> Result<Permit> {
         if !cfg!(windows) && self.profile.required == RequiredProtection::PreventMutation {
             return Err(Error::Unsupported);
         }
@@ -190,57 +194,91 @@ impl ByteSource for ReadCache {
                 Err(current) => active = current,
             }
         }
-        let permit = Permit(self.active.clone());
+        Ok(Permit(self.active.clone()))
+    }
+    fn open_path(
+        &mut self,
+        path: PathBuf,
+        object: &Object,
+        strict: bool,
+    ) -> Result<Option<Opened>> {
+        let Some(directories) = directories(&path, strict)? else {
+            return Ok(None);
+        };
+        let before = match fs::symlink_metadata(&path) {
+            Ok(m) => m,
+            Err(e) if e.kind() == io::ErrorKind::NotFound => return Ok(None),
+            Err(e) => return Err(map_io(e)),
+        };
+        regular(&before)?;
+        if before.len() != object.bytes {
+            return Err(Error::Integrity);
+        }
+        let mut file = open_file(&path, strict)?;
+        regular(&file.metadata().map_err(map_io)?)?;
+        FileExt::try_lock_shared(&file).map_err(|e| {
+            if e.raw_os_error() == fs2::lock_contended_error().raw_os_error() {
+                Error::Busy
+            } else {
+                map_io(e)
+            }
+        })?;
+        // Charge admitted bytes before IO, including failed verification.
+        self.verified_bytes += object.bytes;
+        verify(&mut file, object, self.profile.limits.verify_millis)?;
+        let after = fs::symlink_metadata(&path).map_err(map_io)?;
+        regular(&after)?;
+        if after.len() != object.bytes {
+            return Err(Error::Integrity);
+        }
+
+        Ok(Some(Opened {
+            file,
+            directories,
+            path,
+        }))
+    }
+}
+struct Opened {
+    file: File,
+    directories: Vec<File>,
+    path: PathBuf,
+}
+impl Opened {
+    fn finish(self, object: &Object, place: usize, strict: bool, permit: Permit) -> VerifiedRead {
+        VerifiedRead {
+            file: self.file,
+            _directories: self.directories,
+            path: self.path,
+            object: object.clone(),
+            place,
+            protection: if cfg!(windows) && strict {
+                Protection::WindowsSharing
+            } else {
+                Protection::CooperativeFileLock
+            },
+            _permit: permit,
+        }
+    }
+}
+impl ByteSource for ReadCache {
+    type Reader = VerifiedRead;
+    fn open_verified(&mut self, object: &Object) -> Result<VerifiedRead> {
+        if self.profile.places.is_empty() {
+            return Err(Error::Unsupported);
+        }
+        let permit = self.admit(object)?;
         let strict = self.profile.required == RequiredProtection::PreventMutation;
-        for (index, place) in self.profile.places.iter().enumerate() {
+        for index in 0..self.profile.places.len() {
+            let place = &self.profile.places[index];
             let path = place.layout.object_path(&place.root, &object.sha256);
-            let Some(directories) = directories(&path, strict)? else {
-                continue;
-            };
-            let before = match fs::symlink_metadata(&path) {
-                Ok(m) => m,
-                Err(e) if e.kind() == io::ErrorKind::NotFound => continue,
-                Err(e) => return Err(map_io(e)),
-            };
-            regular(&before)?;
-            if before.len() != object.bytes {
-                return Err(Error::Integrity);
+            if let Some(opened) = self.open_path(path, object, strict)? {
+                return Ok(opened.finish(object, index, strict, permit));
             }
-            let mut file = open_file(&path, strict)?;
-            regular(&file.metadata().map_err(map_io)?)?;
-            FileExt::try_lock_shared(&file).map_err(|e| {
-                if e.raw_os_error() == fs2::lock_contended_error().raw_os_error() {
-                    Error::Busy
-                } else {
-                    map_io(e)
-                }
-            })?;
-            // Charge admitted bytes before IO, including failed verification.
-            self.verified_bytes += object.bytes;
-            verify(&mut file, object, self.profile.limits.verify_millis)?;
-            let after = fs::symlink_metadata(&path).map_err(map_io)?;
-            regular(&after)?;
-            if after.len() != object.bytes {
-                return Err(Error::Integrity);
-            }
-            return Ok(VerifiedRead {
-                file,
-                _directories: directories,
-                path,
-                object: object.clone(),
-                place: index,
-                protection: if cfg!(windows) && strict {
-                    Protection::WindowsSharing
-                } else {
-                    Protection::CooperativeFileLock
-                },
-                _permit: permit,
-            });
         }
         Err(Error::Missing)
     }
 }
-
 /// Holds the file and effective read protection until dropped; no custody claim.
 pub struct VerifiedRead {
     file: File,

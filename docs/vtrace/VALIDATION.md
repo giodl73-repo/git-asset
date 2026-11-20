@@ -1,5 +1,11 @@
 # Intended-use validation
 
+EVID-120 demonstrates exact guarded local native-annex reads using fresh
+synthetic ordinary/bare repositories and one opaque object. This does not
+validate durable job leases, retained publication, remote/hardware custody,
+Linux subprocess containment or full REEL integration. See the separate
+[intended-use limits](../reviews/2026-11-20-annex-read-adapter.md).
+
 EVID-119 demonstrates rejection of historical demotion after new job admission,
 unchanged observed F+M and fresh plans before/after job end. Ten actual reports
 render through read-only catalogue controls. Explicit fixture admission does not

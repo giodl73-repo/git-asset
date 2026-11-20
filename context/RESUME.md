@@ -1,5 +1,24 @@
 # Tig resume state
 
+## Public annex adapter lane
+
+Owned branch feat/native-annex-adapter, input
+21a70f5abc4340582cda3a075a3c5fe1cee13e40. The user selected an additive adapter
+in public Tig while preserving its existing APIs. See
+[contract](../specs/ANNEX-READ-ADAPTER.md) and
+[producer record](../docs/reviews/2026-11-20-annex-read-adapter.md), EVID-120.
+Optional Rust annex-read supports exact local SHA256 format-10 ordinary/bare
+reads on Windows through existing guarded byte interfaces. Existing schema,
+history, Layout and defaults are preserved. No CLI, live cache enrollment,
+publication, persistent job protection, controller/index replacement or renders.
+Focused synthetic and explicitly enrolled native ordinary/bare fixtures pass;
+full local checks are recorded in the producer record. Derive source/hosted status
+from Git; no merge or deployed consumer change is implied. The next integration
+is REEL's exact public source pin/read-provider use, then a separately qualified
+bridge to public Tig's durable admission/protection and retained publication.
+Keep async use on a dedicated thread outside entered Tokio runtimes. Do not
+import the private archive's incompatible controller/index APIs.
+
 Active goal: deliver PRODUCT_PLAN.md, including merge-driven placement/eviction,
 bulk final deletion and eventual metadata retirement. The full goal is not done.
 Read AGENTS.md, CONTEXT.md, docs/DEVELOPMENT.md, the roadmap and active pulse.

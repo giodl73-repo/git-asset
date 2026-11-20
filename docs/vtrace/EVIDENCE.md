@@ -1,5 +1,12 @@
 # Evidence index
 
+EVID-120 (scoped local read candidate), input
+21a70f5abc4340582cda3a075a3c5fe1cee13e40:
+[producer record](../reviews/2026-11-20-annex-read-adapter.md) separates additive
+Rust read implementation, focused/native verification, intended-use limits,
+trace and producer lenses. No durable native lifecycle, live adoption or full
+REEL acceptance is claimed. Existing public history APIs remain supported.
+
 EVID-119 (locally qualified candidate), input d200ed38e2594a6e82205067dd8aadd107a7bff4:
 runtime617540154fedfd7aa51d33c37f31cfd0223941a8.
 [review](../reviews/2026-11-10-teaching-stale-plan.md) separates actual stale apply

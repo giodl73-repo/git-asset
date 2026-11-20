@@ -1,5 +1,13 @@
 # Verification record
 
+EVID-120: three provider-file tests, thirteen existing byte-reader regressions,
+seven annex parser/process tests and explicitly enrolled native ordinary/bare
+fixture pass. Locked all-feature workspace (including 500k persistence), strict
+all-feature/all-target Clippy, standalone tig-git, fmt and structure checks pass.
+Detailed scope and remaining gates are recorded in the
+[producer record](../reviews/2026-11-20-annex-read-adapter.md). No hosted closure
+is implied by local verification.
+
 EVID-119: six native CLI/provider/catalogue cases, actual HTTP -> shipped controls,
 eleven repinned rejection negatives and all78 controller cases pass. Default89185
 workspace/500k and all48441 workspace/500k/strict pass. Final52714 qualifies the
