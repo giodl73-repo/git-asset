@@ -42,7 +42,7 @@ class StoreShardTests(unittest.TestCase):
 
     def test_real_runner_propagates_test_failure(self):
         artifact = json.dumps({"reason": "compiler-artifact",
-                               "target": {"name": "tig_store"},
+                               "target": {"name": "git_asset_store"},
                                "profile": {"test": True},
                                "executable": str(Path(__file__).resolve())})
         build = subprocess.CompletedProcess([], 0, artifact, "")

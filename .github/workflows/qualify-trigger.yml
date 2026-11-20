@@ -28,40 +28,40 @@ jobs:
       - name: Build fixture receiver
         shell: pwsh
         run: |
-          $env:CARGO_TARGET_DIR = Join-Path $env:RUNNER_TEMP 'tig-build'
+          $env:CARGO_TARGET_DIR = Join-Path $env:RUNNER_TEMP 'git-asset-build'
           $env:TEMP = $env:RUNNER_TEMP
           $env:TMP = $env:RUNNER_TEMP
           $env:TMPDIR = $env:RUNNER_TEMP
-          cargo build -p tig-git --features github --bin tig-trigger --locked
+          cargo build -p git-asset --features github --bin git-asset-trigger --locked
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          cargo test -p tig-git --features github --test github_real --locked --no-run
+          cargo test -p git-asset --features github --test github_real --locked --no-run
           exit $LASTEXITCODE
       - name: Qualify live issuer against fresh no-payload fixture
         shell: pwsh
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          TIG_REAL_REPOSITORY: ${{ github.repository }}
-          TIG_REAL_REPOSITORY_ID: ${{ github.repository_id }}
-          TIG_REAL_OWNER_ID: ${{ github.repository_owner_id }}
-          TIG_REAL_REF: ${{ github.ref }}
-          TIG_REAL_WORKFLOW_REF: ${{ github.workflow_ref }}
-          TIG_REAL_EVENT: ${{ github.event_name }}
-          TIG_REAL_AUDIENCE: tig:hosted-qualification
+          GIT_ASSET_REAL_REPOSITORY: ${{ github.repository }}
+          GIT_ASSET_REAL_REPOSITORY_ID: ${{ github.repository_id }}
+          GIT_ASSET_REAL_OWNER_ID: ${{ github.repository_owner_id }}
+          GIT_ASSET_REAL_REF: ${{ github.ref }}
+          GIT_ASSET_REAL_WORKFLOW_REF: ${{ github.workflow_ref }}
+          GIT_ASSET_REAL_EVENT: ${{ github.event_name }}
+          GIT_ASSET_REAL_AUDIENCE: git-asset:hosted-qualification
         run: |
-          $env:CARGO_TARGET_DIR = Join-Path $env:RUNNER_TEMP 'tig-build'
+          $env:CARGO_TARGET_DIR = Join-Path $env:RUNNER_TEMP 'git-asset-build'
           $env:TEMP = $env:RUNNER_TEMP
           $env:TMP = $env:RUNNER_TEMP
           $env:TMPDIR = $env:RUNNER_TEMP
           try {
             $separator = if ($env:ACTIONS_ID_TOKEN_REQUEST_URL.Contains('?')) { '&' } else { '?' }
-            $uri = $env:ACTIONS_ID_TOKEN_REQUEST_URL + $separator + 'audience=' + [Uri]::EscapeDataString($env:TIG_REAL_AUDIENCE)
+            $uri = $env:ACTIONS_ID_TOKEN_REQUEST_URL + $separator + 'audience=' + [Uri]::EscapeDataString($env:GIT_ASSET_REAL_AUDIENCE)
             $response = Invoke-RestMethod -Uri $uri -Headers @{Authorization=('Bearer ' + $env:ACTIONS_ID_TOKEN_REQUEST_TOKEN)}
-            $env:TIG_REAL_GITHUB_OIDC = $response.value
+            $env:GIT_ASSET_REAL_GITHUB_OIDC = $response.value
           } catch {
             Write-Error 'OIDC fixture admission unavailable'
             exit 1
           }
-          cargo test -p tig-git --features github --test github_real --locked actual_hosted_oidc_reaches_foreground_receiver_without_payloads -- --ignored --exact --nocapture
+          cargo test -p git-asset --features github --test github_real --locked actual_hosted_oidc_reaches_foreground_receiver_without_payloads -- --ignored --exact --nocapture
           $result = $LASTEXITCODE
-          Remove-Item Env:TIG_REAL_GITHUB_OIDC
+          Remove-Item Env:GIT_ASSET_REAL_GITHUB_OIDC
           exit $result

@@ -3,7 +3,7 @@
 Input81ecc27eba6289f2639174c7872be3c53583f5ee; contracta36aa29 precedes code.
 Branch feat/placement-final-absence; runtime candidate is pinned before commit.
 [PLACEMENT-FINAL-ABSENCE](../../specs/PLACEMENT-FINAL-ABSENCE.md) names all
-controls, allowed scope, entry/exit and L0/L1/L2. This is EVID-124. Full plan active.
+controls, allowed scope, entry/exit and L0/L1/L2. This is EVID-134. Full plan active.
 
 ## Implementation
 
@@ -58,7 +58,7 @@ synthetic and establish no hardware or native-time/current-authority acceptance.
 
 PLACEMENT-FINAL-ABSENCE -> existing validated head/final status + no-effect skip
 -> actual three-provider source/copy/final/reacquire/replay -> independent literal
-bytes/grants/checkpoints/record snapshots -> refusals +3 actual exits -> EVID-124.
+bytes/grants/checkpoints/record snapshots -> refusals +3 actual exits -> EVID-134.
 Implementation and focused verification/scoped validation pass; broader/source/
 artifact/hosted verification remains pending. Trace is scoped to those facts.
 Joined public Git-return/acquisition/restore export, complete course, actual

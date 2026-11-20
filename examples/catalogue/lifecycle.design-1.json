@@ -1,7 +1,7 @@
 {
   "schema": "tig.teaching-catalogue-fixture.design-1",
   "status": "independent expected outcomes; runner qualification pending",
-  "purpose": "One reproducible Git/Tig story; literal expected results are an oracle for the existing executor, not an implementation of placement.",
+  "purpose": "One reproducible Git/git-asset story; literal expected results are an oracle for the existing executor, not an implementation of placement.",
   "roles": [
     "working",
     "history",
@@ -225,7 +225,7 @@
     },
     {
       "id": "publish-v2",
-      "event": "git push and git clone publish exact records only. Tig payload copies remain unchanged; Git exchange does not establish backup custody.",
+      "event": "git push and git clone publish exact records only. git-asset payload copies remain unchanged; Git exchange does not establish backup custody.",
       "requires": [
         "local-git-exchange",
         "exact-source-admission",
@@ -248,7 +248,7 @@
     },
     {
       "id": "pull-v1",
-      "event": "git fetch leaves HEAD unchanged. A dirty git pull refuses without a Tig action; after repairing the fixture edit, git pull --ff-only selects v1. Explicit Tig adoption and reconciliation then move the bytes.",
+      "event": "git fetch leaves HEAD unchanged. A dirty git pull refuses without a git-asset action; after repairing the fixture edit, git pull --ff-only selects v1. Explicit git-asset adoption and reconciliation then move the bytes.",
       "requires": [
         "local-git-exchange",
         "exact-source-admission",
@@ -271,7 +271,7 @@
     },
     {
       "id": "pull-return-v2",
-      "event": "git push, git fetch and git pull --ff-only return the observer to exact v2 records. Explicit Tig adoption and reconciliation return fixed bytes nearby; original bytes remain retained in history and backup.",
+      "event": "git push, git fetch and git pull --ff-only return the observer to exact v2 records. Explicit git-asset adoption and reconciliation return fixed bytes nearby; original bytes remain retained in history and backup.",
       "requires": [
         "local-git-exchange",
         "exact-source-admission",

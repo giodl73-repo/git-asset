@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Tig read-only agent query experimental-1",
+  "title": "git-asset read-only agent query experimental-1",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema", "enrollment", "query"],

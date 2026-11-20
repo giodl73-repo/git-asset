@@ -4,7 +4,7 @@ Status: target contract with tested capacity accounting and a bounded local
 restart-persistent command ledger. Explicit local sampling/publication integration
 is implemented; native domain/quota authority, whole-device enforcement and a
 complete durable resource service remain open.
-Parents: TIG-R02/R03/R04/R05/R07/R09; SPEC-003/004/005/008/009. Existing pure
+Parents: GIT-ASSET-R02/R03/R04/R05/R07/R09; SPEC-003/004/005/008/009. Existing pure
 handoff tests do not prove concurrent space reservation or measured allocation.
 
 ## Model independent of projects, drives and media

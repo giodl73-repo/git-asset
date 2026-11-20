@@ -40,7 +40,7 @@ error. Twelve isolated concurrency reruns, eight full journal-suite reruns and
 the final expanded suite pass; this does not establish the cause of the original
 refusal. The initial failure remains recorded privately. No assertion was relaxed
 to accept Sql, and temporary raw diagnostic instrumentation was removed before
-final verification. Residual availability finding, owner Tig concurrency/recovery:
+final verification. Residual availability finding, owner git-asset concurrency/recovery:
 investigate if it recurs, without converting a refusal into an observation.
 
 Disposition: producer-applied pass_with_risk for this bounded observation seam.

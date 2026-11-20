@@ -5,7 +5,7 @@ Runtime81ecc27eba6289f2639174c7872be3c53583f5ee is frozen. Parent contention
 correctionad64f03 is integrated in296997a. This closeout changes documentation
 only; derive latest documentation-head CI from GitHub separately.
 [Contract](../../specs/TEACHING-GIT-RETURN.md) names controls, scope, entry/exit
-and L0/L1/L2. Full PRODUCT_PLAN remains active. This is EVID-123.
+and L0/L1/L2. Full PRODUCT_PLAN remains active. This is EVID-133.
 
 ## Implementation
 
@@ -69,12 +69,12 @@ semantic counterexamples beyond their CAS hashes.
 Trace: TEACHING-GIT-RETURN -> actual Git/source/placement + frozen physical oracle
 -> distinct recorded decoder/response4 -> exact enrollment/stream/history/state
 binding -> independent bytes/raw Git/HTTP/shipped/23 refusals -> both workspace/
-500k/strict/standalone/fresh artifact/exact-head CI -> EVID-123 scoped candidate.
+500k/strict/standalone/fresh artifact/exact-head CI -> EVID-133 scoped candidate.
 Joined acquisition/restoration, complete course and native/provider/current-
 authority/large-file/restore/lifetime/browser/human/full-product gates remain OPEN.
 
 Parent PR53 ad64f03 passes exact run43057224855 Windows/Linux/secrets and is ready.
-The earlier43054770000 Linux Busy-wrapper failure remains recorded in EVID-122;
+The earlier43054770000 Linux Busy-wrapper failure remains recorded in EVID-132;
 its test-only correction changes no production capture algorithm.
 
 ## Six producer lenses

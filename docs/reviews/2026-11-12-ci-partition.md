@@ -45,7 +45,7 @@ Windows/Linux matrix has not run. Trace: every prior cargo workspace test class,
 explicit ignored case, baseline SHA, feature profile, Clippy and standalone check
 has a destination above. Foundation aggregates require all native suites to pass.
 
-Producer review (six .roles lenses, owner Tig maintainers): exact test identities
+Producer review (six .roles lenses, owner git-asset maintainers): exact test identities
 and exhaustive partition checked; policy/custody claims remain unchanged; failed
 or skipped suites cannot authorize success; no provider enrollment/private asset
 copy; existing required foundation names retained. PASS_WITH_RISK for this scope;

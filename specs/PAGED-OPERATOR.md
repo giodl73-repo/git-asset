@@ -5,7 +5,7 @@ WP-003/004/006/007/008/009/015; REQ-001/002/003/004/005/006/007/009;
 SPEC-002/003/004/005/008/009/014; IF-002/003/004/005/006/008/012/013;
 PKG-002/003/008/009. RUST/PROVIDER profiles; GIT for the native CLI handoff fixture.
 Native fixture allocation additionally uses WP-010, REQ-010, SPEC-010, IF-010
-and PKG-004/006 through the existing optional adapter; no tig-store dependency
+and PKG-004/006 through the existing optional adapter; no git-asset-store dependency
 on typed assets or Git is introduced.
 Allowed: bounded existing-root operator CLI, shared metadata-budget views and
 read-only original scope pagination over the existing paged/aged controller.
@@ -37,7 +37,7 @@ Claim-release and final-loss approval digests are separate private fields and
 must both match the exact decision before execution IO. No command enables its
 own permissions or generates those approvals.
 
-Commands under tig-storage paged: describe; copies PROFILE REQUEST; plan PROFILE
+Commands under git-asset-storage paged: describe; copies PROFILE REQUEST; plan PROFILE
 REQUEST; inspect/subjects/actions/peak/status PROFILE DECISION; apply/resume/cancel
 PROFILE DECISION. copies stages bounded chunks of existing copy requests into an
 immutable asset-side index. plan consumes an exact indexed selection request and

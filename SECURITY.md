@@ -1,12 +1,12 @@
 # Security and private data
 
-Tig is experimental; no stable supported release or security-support window has
+git-asset is experimental; no stable supported release or security-support window has
 been declared. Use exact source pins and review the relevant provider capability
 and protection assumptions before trusting important bytes.
 
 Do not put credentials, private assets, complete resolver profiles, receipts or
 unredacted logs in public issues, PRs or screenshots. Report vulnerabilities
-privately through the [repository's reporting form](https://github.com/giodl73-repo/tig/security/advisories/new).
+privately through the [repository's reporting form](https://github.com/giodl73-repo/git-asset/security/advisories/new).
 If private reporting is unavailable, open only a nonsensitive request for a private channel;
 do not include vulnerability details or secrets in that request.
 

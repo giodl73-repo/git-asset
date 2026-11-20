@@ -1,6 +1,6 @@
 # Branches, scratch, merge and history
 
-Target walkthrough. No Tig CLI/hook or real Git adapter is implemented yet.
+Target walkthrough. No git-asset CLI/hook or real Git adapter is implemented yet.
 
 ## Branch without a second asset directory
 
@@ -33,7 +33,7 @@ admit job/draft -> write bounded output -> hash/verify -> publish immutable obje
 
 New bytes need protection before they appear in a committed pointer inventory.
 External LFS writes and staged pointers require explicit source reconciliation;
-Tig cannot infer their branch from an OID-only transfer. Active jobs and unstaged
+git-asset cannot infer their branch from an OID-only transfer. Active jobs and unstaged
 work are separate claims. Committing does not silently release them.
 
 ## Merge is one content decision
@@ -51,7 +51,7 @@ desired handoff:
   scratch      = retired only as its obligations are handed off durably
                |
                v
-Tig reconciles physical placement; no second manual content merge
+git-asset reconciles physical placement; no second manual content merge
 ```
 
 If A and C are already in the required working place, merging needs no new working
@@ -77,6 +77,6 @@ claim; deleting a name is not permission to delete its bytes. Branch rename,
 force push, conflicts and detached worktrees have explicit source identities and
 coverage rules in [the workflow contract](../../specs/GIT-WORKFLOW.md).
 
-See [handoff tests](../../crates/tig-core/tests/handoff.rs) for the implemented
+See [handoff tests](../../crates/core/tests/handoff.rs) for the implemented
 pure subset, including the 1,000-object/five-replacement example. The diagrams do
 not prove actual Git event capture, durable commit or physical storage behavior.

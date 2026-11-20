@@ -75,5 +75,5 @@ The local profile provides `host_files: {"fonts/body": "/owned/fonts/body.ttf"}`
 and `capacity_root: "/owned/runs"`, using platform-appropriate absolute paths;
 `destination_root` is at or below the enrolled runs root. These directories/files
 must already exist where required. No path is inferred from the requirement ID.
-Input numbers retain Tig's existing strict safe-integer JSON rules. Tool/version
+Input numbers retain git-asset's existing strict safe-integer JSON rules. Tool/version
 semantics, font licenses and render capacity admission stay consumer-owned.

@@ -63,7 +63,7 @@
         },
         {
           "id": "CL09",
-          "trigger": "LFS local store plus hydrated worktree plus Tig cache",
+          "trigger": "LFS local store plus hydrated worktree plus git-asset cache",
           "expectation": "Measure all allocated copies; do not claim logical dedup means zero physical cost",
           "status": "designed",
           "evidence": []
@@ -71,7 +71,7 @@
         {
           "id": "CL10",
           "trigger": "Generic Git-only repo replaces an LFS file and merges",
-          "expectation": "Tig derives old/new object claims without Art, preserves other users and plans placement",
+          "expectation": "git-asset derives old/new object claims without Art, preserves other users and plans placement",
           "status": "designed",
           "evidence": []
         }
@@ -118,8 +118,8 @@
         },
         {
           "id": "GW06",
-          "trigger": "LFS clean runs outside Tig and creates a new local LFS object",
-          "expectation": "Reconcile explicit source/index and admit protection; no assumed Tig write event",
+          "trigger": "LFS clean runs outside git-asset and creates a new local LFS object",
+          "expectation": "Reconcile explicit source/index and admit protection; no assumed git-asset write event",
           "status": "designed",
           "evidence": []
         },
@@ -408,7 +408,7 @@
           "id": "LF01",
           "trigger": "A clone uses pointer-only checkout and requests one file",
           "steps": [
-            "Resolve one OID through Tig"
+            "Resolve one OID through git-asset"
           ],
           "expectation": "Acquire only the explicitly requested object under budget; no branch-wide hydration",
           "status": "designed",
@@ -460,7 +460,7 @@
           "steps": [
             "Preview cleanup"
           ],
-          "expectation": "Require coordinated all-consumer protection; Tig claims do not make an external pruner safe automatically",
+          "expectation": "Require coordinated all-consumer protection; git-asset claims do not make an external pruner safe automatically",
           "status": "designed",
           "evidence": []
         },
@@ -582,7 +582,7 @@
         },
         {
           "id": "SP08",
-          "trigger": "Another application consumes disk space after Tig reserves capacity",
+          "trigger": "Another application consumes disk space after git-asset reserves capacity",
           "steps": [
             "Attempt the next write"
           ],
@@ -724,7 +724,7 @@
       "cases": [
         {
           "id": "LC01",
-          "trigger": "A producer writes a new large file into an admitted Tig working directory",
+          "trigger": "A producer writes a new large file into an admitted git-asset working directory",
           "steps": [
             "Seal the completed write and bind the logical path"
           ],
@@ -814,7 +814,7 @@
         },
         {
           "id": "LC10",
-          "trigger": "A repository is moved locally while its Tig namespace remains enrolled",
+          "trigger": "A repository is moved locally while its git-asset namespace remains enrolled",
           "steps": [
             "Rebind trusted local root and reconcile source identity"
           ],

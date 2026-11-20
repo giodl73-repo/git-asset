@@ -1,11 +1,32 @@
 # Evidence index
 
-EVID-126 (focused candidate): [remote publication](../reviews/2026-11-11-teaching-remote-publication.md)
+EVID-122 (scoped managed-read candidate), input
+a16dc61d3c551dc686bfae9a566a040dd0069e0a:
+[producer record](../reviews/2026-11-20-annex-managed-read.md) separates shared
+namespace use, pool-pinned full roster, actual native exact reads, verification,
+intended-use limits, trace and producer lenses. Retained publication, participating
+pruner execution and complete consumer/custody acceptance remain open.
+
+EVID-121 (scoped job-projection candidate), input
+6eaf75904868a86201eeb55fc61e10b414fa7759:
+[producer record](../reviews/2026-11-20-native-job-protection.md) separates flat
+native job projection, exact metadata readback, guarded lifecycle verification,
+intended-use limits, trace and six producer lenses. This does not qualify native
+annex pruning, retained publication or complete REEL adoption.
+
+EVID-120 (scoped local read candidate), input
+21a70f5abc4340582cda3a075a3c5fe1cee13e40:
+[producer record](../reviews/2026-11-20-annex-read-adapter.md) separates additive
+Rust read implementation, focused/native verification, intended-use limits,
+trace and producer lenses. No durable native lifecycle, live adoption or full
+REEL acceptance is claimed. Existing public history APIs remain supported.
+
+EVID-136 (focused candidate): [remote publication](../reviews/2026-11-11-teaching-remote-publication.md)
 records actual14-step Git/existing LFS CLI/accounted receiver path,54 PUT bytes,
 corrupt-readback hold and same-plan recheck. Final40 refusals/85 controllers/
 without-feature no-root/strict pass; broad/artifact/source/hosted/full gates remain.
 
-EVID-125 (locally qualified): [joined return/restore](../reviews/2026-11-11-teaching-return-restore.md)
+EVID-135 (locally qualified): [joined return/restore](../reviews/2026-11-11-teaching-return-restore.md)
 records actual11-step source/M acquisition/F restoration and expired old retry.
 Final47 refusals/16 teaching/83 controllers, both workspace+500k/strict profiles,
 standalone/fresh11-step artifact and final15 age cases in both profiles pass.
@@ -14,7 +35,7 @@ test-only correctionc2fcd06 passes corrected full60982. Source08710ef passes
 Windows/Linux/secrets43077356434; correction/closeout needs new-head hosted proof.
 Full intended-use/course/provider/authority/lifetime/human gates remain open.
 
-EVID-124 (qualified synthetic runtime923a40c/source8e948d4):
+EVID-134 (qualified synthetic runtime923a40c/source8e948d4):
 [final-absence review](../reviews/2026-11-11-placement-final-absence.md) records
 read-only/no-effect settled absence and required-destination fences.13 focused/
 3 actual exits/15 teaching/81 controls, both workspace+500k/strict profiles,
@@ -22,13 +43,13 @@ standalone/two fresh artifacts and Windows/Linux/secrets43069646518 pass.
 Documentation-only closeouta25552a also passes exact43077203826 on both hosts
 and secrets. Full intended-use/authority/provider/lifetime gates remain open.
 
-EVID-123 (qualified synthetic runtime81ecc27): [Git return review](../reviews/2026-11-11-teaching-git-return.md)
+EVID-133 (qualified synthetic runtime81ecc27): [Git return review](../reviews/2026-11-11-teaching-git-return.md)
 records accepted exact Git/source return, held missing bytes and useful sibling
 work. All15/23/81/focused strict, both workspace/500k/strict6457/57936, standalone,
 fresh nine-checkpoint artifact and exact Windows/Linux/secrets43059041378 pass.
 Full intended-use/provider/authority/lifetime/human gates remain open.
 
-EVID-122 (locally qualified candidate): [reacquisition review](../reviews/2026-11-11-teaching-reacquisition.md)
+EVID-132 (locally qualified candidate): [reacquisition review](../reviews/2026-11-11-teaching-reacquisition.md)
 records actual ninth-chapter SDK/publication/grant/replay and readonly observations.
 Native96542,28-negative/strict89877, final30-negative/full14/strict61275 and81
 controllers pass. Schema5050/500k/strict, artifact82212 and all-feature complete
@@ -36,7 +57,7 @@ Cargo output (71 summaries/1335 passes/500k) qualify locally; original broad she
 exit is unavailable, final strict Clippy exits0. The review records inherited age
 test failure and explicit Busy recovery. Hosted/full intended-use gates remain open.
 
-EVID-121 (locally qualified candidate): [review](../reviews/2026-11-10-teaching-final-retirement.md)
+EVID-131 (locally qualified candidate): [review](../reviews/2026-11-10-teaching-final-retirement.md)
 records actual manual and aged/category loss, retry/cancel/new-birth/process
 recovery and strict readonly bulk/paged playback. Workspace/500k/strict4118/61973
 pass; final14/all-feature/strict/artifact41136, standalone82649,13 manual/17 paged/
@@ -45,7 +66,7 @@ provider/authority/lifetime and human/full product acceptance remain open.
 
 Rename runtime: b69684f408d036d9e11a0911d6031167e822b566. Local qualification passes; derive current PR/hosted status from GitHub.
 
-EVID-120 (focused candidate), input21a70f5abc4340582cda3a075a3c5fe1cee13e40:
+EVID-130 (focused candidate), input21a70f5abc4340582cda3a075a3c5fe1cee13e40:
 [review](../reviews/2026-11-10-teaching-rename.md) separates actual rename/conflict,
 stable bytes/copies and zero SDK effects from general native rename semantics.
 Terminal95832 focused native/strict and all78 controller cases pass. Broad runs
@@ -487,7 +508,7 @@ new focused tests pass across invoice/font consumers, exact schema/subject/recei
 pins, strict selectors/parser limits, null/duplicate refusal, large external
 metadata and actual read-only CLI. Full all-feature workspace tests, strict Clippy
 and standalone Git/LFS check pass. An external owner-run candidate checks 79
-consumer anchors; raw private evidence remains outside Tig. Hosted qualification,
+consumer anchors; raw private evidence remains outside git-asset. Hosted qualification,
 provider identity/current remote publication, custody and adoption stay separate.
 See [scope and producer review](../reviews/2026-10-31-publication-evidence.md).
 
@@ -527,42 +548,42 @@ root-owner/job adoption, opaque native payload retention or eviction is proved.
 
 | Evidence ID | Source / Command | Status | Scope / limitation |
 | --- | --- | --- | --- |
-| EVID-001 | crates/tig-core/tests/handoff.rs; cargo test --workspace --locked | passed | 13 synthetic tests of assigned claims and snapshot/candidate algebra; no IO/custody/fencing execution |
+| EVID-001 | crates/core/tests/handoff.rs; cargo test --workspace --locked | passed | 13 synthetic tests of assigned claims and snapshot/candidate algebra; no IO/custody/fencing execution |
 | EVID-002 | cargo fmt --all -- --check; cargo clippy --workspace --all-targets --locked -- -D warnings | passed | Current core/store static checks; not future provider assurance |
 | EVID-003 | tests/scenarios/catalog.json, integrations.json and learning-links.json | designed | 110 intended cases with doctrine/mitigation links; not executed workflow acceptance |
 | EVID-004 | .roles/parliament and stage-specific VTRACE review sections | inspected | Producer-applied local role lenses; no independent reviewer or human approval |
 | EVID-005 | docs/SAFETY-PROMISE.md, specs/SAFETY.md and specs/BYTE-WORKTREE.md | inspected | Controlled safety/overlay target obligations, not proof of no-loss execution |
 | EVID-006 | tools/vendor/pins.json and preserved upstream notices | inspected | Pinned development-only ROLES/PITFALL source custody; no runtime dependency |
-| EVID-007 | crates/tig-core/tests/canonical.rs; cargo test --test canonical --locked | passed | 10 Art donor canonical/hash vectors, unchanged legacy framing; no typed graph/record parity claim |
-| EVID-008 | crates/tig-core/tests/tree.rs; cargo test --test tree --locked | passed | 16 public-API pure tests: pinned wire vectors, exact paths, malformed/missing nodes, bounded sparse edits, old-root preservation and injected metadata write failure; no durable store |
-| EVID-009 | crates/tig-core/tests/worktree.rs; cargo test --test worktree --locked | passed | 22 pure public-API tests for isolated bindings, exact candidates, three-way conflicts, shared budgets and retry; no payload publication, Git integration or durable ownership |
-| EVID-010 | crates/tig-store/tests/publication.rs; cargo test -p tig-store --locked | passed | 24 entries including child helper; real temporary stores, ten protocol faults, four abrupt process exits, threaded writers; process restart only, no power-loss/capacity/fence acceptance |
+| EVID-007 | crates/core/tests/canonical.rs; cargo test --test canonical --locked | passed | 10 Art donor canonical/hash vectors, unchanged legacy framing; no typed graph/record parity claim |
+| EVID-008 | crates/core/tests/tree.rs; cargo test --test tree --locked | passed | 16 public-API pure tests: pinned wire vectors, exact paths, malformed/missing nodes, bounded sparse edits, old-root preservation and injected metadata write failure; no durable store |
+| EVID-009 | crates/core/tests/worktree.rs; cargo test --test worktree --locked | passed | 22 pure public-API tests for isolated bindings, exact candidates, three-way conflicts, shared budgets and retry; no payload publication, Git integration or durable ownership |
+| EVID-010 | crates/store/tests/publication.rs; cargo test -p git-asset-store --locked | passed | 24 entries including child helper; real temporary stores, ten protocol faults, four abrupt process exits, threaded writers; process restart only, no power-loss/capacity/fence acceptance |
 | EVID-011 | docs/BACKEND-DECISION.md; official sources and REEL source audit | inspected | WP-000 choose/defer scope: local first slice, service/remote providers deferred; not installation, comparative benchmark or deployment approval |
-| EVID-012 | crates/tig-core/tests/capacity.rs; cargo test -p tig-core --test capacity --locked | passed | 18 pure single-authority tests for reserved/in-flight/allocated handoff, sample watermarks, epochs and bounds; no persistent or physical reservation service |
-| EVID-013 | crates/tig-store/tests/fences.rs and src/local.rs release_tests; cargo test -p tig-store --test fences --locked; cargo test -p tig-store --lib --locked local::release_tests | passed | 12 entries including helper/release unit: real local object OS fences and two child processes; no full claims, hostile namespace, network provider or removal authorization |
-| EVID-014 | crates/tig-store/src/ledger_tests.rs; cargo test -p tig-store --lib --locked ledger::tests | passed | 19 entries including helper: temporary SQLite replay/commit faults, four child processes, concurrency, witness rollback and freshness; no physical admission/full restore/power-loss proof |
-| EVID-015 | crates/tig-store/src/accounted_tests.rs; cargo test -p tig-store --lib --locked accounted::tests | passed | 20 entries including helper: actual temporary publication, four injected bridge boundaries, three child exits and measured scoped file data; no full-volume/free-space enforcement/retirement proof |
-| EVID-016 | crates/tig-store/src/local_capacity_tests.rs; cargo test -p tig-store --lib --locked local_capacity::tests | passed | 12 entries: actual temporary-root available-space sampling, publication, freshness/replay/failure, shared-domain and racing allocation; no native volume/quota enrollment authority or full-device enforcement |
-| EVID-017 | crates/tig-store/src/accounted/cleanup_tests.rs; cargo test -p tig-store --lib --locked accounted::cleanup::tests | passed | 23 entries including helper: bounded read-only preview, explicit discard, durable cancellation, real private partial removal, stale-writer/fault/retry, actual producer interruption and three cleanup child exits; no final-object eviction/full reclaim/restore authority |
-| EVID-018 | crates/tig-store/src/replica_tests.rs; cargo test -p tig-store --lib --locked replica::tests | passed | 20 entries including helper: exact completed-byte verification, live object guard/freshness, declared-domain coverage, historical record bounds and process exit; no durable retention, native independence or eviction authority |
-| EVID-019 | crates/tig-store/src/retention_tests.rs; cargo test -p tig-store --lib --locked retention::tests | passed | 21 entries including helper: budgeted immutable owner-scoped local claims, restart enforcement, concurrent last-slot race, exact grants/accounting and three child exits; no release/handoff, native independence, restore authority or final-object eviction |
-| EVID-020 | crates/tig-store/src/retention/handoff_tests.rs; cargo test -p tig-store --lib --locked retention::handoff::tests | passed | 16 entries including helper: exact owner handoff, preserved payloads, six fault boundaries, reciprocal guards, onward custody and three child exits; no payload eviction/full authority/native independence |
-| EVID-022 | crates/tig-git/tests/codec.rs; cargo test -p tig-git --test codec --locked | passed | 12 Windows entries: strict pointers/protocol, three layouts, exact authorization, corruption, admission, bounded state and ownership failures; Linux adds a Unix cross-filesystem entry (requires /dev/shm) |
-| EVID-023 | crates/tig-git/tests/client.rs; cargo test -p tig-git --test client --locked | passed | Three real Git LFS temporary-repo tests: current/prior checkout, parallel clients, corruption then repair; Windows client 3.4.0; CI records its client; no upload, native enrollment or private consumer acceptance |
-| EVID-024 | crates/tig-git/tests/source.rs; cargo test -p tig-git --test source --locked | passed | 16 temporary Git fixtures: exact staged/commit views, partial staging, conflicts, linked/bare repos, SHA-1/SHA-256, strict scope, missing/corrupt objects, no promisor hydration and budget refusal; no durable claim adoption or global attribute-aware coverage |
-| EVID-025 | crates/tig-git/tests/client.rs; cargo test -p tig-git --test client --locked exact_git_selection | passed | One real-client source-to-transfer fixture: current commit authorizes current bytes, existing historical cache bytes remain unauthorized until explicit old-commit selection, then checkout succeeds; no retention/eviction or native adoption proof |
-| EVID-026 | crates/tig-store/tests/source_claims.rs; cargo test -p tig-store --test source_claims --locked | passed | 19 entries including helper: durable root roles, owner/revision fences, abort/withdraw/retire, concurrent writers, 15 injected command boundaries, six actual child exits, corruption/known rollback, source/history limits and a 16,384-command replay/cap fixture; no root closure, global coverage, physical custody or eviction proof |
-| EVID-027 | crates/tig-git/tests/source.rs; cargo test -p tig-git --test source --locked | passed | Two added fixtures: deterministic exact source/scope context and Git commit-to-durable-root handoff with metadata outside Git, unchanged inputs reused, predecessor retirement and another branch retaining old inputs; no automated native hook/cutover |
-| EVID-028 | crates/tig-store/tests/metadata.rs; cargo test -p tig-store --test metadata --locked | passed | 14 bounded provider/reader entries including helper: flush, dedup, restart, three actual child exits, faults/concurrency, logical/page bounds, corrupt/missing data, known rollback and read-only access; no complete custody/admission proof |
-| EVID-029 | crates/tig-store/tests/metadata.rs; cargo test -p tig-store --test metadata --locked half_million -- --nocapture | passed | One actual disk-backed 500,000-binding synthetic build; reopen uses no node scan, bounded point reads, 13 sparse replacements, old/new roots preserved; 391 new nodes and 212,992 database-growth bytes in local Windows run; not native media/graph scale or eviction evidence |
-| EVID-030 | crates/tig-core/tests/tree.rs and crates/tig-git/tests/client.rs; cargo test --workspace --locked | passed | Two new cases: explicit inventory limits classify as Budget, plus persisted read-only metadata -> source journal -> actual Git LFS; unflushed roots refuse access, flushed roots work; legacy profiles retain defaults; no native cutover |
-| EVID-031 | crates/tig-assets/tests/native.rs; cargo test -p tig-assets --test native --locked | passed | 12 pure native intake cases: separate exact pins, raw whitespace identity, changed definitions/schema/ID, declared fields/defaults, ordered mixed streams, duplicate slots/conflicting sizes, planned null, strict malformed/optional-null/budget refusals; no semantic rule execution or complete graph authority |
-| EVID-032 | crates/tig-assets/tests/cli.rs; cargo test -p tig-assets --test cli --locked | passed | Three actual read-only CLI fixtures with scene and invoice consumers, redacted summaries, exact slot lookup, missing/changed inputs and bounded file reads; no private media, cache attachment or native producer integration |
-| EVID-034 | crates/tig-git/tests/native_source.rs; cargo test -p tig-git --features assets --test native_source --locked | passed | 13 real Git/CLI cases: exact commits/indexes, unchanged-parent cel update, explicit retained metadata, duplicate/conflict/mode/budget refusal, generic ordered-stream consumer, redaction and 1,000-record multi-batch capture followed by lookup with Git directory detached; metadata only, no payload or renderer/custody proof |
-| EVID-036 | crates/tig-store/tests/existing.rs; cargo test -p tig-store --test existing --locked | passed | Ten Windows entries including a helper and an actual child exit: three existing layouts, held read/seek, corrupt/size refusal, no creation, budgets/permit release, Windows object/ancestor sharing protection and cooperative aliases; Linux has an additional symlink case; no custody/eviction proof |
-| EVID-037 | crates/tig-git/tests/native_source.rs and tests/client.rs; cargo test -p tig-git --all-features --test native_source --test client --locked | passed | Two new ID-to-byte/explicit-CLI cases plus real LFS handoff while a cooperative verified reader holds the same object; metadata-only lookup remains independent; no native renderer or global source/job qualification |
-| EVID-035 | crates/tig-git/src/cache.rs; cargo test -p tig-git --locked | passed | Forced second-handle probe/sample supersedes the first; admission resamples and succeeds on attempt two, without global locking or spending rejected observations; five actual LFS client regressions also pass |
-| EVID-033 | crates/tig-assets/tests/graph.rs; cargo test -p tig-assets --test graph --locked | passed | 34 native graph cases: exact/snapshot-selected references, unchanged parents after a cel edit, historical view/frozen pin behavior, missing/ambiguous/checkpoint refusals, typed edges/cycles, caller-admitted coverage, shared-use primary delta, explicit payload selectors, binding/policy digests and a 1,011-node/1,000-primary synthetic hierarchy; no source/job completeness, private producer, native 500k scale or eviction authority |
+| EVID-012 | crates/core/tests/capacity.rs; cargo test -p git-asset-core --test capacity --locked | passed | 18 pure single-authority tests for reserved/in-flight/allocated handoff, sample watermarks, epochs and bounds; no persistent or physical reservation service |
+| EVID-013 | crates/store/tests/fences.rs and src/local.rs release_tests; cargo test -p git-asset-store --test fences --locked; cargo test -p git-asset-store --lib --locked local::release_tests | passed | 12 entries including helper/release unit: real local object OS fences and two child processes; no full claims, hostile namespace, network provider or removal authorization |
+| EVID-014 | crates/store/src/ledger_tests.rs; cargo test -p git-asset-store --lib --locked ledger::tests | passed | 19 entries including helper: temporary SQLite replay/commit faults, four child processes, concurrency, witness rollback and freshness; no physical admission/full restore/power-loss proof |
+| EVID-015 | crates/store/src/accounted_tests.rs; cargo test -p git-asset-store --lib --locked accounted::tests | passed | 20 entries including helper: actual temporary publication, four injected bridge boundaries, three child exits and measured scoped file data; no full-volume/free-space enforcement/retirement proof |
+| EVID-016 | crates/store/src/local_capacity_tests.rs; cargo test -p git-asset-store --lib --locked local_capacity::tests | passed | 12 entries: actual temporary-root available-space sampling, publication, freshness/replay/failure, shared-domain and racing allocation; no native volume/quota enrollment authority or full-device enforcement |
+| EVID-017 | crates/store/src/accounted/cleanup_tests.rs; cargo test -p git-asset-store --lib --locked accounted::cleanup::tests | passed | 23 entries including helper: bounded read-only preview, explicit discard, durable cancellation, real private partial removal, stale-writer/fault/retry, actual producer interruption and three cleanup child exits; no final-object eviction/full reclaim/restore authority |
+| EVID-018 | crates/store/src/replica_tests.rs; cargo test -p git-asset-store --lib --locked replica::tests | passed | 20 entries including helper: exact completed-byte verification, live object guard/freshness, declared-domain coverage, historical record bounds and process exit; no durable retention, native independence or eviction authority |
+| EVID-019 | crates/store/src/retention_tests.rs; cargo test -p git-asset-store --lib --locked retention::tests | passed | 21 entries including helper: budgeted immutable owner-scoped local claims, restart enforcement, concurrent last-slot race, exact grants/accounting and three child exits; no release/handoff, native independence, restore authority or final-object eviction |
+| EVID-020 | crates/store/src/retention/handoff_tests.rs; cargo test -p git-asset-store --lib --locked retention::handoff::tests | passed | 16 entries including helper: exact owner handoff, preserved payloads, six fault boundaries, reciprocal guards, onward custody and three child exits; no payload eviction/full authority/native independence |
+| EVID-022 | crates/git-asset/tests/codec.rs; cargo test -p git-asset --test codec --locked | passed | 12 Windows entries: strict pointers/protocol, three layouts, exact authorization, corruption, admission, bounded state and ownership failures; Linux adds a Unix cross-filesystem entry (requires /dev/shm) |
+| EVID-023 | crates/git-asset/tests/client.rs; cargo test -p git-asset --test client --locked | passed | Three real Git LFS temporary-repo tests: current/prior checkout, parallel clients, corruption then repair; Windows client 3.4.0; CI records its client; no upload, native enrollment or private consumer acceptance |
+| EVID-024 | crates/git-asset/tests/source.rs; cargo test -p git-asset --test source --locked | passed | 16 temporary Git fixtures: exact staged/commit views, partial staging, conflicts, linked/bare repos, SHA-1/SHA-256, strict scope, missing/corrupt objects, no promisor hydration and budget refusal; no durable claim adoption or global attribute-aware coverage |
+| EVID-025 | crates/git-asset/tests/client.rs; cargo test -p git-asset --test client --locked exact_git_selection | passed | One real-client source-to-transfer fixture: current commit authorizes current bytes, existing historical cache bytes remain unauthorized until explicit old-commit selection, then checkout succeeds; no retention/eviction or native adoption proof |
+| EVID-026 | crates/store/tests/source_claims.rs; cargo test -p git-asset-store --test source_claims --locked | passed | 19 entries including helper: durable root roles, owner/revision fences, abort/withdraw/retire, concurrent writers, 15 injected command boundaries, six actual child exits, corruption/known rollback, source/history limits and a 16,384-command replay/cap fixture; no root closure, global coverage, physical custody or eviction proof |
+| EVID-027 | crates/git-asset/tests/source.rs; cargo test -p git-asset --test source --locked | passed | Two added fixtures: deterministic exact source/scope context and Git commit-to-durable-root handoff with metadata outside Git, unchanged inputs reused, predecessor retirement and another branch retaining old inputs; no automated native hook/cutover |
+| EVID-028 | crates/store/tests/metadata.rs; cargo test -p git-asset-store --test metadata --locked | passed | 14 bounded provider/reader entries including helper: flush, dedup, restart, three actual child exits, faults/concurrency, logical/page bounds, corrupt/missing data, known rollback and read-only access; no complete custody/admission proof |
+| EVID-029 | crates/store/tests/metadata.rs; cargo test -p git-asset-store --test metadata --locked half_million -- --nocapture | passed | One actual disk-backed 500,000-binding synthetic build; reopen uses no node scan, bounded point reads, 13 sparse replacements, old/new roots preserved; 391 new nodes and 212,992 database-growth bytes in local Windows run; not native media/graph scale or eviction evidence |
+| EVID-030 | crates/core/tests/tree.rs and crates/git-asset/tests/client.rs; cargo test --workspace --locked | passed | Two new cases: explicit inventory limits classify as Budget, plus persisted read-only metadata -> source journal -> actual Git LFS; unflushed roots refuse access, flushed roots work; legacy profiles retain defaults; no native cutover |
+| EVID-031 | crates/model/tests/native.rs; cargo test -p git-asset-model --test native --locked | passed | 12 pure native intake cases: separate exact pins, raw whitespace identity, changed definitions/schema/ID, declared fields/defaults, ordered mixed streams, duplicate slots/conflicting sizes, planned null, strict malformed/optional-null/budget refusals; no semantic rule execution or complete graph authority |
+| EVID-032 | crates/model/tests/cli.rs; cargo test -p git-asset-model --test cli --locked | passed | Three actual read-only CLI fixtures with scene and invoice consumers, redacted summaries, exact slot lookup, missing/changed inputs and bounded file reads; no private media, cache attachment or native producer integration |
+| EVID-034 | crates/git-asset/tests/native_source.rs; cargo test -p git-asset --features assets --test native_source --locked | passed | 13 real Git/CLI cases: exact commits/indexes, unchanged-parent cel update, explicit retained metadata, duplicate/conflict/mode/budget refusal, generic ordered-stream consumer, redaction and 1,000-record multi-batch capture followed by lookup with Git directory detached; metadata only, no payload or renderer/custody proof |
+| EVID-036 | crates/store/tests/existing.rs; cargo test -p git-asset-store --test existing --locked | passed | Ten Windows entries including a helper and an actual child exit: three existing layouts, held read/seek, corrupt/size refusal, no creation, budgets/permit release, Windows object/ancestor sharing protection and cooperative aliases; Linux has an additional symlink case; no custody/eviction proof |
+| EVID-037 | crates/git-asset/tests/native_source.rs and tests/client.rs; cargo test -p git-asset --all-features --test native_source --test client --locked | passed | Two new ID-to-byte/explicit-CLI cases plus real LFS handoff while a cooperative verified reader holds the same object; metadata-only lookup remains independent; no native renderer or global source/job qualification |
+| EVID-035 | crates/git-asset/src/cache.rs; cargo test -p git-asset --locked | passed | Forced second-handle probe/sample supersedes the first; admission resamples and succeeds on attempt two, without global locking or spending rejected observations; five actual LFS client regressions also pass |
+| EVID-033 | crates/model/tests/graph.rs; cargo test -p git-asset-model --test graph --locked | passed | 34 native graph cases: exact/snapshot-selected references, unchanged parents after a cel edit, historical view/frozen pin behavior, missing/ambiguous/checkpoint refusals, typed edges/cycles, caller-admitted coverage, shared-use primary delta, explicit payload selectors, binding/policy digests and a 1,011-node/1,000-primary synthetic hierarchy; no source/job completeness, private producer, native 500k scale or eviction authority |
 | EVID-021 | historical consumer-readiness note at its pinned tree (generic successor: docs/CONSUMER-ADOPTION.md), docs/SOURCE-BUDGET.md | inspected | Read-only consumer/donor contract audit and source-only budget control; 500,000 is a configured inventory ceiling, not executed scale proof or cutover acceptance |
 
 The 2026-10-26 local Windows Rust 1.98.0 rerun passed EVID-001/002/007/008/009/010/012/013/014/015/016/017/018/019/020
@@ -574,14 +595,14 @@ Real Git LFS download integration is limited to EVID-023/025/030 synthetic tempo
 
 ## Stage review
 
-EVID-038: crates/tig-git/tests/native_source.rs,
+EVID-038: crates/git-asset/tests/native_source.rs,
 consumer_status_is_snapshot_pinned_and_never_default_debug_output. Passed locally:
 old/new committed views preserve draft/selected project values for identical
 payload bytes, change exact record identity, and omit status values from Debug.
 The API does not interpret those values as authority; CLI output is unchanged.
 
 Producer-applied six-role lenses: pass_with_risk. E-01: planned scenarios or an
-Art donor test count could inflate Tig evidence. Resolved by explicit designed/
+Art donor test count could inflate git-asset evidence. Resolved by explicit designed/
 inspected/passed scopes and no invented future evidence rows. Requirement closure
 still needs actual package-specific integration and validation records.
 
@@ -1055,7 +1076,7 @@ rollback. A separate explicit cross-artifact L2 test passes in 0.55s: a real chi
 exits after durable intent, then actual CLI status/cancel/retry processes preserve
 bytes and original publication identity with keeper/tree/namespace roots offline.
 That test is intentionally ignored in a library-only suite and explicitly run
-with a freshly built TIG_RETIREMENT_CLI artifact; both CI platforms require it.
+with a freshly built GIT_ASSET_RETIREMENT_CLI artifact; both CI platforms require it.
 Do not count the ordinary ignored entry as executed evidence.
 
 Final locked default/all-feature workspace suites, strict all-feature/all-target
@@ -1180,7 +1201,7 @@ all-target Clippy reran successfully afterward. Other package implementations
 were unchanged. Standalone Git, fmt, explicit retirement CLI qualification and
 portable L0 pass. Hosted current-head full-suite verification remains separate.
 
-The pre-pair tig-source binary is built from exact inputd81cabe into an isolated
+The pre-pair git-asset-source binary is built from exact inputd81cabe into an isolated
 external target. It successfully inspects newly written pair history and recovers
 both original command receipts. The compatibility test was explicitly executed
 both directly from the all-feature test artifact (0.39s) and through the exact
@@ -1201,22 +1222,22 @@ metadata expiry, large-file and journal continuation gates remain required.
 Input a6783814c22c5d1de01a95fb026f05e8bd8c400b; implementation
 74327391d8c53e3fe9295ba5a19c3a34b7dbe985. Scope/controls/entry/exit and
 GIT/PROVIDER L0/L1/L2: [PLACEMENT-RECONCILIATION](../../specs/PLACEMENT-RECONCILIATION.md).
-Generic tig-store requirements/pages reuse existing accounted publication,
+Generic git-asset-store requirements/pages reuse existing accounted publication,
 retention/handoff, managed retirement/cancellation/reacquisition and scoped
 all-namespace/provider fencing. No new persistent journal or event encoding.
 
 Executed local evidence, in external build/temp roots:
 
-- `cargo test -p tig-store --lib --all-features --locked placement::tests -- --nocapture`:
+- `cargo test -p git-asset-store --lib --all-features --locked placement::tests -- --nocapture`:
   sixteen entries, including one child helper and one actual process exit after
   backup publication. Replacement, job-end demotion, shared bytes, backup outage/
   catch-up, known acknowledged loss, late claim, reader hold with unrelated object
   progress, renewed-demand cancellation, original publication recovery, bounded
   streaming, untracked managed-copy refusal, pagination and provider-order reuse.
-- `cargo test -p tig-store --lib --locked source_claims::admission::tests::placement_requirements -- --nocapture`:
+- `cargo test -p git-asset-store --lib --locked source_claims::admission::tests::placement_requirements -- --nocapture`:
   two new projection/aggregate-budget cases. Current/history precedence is projected
   without commands; incomplete closure holds and namespaces share one work budget.
-- `cargo test -p tig-git --test lifecycle --all-features --locked -- --nocapture`:
+- `cargo test -p git-asset --test lifecycle --all-features --locked -- --nocapture`:
   twelve actual Git/CLI entries, including three added operator composition cases.
   A real merge to main copies/retains/demotes, a no-op needs no original source,
   and revert reacquires exact old bytes. Private permissions default disabled;
@@ -1231,10 +1252,10 @@ Executed local evidence, in external build/temp roots:
   workspace Clippy, standalone Git check, fmt, validator/pins and diff checks pass.
 - `cargo build --workspace --all-features --bins --locked`, then explicit
   `retirement::tests::explicit_cli_pending_cancellation_qualification -- --ignored --exact`
-  with the fresh TIG_RETIREMENT_CLI succeeds. Clean pinned inputd81cabe rebuilt
-  tig-source separately; explicit
+  with the fresh GIT_ASSET_RETIREMENT_CLI succeeds. Clean pinned inputd81cabe rebuilt
+  git-asset-source separately; explicit
   `source_claims::admission::tests::baseline_cli_replays_atomic_pairs_without_format_migration -- --ignored --exact`
-  with TIG_BASELINE_SOURCE_CLI succeeds. Ordinary ignored entries are not proof.
+  with GIT_ASSET_BASELINE_SOURCE_CLI succeeds. Ordinary ignored entries are not proof.
 
 Review corrected cancellation effect reporting and deterministic keeper selection
 across provider reordering; a new fixture's unsupported bare managed publication
@@ -1268,7 +1289,7 @@ intended-use rehearsal and producer review. It closes no full work package.
   backdated not-before, immutable reusable workflow and disabled/public-listener
   refusal. Thirteen actual Git/lifecycle cases retain the prior behavior and add
   exact local listing/root/context compatibility through CommittedSource.
-- Final all-feature tig-git library/authentication/lifecycle suites pass after
+- Final all-feature git-asset library/authentication/lifecycle suites pass after
   the time correction. Default workspace, strict all-feature/all-target workspace
   Clippy in a fresh target, standalone Git, fmt, 70 shipped Node/client flows and
   three restore-helper tests pass. Both ignored cross-artifact qualifiers were
@@ -1282,7 +1303,7 @@ intended-use rehearsal and producer review. It closes no full work package.
 
 The isolated all-feature workspace rerun passes, including the 500000-binding
 metadata case, before the final issuer-time correction; the final all-feature
-tig-git library (37 entries), authentication (eight) and Git/lifecycle (thirteen)
+git-asset library (37 entries), authentication (eight) and Git/lifecycle (thirteen)
 run after that correction passes. Other runtime packages are unchanged by it.
 Earlier failures were not waived: one shared-target focused build replaced a CLI
 during a broad test run, and stale local compiler metadata required fresh isolated
@@ -1316,7 +1337,7 @@ offline status preserve exact acknowledged state. No Git index/worktree is writt
 by the implementation. The helper's ordinary no-op entry is not abrupt-exit proof;
 the parent explicitly launches it and verifies exit73 at both requested stages.
 
-Actual tig-lifecycle index CLI -> three temporary providers copies working and
+Actual git-asset-lifecycle index CLI -> three temporary providers copies working and
 retained bytes, keeps prior bytes working for an enrolled active job, then moves
 those prior bytes to history/backup after owner job withdrawal during a no-op
 index reconciliation. Old bytes are read back through the protected reader;
@@ -1363,7 +1384,7 @@ draft, end a branch, preserve an active job, then demote old working bytes after
 job end on no-op catch-up. Backup/history readback verifies exact bytes; retries
 stream zero new bytes. Missing metadata, unadopted/conflicted stage, ref failure/
 reappearance, condition drift, disabled permission and offline status stay distinct.
-A signed HTTP request with a withdrawn Tig source and unchanged GitHub ref reports
+A signed HTTP request with a withdrawn git-asset source and unchanged GitHub ref reports
 pending rather than false convergence. Shared private preflight validates roots
 before mutation; committed/index completion also checks current admitted selection.
 
@@ -1473,3 +1494,29 @@ is historical, not newly rerun locally. Hosted exact-head checks, native clock/
 authority/provider/large-file/restore, bulk age/category/native selection and
 consent/source settlement, metadata lifetime/continuation and human acceptance
 remain open. The full goal is not complete; no live stores or upgrades were used.
+
+## EVID-123: git-asset product rename
+
+Input 4ce4da04cd92947a49b8f6c33c0f37ccfe8751b9. Existing public repository
+renamed in place, preserving visibility/history. Source and product names now
+use git-asset while exact existing-data identities remain.
+[Producer record](../reviews/2026-11-20-git-asset-rename.md) separates
+implementation, verification, synthetic intended-use validation and trace.
+No live cache operations, private-archive import or native-publication claim.
+
+## EVID-124: README-only CI
+
+Input e78cabff8bb6d49f80065b924c2f685c6a3e3060.
+[Producer record](../reviews/2026-11-20-readme-ci.md) separates implementation,
+verification, intended-use validation and trace. Eight real Git fixtures pass.
+README is mutable narrative, checked directly and excluded from current review
+digests; formal source/spec targets remain pinned. Hosted full and README-only
+proofs remain exact-head GitHub outcomes, not producer approval.
+
+## EVID-140: integrate open PR source
+
+Inputs stack66f8b4b and maine78cabf plus landed README/CI source.
+[Producer record](../reviews/2026-11-20-open-pr-integration.md) separates
+implementation, verification, intended-use validation and trace. Imported
+EVID-120..129 use current aliases130..139. Original commits and legacy data
+identities remain; operational activation and full product acceptance stay open.

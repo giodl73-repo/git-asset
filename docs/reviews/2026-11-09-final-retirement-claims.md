@@ -9,7 +9,7 @@ verification, shared SourceJournal open ancestry, synthetic tests and the
 independently generated roster/scope vector. No provider release/removal format,
 payload mutation, live enrollment or new cache engine is in this implementation.
 Method: one producer applying all six [.roles](../../.roles/ROLE.md) checklists.
-Owner of every finding: Tig maintainer with the named lens. No delegated,
+Owner of every finding: git-asset maintainer with the named lens. No delegated,
 independent reviewer or human approval is claimed.
 
 ## Implementation

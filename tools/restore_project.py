@@ -1,4 +1,4 @@
-"""Explicit consumer orchestration; byte reads/copies are delegated to Tig CLIs."""
+"""Explicit consumer orchestration; byte reads/copies are delegated to git-asset CLIs."""
 from __future__ import annotations
 
 import argparse
@@ -68,7 +68,7 @@ def main() -> None:
         raw = git_cmd("show", spec)
         return json.loads(raw)
 
-    manifest = document("tig/project.json")
+    manifest = document("git-asset/project.json")
     if manifest["schema"] != "tig.project-restore.experimental-1":
         raise ValueError("unsupported project manifest")
     entries = manifest["records"]
@@ -80,7 +80,7 @@ def main() -> None:
     destinations = set()
     for name in entries:
         name = relative(name)
-        if not name.startswith("tig/records/") or not name.endswith(".tig"):
+        if not name.startswith("git-asset/records/") or not name.endswith(".tig"):
             raise ValueError("record outside declared scope")
         record = document(name)
         destination = relative(record["authored"]["restore_path"])
@@ -97,15 +97,15 @@ def main() -> None:
         records.append((record["id"], stream["slot"], destination))
 
     profile = {"schema": "tig.asset-resolver-profile.experimental-1", "git_executable": str(Path(git).resolve()),
-               "repository": str(repo), "commit": revision, "records": ["tig/records"],
-               "definitions": ["tig/definitions"], "byte_source": {
+               "repository": str(repo), "commit": revision, "records": ["git-asset/records"],
+               "definitions": ["git-asset/definitions"], "byte_source": {
                    "places": [{"root": str(store), "layout": "reel-cas"}],
                    "required": "prevent-mutation" if os.name == "nt" else "cooperative-immutable",
                    "limits": {"verify_millis": 300000}}}
     suffix = ".exe" if os.name == "nt" else ""
-    resolve = str((a.bin_dir / ("tig-resolve" + suffix)).resolve(strict=True))
-    restore = str((a.bin_dir / ("tig-restore" + suffix)).resolve(strict=True))
-    with tempfile.TemporaryDirectory(prefix="tig-explicit-restore-") as temporary:
+    resolve = str((a.bin_dir / ("git-asset-resolve" + suffix)).resolve(strict=True))
+    restore = str((a.bin_dir / ("git-asset-restore" + suffix)).resolve(strict=True))
+    with tempfile.TemporaryDirectory(prefix="git-asset-explicit-restore-") as temporary:
         profile_path = Path(temporary) / "profile.json"
         profile_path.write_text(json.dumps(profile), encoding="utf-8")
         # Verify the complete requested set before making any project directories.

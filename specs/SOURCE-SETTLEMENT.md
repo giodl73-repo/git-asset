@@ -70,7 +70,7 @@ authority migration, final deletion, metadata expiry and user adoption stay open
 
 ## Operator interface
 
-`tig-lifecycle settle` provides plan PROFILE, status/apply/resume PROFILE PLAN
+`git-asset-lifecycle settle` provides plan PROFILE, status/apply/resume PROFILE PLAN
 and reconcile PROFILE PLACEMENT_PROFILE [CURSOR]. Describe advertises these
 separately. Strict `tig.source-settlement-profile.design-1` contains enrollment,
 git_executable, repository_root, source_limits, namespace_root, namespace_minimum,

@@ -1,11 +1,11 @@
 [workspace]
-members = ["crates/tig-core", "crates/tig-store", "crates/tig-git", "crates/tig-assets"]
+members = ["crates/core", "crates/store", "crates/git-asset", "crates/model"]
 resolver = "3"
 
 [workspace.package]
 edition = "2024"
 license = "MIT"
-repository = "https://github.com/giodl73-repo/tig"
+repository = "https://github.com/giodl73-repo/git-asset"
 
 [workspace.dependencies]
 serde = { version = "=1.0.228", features = ["derive"] }

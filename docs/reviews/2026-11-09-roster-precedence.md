@@ -14,7 +14,7 @@ Reviewed source hashes are recorded in foundation-targets.json.
 
 One producer applies all six [.roles checklists](../../.roles/ROLE.md).
 No delegation, independent review, human acceptance or deployment authority.
-Owner of each finding: Tig maintainer using the named lens. This closes PL-01
+Owner of each finding: git-asset maintainer using the named lens. This closes PL-01
 only for the explicit fresh roster profile; legacy namespace-local enrollments
 retain their original semantics and need deliberate future migration/adoption.
 
@@ -37,7 +37,7 @@ Strict all-feature/all-target workspace Clippy passes. Fmt, portable validation,
 reviewed hashes and diff checks pass for implementationada8b21.
 
 Explicit ignored/exact pre-change writer qualification passes using the pinned
-273e639 tig-storage artifact: legacy planning succeeds; final-capable and roster
+273e639 git-asset-storage artifact: legacy planning succeeds; final-capable and roster
 binding planning refuse; source/ledger/payloads remain. The existing hosted step
 builds that exact old artifact on each platform and runs this expanded test.
 An ordinary ignored test entry is not executed proof.
@@ -51,18 +51,18 @@ or source event format changed; pre-pair reader, frontend/restore and native
 evidence remain historical unless explicitly rerun. Exact commands:
 
 ```text
-cargo test -p tig-store --lib placement::tests --locked
-cargo test -p tig-store --lib store_protection::tests --locked
+cargo test -p git-asset-store --lib placement::tests --locked
+cargo test -p git-asset-store --lib store_protection::tests --locked
 cargo test --workspace --locked
 cargo build --workspace --all-features --bins --locked
 cargo test --workspace --all-features --locked
 cargo clippy --workspace --all-features --all-targets --locked -- -D warnings
-cargo check -p tig-git --no-default-features --locked
-cargo test -p tig-store --lib --locked retirement::tests::explicit_cli_pending_cancellation_qualification -- --ignored --exact
-cargo test -p tig-store --test retirement_cli --locked pre_final_writer_refuses_new_manifest_and_accepts_legacy_control -- --ignored --exact
+cargo check -p git-asset --no-default-features --locked
+cargo test -p git-asset-store --lib --locked retirement::tests::explicit_cli_pending_cancellation_qualification -- --ignored --exact
+cargo test -p git-asset-store --test retirement_cli --locked pre_final_writer_refuses_new_manifest_and_accepts_legacy_control -- --ignored --exact
 ```
 
-TIG_RETIREMENT_CLI names the fresh external all-feature binary; TIG_PRE_FINAL_CLI
+GIT_ASSET_RETIREMENT_CLI names the fresh external all-feature binary; GIT_ASSET_PRE_FINAL_CLI
 names the pinned273e639 external artifact. Hosted exact-head qualification remains
 separate from these local results and must be checked on the eventual PR head.
 

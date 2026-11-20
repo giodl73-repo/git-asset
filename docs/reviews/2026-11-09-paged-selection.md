@@ -12,7 +12,7 @@ Reviewed target hashes: foundation-targets.json.
 ## Method and producer findings
 
 One producer applies all six [.roles](../../.roles/ROLE.md) checklists. Owner of
-every finding: Tig maintainer using the named lens. These are producer checks,
+every finding: git-asset maintainer using the named lens. These are producer checks,
 not independent people, human acceptance or publication/deletion authority.
 Compare actual code, source/metadata effects and independent framing with the
 existing bounded bulk/source/provider boundaries. Keep NB-07 operationally open:
@@ -70,12 +70,12 @@ evidence is historical, not newly rerun here.
 Commands use explicit external build/temp roots and finite test threads:
 
 ```text
-cargo test -p tig-store --lib --locked final_retirement::paged::tests
-cargo clippy -p tig-store --all-targets --locked -- -D warnings
+cargo test -p git-asset-store --lib --locked final_retirement::paged::tests
+cargo clippy -p git-asset-store --all-targets --locked -- -D warnings
 cargo test --workspace --locked
 cargo test --workspace --all-features --locked
 cargo clippy --workspace --all-features --all-targets --locked -- -D warnings
-cargo check -p tig-git --no-default-features --locked
+cargo check -p git-asset --no-default-features --locked
 pwsh -NoProfile -File tools/validate.ps1
 git diff --check
 ```

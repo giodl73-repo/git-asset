@@ -1,6 +1,6 @@
 # Contributing
 
-Tig is experimental. Discuss public API/schema changes before relying on them;
+git-asset is experimental. Discuss public API/schema changes before relying on them;
 no compatibility or MSRV policy is promised yet. Use a focused branch and PR.
 Read AGENTS.md for repository controls and docs/ARCHITECTURE.md for boundaries.
 
@@ -15,7 +15,7 @@ Vendored checkers need no adjacent portfolio repository.
 cargo fmt --all -- --check
 cargo test --workspace --all-features --locked
 cargo clippy --workspace --all-features --all-targets --locked -- -D warnings
-cargo check -p tig-git --no-default-features --locked
+cargo check -p git-asset --no-default-features --locked
 python -B tools/test_restore_project.py
 pwsh -NoProfile -File tools/validate.ps1
 git diff --check

@@ -12,14 +12,14 @@ from contextlib import closing
 from pathlib import Path
 
 
-TABLES = ("events", "meta", "tig_activation")
+TABLES = ("events", "meta", "git_asset_activation")
 ACTIONS = ("INSERT", "UPDATE", "DELETE")
-FENCE_TABLE = "CREATE TABLE tig_activation(id INTEGER PRIMARY KEY CHECK(id=1),body BLOB NOT NULL CHECK(length(body)<=65536),hash TEXT NOT NULL)"
+FENCE_TABLE = "CREATE TABLE git_asset_activation(id INTEGER PRIMARY KEY CHECK(id=1),body BLOB NOT NULL CHECK(length(body)<=65536),hash TEXT NOT NULL)"
 
 
 def guard_sql(table, action):
-    return (f"CREATE TRIGGER tig_activation_{table}_{action} BEFORE {action} ON {table} "
-            "BEGIN SELECT RAISE(ABORT,'tig:sealed-source'); END")
+    return (f"CREATE TRIGGER git_asset_activation_{table}_{action} BEFORE {action} ON {table} "
+            "BEGIN SELECT RAISE(ABORT,'git-asset:sealed-source'); END")
 
 
 def canonical(value):
@@ -96,7 +96,7 @@ def seal_sql(db, expected, intent):
     if len(body) > 65536:
         raise ValueError("oversize fixture intent")
     db.execute(FENCE_TABLE)
-    db.execute("INSERT INTO tig_activation VALUES(1,?,?)", (body, digest(body)))
+    db.execute("INSERT INTO git_asset_activation VALUES(1,?,?)", (body, digest(body)))
     for table in TABLES:
         for action in ACTIONS:
             # These identifiers are fixed source literals, never caller input.
@@ -121,20 +121,20 @@ def delayed_writer(root):
         except sqlite3.DatabaseError as exc:
             if db.in_transaction:
                 db.execute("ROLLBACK")
-            refused = "tig:sealed-source" in str(exc)
+            refused = "git-asset:sealed-source" in str(exc)
         print(json.dumps({"refused": refused, "unchanged": checkpoint(db) == before}))
 
 
 def activation_status(db, minimum):
-    present = db.execute("SELECT count(*) FROM sqlite_master WHERE name='tig_activation'").fetchone()[0]
+    present = db.execute("SELECT count(*) FROM sqlite_master WHERE name='git_asset_activation'").fetchone()[0]
     if not present:
         return "hold"
     observed = dict(db.execute("SELECT name,sql FROM sqlite_master WHERE type='trigger'"))
-    expected = {f"tig_activation_{table}_{action}": guard_sql(table, action)
+    expected = {f"git_asset_activation_{table}_{action}": guard_sql(table, action)
                 for table in TABLES for action in ACTIONS}
     if observed != expected:
         return "hold"
-    row = db.execute("SELECT body,hash FROM tig_activation WHERE id=1").fetchone()
+    row = db.execute("SELECT body,hash FROM git_asset_activation WHERE id=1").fetchone()
     if row is None:
         return "hold"
     body, hash_value = row
@@ -197,14 +197,14 @@ def run(root):
         assert checkpoint(db) == original
         assert db.execute("SELECT count(*) FROM events").fetchone()[0] == 1
         assert db.execute("SELECT count(*) FROM sqlite_master WHERE type='trigger'").fetchone()[0] == 9
-        body, fence_hash = db.execute("SELECT body,hash FROM tig_activation WHERE id=1").fetchone()
+        body, fence_hash = db.execute("SELECT body,hash FROM git_asset_activation WHERE id=1").fetchone()
         assert body == canonical(intent) and fence_hash == digest(body)
         for table in TABLES:
             try:
                 db.execute(f"DELETE FROM {table}")
                 raise AssertionError("sealed row deletion unexpectedly succeeded")
             except sqlite3.DatabaseError as exc:
-                assert "tig:sealed-source" in str(exc)
+                assert "git-asset:sealed-source" in str(exc)
     other = root / "other-domain"
     create(other, "synthetic-other-domain")
     with closing(connect(other)) as db:
@@ -218,7 +218,7 @@ def run(root):
         db.execute("BEGIN IMMEDIATE")
         seal_sql(db, expected, dict(intent, source=expected))
         db.execute("ROLLBACK")
-        assert db.execute("SELECT count(*) FROM sqlite_master WHERE name='tig_activation' OR type='trigger'").fetchone()[0] == 0
+        assert db.execute("SELECT count(*) FROM sqlite_master WHERE name='git_asset_activation' OR type='trigger'").fetchone()[0] == 0
         db.execute("BEGIN IMMEDIATE")
         append(db, "after-rollback")
         db.execute("COMMIT")
@@ -229,11 +229,11 @@ def run(root):
         assert activation_status(db, minimum) == "matches-minimum"
         with closing(sqlite3.connect(root / "partial-fence.sqlite", isolation_level=None)) as partial:
             db.backup(partial)
-            partial.execute("DROP TRIGGER tig_activation_events_INSERT")
+            partial.execute("DROP TRIGGER git_asset_activation_events_INSERT")
             assert activation_status(partial, minimum) == "hold"
     with closing(sqlite3.connect((root / "pre-fence.sqlite").resolve().as_uri() + "?mode=rw", uri=True)) as restored:
         assert checkpoint(restored) == original  # Ordinary minimum cannot distinguish it.
-        assert restored.execute("SELECT count(*) FROM sqlite_master WHERE name='tig_activation'").fetchone()[0] == 0
+        assert restored.execute("SELECT count(*) FROM sqlite_master WHERE name='git_asset_activation'").fetchone()[0] == 0
         restore_holds = activation_status(restored, minimum) == "hold"
         assert restore_holds
         # Counterexample: a writer that ignores the retained minimum can fork.

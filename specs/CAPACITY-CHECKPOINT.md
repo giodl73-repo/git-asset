@@ -8,7 +8,7 @@ WP-003/004/006/007/013/015; REQ-001/003/004/005/006/007/009;
 SPEC-002/003/004/005/006/008/009/013/014; IF-002/003/004/005/006/008/012/013;
 PKG-001/002/003/009. RUST/PROVIDER/INTEGRATION profiles.
 
-Allowed: additive pure tig-core capacity checkpoint/tree codec, observed watermark
+Allowed: additive pure git-asset-core capacity checkpoint/tree codec, observed watermark
 tracking with unchanged existing transitions, explicit read-only existing ledger
 export through an admitted metadata NodeStore, and synthetic recovery/corruption/
 budget/concurrency vectors. No dependency, current journal/event/receipt format

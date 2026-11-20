@@ -12,7 +12,7 @@ engine, live roots, controller completion or deployment.
 ## Producer method and dispositions
 
 One producer applies all six [.roles](../../.roles/ROLE.md) checklists. Owner of
-each finding: Tig maintainer through the named lens. These are not independent
+each finding: git-asset maintainer through the named lens. These are not independent
 reviewers, human acceptance or deletion authority. Compare actual source/model
 transitions, metadata effects, immutable framing and old executable behavior;
 preserve the difference between prediction, acknowledgement and current protection.
@@ -58,17 +58,17 @@ test threads. Broad logs stay outside source. The old executable is preserved in
 its pinned target; no new build overwrites it.
 
 ```text
-cargo test -p tig-store --lib --locked final_retirement::paged
-cargo test -p tig-store --lib --locked source_claims::age::tests -- --include-ignored
-cargo test -p tig-store --lib --locked source_claims::subset::tests
+cargo test -p git-asset-store --lib --locked final_retirement::paged
+cargo test -p git-asset-store --lib --locked source_claims::age::tests -- --include-ignored
+cargo test -p git-asset-store --lib --locked source_claims::subset::tests
 cargo test --workspace --locked
 cargo test --workspace --all-features --locked
-cargo check -p tig-git --no-default-features --locked
+cargo check -p git-asset --no-default-features --locked
 cargo clippy --workspace --all-targets --locked -- -D warnings
 cargo clippy --workspace --all-features --all-targets --locked -- -D warnings
-cargo build -p tig-store --bin tig-storage --locked
-cargo test -p tig-store --lib --locked explicit_cli_bulk -- --ignored
-cargo test -p tig-store --lib --locked explicit_cli_pending_cancellation_qualification -- --ignored
+cargo build -p git-asset-store --bin git-asset-storage --locked
+cargo test -p git-asset-store --lib --locked explicit_cli_bulk -- --ignored
+cargo test -p git-asset-store --lib --locked explicit_cli_pending_cancellation_qualification -- --ignored
 pwsh -NoProfile -File tools/validate.ps1
 git diff --check
 ```

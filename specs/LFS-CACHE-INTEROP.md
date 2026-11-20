@@ -12,7 +12,7 @@ that capability boundary; it does not claim generic upload/remote support or
 replace producer ingest. REEL source e8fb31c6b21d74f111700d72076bb2a9d2d18176,
 crates/reel-assets/src/lib.rs and src/bin/reel-lfs.rs, supplies the audited CAS
 mapping, verified ordered lookup and disposable-link behavior. Software is MIT,
-Copyright (c) 2026 Gio Della-Libera; Tig's LICENSE preserves those terms. No private
+Copyright (c) 2026 Gio Della-Libera; git-asset's LICENSE preserves those terms. No private
 consumer records or media are ported.
 
 The standalone agent requires an explicit absolute trusted profile. It installs
@@ -20,7 +20,7 @@ no hooks/config, creates no cache roots and follows no network actions. Profiles
 pin an immutable authorization tree: OID path -> exact Object. Lookup reads only
 bounded metadata nodes, never a full inventory or a cache census. Unsupported
 pointer extensions/transforms reject rather than losing fields. Plain current
-and historical Hawser SHA-256 pointer forms are recognized; no Tig pointer dialect.
+and historical Hawser SHA-256 pointer forms are recognized; no git-asset pointer dialect.
 
 Read places have configured order and layout: REEL CAS objects/sha256/aa/OID,
 standard LFS objects/aa/bb/OID, or flat objects/OID. Disabled places are untouched.

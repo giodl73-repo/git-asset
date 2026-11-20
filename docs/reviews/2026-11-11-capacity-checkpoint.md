@@ -1,6 +1,6 @@
 # Paged working-state checkpoint review
 
-EVID-127 candidate; inputb177d4fee4ce84c0ee8a15486e731391e726fd9d.
+EVID-137 candidate; inputb177d4fee4ce84c0ee8a15486e731391e726fd9d.
 [CAPACITY-CHECKPOINT](../../specs/CAPACITY-CHECKPOINT.md) freezes controls,
 allowed scope, framing/budgets and L0/L1/L2 before code. The
 [full continuation target](../../specs/JOURNAL-CONTINUATION.md) remains owed;
@@ -8,7 +8,7 @@ working state alone cannot replace historical results or permit metadata expiry.
 
 Method: one producer inspected core accounting, ledger replay/output dependencies,
 canonical64KiB/4096-node budgets, existing Tree/NodeStore and source/minimum rules.
-All findings owned by Tig producer; these six lenses are not independent people,
+All findings owned by git-asset producer; these six lenses are not independent people,
 permission or human acceptance. Contract3afb135ff77b60bd8d77e112d24b43f66cb1f88e precedes implementation.
 Focused implementation evidence follows; full gates are recorded separately.
 

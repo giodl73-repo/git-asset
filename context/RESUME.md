@@ -1,4 +1,19 @@
-# Tig resume state
+# git-asset resume state
+
+## Current integration lane
+
+The canonical public product is git-asset, coordinating asset lifecycle over Git
+and git-annex. The user requests PR51..60 and README/CI PR62 on main. Owned
+integration work is integrate/open-prs; inputs and gates are in
+specs/OPEN-PR-INTEGRATION.md. Preserve all original commits, existing data
+identifiers and default-off prototype limits. After the requested PRs are on main, take up GitHub issue #64.
+No private controller worktree,
+live cache operation or unrelated S3 patch is included. Read Git/GitHub for exact
+branch/check/merge state. Imported stack evidence uses EVID-130..139; historical
+source 66f8b4b retains its original EVID-120..129 aliases.
+
+Historical qualification and development observations follow. They do not
+supersede the current user authorization to merge qualified source into main.
 
 Owned F:/src/Tig-worktrees/journal-activation, feat/journal-activation. Derive HEAD,
 status and exact process/command/phase/exit before relying on these observations.
@@ -91,7 +106,7 @@ profiles/500k/strict/standalone/bins/fresh14/catalogue pass. Complete_coursefals
 2PUT54B/28requests270GETB, custody/removalfalse, catalogue0payloads/auto_evictionfalse.
 Their released targets have since been reused above; never infer availability
 from historical FREE notes. Older details and failed diagnostics remain in Git
-history and the linked EVID-129/external evidence, not silently discarded.
+history and the linked EVID-139/external evidence, not silently discarded.
 
 ## Next work and open gates
 
@@ -134,17 +149,17 @@ hash raw tracked/untracked bytes except pinself; runtime_behavior_proven=false.
 Source/docs8MiB, individual128KiB; root REVIEW.md nearly full. Roles are producer
 checklists, not independent approval. No live-operation authority follows tests.
 
-- [EVID-129](../docs/reviews/2026-11-11-journal-activation.md): historical entries,
+- [EVID-139](../docs/reviews/2026-11-11-journal-activation.md): historical entries,
   failures, source hashes, engine/seal/scale/helper evidence and residual gates.
 - [Successor contract](../specs/JOURNAL-SUCCESSOR.md): current extraction and
   controller entry, same WP/REQ/SPEC/IF/PKG controls, RUST/PROVIDER/INTEGRATION L0-L2.
 - [CI review](../docs/reviews/2026-11-12-ci-partition.md): coverage/argument tests,
   exact20a/858/92a hosted proof, unchanged deadlines and scheduler limits.
-- [EVID-128](../docs/reviews/2026-11-11-ledger-history.md): PR59 ready, runtime1c1f3ca/
+- [EVID-138](../docs/reviews/2026-11-11-ledger-history.md): PR59 ready, runtime1c1f3ca/
   doc27e8792, local both500k/fresh14 and exact43119762645/43135967822 pass; no merge.
-- [EVID-127](../docs/reviews/2026-11-11-capacity-checkpoint.md): PR58 ready,9122ccf,
+- [EVID-137](../docs/reviews/2026-11-11-capacity-checkpoint.md): PR58 ready,9122ccf,
   exact43100104758 and both local profiles pass.
-- [EVID-126](../docs/reviews/2026-11-11-teaching-remote-publication.md): PR57 ready,
+- [EVID-136](../docs/reviews/2026-11-11-teaching-remote-publication.md): PR57 ready,
   11de7b7/b177d4f, exact43093171430 and14-step fixture; complete coursefalse.
 - Pinned F:/src/Tig-worktrees/activation-legacy-c833-v2 must not be reset/removed.
   External activation-legacy-evidence-66a09d34b4ba4318971df47b28918a5c/run retains

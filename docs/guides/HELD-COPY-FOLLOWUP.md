@@ -7,16 +7,16 @@ new exact-copy decision and requires a new final-loss approval. It makes no
 source-history changes. See [the contract](../../specs/HELD-COPY-FOLLOWUP.md).
 
 ```text
-tig-storage paged followup describe
-tig-storage paged followup plan PROFILE REQUEST
-tig-storage paged followup inspect PROFILE DECISION
-tig-storage paged followup subjects PROFILE DECISION [CURSOR]
-tig-storage paged followup actions PROFILE DECISION [CURSOR]
-tig-storage paged followup peak PROFILE DECISION
-tig-storage paged followup status PROFILE DECISION
-tig-storage paged followup apply PROFILE DECISION
-tig-storage paged followup resume PROFILE DECISION
-tig-storage paged followup cancel PROFILE DECISION
+git-asset-storage paged followup describe
+git-asset-storage paged followup plan PROFILE REQUEST
+git-asset-storage paged followup inspect PROFILE DECISION
+git-asset-storage paged followup subjects PROFILE DECISION [CURSOR]
+git-asset-storage paged followup actions PROFILE DECISION [CURSOR]
+git-asset-storage paged followup peak PROFILE DECISION
+git-asset-storage paged followup status PROFILE DECISION
+git-asset-storage paged followup apply PROFILE DECISION
+git-asset-storage paged followup resume PROFILE DECISION
+git-asset-storage paged followup cancel PROFILE DECISION
 ```
 
 The private `tig.held-copy-followup-profile.design-1` contains:
@@ -37,7 +37,7 @@ capacity authority with a fresh space probe when needed. Old outcomes, debits an
 spent reservations remain intact. Provider metadata is admitted only for attempted
 actions, and prospective reclaim cannot finance admission.
 
-Stage requested copies using the existing `tig-storage paged copies` command
+Stage requested copies using the existing `git-asset-storage paged copies` command
 with a separately enabled operator profile. The indexed request shape is unchanged.
 A `tig.held-copy-followup-request.design-1` contains `operation`, `original` (the
 exact original paged decision), `copies` (that asset-side index) and a new bounded

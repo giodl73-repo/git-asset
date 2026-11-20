@@ -10,7 +10,7 @@ this pin; subsequent review/checkpoint updates are documentation only.
 
 ## Implementation
 
-Implemented bounded candidate: tig-storage paged stages copy chunks and exact whole-selection
+Implemented bounded candidate: git-asset-storage paged stages copy chunks and exact whole-selection
 decisions, explains original scope with bounded cursors, reports witness peak
 and clock-free status, and composes separately approved apply/resume/cancel with
 the existing controller. Default permissions are false. Only the independently
@@ -75,7 +75,7 @@ invariant or full roadmap milestone closes from this component alone.
 ## Producer role review
 
 One producer applied all six [.roles](../../.roles/ROLE.md) checklists; no
-independent or human approval is claimed. Owner: Tig maintainers through the
+independent or human approval is claimed. Owner: git-asset maintainers through the
 named lens. Disposition: pass_with_risk for the locally qualified operator
 candidate, pending hosted checks. PO-07 and full product acceptance remain open.
 

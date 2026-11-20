@@ -53,7 +53,7 @@ concurrency and process interruption. Full VAL-002/003/004 remain OPEN.
 ## Implemented evidence
 
 EVID-020 adds 16 entries including a subprocess helper; workspace total 246.
-Commands: cargo test -p tig-store --lib --locked retention::handoff::tests;
+Commands: cargo test -p git-asset-store --lib --locked retention::handoff::tests;
 locked workspace, fmt and all-target Clippy. Temporary fixtures cover six injected
 boundaries, three actual child exits, exact authorization/budget/type checks,
 corruption/missing records, changed successor, preserved payloads and onward custody.

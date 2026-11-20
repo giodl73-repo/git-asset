@@ -3,7 +3,7 @@
 Public summary: consumer identifiers generalized; original notes retained privately.
 
 Entry/scope/controls: [ASSET-DELIVERY-HISTORY](../../specs/ASSET-DELIVERY-HISTORY.md).
-Targets: `tig-assets::delivery`, shared revision Budget/read-cache helpers, explicit
+Targets: `git-asset-model::delivery`, shared revision Budget/read-cache helpers, explicit
 publication ReceiptChecker/ParsedBinding extraction, delivery/receipt integration
 tests and the optional module export. Native types, status, payload selections,
 provider operations and consumer project records remain unchanged.

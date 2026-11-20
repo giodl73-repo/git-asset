@@ -3,10 +3,10 @@
 Implementation input503adca, based on1c253ea; subsequent fixture diagnostics
 and exact-source qualification are recorded separately. Controls/scope/entry/exit
 and GIT/PROVIDER L0/L1/L2 are in specs/GITHUB-TRIGGER.md. Targets: optional
-tig-git::github, CommittedSource, tig-trigger, shared private profile DTOs,
+git-asset::github, CommittedSource, git-asset-trigger, shared private profile DTOs,
 the inert Action client/example, qualification workflow and focused tests.
 Method: one producer applying all six .roles checklists, not independent people,
-human acceptance or deployment authority. Owner of each row: Tig maintainer using
+human acceptance or deployment authority. Owner of each row: git-asset maintainer using
 the named lens. No private cache or runtime consumer is attached.
 
 | Finding / role | Severity and disposition | Remaining proof / limitation |

@@ -35,7 +35,7 @@ Producer-applied lenses and disposition:
 - Recovery/compatibility: malformed explicit markers refuse rather than selecting
   a different target mode. Existing pointer/member-key policies retain behavior.
 
-Disposition: pass_with_risk for this bounded extension. Owner: Tig typed-asset
+Disposition: pass_with_risk for this bounded extension. Owner: git-asset typed-asset
 integration. No independent review or human publication acceptance is claimed.
 Actual provider reconciliation, all-family delivery completeness, production
 adoption and safe removal remain open. Exit: recorded local checks, exact-head

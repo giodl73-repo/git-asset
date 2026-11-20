@@ -53,5 +53,5 @@ one unit so all row forms share subject/length/target validation and report flag
 The added rule only changes exact row selection; it introduces no IO, recursion,
 new traversal or state transition. All policy roots retain the sixteen-rule bound.
 These are producer findings, not independent review or human approval. Owner:
-Tig maintainers. No work package, full requirement or intended-use cutover closes
+git-asset maintainers. No work package, full requirement or intended-use cutover closes
 from this component evidence.

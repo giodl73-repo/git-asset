@@ -6,7 +6,7 @@ SPEC-005/010/011; ARCH-003/005; IF-005/010/012; DES-004/005/009; PKG-004/006.
 RUST/GIT profiles: L0 fmt/Clippy/repository/canonical VTRACE; L1 exact combined
 payload selection, metadata/size accounting, missing/unsupported/gap/output and
 budget refusals; L2 two-cel/shared-cue revisions plus temporary Git archive replay
-and non-media source/control fixtures. Allowed scope: pure tig-assets graph,
+and non-media source/control fixtures. Allowed scope: pure git-asset-model graph,
 synthetic native source tests and bounded control docs. No provider operations,
 cache IO, job/retention authority or runtime switch. Exit: a complete declared
 Production query derives exact primary, control and source-interpretation object

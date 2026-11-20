@@ -9,7 +9,7 @@ L1 pure vectors/resource/adversarial ports and locked tests/strict Clippy,
 L2 fresh physical metadata finish/reopen/readback and admitted larger deltas.
 
 Entry: existing immutable Tree/NodeStore, exact expected root, caller-admitted
-TreeLimits, owned synthetic fixtures. Allowed code: tig-core tree staging and
+TreeLimits, owned synthetic fixtures. Allowed code: git-asset-core tree staging and
 its tests, physical metadata adopter fixture, linked contract/evidence/context.
 No journal/control/cap change, source initialization, payload IO or expiry.
 Exit: same canonical result as Tree::edit, shared whole-operation limits, only
@@ -72,7 +72,7 @@ nodes and measurements out of source. These are checklists, not independent revi
 Entry7ef73d328f5c2a28477d1f2a7993a8ed288f9978; current tree.rs raw SHA256
 E0DB21C5A25FA16A62ACE90FE35D0BC11E9DC027CDDAC93B28BE99C5BE7022DB.
 The private global index candidate/source pins and failed maximum are recorded
-in EVID-129. Full16384+16384 index append refuses Budget under the frozen512MiB/
+in EVID-139. Full16384+16384 index append refuses Budget under the frozen512MiB/
 2M-read limits. Do not increase those limits or change existing journal caps.
 
 Allowed optimization: Context::edit_path/check/change/find may combine leaf
@@ -90,7 +90,7 @@ roots must match; fewer counted reads must reflect fewer actual logical reads.
 ## Conditional insert amendment
 
 Input7ef73d328f5c2a28477d1f2a7993a8ed288f9978 plus source-pinned leaf candidate in
-EVID-129. Leaf-only optimization still refuses the fixed maximum budget. The
+EVID-139. Leaf-only optimization still refuses the fixed maximum budget. The
 separate operation-name absence pass costs350923 reads/146832332 bytes before
 staging; do not increase512MiB/2M or journal limits to accommodate duplicate work.
 

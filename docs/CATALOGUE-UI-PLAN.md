@@ -1,4 +1,4 @@
-# One catalog across Tig projects
+# One catalog across git-asset projects
 
 WP-015 / REQ-006/007/010, SPEC-014, IF-010/011/013, PKG-004/006/008;
 UI and INTEGRATION profiles. See [the contract](../specs/CATALOGUE.md) and
@@ -39,14 +39,14 @@ samples are explicit. These fixtures supplement real Rust API tests and do not
 claim browser layout, keyboard or live-project acceptance. Run them with:
 
 ```text
-node --test crates/tig-git/tests/work-selection.cjs crates/tig-git/tests/impact.cjs crates/tig-git/tests/ux-flows.cjs crates/tig-git/tests/compare-flows.cjs crates/tig-git/tests/object-flows.cjs
+node --test crates/git-asset/tests/work-selection.cjs crates/git-asset/tests/impact.cjs crates/git-asset/tests/ux-flows.cjs crates/git-asset/tests/compare-flows.cjs crates/git-asset/tests/object-flows.cjs
 ```
 
 Record Compare adds an in-memory exact baseline across project navigation and
 explicit comparison through the existing Rust agent operation. Its workflow
 fixtures cover equal bytes/different records, missing selections, changed
 definitions/slots, cross-project snapshots, baseline races, retry and privacy.
-Run them with `node --test crates/tig-git/tests/compare-flows.cjs`. The baseline
+Run them with `node --test crates/git-asset/tests/compare-flows.cjs`. The baseline
 does not reserve storage or silently resolve an older revision after a project
 changes snapshots. Full browser/provider acceptance remains separate.
 

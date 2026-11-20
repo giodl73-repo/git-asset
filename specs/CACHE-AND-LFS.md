@@ -3,15 +3,15 @@
 Status: target contract with a bounded download-only adapter subset implemented.
 See [executed compatibility scope](LFS-CACHE-INTEROP.md); full index/lifecycle and
 upload support remain open.
-Tig must be useful to a Git/LFS project without typed assets. Art's value is now
-planned as an optional Tig layer under docs/UNIFIED-DESIGN.md, not a prerequisite
+git-asset must be useful to a Git/LFS project without typed assets. Art's value is now
+planned as an optional git-asset layer under docs/UNIFIED-DESIGN.md, not a prerequisite
 for object lookup, placement or cache management. References to the prior Art
 client remain relevant to legacy compatibility, not a mandatory separate product.
 
 ## One access layer, multiple places
 
 ```text
-Git LFS pointer / exact Tig bundle path / direct object request
+Git LFS pointer / exact git-asset bundle path / direct object request
                             |
                   object identity + expected size
                             |
@@ -39,7 +39,7 @@ bounded recovery may enumerate a named provider scope; ordinary lookup may not.
 
 ## Creation and replacement are incremental operations
 
-Write through Tig's ingest/publication API where possible. Stream/hash under a
+Write through git-asset's ingest/publication API where possible. Stream/hash under a
 bounded reservation, verify expected identity/size when supplied, then promote
 immutably and publish a durable replica observation. Choose the configured final
 place up front; stage on that destination when supported rather than copying a
@@ -54,7 +54,7 @@ successful catalog update must not silently lose a completed physical object if
 the process crashes: recover through a durable scoped operation record and
 provider revalidation. Storage and catalog do not form one universal transaction.
 
-Events from Tig-managed writes update the catalog immediately. Filesystem
+Events from git-asset-managed writes update the catalog immediately. Filesystem
 watchers/provider events are optional hints for externally modified caches;
 duplicates, gaps, overflow and disconnects require explicit stale/unknown scope
 and bounded reconciliation. Cache generation changes invalidate negative results.
@@ -68,9 +68,9 @@ may rely on an open file preventing removal on every operating system.
 
 ## Standard LFS compatibility
 
-Read existing standard Git LFS pointers; do not invent a Tig pointer dialect.
+Read existing standard Git LFS pointers; do not invent a git-asset pointer dialect.
 Supported plain SHA-256 pointer OID and byte size identify the object. The OID
-matches Tig's plain SHA-256 blob identity for those exact bytes, not a manifest
+matches git-asset's plain SHA-256 blob identity for those exact bytes, not a manifest
 hash, torrent root or transformed representation. Reject malformed or unsupported
 extension/transform semantics explicitly rather than silently misinterpret them.
 
@@ -80,7 +80,7 @@ Two complementary entry points are planned:
    object inventory and admitted branch/worktree retention claims. A branch name
    must be sealed to a commit; staged candidates have their own exact scope.
 2. Implement an explicitly configured Git LFS custom transfer agent backed by
-   Tig lookup/ingest. Speak the upstream init/transfer/progress/complete protocol;
+   git-asset lookup/ingest. Speak the upstream init/transfer/progress/complete protocol;
    validate identities and bound concurrency. An upload completion means the
    configured destination contract is satisfied, not that GitHub cloud storage
    received the object. Repository config cannot select arbitrary executables
@@ -118,8 +118,8 @@ These ten cases supplement T01-T25; none has been executed.
 | CL06 | Reader acquires object while eviction is planned | Fresh active-use protection fences removal at object/place scope |
 | CL07 | Plain pointer, malformed OID, wrong size or unsupported extension | Correct exact identity or explicit rejection; no arbitrary path lookup |
 | CL08 | LFS agent upload/download retries and parallel requests | Protocol-correct idempotent results; bounded concurrency and truthful completion |
-| CL09 | LFS local store plus hydrated worktree plus Tig cache | Measure all allocated copies; do not claim logical dedup means zero physical cost |
-| CL10 | Generic Git-only repo replaces an LFS file and merges | Tig derives old/new object claims without Art, preserves other users and plans placement |
+| CL09 | LFS local store plus hydrated worktree plus git-asset cache | Measure all allocated copies; do not claim logical dedup means zero physical cost |
+| CL10 | Generic Git-only repo replaces an LFS file and merges | git-asset derives old/new object claims without Art, preserves other users and plans placement |
 
 Open measurements: warm/cold lookup percentile latency, catalog contention,
 number of metadata/object reads, recovery cost, write amplification, duplicate

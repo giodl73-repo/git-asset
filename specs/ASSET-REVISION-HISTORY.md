@@ -3,7 +3,7 @@
 T1a of [the landing plan](../docs/VERSION-DELIVERY-LANDING.md), input
 `c44acdd90907a7c4fff2dd37909956f6b584ee72`. WP-010/011/012/015,
 REQ-001/006/010, SPEC-010/011/012/014/015, IF-010/011/013, PKG-006/008.
-RUST/INTEGRATION profiles. Allowed: pure optional `tig-assets::revisions`, synthetic
+RUST/INTEGRATION profiles. Allowed: pure optional `git-asset-model::revisions`, synthetic
 integration tests, this contract and bounded review evidence. No CLI/provider,
 claim adoption, delivery implementation or consumer project record conversion in T1a.
 

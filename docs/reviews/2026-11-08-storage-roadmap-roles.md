@@ -24,7 +24,7 @@ diff checks. L1/L2: not applicable to prose; all new lifecycle tests remain plan
 | SR-06 Git and Adoption | Medium | Make startup independent of old chat/consumer checkout. Link a bounded handoff and startup path; derive live branch/PR state, use external build/temp roots, preserve other lanes and running tools. Keep journals/large plans machine-side. | Documentation links/checks now; next fresh session verifies source/PR state. No deployment, cache init or automatic hook authority follows from reading files. |
 
 All six corrections are incorporated in the revised plan/startup documentation.
-Owner: Tig maintainer, using the named role as the review lens. Disposition:
+Owner: git-asset maintainer, using the named role as the review lens. Disposition:
 pass_with_risk for the revised design only. No unresolved design blocker within
 this scope; runtime milestones remain open until their specified tests execute.
 This does not close full work packages, independent review or human acceptance.
@@ -56,7 +56,7 @@ implementation, verification, intended-use validation and trace closure remain
 separate future obligations. No runtime evidence count is added.
 
 Method: one producer applying all six checklists, not independent reviewers.
-Owner for every row: Tig maintainer using the named lens. Findings below are
+Owner for every row: git-asset maintainer using the named lens. Findings below are
 incorporated in the plan; the executable proof remains required.
 
 | Finding / role | Severity | Design disposition | Required implementation proof |
@@ -88,7 +88,7 @@ and adoption. Scope excludes runtime code, formats, live stores and deployment.
 Entry: revised merge/eviction/final-deletion/metadata roadmap. Exit: challenge
 counterexamples, correct planning gaps, preserve explicit implementation gates.
 Method: one producer reapplying all six .roles checklists; no delegated or
-independent reviewers. Owner of each finding: Tig maintainer, with its named lens.
+independent reviewers. Owner of each finding: git-asset maintainer, with its named lens.
 
 | Finding / role | Severity | Counterexample and correction | Remaining proof |
 | --- | --- | --- | --- |
@@ -129,7 +129,7 @@ Entry: existing lifecycle roadmap and scoped copy/protection evidence.
 Exit: explicit counterexamples, dispositions and required future tests.
 L0: portable validation, reviewed target hashes and diff check. L1/L2 are not
 required for prose; the runtime cases below remain unexecuted design obligations.
-Owner of every finding: Tig maintainer using the named checklist.
+Owner of every finding: git-asset maintainer using the named checklist.
 
 | Finding / role | Severity | Counterexample and disposition | Required proof |
 | --- | --- | --- | --- |

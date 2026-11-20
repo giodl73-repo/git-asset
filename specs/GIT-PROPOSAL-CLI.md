@@ -3,8 +3,8 @@
 Experimental explicit commands, without installation or repository setup:
 
 ```text
-tig-propose check profile.json     verify records and exact-base preflight
-tig-propose create profile.json    repeat checks, publish separate proposal commit/ref
+git-asset-propose check profile.json     verify records and exact-base preflight
+git-asset-propose create profile.json    repeat checks, publish separate proposal commit/ref
 git show <proposal-reference>      review with ordinary Git
 git cherry-pick <proposal-commit>  separate application/conflict handling
 ```
@@ -34,7 +34,7 @@ with actual enrolled values (Windows drive paths are supported):
     "required": "cooperative-immutable"
   },
   "changes": [{
-    "path": "records/scene/01/cel-b.tig",
+    "path": "records/scene/01/cel-b.asset",
     "expected": { "sha256": "<old record raw SHA-256>", "bytes": 512 },
     "object": { "sha256": "<candidate record raw SHA-256>", "bytes": 530 }
   }]

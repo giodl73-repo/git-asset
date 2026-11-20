@@ -1,6 +1,6 @@
 # Project refusal diagnostics: producer review
 
-Entry: main `81a97d3`. Targets: `tig-project` stderr mapping, CLI refusal
+Entry: main `81a97d3`. Targets: `git-asset-project` stderr mapping, CLI refusal
 regressions and `specs/PROJECT-DIAGNOSTICS.md`. Controls and exit obligations are
 recorded in that spec; this is a producer checklist, not independent acceptance.
 

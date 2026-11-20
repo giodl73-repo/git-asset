@@ -1,9 +1,9 @@
-# Tig principles
+# git-asset principles
 
 Active decision rules, not proof that the intended behavior is implemented.
 Stable scenario-to-doctrine links are in tests/scenarios/learning-links.json.
 
-## TIG-P-01: Separate intent and reality
+## GIT-ASSET-P-01: Separate intent and reality
 
 **Decision rule:** Treat desired, planned and observed states as distinct.
 
@@ -13,7 +13,7 @@ Stable scenario-to-doctrine links are in tests/scenarios/learning-links.json.
 
 **Status:** ACTIVE
 
-## TIG-P-02: Content survives location changes
+## GIT-ASSET-P-02: Content survives location changes
 
 **Decision rule:** Key immutable content independently of names, physical paths and transport representations.
 
@@ -25,7 +25,7 @@ Stable scenario-to-doctrine links are in tests/scenarios/learning-links.json.
 
 **Status:** ACTIVE
 
-## TIG-P-03: Protection composes across owners
+## GIT-ASSET-P-03: Protection composes across owners
 
 **Decision rule:** Union all admitted branch, job, draft and retention obligations; retire only owned claims.
 
@@ -35,7 +35,7 @@ Stable scenario-to-doctrine links are in tests/scenarios/learning-links.json.
 
 **Status:** ACTIVE
 
-## TIG-P-04: Unknown is explicit
+## GIT-ASSET-P-04: Unknown is explicit
 
 **Decision rule:** Carry scope, integrity and freshness gaps; never treat unknown as absent or safe.
 
@@ -45,7 +45,7 @@ Stable scenario-to-doctrine links are in tests/scenarios/learning-links.json.
 
 **Status:** ACTIVE
 
-## TIG-P-05: Durable protection precedes discovery
+## GIT-ASSET-P-05: Durable protection precedes discovery
 
 **Decision rule:** Persist admission and operation identity before exposing new bytes or shrinking old obligations.
 
@@ -55,7 +55,7 @@ Stable scenario-to-doctrine links are in tests/scenarios/learning-links.json.
 
 **Status:** ACTIVE
 
-## TIG-P-06: Concurrency is scoped and fenced
+## GIT-ASSET-P-06: Concurrency is scoped and fenced
 
 **Decision rule:** Coordinate overlapping object/place actions and reject stale operations without pausing unrelated writers.
 
@@ -65,7 +65,7 @@ Stable scenario-to-doctrine links are in tests/scenarios/learning-links.json.
 
 **Status:** ACTIVE
 
-## TIG-P-07: Integration preserves authority and protocol meaning
+## GIT-ASSET-P-07: Integration preserves authority and protocol meaning
 
 **Decision rule:** Use admitted adapters, exact source context and truthful capability/completion semantics.
 
@@ -75,7 +75,7 @@ Stable scenario-to-doctrine links are in tests/scenarios/learning-links.json.
 
 **Status:** ACTIVE
 
-## TIG-P-08: Measure bounded physical costs
+## GIT-ASSET-P-08: Measure bounded physical costs
 
 **Decision rule:** Budget peak output/scratch and count real copies; measure reclaim and reuse.
 
@@ -85,7 +85,7 @@ Stable scenario-to-doctrine links are in tests/scenarios/learning-links.json.
 
 **Status:** ACTIVE
 
-## TIG-P-09: Preserve acknowledged bytes by default
+## GIT-ASSET-P-09: Preserve acknowledged bytes by default
 
 **Decision rule:** Make preservation of acknowledged managed content the default
 across writes, replacement, movement, cleanup and recovery. Refuse destructive

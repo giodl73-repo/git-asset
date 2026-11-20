@@ -38,10 +38,10 @@ not None silently converted to an Unbuilt candidate or Unproven history. A focus
 negative fixture covers each unavailable position. Final source qualification
 must include this change; the earlier seven-case run alone does not qualify it.
 
-Final local verification: all98 tig-assets entries pass (including all eight new
+Final local verification: all98 git-asset-model entries pass (including all eight new
 assessment cases); all42 native_source entries pass, including actual detached
 Git/archive assessment replay. Workspace all-target/all-feature warnings-denied
-Clippy, standalone no-feature tig-git check and format pass. These final targeted
+Clippy, standalone no-feature git-asset check and format pass. These final targeted
 runs qualify the Observation refinement after the earlier491-entry workspace
 run; they are not described as a second full workspace run. Exact committed-head
 Windows/Linux hosted validation remains mandatory before merge. No full intended-

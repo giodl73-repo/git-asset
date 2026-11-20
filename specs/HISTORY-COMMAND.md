@@ -6,9 +6,9 @@ WP-003/009/010/011/012/015, REQ-001/003/004/006/009/010,
 SPEC-003/007/010/011/012/014/015, IF-003/004/007/008/010/011/013,
 PKG-002/003/004/006/008. RUST/PROVIDER/GIT/INTEGRATION profiles.
 
-Scope: schema-feature `tig-history check|publish|propose PROFILE REQUEST` over
+Scope: schema-feature `git-asset-history check|publish|propose PROFILE REQUEST` over
 existing captured preparation, update publication and sparse proposals. Share
-the bounded existing history reader with tig-resolve. No provider initialization,
+the bounded existing history reader with git-asset-resolve. No provider initialization,
 daemon, network, implicit branch/index/worktree change or cleanup.
 
 Entry: exact source, pure updates and admitted publication contracts. Exit: real

@@ -1,6 +1,6 @@
-# Start or resume Tig development
+# Start or resume git-asset development
 
-Open an actual checkout of giodl73-repo/tig as the session workspace. The public
+Open an actual checkout of giodl73-repo/git-asset as the session workspace. The public
 repo assumes no specific drive, consumer repository, cache enrollment or runtime.
 Read AGENTS.md, CONTEXT.md, context/RESUME.md and PRODUCT_PLAN.md, then the active
 wave/pulse and the applicable specs, roles and engineering controls.
@@ -13,7 +13,7 @@ git status --short
 git branch --show-current
 git worktree list
 git log -5 --oneline
-gh pr list --repo giodl73-repo/tig --state open
+gh pr list --repo giodl73-repo/git-asset --state open
 ```
 
 Check the exact source/CI status of relevant PRs. If gh is unavailable, use the
@@ -37,10 +37,23 @@ pwsh -NoProfile -File tools/validate.ps1
 git diff --check
 ```
 
+Root README.md-only edits use a lightweight CI path: documentation/source checks
+and the secret scan still run; Rust toolchain setup, builds/tests/Clippy and pinned
+historical-reader builds skip. Required Windows/Linux job names remain present.
+Other files (including other Markdown), mixed changes, missing comparison commits
+and unknown events select the normal full path. CI uses exact Git comparisons,
+not an API changed-file list or workflow-level path filter.
+
+The mutable product README is deliberately excluded from
+`docs/reviews/foundation-targets.json`; it still receives link, naming and source
+budget checks. Do not add a companion hash-only change for a README edit. Formal
+specifications, CI tooling and every other reviewed target remain pinned.
+Run `python -B tools/test_ci_scope.py` when changing this classification.
+
 For catalogue controller work, run the shipped-script synthetic workflows:
 
 ```text
-node --test crates/tig-git/tests/work-selection.cjs crates/tig-git/tests/impact.cjs crates/tig-git/tests/ux-flows.cjs crates/tig-git/tests/compare-flows.cjs crates/tig-git/tests/object-flows.cjs crates/tig-git/tests/lessons-flows.cjs
+node --test crates/git-asset/tests/work-selection.cjs crates/git-asset/tests/impact.cjs crates/git-asset/tests/ux-flows.cjs crates/git-asset/tests/compare-flows.cjs crates/git-asset/tests/object-flows.cjs crates/git-asset/tests/lessons-flows.cjs
 ```
 
 Run appropriate locked native API tests when bundled scripts change. Rust changes
@@ -57,7 +70,7 @@ At handoff, record source/branch/PR identity, implemented versus tested behavior
 pending checks and the next bounded task in context/RESUME.md when it changes.
 Keep large logs and operator state outside Git. A concise new-session prompt is:
 
-> Continue Tig development from this checkout. Read AGENTS.md and
+> Continue git-asset development from this checkout. Read AGENTS.md and
 > context/RESUME.md, verify current branches/PRs, then take the next unowned
 > PRODUCT_PLAN.md slice. Use synthetic fixtures and explicit external build/temp
 > roots. Preserve existing runtimes and caches.

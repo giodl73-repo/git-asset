@@ -81,7 +81,7 @@ packages must show effective recovery/custody evidence; no global-lock shortcut.
 - Requirements/specs: REQ-001/REQ-005/REQ-006; SPEC-002.
 - Architecture/interfaces/design: ARCH-001; IF-002; DES-001; CR-001..CR-008.
 - Allowed boundaries: PKG-001; profile RUST; integration follows INTEGRATION_PLAN.md.
-- Product surfaces: crates/tig-core identity/tree modules and tests; specs/MODEL.md. Other runtime packages/private inputs are out of scope.
+- Product surfaces: crates/core identity/tree modules and tests; specs/MODEL.md. Other runtime packages/private inputs are out of scope.
 - Prerequisites: none. Entry: Current core regression baseline and hash/encoding decision scope pinned.
 - Exit: Canonical/raw identity vectors, path and size negatives, bounded tree lookup and sparse-change cost demonstrated.
 - Verification commands: tools/validate.ps1 and git diff --check; cargo fmt --all -- --check; cargo test --workspace --locked; cargo clippy --workspace --all-targets --locked -- -D warnings; exact targeted fixture commands pinned at entry.
@@ -101,7 +101,7 @@ packages must show effective recovery/custody evidence; no global-lock shortcut.
 - Requirements/specs: REQ-001/REQ-004/REQ-009; SPEC-006.
 - Architecture/interfaces/design: ARCH-004; IF-007/IF-008; DES-006; CR-001..CR-008.
 - Allowed boundaries: PKG-001/PKG-005; profile RUST; integration follows INTEGRATION_PLAN.md.
-- Product surfaces: planned tig-worktree pure model/tests; specs/BYTE-WORKTREE.md. Other runtime packages/private inputs are out of scope.
+- Product surfaces: planned git-asset-worktree pure model/tests; specs/BYTE-WORKTREE.md. Other runtime packages/private inputs are out of scope.
 - Prerequisites: WP-001. Entry: Frozen object/tree semantics; overlay/tombstone scope explicit.
 - Exit: Shared base, private puts/removals, same-byte reuse, disjoint writes and same-leaf/delete-modify conflicts produce exact candidates without IO claims.
 - Verification commands: tools/validate.ps1 and git diff --check; cargo fmt --all -- --check; cargo test --workspace --locked; cargo clippy --workspace --all-targets --locked -- -D warnings; exact targeted fixture commands pinned at entry.
@@ -121,7 +121,7 @@ packages must show effective recovery/custody evidence; no global-lock shortcut.
 - Requirements/specs: REQ-003/REQ-004/REQ-009; SPEC-003.
 - Architecture/interfaces/design: ARCH-002; IF-003/IF-004; DES-003; CR-001..CR-008.
 - Allowed boundaries: PKG-002/PKG-003; profile PROVIDER; integration follows INTEGRATION_PLAN.md.
-- Product surfaces: planned tig-store publication and tig-engine journal modules; isolated fixture stores. Other runtime packages/private inputs are out of scope.
+- Product surfaces: planned git-asset-store publication and git-asset-engine journal modules; isolated fixture stores. Other runtime packages/private inputs are out of scope.
 - Prerequisites: WP-000/WP-001. Entry: Backend publication/flush and durable operation identity contract accepted.
 - Exit: Lost reply/torn log/stale restore and every publication ordering fault retain recoverability; ack levels reflect achieved persistence.
 - Verification commands: tools/validate.ps1 and git diff --check; cargo fmt --all -- --check; cargo test --workspace --locked; cargo clippy --workspace --all-targets --locked -- -D warnings; exact targeted fixture commands pinned at entry.
@@ -141,7 +141,7 @@ packages must show effective recovery/custody evidence; no global-lock shortcut.
 - Requirements/specs: REQ-002/REQ-003/REQ-004; SPEC-004.
 - Architecture/interfaces/design: ARCH-002; IF-004/IF-006/IF-012; DES-004; CR-001..CR-008.
 - Allowed boundaries: PKG-002/PKG-003; profile PROVIDER; integration follows INTEGRATION_PLAN.md.
-- Product surfaces: planned tig-engine claim/fence modules and provider-port fixtures. Other runtime packages/private inputs are out of scope.
+- Product surfaces: planned git-asset-engine claim/fence modules and provider-port fixtures. Other runtime packages/private inputs are out of scope.
 - Prerequisites: WP-003. Entry: Effective provider fence and clock/renewal assumptions frozen.
 - Exit: Granted reader versus retirement, ABA, new claims and partition/expiry cases reject unsafe actions while unrelated publishers progress.
 - Verification commands: tools/validate.ps1 and git diff --check; cargo fmt --all -- --check; cargo test --workspace --locked; cargo clippy --workspace --all-targets --locked -- -D warnings; exact targeted fixture commands pinned at entry.
@@ -161,7 +161,7 @@ packages must show effective recovery/custody evidence; no global-lock shortcut.
 - Requirements/specs: REQ-006/REQ-008/REQ-009; SPEC-007.
 - Architecture/interfaces/design: ARCH-004; IF-008/IF-009; DES-007; CR-001..CR-008.
 - Allowed boundaries: PKG-004; profile GIT; integration follows INTEGRATION_PLAN.md.
-- Product surfaces: experimental tig-git exact-source/download agent; synthetic Git/LFS integration fixtures. Other runtime packages/private inputs are out of scope.
+- Product surfaces: experimental git-asset exact-source/download agent; synthetic Git/LFS integration fixtures. Other runtime packages/private inputs are out of scope.
 - Prerequisites: WP-001/WP-003/WP-004. Entry: Pinned Git/LFS clients and standard extension support; enrolled source/storage scope.
 - Exit: Pointer/index extraction, configured store, partial/conflicted staging, transfer retries and external-pruner limits verified in temporary repos.
 - Verification commands: tools/validate.ps1 and git diff --check; cargo fmt --all -- --check; cargo test --workspace --locked; cargo clippy --workspace --all-targets --locked -- -D warnings; exact targeted fixture commands pinned at entry.
@@ -186,7 +186,7 @@ arithmetic fixture does not satisfy these runtime exit obligations.
 - Requirements/specs: REQ-002/REQ-003/REQ-005/REQ-009; SPEC-008.
 - Architecture/interfaces/design: ARCH-001/ARCH-002; IF-004/IF-006; DES-002/DES-008; CR-001..CR-008.
 - Allowed boundaries: PKG-001/PKG-003; profile RUST; integration follows INTEGRATION_PLAN.md.
-- Product surfaces: crates/tig-core placement extension and planned engine policy; synthetic assigned/domain fixtures. Other runtime packages/private inputs are out of scope.
+- Product surfaces: crates/core placement extension and planned engine policy; synthetic assigned/domain fixtures. Other runtime packages/private inputs are out of scope.
 - Prerequisites: WP-001/WP-003/WP-004. Entry: Claim owner, source lineage, failure-domain and assignment semantics frozen.
 - Exit: Current/previous/draft union, infeasible copy count, unregistered archive policy, unknown coverage and peak-resource plans are explicit.
 - Verification commands: tools/validate.ps1 and git diff --check; cargo fmt --all -- --check; cargo test --workspace --locked; cargo clippy --workspace --all-targets --locked -- -D warnings; exact targeted fixture commands pinned at entry.
@@ -231,7 +231,7 @@ under an explicit metadata budget. Offline coverage stays unknown.
 - Requirements/specs: REQ-005/REQ-007; SPEC-005.
 - Architecture/interfaces/design: ARCH-003; IF-005; DES-005; CR-001..CR-008.
 - Allowed boundaries: PKG-003; profile PROVIDER; integration follows INTEGRATION_PLAN.md.
-- Product surfaces: tig-store journals and bounded persistent metadata NodeStore; planned full engine catalog; bounded synthetic workload fixtures. Other runtime packages/private inputs are out of scope.
+- Product surfaces: git-asset-store journals and bounded persistent metadata NodeStore; planned full engine catalog; bounded synthetic workload fixtures. Other runtime packages/private inputs are out of scope.
 - Prerequisites: WP-003/WP-004. Entry: Catalog schema/recovery boundary and warm/cold workload budgets pinned.
 - Exit: Miss invalidation, event gaps, source corruption, restore and concurrent publication meet bounded reads/latency with no false custody.
 - Verification commands: tools/validate.ps1 and git diff --check; cargo fmt --all -- --check; cargo test --workspace --locked; cargo clippy --workspace --all-targets --locked -- -D warnings; exact targeted fixture commands pinned at entry.
@@ -271,13 +271,13 @@ under an explicit metadata budget. Offline coverage stays unknown.
 - Requirements/specs: REQ-001/REQ-006/REQ-010; SPEC-010.
 - Architecture/interfaces/design: ARCH-005; IF-010; DES-009; CR-001..CR-008.
 - Allowed boundaries: PKG-001/PKG-006; profile RUST; integration follows INTEGRATION_PLAN.md.
-- Product surfaces: planned tig-assets pure modules/tests and bounded source-intake docs. Other runtime packages/private inputs are out of scope.
+- Product surfaces: planned git-asset-model pure modules/tests and bounded source-intake docs. Other runtime packages/private inputs are out of scope.
 - Prerequisites: WP-001. Entry: Art source/lock/licenses and canonical/model/graph/variant vector inventory pinned.
 - Exit: Old/new parity on imported pure mechanisms; separate exact definitions/instances, declared mixed-stream merge constraints and standalone low-level use remain intact.
 - Verification commands: tools/validate.ps1 and git diff --check; cargo fmt --all -- --check; cargo test --workspace --locked; cargo clippy --workspace --all-targets --locked -- -D warnings; exact targeted fixture commands pinned at entry.
 - Levels: L0 required; L1 pure vectors/negative tests required; L2 synthetic caller integration required, provider IO not applicable.
 - Validation impact: VAL-005; no user acceptance claimed before its named run.
-- Principal risk: Do not count Art tests as Tig evidence before port; preserve original hash domains until tested migration.
+- Principal risk: Do not count Art tests as git-asset evidence before port; preserve original hash domains until tested migration.
 - Assurance: all eight required lanes, scoped to this package; producer review initially, actual independence recorded only when present.
 - Git: wp/010-capability at pinned main; one scoped writer; no live configuration changes.
 - Wave/pulse: context/waves/2026-10-25-placement-foundation/pulses/pulse-05.md.
@@ -291,7 +291,7 @@ under an explicit metadata budget. Offline coverage stays unknown.
 - Requirements/specs: REQ-005/REQ-010; SPEC-011.
 - Architecture/interfaces/design: ARCH-005; IF-010/IF-011; DES-009; CR-001..CR-008.
 - Allowed boundaries: PKG-005/PKG-006; profile INTEGRATION; integration follows INTEGRATION_PLAN.md.
-- Product surfaces: planned tig-assets binding/profile/native-adapter APIs and fake producers. Other runtime packages/private inputs are out of scope.
+- Product surfaces: planned git-asset-model binding/profile/native-adapter APIs and fake producers. Other runtime packages/private inputs are out of scope.
 - Prerequisites: WP-002/WP-003/WP-004/WP-010. Entry: Native extraction and trusted producer/consumed-projection contracts accepted.
 - Exit: Synthetic non-media producer plus text/translation/variant changes establish exact consumption, reusable results, source-valid/output-stale state and frozen catch-up batches; coalesce only before job admission.
 - Verification commands: tools/validate.ps1 and git diff --check; cargo fmt --all -- --check; cargo test --workspace --locked; cargo clippy --workspace --all-targets --locked -- -D warnings; exact targeted fixture commands pinned at entry.
@@ -391,7 +391,7 @@ under an explicit metadata budget. Offline coverage stays unknown.
 - Requirements/specs: REQ-006/REQ-010; SPEC-010/SPEC-011/SPEC-012/SPEC-013.
 - Architecture/interfaces/design: ARCH-004/ARCH-005/ARCH-006/ARCH-007; IF-007/IF-008/IF-010/IF-011/IF-012; DES-006/DES-007/DES-009/DES-010; CR-001..CR-008.
 - Allowed boundaries: PKG-004/PKG-005/PKG-006/PKG-007; profile INTEGRATION; integration follows INTEGRATION_PLAN.md.
-- Product surfaces: consumer-owned adapter/record changes; Tig generic APIs only where explicitly scoped. Other runtime packages/private inputs are out of scope.
+- Product surfaces: consumer-owned adapter/record changes; git-asset generic APIs only where explicitly scoped. Other runtime packages/private inputs are out of scope.
 - Prerequisites: WP-009/WP-011/WP-012/WP-013. Entry: Owner-approved private source pins, exact old/new mapping and rollback/retention plan.
 - Exit: Owner-run same-behavior and recoverability acceptance, dry-run byte accounting and reversible scoped cutover; public fixtures remain synthetic.
 - Verification commands: tools/validate.ps1 and git diff --check; cargo fmt --all -- --check; cargo test --workspace --locked; cargo clippy --workspace --all-targets --locked -- -D warnings; exact targeted fixture commands pinned at entry.

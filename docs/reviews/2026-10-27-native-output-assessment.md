@@ -40,7 +40,7 @@ Residual risks: current source/admission authority remains caller-owned; parsed
 unsigned claims do not prove actual consumption/execution, approval or custody.
 The adapter does not run schema/variant rules, discover every output, queue jobs,
 change storage placement or qualify private adoption. Generic APIs only; no
-legacy consumer/REEL-specific metadata location is built into Tig. Final workspace/hosted
+legacy consumer/REEL-specific metadata location is built into git-asset. Final workspace/hosted
 qualification remains required and is recorded separately below.
 
 Independent read-only scope audit (not private acceptance): local legacy consumer
@@ -52,12 +52,12 @@ No media/cache read, source edit or production binding change was needed.
 Final local verification: workspace --all-features --locked passes502 test entries
 (including all ten native assessment fixtures). The500,000-binding metadata suite
 passes171.74s. Workspace all-target/all-feature warnings-denied Clippy passes3.60s;
-standalone no-feature tig-git check, fmt and structural/source-budget checks pass.
+standalone no-feature git-asset check, fmt and structural/source-budget checks pass.
 No code changed after these final runs. Logs are private runtime data outside Git.
 Hosted exact-head Windows/Linux qualification and parent33 qualification remain
 mandatory before merge; full intended-use and private adoption stay OPEN.
 
-Review disposition: scoped component pass_with_risk, owner Tig producer. No
+Review disposition: scoped component pass_with_risk, owner git-asset producer. No
 unresolved blocking component findings. Medium residuals (same owner): external
 admission authority, unsigned evidence truth, schema/variant completeness and full
 native custody/adoption remain open under the original readiness requirements;

@@ -4,10 +4,10 @@ Input63f2c96e991553e45a55f2cab1b645a945ede496; implementation2fecfab followed
 by corrective002a85042be6cda1ee35e665aad97ba09d9dd0a8. Controls, allowed scope,
 entry/exit and RUST/PROVIDER L0/L1/L2 are in
 [RETAINED-SUBSET](../../specs/RETAINED-SUBSET.md). Targets: that contract,
-source_claims::subset, guarded atomic selection, tig-source subset, their actual
+source_claims::subset, guarded atomic selection, git-asset-source subset, their actual
 CLI/process fixtures and the pinned old-reader CI qualifier. Method: one producer
 applying all six [.roles checklists](../../.roles/ROLE.md). Owner of all findings:
-Tig maintainer using the named lens. No delegated/independent reviewer or approval.
+git-asset maintainer using the named lens. No delegated/independent reviewer or approval.
 
 ## Implementation
 

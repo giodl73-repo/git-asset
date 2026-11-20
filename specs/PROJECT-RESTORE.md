@@ -12,7 +12,7 @@ CLI with synthetic fixtures. No new provider/cache engine, daemon, lifecycle
 claim, quota, render or automatic runtime/source adoption.
 
 ```text
-tig-project [--apply] [--expect-plan SHA256] LOCAL_PROFILE MANIFEST_PATH
+git-asset-project [--apply] [--expect-plan SHA256] LOCAL_PROFILE MANIFEST_PATH
 ```
 
 The explicit local profile supplies Git executable/repository/exact commit,
@@ -37,7 +37,7 @@ independent selections; undeclared host/render dependencies are not discovered.
 Preview performs complete bounded source verification and existing-destination
 checks without creating a run root. Apply performs that same preflight first,
 then creates explicit owned parents and calls the same restore primitive used
-by `tig-restore`. Reopen/reverify each source at copy time and hold its effective
+by `git-asset-restore`. Reopen/reverify each source at copy time and hold its effective
 guard throughout copy. Preserve synced private sibling, independent readback,
 atomic no-replace publication and verified identical-target retry. No global lock.
 

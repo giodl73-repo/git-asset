@@ -2,7 +2,7 @@
 
 Input 5411e2be0521aef0e3722e508f31ff6355b8a66f. WP-008/009; REQ-002/004/007/009;
 SPEC-005/006/007/008; ARCH-002/003/004; IF-004/006/008; DES-004/005/007;
-PKG-003 (tig-store module), GIT/PROVIDER profiles. Entry: exact Git extraction,
+PKG-003 (git-asset-store module), GIT/PROVIDER profiles. Entry: exact Git extraction,
 immutable tree identity and restart-persistent SQLite techniques. Exit: actual
 temporary-store/source integration and child-exit tests preserve prepared/current/
 predecessor roots, reject stale owners/generations and replay commands exactly.
@@ -105,7 +105,7 @@ Unknown IDs return Missing instead of applying a new command; changed requests
 return Conflict. The receipt checkpoint/revision remain historical after later
 transitions. This is acknowledgment recovery, not current-state observation,
 producer replay or interrupted handoff reconciliation. The explicit inspector
-guide documents its bounded private `tig-source acknowledge` CLI profile.
+guide documents its bounded private `git-asset-source acknowledge` CLI profile.
 
 EVID-026: 19 entries including the subprocess helper, six actual exits during
 prepare/adopt and 15 injected boundaries across five command variants. Real

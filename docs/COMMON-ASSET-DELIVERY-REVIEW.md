@@ -3,7 +3,7 @@
 Status: design proposal for review, not an implemented contract or migration.
 The [landing plan](VERSION-DELIVERY-LANDING.md) adds production revisions,
 selection/retention boundaries, bounded PRs and six-role closure obligations.
-Baseline: Tig `1dfa6db6199a226661601e2e829dcbd9ad56c2f1`.
+Baseline: git-asset `1dfa6db6199a226661601e2e829dcbd9ad56c2f1`.
 Scope: WP-010/011/015, REQ-001/006/010, SPEC-010/012/015,
 IF-010/011/013 and PKG-006/008, following the existing publication-evidence slice.
 No asset, provider, cache, producer binding or current receipt changes here.
@@ -57,7 +57,7 @@ Do not silently add new top-level fields to the strict design-1 envelope.
 The following is a shape illustration; object pins are omitted:
 
 ```text
-image / cue / scene / movie / text / score / other asset.tig
+image / cue / scene / movie / text / score / other asset.asset
   id, definition, authored, selected, status
   metadata.delivery
     schema: tig.delivery-state.v1                 [PROPOSED]
@@ -101,7 +101,7 @@ still requires an admitted operation and its policy/authority gates. A receipt
 or policy annotation alone does not authorize a network publication.
 
 History and raw receipts belong in existing immutable asset storage. Use bounded
-history/index pages through Tig's object/tree or admitted index interfaces. The
+history/index pages through git-asset's object/tree or admitted index interfaces. The
 asset file changes only the small history-root pin and any intentionally changed
 policy pin; it never grows an unbounded receipt/event array. One receipt can
 provide evidence for many subjects without duplicating its bytes or creating a
@@ -131,8 +131,8 @@ and target; the event can then pin the receipt without a hash cycle.
 | Explicitly publish retained v1 publicly | B | B/R2 | A/R3 |
 | Remove the review file remotely | B | observed absent; R1/R2 retained | A/R3 |
 
-The asset ID never changes. There are no movie-v1-drive-receipt.tig or
-movie-v2-youtube-receipt.tig instances. The final row grants no permission to
+The asset ID never changes. There are no movie-v1-drive-receipt.asset or
+movie-v2-youtube-receipt.asset instances. The final row grants no permission to
 delete A, B or their evidence from a cache. Choosing an older approved public
 version is a publishing policy decision, not an implicit selection rollback.
 

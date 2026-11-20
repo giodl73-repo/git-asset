@@ -18,8 +18,8 @@ synthetic validation, trace and six producer review closeout.
 
 ## Interface and authority
 
-The inspection profile and tig-storage bulk describe/plan/peak/status retain
-their existing meanings. The separate interface is tig-storage bulk execute
+The inspection profile and git-asset-storage bulk describe/plan/peak/status retain
+their existing meanings. The separate interface is git-asset-storage bulk execute
 describe, or apply/resume/cancel PROFILE PLAN. Apply and resume invoke the same
 idempotent bulk controller. No final reacquisition verb is introduced here.
 

@@ -12,7 +12,7 @@ PKG-002/003/004/006/007/008/009. RUST/GIT/PROVIDER/UI/INTEGRATION profiles.
 
 Allowed scope: optional schema+upload fresh-root sample mode, literal oracle,
 fixture-only loopback LFS Basic endpoint over existing LocalStore/accounted
-publication, actual existing tig-lfs upload CLI, bounded saved observations,
+publication, actual existing git-asset-lfs upload CLI, bounded saved observations,
 strict distinct recorded reader and GET-only view. No production upload/provider/
 placement algorithm or wire/ledger format change, dependency, replacement cache
 engine, live root, public network, cloud credential, hook/install, daemon, browser
@@ -23,7 +23,7 @@ execution bridge, policy adoption, remote retention or metadata expiry.
 Read teaching/exchange/playback/LFS-UPLOAD/PUBLICATION/SAFETY/MODEL, engineering
 router/wave/pulse, pitfalls and all six producer checklists. Preserve old commands
 and readers. Without upload support, reject this command before creating its
-output root. Require fixed sibling tig-lfs with upload support before creating
+output root. Require fixed sibling git-asset-lfs with upload support before creating
 the fresh root; do not search arbitrary executables from reports or the browser.
 Document building both binaries with schema,upload. All profiles, stores, source
 staging, bare remote, observer and loopback listener belong to that fresh root.

@@ -108,7 +108,7 @@ replay after expiry remain OPEN. The full PRODUCT_PLAN objective is unchanged.
 
 Trace: contract controls -> existing SDK composition/readonly query -> independent
 literal bytes, actual child exits, exact malformed frames, retained facts/native
-selection, HTTP/repinned negatives/shipped controls -> EVID-121. Implementation,
+selection, HTTP/repinned negatives/shipped controls -> EVID-131. Implementation,
 verification, scoped synthetic validation, trace and producer review close
 separately from full contract or human/intended-use acceptance.
 

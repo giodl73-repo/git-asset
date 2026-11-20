@@ -1,6 +1,6 @@
 # Trees, bundles and transport
 
-Target walkthrough. Tig has no implemented tree format, hash-tree store or
+Target walkthrough. git-asset has no implemented tree format, hash-tree store or
 BitTorrent provider yet. Hash labels below are schematic, not real digests.
 
 ## Share structure across versions
@@ -44,7 +44,7 @@ verifies portions of one file. Neither implies that a slightly edited compressed
 video retains most byte chunks: encoding can change many bytes. Keep primary
 objects independently addressable and measure real cross-version reuse.
 
-Tig object digests, manifest identities and torrent identifiers are separate.
+git-asset object digests, manifest identities and torrent identifiers are separate.
 An explicit representation map connects them. A trusted root can support proofs
 of membership/integrity; it cannot prove that a disconnected archive still holds
 the object or that a consumer has stopped using it.
@@ -74,7 +74,7 @@ logical group checkpoint 2 -> bundle V2 -> immutable shards S1 S3
 receiver: retain S1; acquire missing S3; retain S2 where history still needs it
 ```
 
-Tig can ask an admitted client/provider to seed or acquire immutable shards.
+git-asset can ask an admitted client/provider to seed or acquire immutable shards.
 Changing a label does not mutate an existing torrent's contents. Avoid making a
 full new archive for every bundle version. Existing-file/piece reuse depends on
 the client integration and must be measured; shared hashes alone do not ensure

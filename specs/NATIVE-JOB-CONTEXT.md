@@ -91,7 +91,7 @@ eight transient Busy/stale-probe attempts with identical exponential scheduling,
 then incorrectly reports contention as Capacity. Two clients can supersede samples
 or exhaust the short synchronized retry window without a full disk.
 
-Extend allowed scope to the existing tig-git cache/protocol adapter and controlled
+Extend allowed scope to the existing git-asset cache/protocol adapter and controlled
 concurrency fixture (WP-004/006/009, REQ-003/004/007/008/009, SPEC-003/004/007/009,
 IF-004/005/007/009/012, PKG-003/004). Use bounded capped op-specific backoff and
 more transient attempts, always re-probe/re-sample rejected observations. Preserve

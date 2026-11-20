@@ -1,6 +1,6 @@
 # Staged design review execution
 
-Input source: Tig 0a9a522. Method: producer-applied local role checklists; no
+Input source: git-asset 0a9a522. Method: producer-applied local role checklists; no
 independent reviewers, delegation or human acceptance. One VTRACE deliverable
 was advanced at a time; feedback reopened only its affected file.
 
@@ -28,7 +28,7 @@ No TRACKER snapshot or unrelated checkout was changed.
 | CHANGE_CONTROL | [CHANGE_CONTROL.md](CHANGE_CONTROL.md) | settled for design with risk | CC-01: absorbing Art mistaken for bulk format/history rewrite; Resolved: stable identities, compatibility triggers and explicit parity/rollback packages | 21483f94e9a4b789a15223214c7b5b5adb12b4389de47623c16f0cd7818b76fc |
 | LANGUAGE_PROFILE_COMPATIBILITY | [LANGUAGE_PROFILES.md](LANGUAGE_PROFILES.md) | settled for design with risk | LP-02: canonical checker requires Profile ID and PROFILE identifiers; Resolved in this file with stable IDs and retained short aliases; no evidence weakened | c814c1ed8ae76250a44516433167438123f0b166dbc766402e0c12c1acadef64 |
 | COMMUNICATIONS_STRATEGY | [COMMUNICATIONS_STRATEGY.md](COMMUNICATIONS_STRATEGY.md) | settled for design with risk | COM-01: polished guides imply live provider functionality; Resolved: audience/source mapping, current-target labels and private-data boundaries | d6ff438ab6bfe5f4c9a7e074e8e7b7f46e3620b5c1a8752dd235b999f0703180 |
-| EVIDENCE | [EVIDENCE.md](EVIDENCE.md) | settled for design with risk | E-01: planned scenarios or donor tests inflate current Tig evidence; Resolved: only actual current tests passed; design/source inspection rows explicitly scoped | fc268130708464166ce985a284f923022cf51abf7912f4ba62a8f56728b550d3 |
+| EVIDENCE | [EVIDENCE.md](EVIDENCE.md) | settled for design with risk | E-01: planned scenarios or donor tests inflate current git-asset evidence; Resolved: only actual current tests passed; design/source inspection rows explicitly scoped | fc268130708464166ce985a284f923022cf51abf7912f4ba62a8f56728b550d3 |
 | VERIFICATION | [VERIFICATION.md](VERIFICATION.md) | settled for design with risk | V-01: current component tests could close full safety requirements; Resolved: per-requirement partial/open evidence and explicit provider/system proof obligations | 340b95eb6d29f859890c110ad7dc4418bfbb05d706e59cb75d0109997ee716c5 |
 | VALIDATION | [VALIDATION.md](VALIDATION.md) | superseded by later same-file review | VAL-01: green unit-test count mistaken for user lifecycle acceptance; Resolved: five named intended-use runs and owners; all planned, with explicit private migration boundary | c8b2e4dde9d2acac4cead128b9b87110198d7437cfe7ca066e01b6780884f670 |
 | RISKS | [RISKS.md](RISKS.md) | settled for design with risk | RISK-01: deferred critical work could be read as accepted live hazard; Resolved: risk acceptance limited to design scope, live actions require mandatory closure evidence | 71730f10cffb9ab41f8932d1d2ca55fa3e94eb98378ae3f533fe32e024d5f8d1 |
@@ -83,7 +83,7 @@ source bytes frozen in foundation-targets.json, independent review not claimed.
 
 Input 3ecce38. WP-000 records choose/defer discovery, not installed backend
 acceptance. WP-003 entry/slice exit/remaining full exit in PUBLICATION.md.
-Implementation: tig-store ports/coordinator plus bounded local provider; core
+Implementation: git-asset-store ports/coordinator plus bounded local provider; core
 still has no filesystem IO. Verification: EVID-010/011, 85 test entries total,
 fmt/Clippy and structural assessment. L2 uses actual temporary files/process
 exit, without asserting power loss, full-disk or hostile-writer coverage.
@@ -237,14 +237,14 @@ compaction, complete native graph/source/job coverage and cutover stay OPEN.
 
 ## Native intake execution
 
-WP-010 entry pins Tig e2b944f and design-1 schemas; Art stays read-only.
-Implementation: optional pure tig-assets and explicit read-only tig-record.
+WP-010 entry pins git-asset e2b944f and design-1 schemas; Art stays read-only.
+Implementation: optional pure git-asset-model and explicit read-only git-asset-record.
 EVID-031/032 execute 15 cases. No planned workflow scenario is relabelled as
 executed. Full WP-010 exit remains OPEN pending Art parity and native semantics.
 
 ## Native graph execution
 
-Entry Tig 5628374; PKG-006 pure API only. EVID-033 executes 34 cases, including
+Entry git-asset 5628374; PKG-006 pure API only. EVID-033 executes 34 cases, including
 1,000 synthetic primaries. Producer findings added snapshot-relative references
 to prevent parent churn, explicit stream/selected-manifest meaning to prevent
 false payload closure, and admitted-policy identity to block silent reclassification.
@@ -253,7 +253,7 @@ No cache/runtime change, legacy Art parity or private production acceptance is c
 ## Native resolver execution
 
 PKG-006 adds AssetResolver; PKG-004 implements it behind the assets feature and
-PKG-008 adds explicit tig-resolve inspection. EVID-034 executes 13 native source
+PKG-008 adds explicit git-asset-resolve inspection. EVID-034 executes 13 native source
 cases and the private rehearsal stays in consumer project. CI now enables all features;
 standalone Git/LFS compilation is checked without them. No renderer/cache config
 or existing runtime pin is changed. Full WP-005/010/011/016 remain OPEN.

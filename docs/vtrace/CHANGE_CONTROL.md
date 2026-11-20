@@ -5,7 +5,7 @@ provider capabilities, acknowledgement, reader/removal fencing, source selection
 retention, resource limits or public readiness claims change. Record affected
 REQ/SPEC/IF/DES/PKG/WP, source/evidence and consumer compatibility before adoption.
 
-Preserve stable TIG-R and doctrine IDs. REQ aliases do not rename obligations.
+Preserve stable GIT-ASSET-R and doctrine IDs. REQ aliases do not rename obligations.
 Wire/hash domains and .art compatibility need pinned migration vectors, not a
 branding replacement. Keep changed baselines distinguishable from old accepted
 snapshots. Unknown coverage and old authorities must not silently become current.

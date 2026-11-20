@@ -1,13 +1,13 @@
 # Rust project restore profiles: producer review
 
 Controls: [PROJECT-RESTORE](../../specs/PROJECT-RESTORE.md), WP-005/011/015,
-REQ-001/003/006/010, IF-005/008/010/013, PKG-003/004/008. Entry code is Tig
+REQ-001/003/006/010, IF-005/008/010/013, PKG-003/004/008. Entry code is git-asset
 `e184ef7`, now qualified as main `5b4735e5ee304358260610f55247b52dc2d02f86`
 with identical whole tree. Scope is the first orchestration slice from the
 [portable replay feedback](../../feedbacks/README.md).
 
-Extract the existing verified copy into `tig-git::restore` and keep the original
-single-object CLI protocol. The new `tig-project` reads a bounded manifest from
+Extract the existing verified copy into `git-asset::restore` and keep the original
+single-object CLI protocol. The new `git-asset-project` reads a bounded manifest from
 one exact Git listing, captures the declared native namespace once and keeps a
 frozen in-memory plan. Apply needs no subsequent Git/working-file reads. Nested
 scopes, fresh explicit roots, selected/literal-stream selectors and a compact

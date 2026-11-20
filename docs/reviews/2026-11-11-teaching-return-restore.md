@@ -3,7 +3,7 @@
 Current status: locally qualified; exact final-source hosted qualification remains.
 The local closeout below supersedes earlier checkpoint-pending notes.
 
-EVID-125. Input8e948d4791c64f41a4d76d66195a709a73890e54;
+EVID-135. Input8e948d4791c64f41a4d76d66195a709a73890e54;
 contractaa6394695486889d32e8b706509be1e65de9adfd precedes runtime.
 Branch feat/teaching-return-restore. The [contract](../../specs/TEACHING-RETURN-RESTORE.md)
 names WP/REQ/SPEC/IF/PKG controls, allowed scope, entry/exit and L0/L1/L2.
@@ -81,7 +81,7 @@ clock and domains do not prove hardware independence/current authority.
 ## Six producer lenses
 
 Method: source/contract/data-flow inspection and re-pinned semantic mutations.
-All findings owned by the Tig producer. These are checklists applied by one
+All findings owned by the git-asset producer. These are checklists applied by one
 producer, not independent reviewers or human approval.
 
 | Lens / exact target | Finding / severity | Disposition and remaining evidence |

@@ -5,10 +5,10 @@ Public summary: consumer identifiers generalized; original notes retained privat
 Entry759af7a, parentPR30 pending qualification. WP-005/008/009/010/011/016;
 REQ-001/004/006/007/008/009/010, SPEC-005/006/007/009/010/011,
 IF-005/007/008/009, PKG-004/005/008. GIT/INTEGRATION profiles, pulse05.
-Allowed: tig-git proposal preflight split, explicit CLI/Cargo target, synthetic
+Allowed: git-asset proposal preflight split, explicit CLI/Cargo target, synthetic
 CLI fixtures and scoped spec/guide/VTRACE records. No live consumer switch.
 
-Provide tig-propose check PROFILE and tig-propose create PROFILE. No arguments
+Provide git-asset-propose check PROFILE and git-asset-propose create PROFILE. No arguments
 means usage/no action. Both use the SAME library preflight against exact base
 and old raw-byte pins; check must write zero Git objects/refs or worktree bytes.
 Create consumes a non-deserializable checked request, reusing parentPR30's

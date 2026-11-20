@@ -81,7 +81,7 @@ authority/provider/large-file/restore and metadata-lifetime acceptance remain OP
 
 Trace: contract -> existing actual SDK ingest/retention/replay -> direct accessor
 projection and strict readonly variant -> independent copies/native HTTP/30
-repinned negatives/81 shipped controls -> EVID-122 focused candidate. Close
+repinned negatives/81 shipped controls -> EVID-132 focused candidate. Close
 implementation, verification, scoped validation, trace and review separately.
 Parent PR52 head3f3adc7 exact run43038012291 passes Windows/Linux/secrets and is
 ready for review. No merge, deployment or full product acceptance follows.

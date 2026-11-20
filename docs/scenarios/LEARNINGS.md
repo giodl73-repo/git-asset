@@ -25,8 +25,8 @@ The existing 13 Rust tests remain separately scoped mechanism evidence.
 2. A plan generation is not a reader/removal fence. Read grants, path reuse and
    lost renewal require provider-effective coordination (P06, I03/I07, F04/F05,
    M04/M05). A timeout or global process lock is not a complete solution.
-3. Capacity admission must include both other Tig writers and external disk
-   consumers. It bounds Tig's work but cannot guarantee a future write succeeds
+3. Capacity admission must include both other git-asset writers and external disk
+   consumers. It bounds git-asset's work but cannot guarantee a future write succeeds
    (P08, I10, F02, M02). Full-disk recovery remains required.
 4. LFS interoperability includes the surrounding client lifecycle: configured
    local stores, prune, attributes and unsupported extensions (P07/P08, I11/I12,

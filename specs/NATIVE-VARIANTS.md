@@ -11,7 +11,7 @@ L2: actual native Git edits and projected primary/recipe requirements.
 Design/source donor: Art119c66446f2e95129d8d8f143d60ec6220d2813a,
 crates/art-core/src/variants.rs and tests/variants.rs (MIT; same copyright/notice
 as root LICENSE). Preserve sparse exact selection, consumed-axis projection,
-owner/definition/space/semantics locks and no fallback. Tig uses NEW experimental
+owner/definition/space/semantics locks and no fallback. git-asset uses NEW experimental
 wire/subject identities, native raw Object pins and slot references, not Art hashes.
 
 Space document: schema:tig.variant-space.experimental-1, axes:{name:[values]}.

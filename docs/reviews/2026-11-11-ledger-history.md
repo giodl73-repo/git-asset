@@ -1,10 +1,10 @@
 # Original-result archive design review
 
-EVID-128 candidate; input9122ccff80f18dc79b8fafb3a58f52705ae78ac3.
+EVID-138 candidate; input9122ccff80f18dc79b8fafb3a58f52705ae78ac3.
 [LEDGER-HISTORY](../../specs/LEDGER-HISTORY.md) names controls/scope and L0/L1/L2.
 Method: the producer inspected actual ledger requests/outputs/execute/catch_up,
 core private tokens, immutable Tree point lookup and parent checkpoint behavior.
-All findings belong to Tig producer. These six lenses are not independent people,
+All findings belong to git-asset producer. These six lenses are not independent people,
 publication authority or human acceptance. Entry was design only; implementation and scoped evidence follow.
 
 | Lens / target | Finding / severity | Required disposition / evidence |

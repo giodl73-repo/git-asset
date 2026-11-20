@@ -1,6 +1,6 @@
 # Journal activation design review
 
-EVID-129 design only; inputc833add85f9a9c79d3387a78e469bc13a2570403.
+EVID-139 design only; inputc833add85f9a9c79d3387a78e469bc13a2570403.
 [JOURNAL-ACTIVATION](../../specs/JOURNAL-ACTIVATION.md) names controls, full
 required outcome, allowed fixture-only entry and L0/L1/L2 gates before code.
 Method: producer inspected actual legacy guard/apply_once/catch_up and staged
@@ -177,7 +177,7 @@ full controlled pipeline88738 is LIVE (default then all), both normal targets
 reserved. New exact43119762645 Windows/Linux are live, secrets pass. Old failed/
 interrupted runs remain recorded. Do not overlap/restart; full PRODUCT_PLAN active.
 
-Local parent integration brings1c1f3ca fixture readiness/spec/EVID-128 into this
+Local parent integration brings1c1f3ca fixture readiness/spec/EVID-138 into this
 owned activation branch. Private Rust component bytes remain unchanged; parent
 fence fixture bytes match the separately qualified correction. Context retains
 the active lane and controlled88738 process/target ownership. No PR merge occurs.
@@ -194,7 +194,7 @@ Logical metrics include intermediate writes; published metrics count provider
 put calls/bytes, not newly allocated storage, durability or reclaim. Caller still
 owns physical admission, finish/readback and atomic root adoption.
 
-Producer inspection of tree/staged.rs and named fixtures, owner Tig maintainers:
+Producer inspection of tree/staged.rs and named fixtures, owner git-asset maintainers:
 
 | Lens | Finding / disposition |
 | --- | --- |
@@ -310,7 +310,7 @@ source review replaces post-hoc proof-write accounting with the shared proof por
 14508 currently runs six short entries, adding exact proof quotas and corrupt/
 wrong-ack providers. No later pass or maximum-delta result is claimed yet.
 
-Producer findings, owner Tig maintainers: identity requires original/continued
+Producer findings, owner git-asset maintainers: identity requires original/continued
 schema separation and paired sequence/operation proofs; placement grants no new
 use/removal authority; custody retains external source/minimum/admission gates;
 concurrency requires exact source/controller CAS beyond this immutable component;
@@ -354,7 +354,7 @@ joined controller/minimum/tail/recovery/old-writer/expiry gates remain OPEN.
 
 
 Joined-controller producer review while immutable source qualification runs:
-JC-01 critical, owner Tig maintainers, design disposition resolved / implementation
+JC-01 critical, owner git-asset maintainers, design disposition resolved / implementation
 OPEN. Previous-generation digest alone cannot derive its operation-derived tail
 filename after domain.json replacement. Successor contract now requires immutable
 controls/DIGEST.json readback before current-control publication; recover the
@@ -362,7 +362,7 @@ previous tail through exactly one known predecessor control, never a history sca
 Missing predecessor/current record holds; seal-to-archive-to-publish exits and two
 rotations remain required fixtures. No new code or passing runtime claim follows.
 
-JC-02 critical, owner Tig maintainers, OPEN. An already-full source cannot be
+JC-02 critical, owner git-asset maintainers, OPEN. An already-full source cannot be
 assumed to have another ordinary reservation slot. Controller metadata admission
 must precede preparation writes and exclude competing capacity users, including
 source-fence/rollback growth and cumulative control/tail files. Numeric ceilings
@@ -447,7 +447,7 @@ CAS requirements; provider/privacy shares all budgets/uses synthetic metadata on
 Git/adoption preserves original request/checkpoint/probe semantics. Independent/
 human review and the complete plan remain OPEN. No public activation is exposed.
 
-JC-03 high, owner Tig maintainers, design clarified / implementation OPEN:
+JC-03 high, owner git-asset maintainers, design clarified / implementation OPEN:
 prepublication recovery can finish only its known prospective archive. Missing an
 already-published archive is known loss, not an initialization opportunity; minima
 and predecessor checks precede IO. JC-04 high, same owner, OPEN: restored working
@@ -468,7 +468,7 @@ target free. Do not conflate these pending profiles with parent1c1f3ca's results
 
 Parent archive qualification is now terminal0 for full local profiles/500k/strict/
 standalone/fresh14, plus exact1c hosted all3. Documentation27e8792 is locally
-integrated without a remote PR merge; EVID-128 carries its complete outcomes and
+integrated without a remote PR merge; EVID-138 carries its complete outcomes and
 prior failed/interrupted runs. Its new exact43135967822 remains pending, PR59 draft.
 Integration resolves only active context/resume/review/pin records, preserving
 current d29 runtime bytes and full remaining plan. No production capability added.
@@ -609,7 +609,7 @@ strict29.98s and fmt all.exit0; source pins pass. Maximum reaches32768 global/
 16384 local with351309 metadata reads/147040227 bytes,0 writes,1021129 local body
 bytes. These are replay IO/body counts, not physical quota, admission or reclaim.
 
-Producer finding ST-03, major, owner Tig maintainers: WHERE name NOT LIKE sqlite_%
+Producer finding ST-03, major, owner git-asset maintainers: WHERE name NOT LIKE sqlite_%
 uses wildcard underscore and hides a user sqlitex_intruder table. Independent
 in-memory SQLite counterexample returns old=[] versus literal GLOB=[intruder].
 Resolved before final qualification with NOT GLOB sqlite_* and actual Rust/SQLite
@@ -634,7 +634,7 @@ These checklists are not independent/human approval. Full continued public metho
 writer CAS/poisoning, activation/recovery/control/seal/admission and all product
 gates remain OPEN. Existing public-method audit names their required behaviors.
 
-ST-04, major/open, owner Tig maintainers: joined preparation must meter replay,
+ST-04, major/open, owner git-asset maintainers: joined preparation must meter replay,
 archived output capture, both indexes, working state/SQL rows/ancestry together.
 Separate observed maxima147040227 replay bytes plus446696246 index-append bytes
 exceed512MiB if naively combined. Their workloads differ, so this comparison is
@@ -824,7 +824,7 @@ not an unmodified-binary claim. Full-tail-seal/joined/strict maximum and final
 regressions remain pending on live3708. Do not edit its pinned Rust source.
 
 Next bounded source-locator/open design is appended before its implementation.
-Six producer lenses (owner Tig maintainers), design only PASS_WITH_RISK: identity
+Six producer lenses (owner git-asset maintainers), design only PASS_WITH_RISK: identity
 checks both digest identity and complete prior tail header; policy adds no
 placement permission; custody keeps expiry/removal a separate required protocol;
 recovery refuses known missing archives and does not recursively repair history;

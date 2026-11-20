@@ -1,6 +1,6 @@
 # Remote-publication teaching producer review
 
-EVID-126 focused candidate. The later implementation/qualification section
+EVID-136 focused candidate. The later implementation/qualification section
 supersedes entry-stage design-only status. Input2ec1a2e8c9e22227d53b548fc72c7fdb7c42830d;
 branch feat/teaching-remote-publication. The
 [contract](../../specs/TEACHING-REMOTE-PUBLICATION.md) names controls, allowed
@@ -11,7 +11,7 @@ Method: producer inspection of existing upload Backend/CLI, upload_witness,
 LocalStore/accounted publication, source snapshot selection, exchange playback,
 reader bounds and explicit fixture lifetime. All six are producer checklists;
 no delegation, independent people, human approval or deletion authority follows.
-Owner of every item is the Tig producer.
+Owner of every item is the git-asset producer.
 
 | Lens / target | Finding / severity | Contract disposition / required evidence |
 | --- | --- | --- |
@@ -33,7 +33,7 @@ large-file/lifetime/metadata-expiry/operator/UI/Action or full-plan acceptance.
 
 Contract6ae7b3c precedes code. New optional mode executes ordinary seven and real
 Git exchange, then actual disabled publication, two uploads, corrupt readback hold
-and same-plan recheck. Fixed sibling tig-lfs commands are real bounded children;
+and same-plan recheck. Fixed sibling git-asset-lfs commands are real bounded children;
 no API-equivalent command is falsely presented as executed. Input source and
 receiver are owned fresh-root files; receiver publication uses actual accounted
 LocalStore and a separately admitted capacity/job. The private fixture state gate

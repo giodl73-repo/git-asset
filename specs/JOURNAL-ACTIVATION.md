@@ -175,10 +175,10 @@ No live cache, daemon, browser/viewer, transfer, deletion, deployment or merge.
 ## Frozen initial SQL/probe amendment
 
 Private qualification names are fixed. Control table:
-`CREATE TABLE tig_activation(id INTEGER PRIMARY KEY CHECK(id=1),body BLOB NOT NULL CHECK(length(body)<=65536),hash TEXT NOT NULL)`.
+`CREATE TABLE git_asset_activation(id INTEGER PRIMARY KEY CHECK(id=1),body BLOB NOT NULL CHECK(length(body)<=65536),hash TEXT NOT NULL)`.
 After inserting the single canonical intent, create these nine guards:
-for each table events, meta, tig_activation and action INSERT, UPDATE, DELETE,
-`CREATE TRIGGER tig_activation_TABLE_ACTION BEFORE ACTION ON TABLE BEGIN SELECT RAISE(ABORT,'tig:sealed-source'); END`.
+for each table events, meta, git_asset_activation and action INSERT, UPDATE, DELETE,
+`CREATE TRIGGER git_asset_activation_TABLE_ACTION BEFORE ACTION ON TABLE BEGIN SELECT RAISE(ABORT,'git-asset:sealed-source'); END`.
 TABLE/ACTION substitutions come from that fixed literal list, never caller input.
 The intent insert precedes its own INSERT guard. All DDL/insert/guard creation
 commits or rolls back together. A guard abort is an error, never an acknowledgement.

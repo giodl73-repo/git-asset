@@ -1,6 +1,6 @@
 # Comparing and finding assets
 
-Tig compares immutable byte identities and declared references at exact snapshots.
+git-asset compares immutable byte identities and declared references at exact snapshots.
 Project adapters define the meaning of an episode, photograph or dependency.
 Cache paths and filenames do not establish equality.
 
@@ -11,15 +11,15 @@ Cache paths and filenames do not establish equality.
 | Where is it referenced inside an inventory? | CLI: works then manifest_references | Explicit admitted JSON scope; root, document and JSON-pointer provenance |
 | Who could be affected if that inventory owner changes? | CLI: manifest_impact | Conditional native consumers from all matching owners; association evidence stays distinct from semantic edges |
 | What changed in declared version content? | Work -> Versions -> Compare declared bytes | Added/shared/removed declarations in admitted version manifests; coverage remains explicit |
-| What changed in declared dependencies? | tig-graph inspect/compare | Caller-admitted graph/profile semantics; see [graph inspection](../specs/NATIVE-GRAPH.md) |
+| What changed in declared dependencies? | git-asset-graph inspect/compare | Caller-admitted graph/profile semantics; see [graph inspection](../specs/NATIVE-GRAPH.md) |
 | Are two videos perceptually equivalent? | Renderer/media adapter | Requires decoded media semantics; equal filenames or similar previews are insufficient |
 
 Use a machine-local catalogue enrollment with exact commit pins and externally
 admitted category rules. Both CLI operations run without the catalogue server:
 
 ```text
-tig-catalogue shared ENROLLMENT project-a project-b NEW_REPORT [CATEGORY]
-tig-catalogue references ENROLLMENT SHA256 NEW_REPORT [PROJECT] [OFFSET]
+git-asset-catalogue shared ENROLLMENT project-a project-b NEW_REPORT [CATEGORY]
+git-asset-catalogue references ENROLLMENT SHA256 NEW_REPORT [PROJECT] [OFFSET]
 ```
 
 ENROLLMENT and NEW_REPORT are absolute paths. Reports are create-new JSON files

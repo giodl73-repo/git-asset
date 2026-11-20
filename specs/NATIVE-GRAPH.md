@@ -30,12 +30,12 @@ pointers; graph output is not a sanitized public receipt. No recursive scanning,
 duplicated authored dependency array, producer fingerprint or eviction authority
 is introduced. Full WP-010/011 and native adoption remain open.
 
-Entry: Tig 562837485a2131e4d2209b7dce98fb39a8bb248c. WP-010 native graph
+Entry: git-asset 562837485a2131e4d2209b7dce98fb39a8bb248c. WP-010 native graph
 slice and WP-011 extraction prerequisite; REQ-001/006/010, SPEC-010/011,
 ARCH-005, IF-010, DES-009, PKG-006, CR-001..008. RUST profile: L0 structural,
 fmt, Clippy and canonical VTRACE; L1 positive/negative bounded graph tests;
 L2 synthetic scene and non-media consumers through the public native API.
-Only tig-assets pure code, tests and scoped control docs may change. No IO,
+Only git-asset-model pure code, tests and scoped control docs may change. No IO,
 cache setup, private fixtures, producer jobs or live lane changes in this package.
 
 A trusted caller admits an exact definition pin with extraction rules. Rules
@@ -112,7 +112,7 @@ claim 500,000 native graph scale, private primary-input adoption or custody.
 ## Small authoring changes and frozen builds
 
 ```text
-scene.tig: deps=[{id:cel/b}]       scene file stays unchanged
+scene.asset: deps=[{id:cel/b}]       scene file stays unchanged
                    |
 Git snapshot A: cel/b -> B1        binding digest A
 Git snapshot B: cel/b -> B2        binding digest B
@@ -122,7 +122,7 @@ frozen reference: cel/b + B1 pin   remains B1 in either snapshot
 Only the cel leaf needs editing. The graph materializes exact dependency pins
 from the chosen view, so a parent file hash alone is not a build identity.
 A binding digest covers admitted interpretation, requested kinds, ordered roots,
-resolved nodes and edges. It uses SHA-256 with TIG-NUL-native-binding-NUL-
+resolved nodes and edges. It uses SHA-256 with GIT-ASSET-NUL-native-binding-NUL-
 experimental-1-NUL framing, length-prefixed canonical items and collection counts.
 Items are admission digest, sorted requested kinds, sorted roots, nodes by exact
 reference, and breadth-first resolved edges in rule/array or UTF-8 map-key order; each collection

@@ -15,7 +15,7 @@ not independent review or human acceptance.
 | Provider/privacy | Reader cache charges old/new objects together and checks sizes/hashes. Requests/status are bounded before metadata reads. No paths, prompts or private providers enrolled; synthetic tests make no writes through the reader. |
 | Git/adoption | Stable asset ID, authored values, rights, unrelated streams/metadata preserved. Historical aliases remain old unless explicitly named; status changes require the caller's complete map. Existing sparse proposals remain the future handoff. |
 
-Executed: ten focused update scenarios and the complete all-feature tig-assets
+Executed: ten focused update scenarios and the complete all-feature git-asset-model
 regression suite pass; package all-target/all-feature locked Clippy passes with
 warnings denied. Cases include episode-like and non-media records, A/B retained
 revisions, two delivery targets, stale input, run collision, wrong selection,

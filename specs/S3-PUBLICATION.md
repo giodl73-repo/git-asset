@@ -15,7 +15,7 @@ service installation, consumer deployment or production qualification.
 
 The first remote backend is Amazon S3 general-purpose conditional PutObject with
 independently admitted per-object presigned PUT and GET URLs. Signatures/credentials
-are supplied outside Tig, remain private, and can be refreshed without changing
+are supplied outside git-asset, remain private, and can be refreshed without changing
 operation identity. No discovery, credential helper, ambient proxy, redirect,
 automatic retry, bucket listing, multipart or DELETE is available in this slice.
 Query validation admits only SigV4 authentication/operation annotations (and a
@@ -40,7 +40,7 @@ equal to the object bytes and Content-Type:application/octet-stream. The GET URL
 must authorize full readback of that same key. Other metadata, ACL, encryption-key
 headers and redirect-based endpoint discovery are not synthesized. Expired access
 can be replaced in the private profile without changing target location/plan.
-Tig emits neither URLs nor transport errors. The CLI installs no HTTP logger;
+git-asset emits neither URLs nor transport errors. The CLI installs no HTTP logger;
 library hosts must keep transport trace logging disabled because ureq trace mode
 can include URL queries. A redacted Client Debug implementation is not protection
 against an application explicitly enabling sensitive transport tracing.
@@ -101,15 +101,15 @@ status. Runtime records and detailed receipts stay asset-side, never in Git.
 
 ## CLI and agent contract
 
-Build with `cargo build -p tig-store --features s3 --bin tig-storage --locked`.
+Build with `cargo build -p git-asset-store --features s3 --bin git-asset-storage --locked`.
 The default standalone Git/LFS build has no S3 network dependency. Root discovery
-reports whether S3 was compiled. `tig-storage s3 describe` opens no provider.
+reports whether S3 was compiled. `git-asset-storage s3 describe` opens no provider.
 
-    tig-storage s3 plan PROFILE REQUEST
-    tig-storage s3 peak PROFILE PLAN
-    tig-storage s3 status PROFILE PLAN
-    tig-storage s3 apply PROFILE PLAN
-    tig-storage s3 resume PROFILE PLAN
+    git-asset-storage s3 plan PROFILE REQUEST
+    git-asset-storage s3 peak PROFILE PLAN
+    git-asset-storage s3 status PROFILE PLAN
+    git-asset-storage s3 apply PROFILE PLAN
+    git-asset-storage s3 resume PROFILE PLAN
 
 REQUEST is strict `tig.s3-upload-request.design-1` JSON with operation and the
 existing exact source publication Request. It cannot supply URLs, owner, target,
@@ -152,5 +152,5 @@ Primary protocol sources (reviewed 2026-11-08):
 [PutObject](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObject.html),
 [presigned URLs](https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-presigned-url.html).
 The optional synchronous client is pinned ureq 3.5.1; its maintained TLS/HTTP stack
-is reused rather than implementing TLS/signatures in Tig. See its
+is reused rather than implementing TLS/signatures in git-asset. See its
 [configuration](https://docs.rs/ureq/3.5.1/ureq/config/struct.ConfigBuilder.html).

@@ -1,9 +1,23 @@
-# Tig maintainer context
+# git-asset maintainer context
+
+## Current integration lane
+
+The canonical public product is git-asset, coordinating asset lifecycle over Git
+and git-annex. The user requests PR51..60 and README/CI PR62 on main. Owned
+integration work is integrate/open-prs; inputs and gates are in
+specs/OPEN-PR-INTEGRATION.md. Preserve all original commits, existing data
+identifiers and default-off prototype limits. No private controller worktree,
+live cache operation or unrelated S3 patch is included. Read Git/GitHub for exact
+branch/check/merge state. Imported stack evidence uses EVID-130..139; historical
+source 66f8b4b retains its original EVID-120..129 aliases.
+
+Historical qualification and development observations follow. They do not
+supersede the current user authorization to merge qualified source into main.
 
 User-selected checkout: C:/src/Tig; preserve its dirty user changes. Active owned
 work is F:/src/Tig-worktrees/journal-activation, feat/journal-activation. Start with
 [resume state](context/RESUME.md) and derive actual HEAD/status/processes before
-relying on any historical note. GitHub: giodl73-repo/tig; draft/ready PRs are not
+relying on any historical note. GitHub: giodl73-repo/git-asset; draft/ready PRs are not
 merged or deployment authority. Full PRODUCT_PLAN remains the active objective.
 
 The private capacity-journal continuation lane has focused evidence for an atomic
@@ -12,7 +26,7 @@ working/history state and bounded operation/sequence indexes. New conditional
 staged insertion preserves canonical roots and proves absence during mutation.
 The real full16384 legacy source plus16384 immutable index delta reaches32768
 under unchanged budgets; full core, physical reopen, original archive,500k metadata,
-strict/fmt pass. See [EVID-129](docs/reviews/2026-11-11-journal-activation.md).
+strict/fmt pass. See [EVID-139](docs/reviews/2026-11-11-journal-activation.md).
 The private cfg(test) CapacityLedger mode now has actual full three-generation
 proof: original16384 + two method-written tails16384 each, then a generation3
 command reaches49153. General open uses exactly one checked predecessor archive,
@@ -69,7 +83,7 @@ fixture; actual writer/controller, physical admission and full-product gates rem
 No public seal-only operation or cap waiver. Provider/source/witness continuation
 and separately authorized detail expiry remain required; replay fences must survive.
 
-Tig is generic Rust byte/asset infrastructure, usable for Git/LFS without typed
+git-asset is generic Rust byte/asset infrastructure, usable for Git/LFS without typed
 assets. Optional typed records incorporate Art's generic value under
 [unified design](docs/UNIFIED-DESIGN.md); media semantics remain adapter-owned.
 Logical paths resolve in exact bundle snapshots, physical paths are provider-owned.

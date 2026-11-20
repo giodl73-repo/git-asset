@@ -59,7 +59,7 @@ native/current-authority/provider/large-file/lifetime/product acceptance remain.
 
 ## Trace
 
-EVID-120 connects WP-004/008/010/015/016; REQ-001/005/006/007/009/010;
+EVID-130 connects WP-004/008/010/015/016; REQ-001/005/006/007/009/010;
 SPEC-002/005/008/010/014; IF-002/005/008/010/011/013;
 PKG-002/004/006/008 through TEACHING-RENAME.md, existing APIs, literal oracle,
 native/API/shipped-controls assertions and this review. Full goal remains open.

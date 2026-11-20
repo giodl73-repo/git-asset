@@ -40,16 +40,16 @@ a prerequisite for basic Git/LFS use or local safe placement.
 
 | Requirement | Specification allocation | Work packages | Current evidence / remaining gap |
 | --- | --- | --- | --- |
-| REQ-001 / TIG-R01 | SPEC-002/006/010 | WP-001/002/010 | Prototype identity fields are asserted; real hashing/tree/record parity open |
-| REQ-002 / TIG-R02 | SPEC-001/004/008 | WP-004/006/009 | Partial pure union/candidates; authority, constraints and durable source claims open |
-| REQ-003 / TIG-R03 | SPEC-003/004/008/009/013 | WP-003/004/006/007/013/014 | No-loss/retained custody and live execution unverified |
-| REQ-004 / TIG-R04 | SPEC-001/003/004/009 | WP-003/004/007/009 | Snapshot rejection tested; durable fencing/recovery open |
-| REQ-005 / TIG-R05 | SPEC-001/002/005/008/009/011/013 | WP-001/006/007/008/011/013/014 | Logical count subset tested; physical resources/reclaim unverified |
-| REQ-006 / TIG-R06 | SPEC-002/007/010/012/013/014/015 | WP-000/001/005/010/012/013/014/015/016 | Structural/private-source boundary inspection only; providers/adoption open |
-| REQ-007 / TIG-R07 | SPEC-005/014 | WP-008/015 | Shared catalog and fast lookup not implemented |
-| REQ-008 / TIG-R08 | SPEC-007/013 | WP-005/013 | Pinned real-client integration not implemented |
-| REQ-009 / TIG-R09 | SPEC-001/003/006/007/008/012 | WP-002/003/005/009/012 | Pure desired projection only; Git/index/job recovery open |
-| REQ-010 / TIG-R10 | SPEC-010/011/012/014 | WP-010/011/012/015/016 | Canonical donor subset ported under WP-001; full semantics/adoption open |
+| REQ-001 / GIT-ASSET-R01 | SPEC-002/006/010 | WP-001/002/010 | Prototype identity fields are asserted; real hashing/tree/record parity open |
+| REQ-002 / GIT-ASSET-R02 | SPEC-001/004/008 | WP-004/006/009 | Partial pure union/candidates; authority, constraints and durable source claims open |
+| REQ-003 / GIT-ASSET-R03 | SPEC-003/004/008/009/013 | WP-003/004/006/007/013/014 | No-loss/retained custody and live execution unverified |
+| REQ-004 / GIT-ASSET-R04 | SPEC-001/003/004/009 | WP-003/004/007/009 | Snapshot rejection tested; durable fencing/recovery open |
+| REQ-005 / GIT-ASSET-R05 | SPEC-001/002/005/008/009/011/013 | WP-001/006/007/008/011/013/014 | Logical count subset tested; physical resources/reclaim unverified |
+| REQ-006 / GIT-ASSET-R06 | SPEC-002/007/010/012/013/014/015 | WP-000/001/005/010/012/013/014/015/016 | Structural/private-source boundary inspection only; providers/adoption open |
+| REQ-007 / GIT-ASSET-R07 | SPEC-005/014 | WP-008/015 | Shared catalog and fast lookup not implemented |
+| REQ-008 / GIT-ASSET-R08 | SPEC-007/013 | WP-005/013 | Pinned real-client integration not implemented |
+| REQ-009 / GIT-ASSET-R09 | SPEC-001/003/006/007/008/012 | WP-002/003/005/009/012 | Pure desired projection only; Git/index/job recovery open |
+| REQ-010 / GIT-ASSET-R10 | SPEC-010/011/012/014 | WP-010/011/012/015/016 | Canonical donor subset ported under WP-001; full semantics/adoption open |
 
 SPEC-001 is retained/regression-checked by pure and integration packages;
 SPEC-015 is ongoing development verification in every package. All other specs

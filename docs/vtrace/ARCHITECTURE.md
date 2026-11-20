@@ -1,7 +1,7 @@
 # Architecture baseline
 
 Target component IDs control packages; they are not claims that crates exist.
-The implemented tig-core, tig-store, tig-assets and tig-git workspace is mapped
+The implemented git-asset-core, git-asset-store, git-asset-model and git-asset workspace is mapped
 in [current architecture](../ARCHITECTURE.md). EVIDENCE.md and
 PACKAGE_BOUNDARIES.md distinguish their proof from the full target architecture.
 

@@ -1,13 +1,31 @@
 # Intended-use validation
 
-EVID-126 demonstrates actual Git metadata exchange separately from explicit
+EVID-122 demonstrates actual native pool-roster binding and held byte/use guards
+while owner adoption remains possible, plus lock release on child death without
+claim release. It does not qualify native pruner execution, retained publication,
+roster handoff, remote/hardware custody or complete REEL acceptance. See
+[scope](../reviews/2026-11-20-annex-managed-read.md).
+
+EVID-121 demonstrates flat declared job obligations through actual metadata
+finish/reopen and guarded namespace reopen while the synthetic Git checkout is
+unavailable. It does not qualify abrupt integrated process death, actual annex
+pool/pruner enforcement, publication or full consumer workflow acceptance.
+See [scope](../reviews/2026-11-20-native-job-protection.md).
+
+EVID-120 demonstrates exact guarded local native-annex reads using fresh
+synthetic ordinary/bare repositories and one opaque object. This does not
+validate durable job leases, retained publication, remote/hardware custody,
+Linux subprocess containment or full REEL integration. See the separate
+[intended-use limits](../reviews/2026-11-20-annex-read-adapter.md).
+
+EVID-136 demonstrates actual Git metadata exchange separately from explicit
 remote byte publication, corrupt readback and exact recheck. R availability does
 not become retained custody or removal authority; F/D/M/source stay unchanged.
 This synthetic14-step native/HTTP/shipped scope does not qualify real providers,
 current authority/clock/quota, complete course or classroom acceptance. See
 [review](../reviews/2026-11-11-teaching-remote-publication.md).
 
-EVID-125 joins accepted Git return with missing payload, explicit new retained
+EVID-135 joins accepted Git return with missing payload, explicit new retained
 M birth, then ordinary F restoration with D absent. Actual old expired retry
 removes0 new/58 historical bytes and preserves current source/custody. Literal
 synthetic bytes and native HTTP/shipped controls qualify this bounded lesson;
@@ -15,14 +33,14 @@ complete course, providers/current authority/clock/large files/lifetime/operator
 Action and browser/human acceptance stay OPEN. See
 [review](../reviews/2026-11-11-teaching-return-restore.md).
 
-EVID-121 connects exact Git/native category and retained-age selection through
+EVID-131 connects exact Git/native category and retained-age selection through
 actual synthetic claim settlement/final loss to readonly catalogue observations,
 with intent process recovery, cancel, new-birth replay and honest allocation.
 Synthetic domains/consent/time do not prove hardware, real clock or human approval.
 Complete course, operator/Action, provider/authority/lifetime and browser/human
 acceptance remain OPEN; [review](../reviews/2026-11-10-teaching-final-retirement.md).
 
-EVID-120 teaches authored Git path versus immutable bytes through real conflict
+EVID-130 teaches authored Git path versus immutable bytes through real conflict
 refusal and zero-effect rename reconciliation. Eight recorded reports; no
 browser/classroom or general native writer acceptance. See
 [review](../reviews/2026-11-10-teaching-rename.md). Full course/product remains open.
@@ -204,7 +222,7 @@ A synthetic demonstration can validate the synthetic workflow within its scope;
 it does not automatically accept a private production project. Private migration
 requires its owning session's approved exact mapping, byte/recovery/rollback
 checks and scoped operator acceptance. No screenshots/private payloads move into
-Tig to manufacture evidence. Consent/publication and storage safety stay distinct.
+git-asset to manufacture evidence. Consent/publication and storage safety stay distinct.
 
 WP-001 supplies the pure identity/tree component of VAL-001 through EVID-007/008.
 It does not change that intended-use run's planned status: Git/LFS, byte worktree,
@@ -547,3 +565,24 @@ and unverified current presence. This validates a bounded 8 MiB/process-restart
 library slice, not full bulk F/D/M, actual provider/clock/authority/large-file,
 metadata lifetime, operator UX or human acceptance. See
 ../reviews/2026-11-09-final-provider.md; full product acceptance remains open.
+
+## Product rename intended use
+
+EVID-123: the team overview explains the CRM-like asset relationship/lifecycle
+layer over Git and git-annex. Synthetic command discovery and unchanged legacy
+record identity demonstrate naming/reader compatibility, not cache migration,
+complete native publication or production acceptance.
+
+## README-only CI intended use
+
+EVID-124: root README-only narrative edits keep quick checks and skip expensive
+Rust qualification. Required matrix check names remain present. A following
+one-file README PR provides the hosted fast-path demonstration; full product
+and independent/human acceptance remain separate.
+
+## Open-PR intended use
+
+EVID-140: preserve the existing synthetic teaching/history/continuation scope
+while reconciling current public naming. No live cache rollout, private controller,
+physical metadata admission, native publication or complete product acceptance
+follows from code inclusion. See the separate producer record and exact PR checks.

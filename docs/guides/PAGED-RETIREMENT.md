@@ -1,6 +1,6 @@
 # Whole historical selections and original-binding pages
 
-Experimental Rust metadata API: `tig_store::final_retirement::paged`. This first
+Experimental Rust metadata API: `git_asset_store::final_retirement::paged`. This first
 layer supports the [paged-retirement contract](../../specs/PAGED-RETIREMENT.md).
 The durable decision/page/claim/final-provider controller remains required.
 

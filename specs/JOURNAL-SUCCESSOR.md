@@ -247,7 +247,7 @@ old/new handles and another domain, actual unmodified old-library refusal plus
 accepted legacy control, stale/restored prefixes/minima and missing nodes/tails.
 Then both workspace/500k/strict/standalone/teaching artifacts and exact hosts.
 
-Producer checklists, owner Tig maintainers, design pass_with_risk: identity requires
+Producer checklists, owner git-asset maintainers, design pass_with_risk: identity requires
 noncyclic exact authority/record proofs; placement retains unknown/protection
 semantics; custody requires independent minima/physical admission and grants no
 reclaim; concurrency requires SQL and controller fencing plus every recovery exit;
@@ -301,10 +301,10 @@ Entry is the checked Base and exact TailIdentity; exit is a read-only replayed
 snapshot with acknowledged tail prefix checked, never a writable journal handle.
 
 An empty tail cannot be bound by its head alone. Preserve existing meta/events
-columns and add tig_tail(id INTEGER PRIMARY KEY CHECK(id=1),body BLOB NOT NULL
+columns and add git_asset_tail(id INTEGER PRIMARY KEY CHECK(id=1),body BLOB NOT NULL
 CHECK(length(body)<=65536),hash TEXT NOT NULL). Exactly one row stores canonical
 TailIdentity bytes and SHA256. After its initial insertion, three fixed SQL guards
-reject INSERT/UPDATE/DELETE on tig_tail; readback requires exact table/guard SQL.
+reject INSERT/UPDATE/DELETE on git_asset_tail; readback requires exact table/guard SQL.
 The nine activation guards remain separate and unchanged. A future real tail
 creator must establish and read back this header under admitted capacity before
 any publication. This entry permits only explicit synthetic SQL fixture creation.
@@ -460,7 +460,7 @@ all-method writer, physical admission, source/provider/witness and expiry stay o
 Scoped ST-04 preparation outcome: final59288 passes same real16384+16384, physical
 finish/readback and retained old outcomes under one unchanged meter1123418 reads/
 447596663 bytes,668057 writes/258673542 bytes. Ordinary strict maximum and index
-regressions/short25/strict/fmt also pass. EVID-129 retains the failed diagnostic and
+regressions/short25/strict/fmt also pass. EVID-139 retains the failed diagnostic and
 before-code amendment hashes. This closes this fixture's joined logical budget,
 not physical admission, actual controller/writer/rotation/recovery or all-method/
 provider/source/witness/expiry/full product acceptance.

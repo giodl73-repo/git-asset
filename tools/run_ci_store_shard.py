@@ -49,7 +49,7 @@ def commands(executable, names):
 
 def run(shard):
     build = subprocess.run(
-        ["cargo", "test", "-p", "tig-store", "--lib", "--all-features",
+        ["cargo", "test", "-p", "git-asset-store", "--lib", "--all-features",
          "--locked", "--no-run", "--message-format=json"],
         capture_output=True, text=True)
     print(build.stderr, end="", flush=True)
@@ -58,7 +58,7 @@ def run(shard):
     for line in build.stdout.splitlines():
         item = json.loads(line)
         if (item.get("reason") == "compiler-artifact"
-                and item.get("target", {}).get("name") == "tig_store"
+                and item.get("target", {}).get("name") == "git_asset_store"
                 and item.get("profile", {}).get("test")
                 and item.get("executable")):
             executables.add(item["executable"])

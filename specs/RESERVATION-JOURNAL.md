@@ -8,7 +8,7 @@ No existing root is upgraded, journal limit waived or time inferred from replay.
 
 Input a24d962cd0b47ed2045414dd67e1c17d37394fed. Bounded WP-003/004/006/008
 slice: REQ-003/004/005/007/009, SPEC-003/004/005/008, ARCH-002/003,
-IF-003/004/005/006, DES-003/004/005/008, PKG-003 in tig-store, PROVIDER profile.
+IF-003/004/005/006, DES-003/004/005/008, PKG-003 in git-asset-store, PROVIDER profile.
 Entry: tested capacity model/local exclusion and explicit trusted temporary roots.
 Exit: per-domain transactional commands, idempotent replies, bounded incremental
 replay, process-restart recovery and concurrent admissions. Full packages remain
@@ -94,8 +94,8 @@ witness rejection, probe freshness and indexed-tail replay. Fixed free/allocatio
 values are synthetic, not measurements of physical capacity. No real full-disk,
 power-loss, network filesystem, hostile writer or unwitnessed-restore proof exists.
 
-Commands: `cargo test -p tig-store --lib --locked ledger::tests` (19 entries),
-`cargo test -p tig-core --test capacity --locked` (18),
+Commands: `cargo test -p git-asset-store --lib --locked ledger::tests` (19 entries),
+`cargo test -p git-asset-core --test capacity --locked` (18),
 `cargo test --workspace --locked` (134), fmt and all-target Clippy. EVID-014
 records this scope. Full WP-003/004/006/008 and intended-use gates remain open.
 

@@ -98,7 +98,7 @@ child exit and unrelated progress. Designed cases close only with exact evidence
 
 ## Explicit committed-ref operator composition
 
-`tig-lifecycle reconcile PROFILE REQUEST PLACEMENT_PROFILE [CURSOR]` composes
+`git-asset-lifecycle reconcile PROFILE REQUEST PLACEMENT_PROFILE [CURSOR]` composes
 the existing committed-ref selector and one actual placement page. PROFILE and
 REQUEST keep their existing strict schemas. PLACEMENT_PROFILE is private strict
 `tig.placement-profile.design-1`: config, ordered providers (root, ledger_root,
