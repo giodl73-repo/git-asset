@@ -15,7 +15,7 @@ fixtures. Reviewed hashes: foundation-targets.json.
 ## Method and six producer lenses
 
 One producer applies all six [.roles checklists](../../.roles/ROLE.md), without
-delegation, independent review or human acceptance. Owner of each finding: Tig
+delegation, independent review or human acceptance. Owner of each finding: git-asset
 maintainer using the named lens. This qualifies the declared native-to-flat seam;
 it does not make an arbitrary flat namespace a complete native protection source.
 Adopters must admit the actual native roots/profiles and enforce their writer
@@ -32,7 +32,7 @@ boundary before claiming complete scope. No existing root is silently migrated.
 
 ## Verification
 
-Additional planning finding NB-07 (High, placement/recovery lenses; owner Tig
+Additional planning finding NB-07 (High, placement/recovery lenses; owner git-asset
 maintainer): an object can occur in more historical roots than MAX_ROOTS. Every
 bounded batch sees the unselected roots as protection and therefore preserves all
 selected paths. Repeating batches cannot retire that whole block. Disposition:
@@ -92,22 +92,22 @@ broad suites cover the unchanged runtime. Hosted exact-head results remain pendi
 
 ```text
 cargo fmt --all -- --check
-cargo test -p tig-git --features schema --test native_source retirement_cases --locked
-cargo test -p tig-git --features schema --lib independent_native_binding --locked
+cargo test -p git-asset --features schema --test native_source retirement_cases --locked
+cargo test -p git-asset --features schema --lib independent_native_binding --locked
 cargo clippy --workspace --all-features --all-targets --locked -- -D warnings
 cargo test --workspace --locked
-cargo check -p tig-git --no-default-features --locked
+cargo check -p git-asset --no-default-features --locked
 cargo build --workspace --all-features --bins --locked
 cargo test --workspace --all-features --locked
-cargo test -p tig-store --lib --locked retirement::tests::explicit_cli_pending_cancellation_qualification -- --ignored --exact
-cargo test -p tig-store --lib --locked final_retirement::bulk::tests::explicit_cli_bulk_inspection_qualification -- --ignored --exact
-cargo test -p tig-store --lib --locked final_retirement::bulk::tests::operator::explicit_cli_bulk_execution_qualification -- --ignored --exact
-cargo test -p tig-store --test retirement_cli --locked pre_final_writer_refuses_new_manifest_and_accepts_legacy_control -- --ignored --exact
+cargo test -p git-asset-store --lib --locked retirement::tests::explicit_cli_pending_cancellation_qualification -- --ignored --exact
+cargo test -p git-asset-store --lib --locked final_retirement::bulk::tests::explicit_cli_bulk_inspection_qualification -- --ignored --exact
+cargo test -p git-asset-store --lib --locked final_retirement::bulk::tests::operator::explicit_cli_bulk_execution_qualification -- --ignored --exact
+cargo test -p git-asset-store --test retirement_cli --locked pre_final_writer_refuses_new_manifest_and_accepts_legacy_control -- --ignored --exact
 ```
 
-Native CLI integration uses Cargo's explicitly built CARGO_BIN_EXE_tig-retirement,
-not an installed runtime. TIG_RETIREMENT_CLI/TIG_BULK_CLI name the fresh external
-all-feature artifact; TIG_PRE_FINAL_CLI names pinned273e639. Ignored suite output
+Native CLI integration uses Cargo's explicitly built CARGO_BIN_EXE_git-asset-retirement,
+not an installed runtime. GIT_ASSET_RETIREMENT_CLI/GIT_ASSET_BULK_CLI name the fresh external
+all-feature artifact; GIT_ASSET_PRE_FINAL_CLI names pinned273e639. Ignored suite output
 is not explicit qualification. Frontend/restore and source pre-pair artifact
 evidence remain historical unless rerun; CI and human acceptance remain separate.
 
@@ -120,7 +120,7 @@ outage and partial retirement. Existing bulk protection/consent remains decisive
 the new adapter neither authorizes adoption nor deletes bytes itself.
 
 Trace: controls above -> NATIVE-RETIREMENT-BINDINGS.md -> Graph::storage_objects,
-native::retirement build/inspect/select and tig-retirement -> eight integration
+native::retirement build/inspect/select and git-asset-retirement -> eight integration
 entries, one framing entry/four independent cases, real Git/CLI,1,000-root limits
 and actual bulk byte effects -> EVID-105. Implementation, verification, synthetic
 validation and six producer lenses close separately. Disposition: pass_with_risk

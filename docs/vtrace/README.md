@@ -1,4 +1,4 @@
-# Tig engineering baseline
+# git-asset engineering baseline
 
 Scope: full local specification/work-package design, producer-reviewed with risk.
 This is an engineering control set, not certification or proof of production
@@ -9,7 +9,7 @@ designed and full requirements/invariants remain OPEN.
 
 | Question | Controlled record |
 | --- | --- |
-| Why build Tig and for whom? | [Mission](MISSION.md), [CONOPS](CONOPS.md) |
+| Why build git-asset and for whom? | [Mission](MISSION.md), [CONOPS](CONOPS.md) |
 | What must it do and what exists today? | [Requirements](REQUIREMENTS.md), [current/target specs](SPECIFICATION_BASELINE.md) |
 | Who owns each component and contract? | [Architecture](ARCHITECTURE.md), [packages](PACKAGE_BOUNDARIES.md), [interfaces](INTERFACES.md), [design](DESIGN.md) |
 | How will it be built and checked? | [Code rigor](CODE_RIGOR.md), [profiles](LANGUAGE_PROFILES.md), [implementation plan](IMPLEMENTATION_PLAN.md), [17 work packages](WORK_PACKAGES.md) |
@@ -27,5 +27,5 @@ prerequisites for standalone Git/LFS byte management.
 
 Run the portable repository checks with tools/validate.ps1. The optional native
 canonical VTRACE structural assessment and source pin are recorded in PROCESS.md.
-The explicit-profile experimental tig-lfs is component-tested; no daemon, automatic
+The explicit-profile experimental git-asset-lfs is component-tested; no daemon, automatic
 configuration or hidden approval system is added here.

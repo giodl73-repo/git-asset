@@ -3,7 +3,7 @@
 T2 mutation preparation of [the landing plan](../docs/VERSION-DELIVERY-LANDING.md),
 input `27846e51261e871502b5848c3fd245147dc18baf`. WP-009/010/011/012/015,
 REQ-001/004/006/009/010, SPEC-007/010/011/012/014/015, IF-007/008/010/011/013,
-PKG-004/005/006/008. RUST/GIT/INTEGRATION profiles. Allowed: pure tig-assets update
+PKG-004/005/006/008. RUST/GIT/INTEGRATION profiles. Allowed: pure git-asset-model update
 preparation over existing contracts, focused tests and bounded review/specs.
 No IO writers, cache initialization, provider engine, automatic Git operation,
 approval inference or live consumer adoption. Existing sparse Git proposals and

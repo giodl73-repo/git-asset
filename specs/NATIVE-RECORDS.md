@@ -11,7 +11,7 @@ It is not the type definition or a replacement for standard Git LFS pointers.
 definitions/cel.json ---> separately pinned authored JSON Schema / role rules
          |
          v
-scene-04/cel-b.tig -----> values + ordered stream bindings + selected result
+scene-04/cel-b.asset -----> values + ordered stream bindings + selected result
                                              |
                                              v
                                   immutable byte objects

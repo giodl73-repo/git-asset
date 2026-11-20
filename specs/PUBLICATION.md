@@ -3,7 +3,7 @@
 WP-003 bounded slice. Input main 3ecce389891212191ca53124e3906e1009a4ba5a.
 Controls: REQ-003/004/009, SPEC-003, ARCH-002, IF-003/004, DES-003,
 PKG-002/003, PROFILE-003 (PROVIDER). WP-000 choose/defer decision is recorded
-in BACKEND-DECISION.md. Scope: new tig-store crate, explicit temporary stores,
+in BACKEND-DECISION.md. Scope: new git-asset-store crate, explicit temporary stores,
 streamed publication, operation replay and fault/reopen tests. No live cache,
 daemon, broad census, transfer configuration or removal.
 
@@ -42,7 +42,7 @@ contract, not proof that any arbitrary port implementation is trustworthy.
 
 Roots are explicitly initialized/opened by caller in owned locations, never by
 repo startup. SHA-256-derived operation/object names, bounded strict metadata and
-symlink/type rejection restrict paths. Concurrent trusted Tig writers use private
+symlink/type rejection restrict paths. Concurrent trusted git-asset writers use private
 partials and no-clobber publication. Adversarial path replacement/TOCTOU and
 unmanaged writers require later handle-based fencing; these stores cannot be
 admitted as production custody for that threat model.
@@ -54,8 +54,8 @@ small; expanding operation records/observations live outside ordinary Git.
 
 ## Implemented checkpoint and limits
 
-The publication coordinator and provider ports live in tig-store (PKG-002 and a
-bounded PKG-003 subset); tig-core remains free of filesystem IO. This allocation
+The publication coordinator and provider ports live in git-asset-store (PKG-002 and a
+bounded PKG-003 subset); git-asset-core remains free of filesystem IO. This allocation
 does not require a separate engine crate before its responsibilities grow.
 The local design-5 store has a small place marker, immutable per-operation
 intent/completion files, final SHA-256 objects and private staging. Runtime
@@ -91,7 +91,7 @@ Linux; Windows tests use type guards, not adversarial reparse-point fencing.
 No actual full disk, power loss, host reboot, hostile filesystem writer or
 provider-durable backend was tested.
 
-Commands: `cargo test -p tig-store --locked` (24 entries),
+Commands: `cargo test -p git-asset-store --locked` (24 entries),
 `cargo test --workspace --locked` (154 total), fmt and all-target Clippy.
 EVID-010 records this scope; WP-003 remains in progress, not fully verified.
 

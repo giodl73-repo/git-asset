@@ -1,5 +1,26 @@
 # Verification record
 
+EVID-122: two shared-use store tests (including forced process death), eleven
+annex tests and actual native ordinary/bare fixture pass. Locked all-feature
+workspace/500k with two threads, strict all-target Clippy, standalone/assets-only
+Git and final L0 pass. The earlier four-thread Age(Budget) scale-fixture failure
+is retained in the [producer record](../reviews/2026-11-20-annex-managed-read.md).
+
+EVID-121: three native job-projection fixtures pass exact membership,
+header/flat substitution, missing/corrupt metadata, aggregate budgets and
+finished/reopened guarded namespace replay/stale/peer/cancellation cases.
+Locked all-feature workspace/500k, strict all-feature/all-target Clippy,
+standalone/assets-only git-asset, fmt, structure/hash pins and diff pass. Scope and
+open gates are in the [producer record](../reviews/2026-11-20-native-job-protection.md).
+
+EVID-120: three provider-file tests, thirteen existing byte-reader regressions,
+seven annex parser/process tests and explicitly enrolled native ordinary/bare
+fixture pass. Locked all-feature workspace (including 500k persistence), strict
+all-feature/all-target Clippy, standalone git-asset, fmt and structure checks pass.
+Detailed scope and remaining gates are recorded in the
+[producer record](../reviews/2026-11-20-annex-read-adapter.md). No hosted closure
+is implied by local verification.
+
 EVID-119: six native CLI/provider/catalogue cases, actual HTTP -> shipped controls,
 eleven repinned rejection negatives and all78 controller cases pass. Default89185
 workspace/500k and all48441 workspace/500k/strict pass. Final52714 qualifies the
@@ -244,7 +265,7 @@ dry runs, hosted qualification and installed-runtime adoption are separate.
 
 ## Native metadata archive verification
 
-Entry 0855e7a; EVID-040. `cargo test -p tig-assets -p tig-git --all-features
+Entry 0855e7a; EVID-040. `cargo test -p git-asset-model -p git-asset --all-features
 --locked`: 116 Windows component entries pass. The final non-media replay
 extension reruns all 24 native-source cases. Workspace all-target/all-feature
 Clippy with warnings denied passes. Exact provider reopen, detached Git metadata,
@@ -257,7 +278,7 @@ Local Windows foundation checks passed on 2026-10-25: scenario inventory,
 local links, reviewed file hashes and pinned ROLES/PITFALL checkers.
 Scope: repository/link/scenario structure and pinned ROLES/PITFALL checkers only.
 No provider tests, custody proofs, transfer benchmarks or actual reclaim have run.
-All 110 scenarios remain designed and all TIG-R requirements remain OPEN.
+All 110 scenarios remain designed and all GIT-ASSET-R requirements remain OPEN.
 The two integration suites have explicit JSON ledgers checked alongside the
 foundation cases. Producer-applied design review found durable protection,
 OID-only context and physical-copy accounting gaps; their corrections are
@@ -265,7 +286,7 @@ requirements for future fixtures, not verified runtime solutions.
 
 Pure handoff slice, 2026-10-25, Windows Rust 1.98.0: 13 synthetic tests pass;
 formatting and locked all-target Clippy with warnings denied pass. Source:
-crates/tig-core/src/lib.rs and crates/tig-core/tests/handoff.rs; scope:
+crates/core/src/lib.rs and crates/core/tests/handoff.rs; scope:
 specs/HANDOFF-PROTOTYPE.md. The caller supplies alleged verified copies/coverage.
 No real content hashing, freshness/custody validation, durable transaction or
 eviction execution is proven. Branch/main/history and active-job safeguards are
@@ -366,8 +387,8 @@ compaction, complete native graph/source/job coverage and cutover stay OPEN.
 
 ## Native envelope intake verification
 
-EVID-031: cargo test -p tig-assets --test native --locked passed 12 cases.
-EVID-032: cargo test -p tig-assets --test cli --locked passed three actual CLI
+EVID-031: cargo test -p git-asset-model --test native --locked passed 12 cases.
+EVID-032: cargo test -p git-asset-model --test cli --locked passed three actual CLI
 cases, including scene and invoice consumers. Pin edits, null/missing shape,
 budgets, stream conflicts and redaction refuse or report incomplete as specified.
 Full workspace commands remain mandatory before commit; schema/rule semantics,
@@ -380,7 +401,7 @@ VTRACE and repository structural validation passed. No full-system gate closes.
 
 ## Native graph verification
 
-EVID-033: cargo test -p tig-assets --test graph --locked passed 34 cases.
+EVID-033: cargo test -p git-asset-model --test graph --locked passed 34 cases.
 The 1,011-node hierarchy resolves 1,000 primary payloads with 1,010 edges and
 one lookup per exact revision. A stable parent follows its logical cel ID within
 the chosen view; old snapshots/frozen pins restore old selection. Other roots
@@ -395,7 +416,7 @@ fixtures remain synthetic and no real native consumer/custody gate is closed.
 
 ## Native Git/consumer verification
 
-EVID-034: cargo test -p tig-git --features assets --test native_source --locked
+EVID-034: cargo test -p git-asset --features assets --test native_source --locked
 passes 13 real-Git/CLI cases, including 1,000 records across multiple bounded
 batches. After capture, detaching the Git directory leaves ID lookup working.
 Day-two edits affect only the cel file; old commits and captured indexes retain
@@ -410,7 +431,7 @@ all-feature Clippy and standalone no-default-feature Git compilation pass.
 
 ## Existing byte-reader verification
 
-EVID-036: cargo test -p tig-store --test existing --locked passes ten Windows
+EVID-036: cargo test -p git-asset-store --test existing --locked passes ten Windows
 entries including a helper and one actual child exit. Read/seek, ordered layouts,
 corruption refusal, bounds/permit release, Windows sharing/ancestor protection,
 cooperative aliases and other-object progress are exercised. Unix has an explicit
@@ -424,7 +445,7 @@ No native renderer, complete custody or final eviction gate closes.
 
 ## Consumer status-map verification
 
-Entry 12757c2, EVID-038: cargo test -p tig-assets -p tig-git --all-features --locked
+Entry 12757c2, EVID-038: cargo test -p git-asset-model -p git-asset --all-features --locked
 passes 102 Windows entries, including 16 native-source tests and the new
 snapshot-status/redaction case. Workspace all-target/all-feature warnings-denied
 Clippy passes. This scoped rerun does not replace the previous full store/metadata
@@ -437,7 +458,7 @@ that correction. Full Windows/Linux current-head CI remains required.
 
 ## Explicit map-reference verification
 
-Entry 85e4938; EVID-039. RUST/GIT L1/L2: cargo test -p tig-assets -p tig-git
+Entry 85e4938; EVID-039. RUST/GIT L1/L2: cargo test -p git-asset-model -p git-asset
 --all-features --locked passes 110 Windows entries (40 graph, 18 native source).
 All earlier single/array and Git/LFS regressions remain in that scope. Workspace
 all-target/all-feature Clippy with warnings denied passes. The separate 1,000-map
@@ -446,7 +467,7 @@ and remains within its declared metadata response budget. This is not measured
 500k native graph scale, private rendering or physical IO/custody proof. Full
 current-head Windows/Linux CI remains the merge obligation.
 
-Cooperative reader follow-up (EVID-041): cargo test -p tig-store --lib --test
+Cooperative reader follow-up (EVID-041): cargo test -p git-asset-store --lib --test
 existing --locked passes 143 Windows entries; workspace all-target/all-feature
 Clippy passes. The Linux duplicate-descriptor case is not executed on Windows.
 Full current-head Linux/Windows CI must qualify the updated guard. Previous
@@ -454,7 +475,7 @@ Linux same-head success does not qualify this new source change.
 
 ## Declared production requirements
 
-Entry 5a35f5a; EVID-042. cargo test -p tig-assets -p tig-git --all-features --locked
+Entry 5a35f5a; EVID-042. cargo test -p git-asset-model -p git-asset --all-features --locked
 passes 123 Windows entries; 46 graph / 25 native-source. Workspace all-target/all-
 feature warnings-denied Clippy passes. Exact selected/named controls, metadata
 identity, size contradictions, missing/unsupported selections, output roots,
@@ -465,7 +486,7 @@ provider durability, global coverage or an eviction gate. Full CI stays required
 
 ## Frozen native production context
 
-Entry e7d2bde; EVID-043. cargo test -p tig-assets -p tig-git --all-features --locked
+Entry e7d2bde; EVID-043. cargo test -p git-asset-model -p git-asset --all-features --locked
 passes 130 Windows entries; final native-source rerun covers 32 cases after the
 expanded corrupt/substitution/readback checks. Workspace all-target/all-feature
 warnings-denied Clippy passes. Readonly exact context replay, owner root
@@ -475,7 +496,7 @@ CI is required; no new full store/500k local qualification or live adoption clai
 
 ## Declared consumed-input recipes
 
-Entry e504cf3; EVID-044. cargo test -p tig-assets -p tig-git --all-features --locked
+Entry e504cf3; EVID-044. cargo test -p git-asset-model -p git-asset --all-features --locked
 passes 147 Windows entries; 61 graph, 34 native-source. Workspace all-target/all-
 feature warnings-denied Clippy passes. Behavior vectors adapt the exact Art donor
 model tests without copying its record format or claiming hash parity. Additional
@@ -492,7 +513,7 @@ No media reads/rendering occur; opaque parameters remain caller-admitted semanti
 
 ## Claimed produced-output correspondence
 
-Entry77a7e14; EVID-045. cargo test -p tig-assets -p tig-git --all-features --locked
+Entry77a7e14; EVID-045. cargo test -p git-asset-model -p git-asset --all-features --locked
 passes163 Windows entries (75graph,36native-source). Workspace all-feature/all-
 target warnings-denied Clippy and standalone no-feature Git check pass. Fourteen
 pure cases cover exact subject binding, old provenance/current recipe comparison,
@@ -504,7 +525,7 @@ policy, readonly-store writes and conflicting output/input sizes. These are
 metadata-only claims, not output-byte integrity or actual producer proof.
 ## Canonical existing-cache roots
 
-Entry84136b5; EVID-046. Locked Windows tests: tig-store existing 13, tig-git
+Entry84136b5; EVID-046. Locked Windows tests: git-asset-store existing 13, git-asset
 client 6 and source 18, all pass. Workspace all-target/all-feature Clippy with
 -D warnings, fmt and standalone no-default-feature Git check pass. Complete
 root admission precedes metadata lookup; the component walker skips incomplete
@@ -615,8 +636,8 @@ Historical qualification from capacity branch 712639b; integration qualification
 
 ## Closed reservation retirement
 
-EVID-KRY-01 / CAPACITY-RETIREMENT.md: cargo test -p tig-core --test capacity
---locked passes 21 entries; cargo test -p tig-store --lib --locked ledger::tests
+EVID-KRY-01 / CAPACITY-RETIREMENT.md: cargo test -p git-asset-core --test capacity
+--locked passes 21 entries; cargo test -p git-asset-store --lib --locked ledger::tests
 passes 26. Ten entries are new. Full default workspace and all-feature runs,
 all-feature/all-target Clippy with warnings denied, fmt and standalone no-feature
 Git check pass. Tests cover the actual full working-set bound, exact old receipts,
@@ -626,12 +647,12 @@ synthetic temporary-root qualification, not live consumer or full-disk recovery.
 
 ## First storage orchestration slice
 
-EVID-084 / STORAGE-ORCHESTRATION.md: `cargo test -p tig-store --lib --locked
-orchestration::tests` passes 15 entries; `cargo test -p tig-store --test storage_cli
+EVID-084 / STORAGE-ORCHESTRATION.md: `cargo test -p git-asset-store --lib --locked
+orchestration::tests` passes 15 entries; `cargo test -p git-asset-store --test storage_cli
 --locked` passes five actual CLI process fixtures. The source-held/unrelated-scope
 assertion additionally passes its exact targeted case after review. Locked
 all-feature workspace regression, all-feature/all-target warnings-denied Clippy,
-fmt and standalone no-default-feature tig-git check pass. External synthetic roots
+fmt and standalone no-default-feature git-asset check pass. External synthetic roots
 only. Locked default workspace regression also passes.
 Read-only status means no journal commands, not an OS read-only SQLite connection.
 The reference provider still caps objects at 8 MiB and process-restart durability.
@@ -642,14 +663,14 @@ producer review are recorded separately from that implementation commit.
 
 ## Protection demand snapshot
 
-EVID-085 / PROTECTION-DEMAND-SNAPSHOT.md: `cargo test -p tig-store --lib --locked
+EVID-085 / PROTECTION-DEMAND-SNAPSHOT.md: `cargo test -p git-asset-store --lib --locked
 protection::tests` passes 17 Windows entries, including a 33,000-binding resource
-boundary and actual snapshot-to-copy integration. `cargo test -p tig-store --test
+boundary and actual snapshot-to-copy integration. `cargo test -p git-asset-store --test
 source_claims --locked` passes all 35 existing journal entries. Default workspace
 regression passes, including a final default run. Final all-feature workspace
 regression also passes after the deadline and exact-selection-provenance fixes.
 The repeated-root case additionally checks two identical predecessor roots. Strict
-all-feature/all-target Clippy, standalone no-feature tig-git check and fmt pass.
+all-feature/all-target Clippy, standalone no-feature git-asset check and fmt pass.
 Explicit external build/temp roots only. No runtime file/payload removals are
 performed by this slice; hosted qualification remains separate.
 
@@ -674,7 +695,7 @@ not physical removal, power-loss durability, cross-namespace closure or adoption
 ## Store-bound protection assessment
 
 EVID-087 / STORE-PROTECTION-BOUNDARY.md, implementationbe6f946: `cargo test -p
-tig-store --lib --locked store_protection::tests` passes 15 entries including a
+git-asset-store --lib --locked store_protection::tests` passes 15 entries including a
 helper and one actual child process. Two guarded namespaces, mapped place aliases,
 provider readers/retention, exact enrollment/contract, failed marker revalidation,
 aggregate limits/deadline and read-only missing-anchor refusal are exercised.
@@ -688,7 +709,7 @@ consumer validation. Hosted checks remain separate.
 ## Managed replica retirement/reacquisition
 
 EVID-088 / MANAGED-REPLICA-RETIREMENT.md, implementationfe88c7c: `cargo test -p
-tig-store --lib --locked retirement::tests` passes 24 entries in 14.79s, including
+git-asset-store --lib --locked retirement::tests` passes 24 entries in 14.79s, including
 one helper and eight actual child exits. These inspect real absent/present paths
 and restored exact bytes, not only a success flag. The source object remains when
 claims/readers/retention or keeper authority prevent unlink; known settled-journal/
@@ -704,7 +725,7 @@ remain separate; the first profile is ordinary replica retirement only.
 ## Explicit retirement CLI/agent interface
 
 EVID-089 / RETIREMENT-AGENT-CLI.md, implementation19346c4:
-`cargo test -p tig-store --test retirement_cli --locked` passes eight process
+`cargo test -p git-asset-store --test retirement_cli --locked` passes eight process
 cases. Actual temporary object paths disappear after apply and exact bytes return
 after explicit reacquisition; old resume preserves that newer copy. Private policy
 forgery/default flags, unknown role, missing keeper, source reader/claim, malformed/
@@ -712,8 +733,8 @@ oversized documents, unknown roots, acknowledged corruption and no-command statu
 are exercised. The 24 kernel retirement entries retain actual interruption/restore
 proof and add status checks at pending/terminal/cancelled/restored-prefix states.
 
-After building the CLI, set TIG_RETIREMENT_CLI to its absolute artifact and run
-`cargo test -p tig-store --lib --locked retirement::tests::explicit_cli_pending_cancellation_qualification -- --ignored --exact`.
+After building the CLI, set GIT_ASSET_RETIREMENT_CLI to its absolute artifact and run
+`cargo test -p git-asset-store --lib --locked retirement::tests::explicit_cli_pending_cancellation_qualification -- --ignored --exact`.
 That separately executed case passes: actual child exit after intent followed by
 CLI status/cancel/retry, offline keeper/tree/namespaces and original receipt replay.
 The ordinary-suite ignored entry is not the proof; this explicit command is also
@@ -724,7 +745,7 @@ live-store or automatic lifecycle guarantee follows from these fixtures.
 
 ## Source-preserving S3 publication
 
-EVID-090 / S3-PUBLICATION.md, implementation4fc3060: `cargo test -p tig-store
+EVID-090 / S3-PUBLICATION.md, implementation4fc3060: `cargo test -p git-asset-store
 --all-features --test s3_publication --locked` passes 15 cases. Actual HTTP headers,
 checksum/body and full readback are checked; source remains present and guarded.
 CLI process tests cover plan/peak/apply/status/resume and lost-reply restart.
@@ -745,7 +766,7 @@ large-file/native or complete operational lifetime guarantees.
 
 ## Standalone Git LFS upload
 
-EVID-091 / LFS-UPLOAD.md, implementation2f1173b: `cargo test -p tig-git
+EVID-091 / LFS-UPLOAD.md, implementation2f1173b: `cargo test -p git-asset
 --features upload --test upload --locked` passes 13 integration cases. Actual Git
 LFS 3.4.0 push and real CLI/HTTP fixtures verify exact bytes, optional verify
 notification, lost-reply retry, private scope/credential admission and source
@@ -766,7 +787,7 @@ remote quota, large-file/native, full authority restore or lifetime claim follow
 ## Committed-ref desired selection
 
 EVID-092 / GIT-LIFECYCLE-RECONCILIATION.md, implementationfc3c57f: nine
-`cargo test -p tig-git --test lifecycle --locked` integration cases pass against
+`cargo test -p git-asset --test lifecycle --locked` integration cases pass against
 actual Git merges/reverts, exact/Unicode refs, catch-up/stale/no-op requests,
 active jobs, private enrollment, ref drift, real CLI and offline status. Metadata
 finishes and fresh readback precedes admission; status acknowledges no provider
@@ -775,7 +796,7 @@ three actual child exits and a full-history last-slot test. Existing journal
 regressions pass all 35 entries. Before/after scoped admission and one transaction
 protect pair visibility, replay and partial/collision refusal.
 
-The separate pre-pair reader qualification builds exact inputd81cabe's tig-source
+The separate pre-pair reader qualification builds exact inputd81cabe's git-asset-source
 and executes the ignored compatibility test explicitly. It reads new pair history
 and recovers both command receipts. The ordinary ignored entry proves nothing.
 CI builds the pinned old reader separately on both platforms. Default/all-feature
@@ -891,3 +912,12 @@ fifteen S3 entries and the final-runtime full all-feature rerun pass. No runtime
 code changed after9f5e8c0. Exact command/scope/caveats are in
 ../reviews/2026-11-09-final-provider.md. Hosted Windows/Linux, full FR-06..15,
 independent review and full requirement closure remain separate and open.
+
+## Product rename verification
+
+EVID-123: immutable-input branding/891-identity audit, all-target/all-feature
+check and strict Clippy, two front-door cases, legacy committed-record readback,
+82 JavaScript and three Python cases pass. Standalone/assets-only, actual native ordinary/bare reads and Git command
+discovery pass. The producer record preserves both broad-run failures and the
+focused corrected clock fixture/strict Clippy result. Complete two-phase and hosted
+exact-head outcomes are recorded on PR 61, separately from implementation.

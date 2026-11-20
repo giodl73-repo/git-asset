@@ -11,14 +11,14 @@ exact definition categories and optional age policy), finite limits and explicit
 allow_stage=true. Staging is disabled by default. Profiles and results remain
 private outside project Git; no store is initialized by these commands.
 
-Use tig-retirement index-paged PROFILE REQUEST to stage occurrence metadata.
+Use git-asset-retirement index-paged PROFILE REQUEST to stage occurrence metadata.
 The tig.native-paged-index-request.design-1 names exact namespace/source/
 predecessor/header occurrences. Optional base points to an existing immutable
 occurrence index, allowing bounded chunks under the64KiB document limit.
 Conflicting header reuse for the same occurrence refuses. The result supplies an
 asset-side occurrences pointer and a finished metadata checkpoint.
 
-Use tig-retirement select-paged PROFILE REQUEST with a
+Use git-asset-retirement select-paged PROFILE REQUEST with a
 tig.native-paged-select-request.design-1 containing that occurrences pointer,
 filter (exact asset References and/or admitted category names) and optional
 paging limits. Asset and category filters intersect. A requested asset may exist

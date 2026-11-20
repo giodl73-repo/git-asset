@@ -10,7 +10,7 @@ actual process plan/apply/status/resume/cancel/reacquire with independent privat
 policy admission, redacted errors and exact retry outcomes. No initialization,
 live deployment, automatic Git workflow, final deletion or provider migration.
 
-`tig-storage retire describe` discovers this interface. `retire plan PROFILE
+`git-asset-storage retire describe` discovers this interface. `retire plan PROFILE
 REQUEST` produces canonical library plan bytes; `retire status PROFILE PLAN`
 reads historical action state plus a distinct fresh object observation.
 `retire apply PROFILE PLAN`, `resume` and `cancel` use the same existing library.
@@ -94,10 +94,10 @@ redacted failures. Full native/large-file/restore/epoch/lifetime and live adopti
 gates remain; implementation and verification/validation/trace/review close apart.
 
 The explicit pending-cancellation L2 fixture requires a built binary unavailable
-to a library-only Cargo invocation. After building `tig-storage`, set
-TIG_RETIREMENT_CLI to its absolute path and run:
+to a library-only Cargo invocation. After building `git-asset-storage`, set
+GIT_ASSET_RETIREMENT_CLI to its absolute path and run:
 
-    cargo test -p tig-store --lib --locked retirement::tests::explicit_cli_pending_cancellation_qualification -- --ignored --exact
+    cargo test -p git-asset-store --lib --locked retirement::tests::explicit_cli_pending_cancellation_qualification -- --ignored --exact
 
 It creates synthetic stores, exits a child after real durable intent, then runs
 actual status/cancel/retry processes with keeper/tree/namespace roots unavailable.

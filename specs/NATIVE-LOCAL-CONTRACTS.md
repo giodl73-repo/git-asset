@@ -50,7 +50,7 @@ Native validate_local_contracts(dialect) checks all captured current/retained
 records and reuses compilation by definition. The immutable borrowing resolver
 reports local_contracts_validated:true only after the complete scoped check;
 the existing authored-only path reports false. Mutation/expansion needs recheck.
-Explicit CLI: tig-record validate-contract INSTANCE DEFINITION SCHEMA DIALECT.
+Explicit CLI: git-asset-record validate-contract INSTANCE DEFINITION SCHEMA DIALECT.
 Without schema feature it refuses before IO; bind/inspect/validate stay unchanged.
 
 Producer pre-code six-role review: identity requires exact definition and declared

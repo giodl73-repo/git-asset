@@ -1,6 +1,6 @@
 # Validation profiles
 
-Profiles tailor package verification; they are not commands implemented by Tig.
+Profiles tailor package verification; they are not commands implemented by git-asset.
 All commands run in the package's isolated checkout with explicitly configured
 shared Cargo target and admitted temporary scopes. CI uses Windows and Linux.
 
@@ -27,7 +27,7 @@ names are required before each implementation package is closed.
 
 Native optional-feature slice additionally requires cargo test --workspace
 --all-features --locked and cargo clippy --workspace --all-features --all-targets
---locked -- -D warnings. Check cargo check -p tig-git --no-default-features --locked
+--locked -- -D warnings. Check cargo check -p git-asset --no-default-features --locked
 to preserve standalone Git/LFS. Default workspace tests alone skip native adapter
 fixtures and cannot qualify this package.
 

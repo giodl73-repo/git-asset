@@ -12,7 +12,7 @@ readback, retry/lost reply, denial, bounded resource use and truthful unsupporte
 retention. No cache initialization, hook/config installation, live consumer or
 cloud/last-copy deletion. Verification/validation/trace/review close separately.
 
-The opt-in tig-git upload feature adds `tig-lfs --upload-profile PROFILE`; the
+The opt-in git-asset upload feature adds `git-asset-lfs --upload-profile PROFILE`; the
 existing --profile download protocol/records remain compatible and network-free
 without the new feature. Standard standalone upload frames must carry action:null.
 Init remote must match private enrollment; uploaded paths must exactly match the
@@ -77,16 +77,16 @@ their existing gates. LFS upload does not make a Git merge a backup acknowledgem
 
 ## Operator and agent interface
 
-With the optional `upload` feature, `tig-lfs upload describe` reports the versioned
+With the optional `upload` feature, `git-asset-lfs upload describe` reports the versioned
 interface and default-disabled capability. Commands are:
 
 ```text
-tig-lfs upload plan PROFILE OBJECT
-tig-lfs upload peak PROFILE PLAN
-tig-lfs upload status PROFILE PLAN
-tig-lfs upload apply PROFILE PLAN
-tig-lfs upload resume PROFILE PLAN
-tig-lfs --upload-profile PROFILE
+git-asset-lfs upload plan PROFILE OBJECT
+git-asset-lfs upload peak PROFILE PLAN
+git-asset-lfs upload status PROFILE PLAN
+git-asset-lfs upload apply PROFILE PLAN
+git-asset-lfs upload resume PROFILE PLAN
+git-asset-lfs --upload-profile PROFILE
 ```
 
 PROFILE/OBJECT/PLAN arguments are absolute paths to bounded regular JSON files;

@@ -19,7 +19,7 @@ library composition, not live storage, automatic native selection or acceptance.
 ## Method and six producer lenses
 
 One producer applied all six [.roles checklists](../../.roles/ROLE.md), without
-delegation or independent/human approval. Owner of every finding: Tig maintainer
+delegation or independent/human approval. Owner of every finding: git-asset maintainer
 using the named lens. Severity identifies the counterexample; disposition does
 not waive the remaining product gates.
 
@@ -51,11 +51,11 @@ full suites remain separate. Commands used:
 cargo test --workspace --locked
 cargo build --workspace --all-features --bins --locked
 cargo test --workspace --all-features --locked
-cargo test -p tig-store --lib final_retirement::bulk --locked
+cargo test -p git-asset-store --lib final_retirement::bulk --locked
 cargo clippy --workspace --all-features --all-targets --locked -- -D warnings
-cargo check -p tig-git --no-default-features --locked
-cargo test -p tig-store --lib --locked retirement::tests::explicit_cli_pending_cancellation_qualification -- --ignored --exact
-cargo test -p tig-store --test retirement_cli --locked pre_final_writer_refuses_new_manifest_and_accepts_legacy_control -- --ignored --exact
+cargo check -p git-asset --no-default-features --locked
+cargo test -p git-asset-store --lib --locked retirement::tests::explicit_cli_pending_cancellation_qualification -- --ignored --exact
+cargo test -p git-asset-store --test retirement_cli --locked pre_final_writer_refuses_new_manifest_and_accepts_legacy_control -- --ignored --exact
 ```
 
 Only passing explicit invocations are evidence, not ordinary ignored suite
@@ -80,7 +80,7 @@ has active demand for the same content. PLACEMENT-RECONCILIATION.md currently
 specifies that local order, while PRODUCT_PLAN.md describes history only when no
 active use remains. Resolve the admitted precedence scope explicitly, preserving
 additive hard obligations and policy isolation; add multi-namespace/job withdrawal
-and additive-policy regression fixtures. Owner: Tig maintainer, placement lane;
+and additive-policy regression fixtures. Owner: git-asset maintainer, placement lane;
 severity High for intended placement correctness, not observed data loss.
 
 Bounds remain sixteen historical roots, 1,024 paths, thirty-two unique objects/

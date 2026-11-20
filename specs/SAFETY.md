@@ -1,10 +1,10 @@
-# Tig safety contract
+# git-asset safety contract
 
 Status: full-system target, not verified. A bounded local publication subset is
 implemented under specs/PUBLICATION.md; other obligations remain open.
 Owners: storage/custody and recovery roles.
 
-Governing principle TIG-P-09 and invariant TIG-I-01: preserve acknowledged managed
+Governing principle GIT-ASSET-P-09 and invariant GIT-ASSET-I-01: preserve acknowledged managed
 bytes by default. Publication, replacement, movement and recovery must not silently
 overwrite content or make it unrecoverable. Explicit admitted final-retirement
 policy/authority is distinct from ordinary replica eviction. The full contract

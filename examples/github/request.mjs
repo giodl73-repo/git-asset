@@ -14,13 +14,13 @@ async function boundedJSON(response, cap) {
 
 export async function request(env, fetcher = globalThis.fetch) {
   try {
-    const endpoint = new URL(env.TIG_ENDPOINT);
+    const endpoint = new URL(env.GIT_ASSET_ENDPOINT);
     const issuer = new URL(env.ACTIONS_ID_TOKEN_REQUEST_URL);
     if (endpoint.protocol !== 'https:' || endpoint.username || endpoint.password || endpoint.search || endpoint.hash || endpoint.pathname !== '/v1/reconcile') throw new Error('endpoint');
     if (issuer.protocol !== 'https:' || !issuer.hostname.endsWith('.actions.githubusercontent.com') || issuer.username || issuer.password || issuer.hash) throw new Error('issuer');
-    if (!env.TIG_AUDIENCE || env.TIG_AUDIENCE.length > 512 || !env.ACTIONS_ID_TOKEN_REQUEST_TOKEN) throw new Error('enrollment');
+    if (!env.GIT_ASSET_AUDIENCE || env.GIT_ASSET_AUDIENCE.length > 512 || !env.ACTIONS_ID_TOKEN_REQUEST_TOKEN) throw new Error('enrollment');
     if (!/^(?:[0-9a-f]{40}|[0-9a-f]{64})$/.test(env.GITHUB_SHA) || /^0+$/.test(env.GITHUB_SHA)) throw new Error('commit');
-    issuer.searchParams.set('audience', env.TIG_AUDIENCE);
+    issuer.searchParams.set('audience', env.GIT_ASSET_AUDIENCE);
     const oidc = await fetcher(issuer, { headers: { Authorization: `Bearer ${env.ACTIONS_ID_TOKEN_REQUEST_TOKEN}` }, redirect: 'error', signal: AbortSignal.timeout(15000) });
     if (!oidc.ok) throw new Error('issuer');
     const { value: token } = await boundedJSON(oidc, 24576);
@@ -43,7 +43,7 @@ export async function request(env, fetcher = globalThis.fetch) {
     return { summary: { state: complete ? 'converged' : 'pending', authenticated: true, storage_converged: result.storage_converged }, exitCode: complete ? 0 : 2 };
   } catch {
     // Neither network exceptions nor remote bodies become credential-bearing logs.
-    throw new Error('Tig request failed');
+    throw new Error('git-asset request failed');
   }
 }
 
@@ -53,7 +53,7 @@ if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) 
     console.log(JSON.stringify(result.summary));
     process.exitCode = result.exitCode;
   } catch {
-    console.error('Tig request failed');
+    console.error('git-asset request failed');
     process.exitCode = 1;
   }
 }

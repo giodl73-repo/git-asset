@@ -1,10 +1,10 @@
 # Local catalog application
 
 SPEC-014 / WP-015, IF-010/011/013, PKG-004/006/008. Native Rust application
-service and bundled frontend, gated by tig-git/schema. No daemon installation.
+service and bundled frontend, gated by git-asset/schema. No daemon installation.
 
-` tig-catalogue check ABSOLUTE_ENROLLMENT ` validates metadata without media IO.
-` tig-catalogue serve ABSOLUTE_ENROLLMENT [PORT] ` explicitly serves loopback
+` git-asset-catalogue check ABSOLUTE_ENROLLMENT ` validates metadata without media IO.
+` git-asset-catalogue serve ABSOLUTE_ENROLLMENT [PORT] ` explicitly serves loopback
 (default 8799). Stop the process to stop the viewer.
 
 The record inspector's Impact tab traces potential consumers using owner-admitted
@@ -63,7 +63,7 @@ additions/removals and before/after role/group/object changes, baseline to curre
 Decoded media, transitive dependencies, producer currency and retained custody
 remain separate; equality never establishes regeneration or eviction authority.
 
-`tig-catalogue shared ENROLLMENT LEFT RIGHT NEW_REPORT [CATEGORY]` compares
+`git-asset-catalogue shared ENROLLMENT LEFT RIGHT NEW_REPORT [CATEGORY]` compares
 selected object identities in two explicit pinned projects. Only those project
 profiles are opened. Identity is SHA-256 plus length; conflicting lengths refuse.
 Shared bytes count unique objects once; each side lists all matching asset IDs,
@@ -82,7 +82,7 @@ view names both pinned commits, excluded scopes and missing selections.
 Matching categories need not represent the same media type across projects;
 their meaning remains externally admitted. A zero result is scoped evidence.
 
-`tig-catalogue references ENROLLMENT SHA256 NEW_REPORT [PROJECT] [OFFSET]`
+`git-asset-catalogue references ENROLLMENT SHA256 NEW_REPORT [PROJECT] [OFFSET]`
 lists direct selected and named-stream bindings, 100/page, across all enrolled
 projects or one explicit project. `/api/references` accepts sha/project/offset
 with the same calculation. Reports distinguish selected bindings and stream
@@ -111,7 +111,7 @@ delivery_pattern. Matchers have pointer (default /id), anchored Rust-regex
 pattern, capture-expanded key and optional title. Explicit pointers address id,
 authored or status strings. Root matches establish groups; member matches can
 join existing groups but cannot create works. IDs remain project-scoped;
-group keys are presentation identities, not new Tig instances or dependencies.
+group keys are presentation identities, not new git-asset instances or dependencies.
 
 A stage supplies label, pointer, pattern and optional selected_slot_prefix.
 It requires selected bytes; a configured slot prefix must resolve exactly to
@@ -138,7 +138,7 @@ The union preserves search, deterministic order, snapshot fencing and 100-row
 paging. One collection's status must not be applied to another collection.
 
 Exact loopback Host, foreign-Origin refusal and per-process unpredictable
-X-Tig-Session admission protect APIs. Bootstrap supplies the token in its page,
+X-Git-Asset-Session admission protect APIs. Bootstrap supplies the token in its page,
 never a URL. No-store responses, CSP, textContent and no cookies/CORS. This is
 not hosted multi-user authentication; do not expose through a reverse proxy.
 

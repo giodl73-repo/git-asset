@@ -15,7 +15,7 @@ workflow invocation and operator guide. Reviewed hashes: foundation-targets.json
 ## Method and six producer lenses
 
 One producer applies all six [.roles checklists](../../.roles/ROLE.md), without
-delegation or independent/human approval. Owner of every finding: Tig maintainer
+delegation or independent/human approval. Owner of every finding: git-asset maintainer
 using the named lens. Exact private profile admission is an application/operator
 trust boundary, not cryptographic proof or a UI approval inferred from hashing.
 
@@ -77,21 +77,21 @@ after6b9016e. PR #35 is draft against #34 pending exact-head hosted qualificatio
 
 ```text
 cargo fmt --all -- --check
-cargo test -p tig-store --lib --locked final_retirement::bulk
-cargo build -p tig-store --bin tig-storage --locked
-cargo test -p tig-store --lib --locked final_retirement::bulk::tests::operator::explicit_cli_bulk_execution_qualification -- --ignored --exact
+cargo test -p git-asset-store --lib --locked final_retirement::bulk
+cargo build -p git-asset-store --bin git-asset-storage --locked
+cargo test -p git-asset-store --lib --locked final_retirement::bulk::tests::operator::explicit_cli_bulk_execution_qualification -- --ignored --exact
 cargo clippy --workspace --all-features --all-targets --locked -- -D warnings
 cargo test --workspace --locked
-cargo check -p tig-git --no-default-features --locked
+cargo check -p git-asset --no-default-features --locked
 cargo build --workspace --all-features --bins --locked
 cargo test --workspace --all-features --locked
-cargo test -p tig-store --lib --locked retirement::tests::explicit_cli_pending_cancellation_qualification -- --ignored --exact
-cargo test -p tig-store --lib --locked final_retirement::bulk::tests::explicit_cli_bulk_inspection_qualification -- --ignored --exact
-cargo test -p tig-store --test retirement_cli --locked pre_final_writer_refuses_new_manifest_and_accepts_legacy_control -- --ignored --exact
+cargo test -p git-asset-store --lib --locked retirement::tests::explicit_cli_pending_cancellation_qualification -- --ignored --exact
+cargo test -p git-asset-store --lib --locked final_retirement::bulk::tests::explicit_cli_bulk_inspection_qualification -- --ignored --exact
+cargo test -p git-asset-store --test retirement_cli --locked pre_final_writer_refuses_new_manifest_and_accepts_legacy_control -- --ignored --exact
 ```
 
-TIG_BULK_CLI/TIG_RETIREMENT_CLI identify fresh external artifacts;
-TIG_PRE_FINAL_CLI identifies pinned273e639. All builds, logs and temporary
+GIT_ASSET_BULK_CLI/GIT_ASSET_RETIREMENT_CLI identify fresh external artifacts;
+GIT_ASSET_PRE_FINAL_CLI identifies pinned273e639. All builds, logs and temporary
 synthetic stores remain external. Frontend/restore and source pre-pair artifact
 evidence is historical unless explicitly rerun; hosted CI remains separate.
 

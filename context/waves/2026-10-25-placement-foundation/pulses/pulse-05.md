@@ -26,9 +26,9 @@ producer/independent method and exact evidence scope.
 ## Native intake progress
 
 WP-010 adds bounded pure design-1 envelope/definition binding and explicit
-read-only tig-record inspection/slot lookup (EVID-031/032, 15 tests). Model,
+read-only git-asset-record inspection/slot lookup (EVID-031/032, 15 tests). Model,
 graph, variant parity and complete native/REEL semantics remain OPEN. Private
-consumer project conversion fixtures are maintained in that artifact repository, not Tig.
+consumer project conversion fixtures are maintained in that artifact repository, not git-asset.
 
 ## Native graph progress
 

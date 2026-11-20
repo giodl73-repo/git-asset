@@ -1,4 +1,4 @@
-# Tig pitfalls
+# git-asset pitfalls
 
 Failure memory from scenario design review. Countermeasures are planned, not
 implemented full-system fixes. See [mitigations](../scenarios/MITIGATIONS.md).
@@ -11,7 +11,7 @@ stream and report its equality to current selection separately. Receipt binding
 still establishes neither current remote state nor producer currency. Component
 evidence and remaining acceptance belong to the publication-subject review.
 
-## TIG-F-01: Membership mistaken for deletion permission
+## GIT-ASSET-F-01: Membership mistaken for deletion permission
 
 **Pattern:** A dropped label or branch is treated as proof that bytes are unused.
 
@@ -29,13 +29,13 @@ evidence and remaining acceptance belong to the publication-subject review.
 
 **Severity:** critical.
 
-**Principles:** TIG-P-03/TIG-P-04.
+**Principles:** GIT-ASSET-P-03/GIT-ASSET-P-04.
 
-**Invariants:** TIG-I-01/TIG-I-02.
+**Invariants:** GIT-ASSET-I-01/GIT-ASSET-I-02.
 
 **Status:** OPEN
 
-## TIG-F-02: Logical savings mistaken for free disk space
+## GIT-ASSET-F-02: Logical savings mistaken for free disk space
 
 **Pattern:** Logical sizes hide duplicate materializations, sparse allocation, staging or pack pinning.
 
@@ -63,13 +63,13 @@ per leaf or ignoring failed-route reads can evade the operation limit.
 
 **Severity:** major.
 
-**Principles:** TIG-P-08.
+**Principles:** GIT-ASSET-P-08.
 
-**Invariants:** TIG-I-04/TIG-I-10.
+**Invariants:** GIT-ASSET-I-04/GIT-ASSET-I-10.
 
 **Status:** OPEN
 
-## TIG-F-03: Derived catalog mistaken for durable protection
+## GIT-ASSET-F-03: Derived catalog mistaken for durable protection
 
 **Pattern:** Rebuilding an index discards uncommitted admission, unfinished intents or active-job protection.
 
@@ -98,13 +98,13 @@ uncertain commit results must not leave a writable stale in-memory authority.
 
 **Severity:** critical.
 
-**Principles:** TIG-P-05.
+**Principles:** GIT-ASSET-P-05.
 
-**Invariants:** TIG-I-05/TIG-I-06.
+**Invariants:** GIT-ASSET-I-05/GIT-ASSET-I-06.
 
 **Status:** OPEN
 
-## TIG-F-04: Stale observation mistaken for a removal fence
+## GIT-ASSET-F-04: Stale observation mistaken for a removal fence
 
 **Pattern:** A planner checks once, then removes while a reader or new claim arrives.
 
@@ -126,13 +126,13 @@ independently acquired guards and durable claims retain their own obligations.
 
 **Severity:** critical.
 
-**Principles:** TIG-P-06.
+**Principles:** GIT-ASSET-P-06.
 
-**Invariants:** TIG-I-03/TIG-I-07.
+**Invariants:** GIT-ASSET-I-03/GIT-ASSET-I-07.
 
 **Status:** OPEN
 
-## TIG-F-05: Expiry mistaken for permission
+## GIT-ASSET-F-05: Expiry mistaken for permission
 
 **Pattern:** Wall-clock expiry or an expired lease is used as automatic proof that jobs and retention have ended.
 
@@ -150,13 +150,13 @@ independently acquired guards and durable claims retain their own obligations.
 
 **Severity:** critical.
 
-**Principles:** TIG-P-03/TIG-P-06.
+**Principles:** GIT-ASSET-P-03/GIT-ASSET-P-06.
 
-**Invariants:** TIG-I-01/TIG-I-07/TIG-I-11.
+**Invariants:** GIT-ASSET-I-01/GIT-ASSET-I-07/GIT-ASSET-I-11.
 
 **Status:** OPEN
 
-## TIG-F-06: Path or alias mistaken for immutable identity
+## GIT-ASSET-F-06: Path or alias mistaken for immutable identity
 
 **Pattern:** A reused path, case-colliding name or changed mount is assumed to denote the same object/place.
 
@@ -174,13 +174,13 @@ independently acquired guards and durable claims retain their own obligations.
 
 **Severity:** major.
 
-**Principles:** TIG-P-02/TIG-P-04.
+**Principles:** GIT-ASSET-P-02/GIT-ASSET-P-04.
 
-**Invariants:** TIG-I-08/TIG-I-09.
+**Invariants:** GIT-ASSET-I-08/GIT-ASSET-I-09.
 
 **Status:** OPEN
 
-## TIG-F-07: Availability hint mistaken for verified custody
+## GIT-ASSET-F-07: Availability hint mistaken for verified custody
 
 **Pattern:** An old row, successful download or peer count stands in for current independent retained bytes.
 
@@ -198,13 +198,13 @@ independently acquired guards and durable claims retain their own obligations.
 
 **Severity:** critical.
 
-**Principles:** TIG-P-01/TIG-P-04.
+**Principles:** GIT-ASSET-P-01/GIT-ASSET-P-04.
 
-**Invariants:** TIG-I-01/TIG-I-02/TIG-I-06.
+**Invariants:** GIT-ASSET-I-01/GIT-ASSET-I-02/GIT-ASSET-I-06.
 
 **Status:** OPEN
 
-## TIG-F-08: LFS operation mistaken for lifecycle ownership
+## GIT-ASSET-F-08: LFS operation mistaken for lifecycle ownership
 
 **Pattern:** An OID request or local completion implies a branch, cloud upload, transformed identity or safe pruning.
 
@@ -212,7 +212,7 @@ independently acquired guards and durable claims retain their own obligations.
 
 **Detection difficulty:** High when relying only on happy-path or set-level tests.
 
-**Why it matters:** Tig can misclassify new objects, report false upload success or hide worktree copies.
+**Why it matters:** git-asset can misclassify new objects, report false upload success or hide worktree copies.
 
 **Evidence:** CL07/CL08/GW01/GW06/GW07/GW11/LF01/LF02/LF04/LF05/LC04; designed only.
 
@@ -222,13 +222,13 @@ independently acquired guards and durable claims retain their own obligations.
 
 **Severity:** major.
 
-**Principles:** TIG-P-07/TIG-P-08.
+**Principles:** GIT-ASSET-P-07/GIT-ASSET-P-08.
 
-**Invariants:** TIG-I-06/TIG-I-11/TIG-I-12.
+**Invariants:** GIT-ASSET-I-06/GIT-ASSET-I-11/GIT-ASSET-I-12.
 
 **Status:** OPEN
 
-## TIG-F-09: Provider convenience mistaken for trusted authority
+## GIT-ASSET-F-09: Provider convenience mistaken for trusted authority
 
 **Pattern:** A repository, torrent or shared catalog selects arbitrary paths, execution or private data access.
 
@@ -246,13 +246,13 @@ independently acquired guards and durable claims retain their own obligations.
 
 **Severity:** critical.
 
-**Principles:** TIG-P-07.
+**Principles:** GIT-ASSET-P-07.
 
-**Invariants:** TIG-I-08/TIG-I-11.
+**Invariants:** GIT-ASSET-I-08/GIT-ASSET-I-11.
 
 **Status:** OPEN
 
-## TIG-F-10: Content addressing mistaken for bounded work
+## GIT-ASSET-F-10: Content addressing mistaken for bounded work
 
 **Pattern:** A valid-looking root expands into unbounded, cyclic or repeatedly scanned metadata.
 
@@ -270,13 +270,13 @@ independently acquired guards and durable claims retain their own obligations.
 
 **Severity:** major.
 
-**Principles:** TIG-P-04/TIG-P-08.
+**Principles:** GIT-ASSET-P-04/GIT-ASSET-P-08.
 
-**Invariants:** TIG-I-02/TIG-I-10.
+**Invariants:** GIT-ASSET-I-02/GIT-ASSET-I-10.
 
 **Status:** OPEN
 
-## TIG-F-11: Logical objects mistaken for physical representations
+## GIT-ASSET-F-11: Logical objects mistaken for physical representations
 
 **Pattern:** An object digest is confused with a pack/torrent root, or key rotation silently changes its logical identity.
 
@@ -294,13 +294,13 @@ independently acquired guards and durable claims retain their own obligations.
 
 **Severity:** major.
 
-**Principles:** TIG-P-02/TIG-P-08.
+**Principles:** GIT-ASSET-P-02/GIT-ASSET-P-08.
 
-**Invariants:** TIG-I-04/TIG-I-09/TIG-I-10.
+**Invariants:** GIT-ASSET-I-04/GIT-ASSET-I-09/GIT-ASSET-I-10.
 
 **Status:** OPEN
 
-## TIG-F-12: Events mistaken for authoritative desired state
+## GIT-ASSET-F-12: Events mistaken for authoritative desired state
 
 **Pattern:** A missed hook, renamed branch or later writer replaces obligations without a complete trusted checkpoint.
 
@@ -318,13 +318,13 @@ independently acquired guards and durable claims retain their own obligations.
 
 **Severity:** major.
 
-**Principles:** TIG-P-03/TIG-P-05.
+**Principles:** GIT-ASSET-P-03/GIT-ASSET-P-05.
 
-**Invariants:** TIG-I-02/TIG-I-03/TIG-I-11.
+**Invariants:** GIT-ASSET-I-02/GIT-ASSET-I-03/GIT-ASSET-I-11.
 
 **Status:** OPEN
 
-### Accounted publication refinement (TIG-F-02 / M02)
+### Accounted publication refinement (GIT-ASSET-F-02 / M02)
 
 A file-data footprint is not volume growth. Name its basis and account separately
 for metadata, ledger, external writers and shared aliases; conservative overcharge
@@ -333,7 +333,7 @@ result; it cannot finance rebuilding lost bytes. An interrupted private partial
 retains in-flight capacity and cannot spawn another full copy automatically.
 EVID-015 tests these bounded local mitigations; whole-device safety stays OPEN.
 
-### Sampling refinement (TIG-F-02 / TIG-F-06)
+### Sampling refinement (GIT-ASSET-F-02 / GIT-ASSET-F-06)
 
 Free space must be scoped to an admitted capacity authority and sampled after a
 new ticket, using caller-available bytes. Exact operation replay is historical
@@ -342,7 +342,7 @@ capacity observation exists. Explicit label/instance enrollment does not prove
 native volume/quota identity or prevent independent double enrollment. EVID-016
 exercises the bounded sampler; native mapping remains an admission obligation.
 
-### Private cleanup refinement (TIG-F-01 / TIG-F-04 / TIG-F-05)
+### Private cleanup refinement (GIT-ASSET-F-01 / GIT-ASSET-F-04 / GIT-ASSET-F-05)
 
 Unacknowledged staging is not automatically disposable by age or lost labels.
 Require exact reviewed discard authority and durable cancellation before removal.
@@ -352,7 +352,7 @@ Retain binding/intent evidence and charge remaining metadata; partial removal is
 not final-object eviction or proof of volume reclaim. EVID-017 exercises this
 bounded mitigation; full custody/retirement and restore authority stay OPEN.
 
-### Replica evidence refinement (TIG-F-07 / TIG-F-09)
+### Replica evidence refinement (GIT-ASSET-F-07 / GIT-ASSET-F-09)
 
 Exact completed bytes plus a held guard prove scoped live integrity, not long-term
 retention or physical independence. Saved observations carry historical provenance;
@@ -360,7 +360,7 @@ only fresh in-process sessions participate in declared-domain coverage. Duplicat
 store aliases cannot inflate counts. Failed revalidation invalidates evidence
 without unlocking it. EVID-018 tests this subset; durable custody/eviction stays OPEN.
 
-### Persistent retention refinement (TIG-F-03 / TIG-F-05 / TIG-F-07)
+### Persistent retention refinement (GIT-ASSET-F-03 / GIT-ASSET-F-05 / GIT-ASSET-F-07)
 
 Install a durable claim before acknowledging retained custody; session lifetime
 or timeout is not its lifetime. Reserve metadata before writes, bind owner and
@@ -369,7 +369,7 @@ access. Installed-but-unsettled claims still protect bytes. Missing acknowledged
 records are incidents, never silently recreated with spent budget. EVID-019 tests
 normal restart protection; owned release and authoritative restore stay OPEN.
 
-### Handoff history refinement (TIG-F-03 / TIG-F-04 / TIG-F-07)
+### Handoff history refinement (GIT-ASSET-F-03 / GIT-ASSET-F-04 / GIT-ASSET-F-07)
 
 Hold a verified successor guard while retiring the exact owned source claim.
 Record handoff before metadata removal; missing metadata alone is not a retry.
@@ -378,7 +378,7 @@ Recovery of a committed handoff does not repeat its decision after custody moves
 onward. EVID-020 tests these local mitigations; payload-removal and restore authority
 remain OPEN. EVID-021 prevents small fixtures being mistaken for native scale proof.
 
-### Native reference refinement (TIG-F-01 / TIG-F-09 / TIG-F-10)
+### Native reference refinement (GIT-ASSET-F-01 / GIT-ASSET-F-09 / GIT-ASSET-F-10)
 
 A parent file hash alone does not identify snapshot-selected dependencies. Pin
 frozen results separately; materialize exact referenced revisions in a declared
@@ -387,7 +387,7 @@ and a selected result manifest is not automatically all primary payloads.
 Admit interpretation externally, preserve gaps, bound callback responses and
 edge attempts, and return only scoped unreferenced candidates. EVID-033 tests
 these pure mitigations; global ref counts, custody and eviction remain OPEN.
-### Windows prefix refinement (TIG-F-09)
+### Windows prefix refinement (GIT-ASSET-F-09)
 
 An extended drive prefix can report absolute before it is a usable directory
 lookup target. Require a complete drive root at enrollment, and start ancestor
@@ -395,7 +395,7 @@ opens only once RootDir is present. EVID-046 checks normal/canonical aliases,
 three layouts and retained protection; accepting canonical spelling must never
 be implemented by weakening sharing or ancestor guards.
 
-### Job snapshot refinement (TIG-F-01 / TIG-F-09 / TIG-F-10)
+### Job snapshot refinement (GIT-ASSET-F-01 / GIT-ASSET-F-09 / GIT-ASSET-F-10)
 
 A source-only context misses producer/runtime and result obligations. Reference
 that context in a bounded immutable job envelope; derive its inputs and optional
@@ -406,7 +406,7 @@ reopen. These are positive declared obligations, never complete absence/custody 
 permission to remove. Prefix checking must consider nonadjacent sorted names;
 lexical neighbors alone miss a,a-b,a/b file/directory conflicts.
 
-### Contention refinement (TIG-F-04 / TIG-F-09)
+### Contention refinement (GIT-ASSET-F-04 / GIT-ASSET-F-09)
 
 A short synchronized retry window can reject valid concurrent work; reporting all
 ledger failures as Capacity hides the distinction from a full disk. Bound and
@@ -414,7 +414,7 @@ stagger only transient retries, always refresh superseded observations, and repo
 Busy separately from capacity/policy and state-integrity failures. EVID-047 adds
 nine-conflict recovery and real parallel LFS checks; no global lock is a remedy.
 
-### Git proposal refinement (TIG-F-03 / TIG-F-06 / TIG-F-12)
+### Git proposal refinement (GIT-ASSET-F-03 / GIT-ASSET-F-06 / GIT-ASSET-F-12)
 
 A retained producer result is not a permission to overwrite today's record. Bind
 the proposed replacement to exact base bytes, create a separate Git commit/ref,
@@ -426,7 +426,7 @@ Git metadata, not media custody. Source/job roots remain retention obligations
 until separate reconciled handoff. EVID-048 exercises this bounded seam; complete
 source/claim lifecycle and provider safety remain OPEN.
 
-### Catch-up refinement (TIG-F-06 / TIG-F-09 / TIG-F-12)
+### Catch-up refinement (GIT-ASSET-F-06 / GIT-ASSET-F-09 / GIT-ASSET-F-12)
 
 An unavailable desired plan is blocked, not an unbuilt output. Existing selected
 bytes without provenance are unproven, not automatically stale. Freeze one source
@@ -435,7 +435,7 @@ A frozen exact input intentionally ignores later logical-ID revisions; fixtures
 for catch-up must distinguish that from snapshot-selected authoring. EVID-050
 covers the scoped assessment; no global discovery, execution or custody follows.
 
-### Native evidence-location refinement (TIG-F-06 / TIG-F-09 / TIG-F-12)
+### Native evidence-location refinement (GIT-ASSET-F-06 / GIT-ASSET-F-09 / GIT-ASSET-F-12)
 
 Keep evidence discovery in the exact selected record. A parallel editable claim
 registry can drift from output selection. Explicit literal metadata keys identify
@@ -444,7 +444,7 @@ are malformed rather than missing history. Read exact retained claim bytes and
 replay original semantics separately from desired producer changes. EVID-051
 qualifies read-only synthetic native triage, not evidence authenticity or custody.
 
-### Schema interpreter refinement (TIG-F-03 / TIG-F-06 / TIG-F-12)
+### Schema interpreter refinement (GIT-ASSET-F-03 / GIT-ASSET-F-06 / GIT-ASSET-F-12)
 
 A schema byte pin does not prove its assertions ran. Bind explicit dialect and
 engine policy to a successful check; refuse declared-dialect disagreement instead
@@ -454,7 +454,7 @@ become success. Defaults/unknown annotations are not executed authoring or nativ
 rules. EVID-052 tests this optional authored-schema seam, not a general CPU sandbox
 or complete asset semantics. Recheck retained records and any expanded snapshot.
 
-### Local contract refinement (TIG-F-03 / TIG-F-06 / TIG-F-12)
+### Local contract refinement (GIT-ASSET-F-03 / GIT-ASSET-F-06 / GIT-ASSET-F-12)
 
 A legacy or empty rule map has unknown meaning, not a successful no-op contract.
 Require a versioned declaration and explicit admitted dialect before executing
@@ -465,7 +465,7 @@ EVID-053's first fixture caught that authored-rule omission; correcting the sche
 preserves engine semantics. Contract authors need negative cases for every
 intended assertion. Local success still proves no external/native/custody facts.
 
-### Variant context refinement (TIG-F-03 / TIG-F-06 / TIG-F-09)
+### Variant context refinement (GIT-ASSET-F-03 / GIT-ASSET-F-06 / GIT-ASSET-F-09)
 
 Do not duplicate payload pointers in a variant index: name native stream slots.
 Validate the entire project context before consumed-axis projection; otherwise a
@@ -477,7 +477,7 @@ Interpretation/control documents are not primary media; declare/retain their
 objects through existing context mechanisms rather than assuming index presence
 establishes byte custody or complete job coverage. EVID-054 covers scoped cases.
 
-### Variant retention refinement (TIG-F-03 / TIG-F-06 / TIG-F-12)
+### Variant retention refinement (GIT-ASSET-F-03 / GIT-ASSET-F-06 / GIT-ASSET-F-12)
 
 A temporary selected stream is not enough to replay why a job chose it. Retain
 the index, original/current spaces, full context and externally admitted policy
@@ -487,7 +487,7 @@ deduplication must not conceal missing interpretation. Match each covered node's
 primary set exactly to its selection; accepting all language streams defeats
 projection. EVID-055 checks these scoped rules, not global protection or eviction.
 
-### Captured versus consumed refinement (TIG-F-03 / TIG-F-06 / TIG-F-09)
+### Captured versus consumed refinement (GIT-ASSET-F-03 / GIT-ASSET-F-06 / GIT-ASSET-F-09)
 
 A retained control need not be raw-hashed into every producer recipe, but ignoring
 its bytes requires qualified semantic extraction elsewhere. Keep full graph
@@ -497,7 +497,7 @@ ordered consumed streams. Explicit original projected-policy replay must not
 silently try legacy admission or vice versa. EVID-056 is mechanism evidence, not
 complete native extraction, media recoverability or safe eviction.
 
-### Progress versus present bytes refinement (TIG-F-03 / TIG-F-06)
+### Progress versus present bytes refinement (GIT-ASSET-F-03 / GIT-ASSET-F-06)
 
 A copied file can precede its logged acknowledgement; an acknowledged file can
 later change. Never interpret unlogged completion as absence or logged completion
@@ -506,7 +506,7 @@ reverify actual destinations on retry. A torn tail is incomplete evidence, not
 a selected file or automatic cleanup target. EVID-069 exercises this boundary;
 full disk/power-loss behavior and independent custody remain separate gates.
 
-### A free-space number is not capacity admission (TIG-F-03 / TIG-F-06)
+### A free-space number is not capacity admission (GIT-ASSET-F-03 / GIT-ASSET-F-06)
 
 Sampling a convenient ancestor can measure a different filesystem from the
 destination. Require explicit root enrollment, check destination ancestry and
@@ -515,7 +515,7 @@ copies, consumer scratch estimates and observed free space separate. No probe
 reserves blocks, accounts every allocation or fences unrelated writers. EVID-070
 adds scoped preflight evidence; durable admission and quotas stay separate.
 
-### A private filename is not ownership (TIG-F-01 / TIG-F-03 / TIG-F-06)
+### A private filename is not ownership (GIT-ASSET-F-01 / GIT-ASSET-F-03 / GIT-ASSET-F-06)
 
 A matching partial name can belong to another plan, a live writer or an unrelated
 creator. List only explicit bounded destination scopes; do not follow links or

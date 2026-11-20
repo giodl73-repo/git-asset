@@ -55,7 +55,7 @@ Full requirements, package exits and VAL-002/003/004 remain OPEN.
 ## Implemented evidence
 
 EVID-019: 21 new entries including a subprocess helper; workspace total 230.
-Commands: cargo test -p tig-store --lib --locked retention::tests; locked workspace,
+Commands: cargo test -p git-asset-store --lib --locked retention::tests; locked workspace,
 fmt and warnings-denied all-target Clippy. Temporary fixtures exercise exact retry,
 reopen, metadata-only accounting with a larger target payload, owner/budget/type
 mismatch, damaged/missing records, pending partials, per-object cap and concurrent

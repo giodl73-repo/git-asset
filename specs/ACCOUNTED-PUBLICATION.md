@@ -74,7 +74,7 @@ A simulated StorageFull read error is not an actual full-disk test. Fixed probe
 values are synthetic; file-data allocation is measured only in temporary stores.
 The workspace has 154 entries. L0 structure/fmt/VTRACE, L1 locked workspace tests
 and all-target Clippy, L2 actual temporary-store/process integration apply.
-Commands: `cargo test -p tig-store --lib --locked accounted::tests` (20),
+Commands: `cargo test -p git-asset-store --lib --locked accounted::tests` (20),
 `cargo test --workspace --locked` (154). EVID-015 records this bounded scope;
 full WP-007 and upstream safety/physical-admission gates remain open.
 

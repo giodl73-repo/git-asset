@@ -1,15 +1,15 @@
 # Select historical native assets
 
-The optional schema-feature tig-retirement adapter maps native record identities
+The optional schema-feature git-asset-retirement adapter maps native record identities
 to exact historical flat bindings. It neither approves final deletion nor opens
 payloads. [The contract](../../specs/NATIVE-RETIREMENT-BINDINGS.md) defines the
 admitted graph/profile and source boundaries. Categories are configuration; no
 cel, cue or golden state is built into the storage engine.
 
 ```text
-tig-retirement describe
-tig-retirement bind /absolute/private-bind-profile.json
-tig-retirement select /absolute/private-select-profile.json /absolute/block-request.json
+git-asset-retirement describe
+git-asset-retirement bind /absolute/private-bind-profile.json
+git-asset-retirement select /absolute/private-select-profile.json /absolute/block-request.json
 ```
 
 An admitted application first captures the exact native source and writes its

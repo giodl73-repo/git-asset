@@ -31,7 +31,7 @@ The subsequent locked all-feature workspace tests pass, including the
 whitespace checks pass. Exact-head hosted qualification remains required.
 
 An owner-run read-only consumer project preview at `e29e355` using the immutable tool built
-from Tig `1d64b6e` also passes: two selected placements of one 1,059-byte retained
+from git-asset `1d64b6e` also passes: two selected placements of one 1,059-byte retained
 text object, 2,118 logical destination bytes, one source verification, zero copies
 and no destination directory. Two declared links pin a separate runtime descriptor
 and the earlier comparison report. Their verification flag and all custody/
@@ -51,7 +51,7 @@ Producer-applied lenses:
 - Concurrency/recovery: prior scoped copy/progress behavior is unchanged; links
   survive structured failure without implying completion or automatic recovery.
 
-Disposition pass_with_risk for declared handoff linkage. Owner: Tig orchestration
+Disposition pass_with_risk for declared handoff linkage. Owner: git-asset orchestration
 and consumer integration. No independent review/human approval. Orphan
 classification, link evidence verification/retention, complete environment and
 producer semantics, actual consumer adoption and custody/removal remain open.

@@ -31,7 +31,7 @@ view does not weaken production_requirements or claim complete native semantics.
 Unsupported opaque closure holds. Profiles remain independently admitted, never
 inferred from an instance's descriptive status or a filename.
 
-The optional tig-git native adapter writes a candidate flat root through existing
+The optional git-asset native adapter writes a candidate flat root through existing
 Tree/NodeStore ports. A bounded header pins the exact native source archive,
 canonical profile document and root index. Each root asset has independent paths
 assets/RECORD_DIGEST/OBJECT_DIGEST for its complete declared storage closure.
@@ -66,7 +66,7 @@ remaining bindings and emit one exact bulk::Selection for the admitted historica
 namespace/source/predecessor. Bulk planning still checks all other roots, jobs,
 aliases, custody/grants and current authority; selector output grants no deletion.
 
-The explicit schema-feature CLI tig-retirement exposes describe, bind PROFILE,
+The explicit schema-feature CLI git-asset-retirement exposes describe, bind PROFILE,
 and select PROFILE REQUEST. Bind opens an existing metadata store under its
 trusted minimum, compiles the independently admitted source archive/root/profile
 inputs, finishes and independently reads back the candidate before output. Select

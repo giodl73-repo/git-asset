@@ -5,7 +5,7 @@ REQ-001/005/006/007/010, SPEC-010/011/014, IF-008/010/011/013,
 PKG-004/006/008; RUST and INTEGRATION profiles.
 
 Entry: captured native snapshots, admitted graph profiles, existing shared-object
-and binding queries. Scope: a generic Rust tig-query CLI/library, discoverable
+and binding queries. Scope: a generic Rust git-asset-query CLI/library, discoverable
 versioned JSON request/response contract, find/shared/references/compare/impact,
 fixtures and agent documentation. Reuse native graph traversal; no second source
 registry, cache initialization, media scan, mutation, daemon or browser actions.
@@ -24,7 +24,7 @@ Producer roles: identity, privacy/provider, Git/adoption and concurrency/recover
 No independent approval, complete media semantics or eviction authority implied.
 
 Schema scope: expose a definition-free document check through the existing
-offline tig-assets schema compiler, so CLI discovery and runtime validation
+offline git-asset-model schema compiler, so CLI discovery and runtime validation
 share the exact checked-in request schema. No schema engine/dependency is added.
 
 Producer review: exact record pins preserve frozen revisions; shortest reverse

@@ -1,6 +1,6 @@
 {
   "$schema":"https://json-schema.org/draft/2020-12/schema",
-  "title":"Tig agent query result experimental-1",
+  "title":"git-asset agent query result experimental-1",
   "type":"object",
   "required":["schema","status","authorizes_eviction"],
   "properties":{

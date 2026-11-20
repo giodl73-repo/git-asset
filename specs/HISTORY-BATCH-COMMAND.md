@@ -5,7 +5,7 @@ Input `89606502149bace28a6bd55e2daa73285afca7b4`, extending
 [host seam](HOSTED-HISTORY-COMMAND.md). Controls, review and qualification are in
 [the entry](../docs/reviews/history-multi-entry.md).
 
-Commands: `tig-history batch-check|batch-publish|batch-propose PROFILE REQUEST`.
+Commands: `git-asset-history batch-check|batch-publish|batch-propose PROFILE REQUEST`.
 The same application service is available to admitted compiled provider hosts.
 No host upgrade, store initialization or operation runs automatically.
 

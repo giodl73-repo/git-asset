@@ -5,7 +5,7 @@ Input 9b8a6890e0074a58851a8d313dcb9b841fd7d613; implementation
 [LFS-UPLOAD](../../specs/LFS-UPLOAD.md), WP-003/005/006/007/014/015;
 REQ-001/003/004/005/006/007/008/009; SPEC-002/003/004/005/007/008/009/013;
 IF-002/003/004/005/006/008/009/012/013; PKG-002/003/004/007/008.
-GIT/PROVIDER profiles. Targets: optional tig-git upload/CLI/protocol, shared
+GIT/PROVIDER profiles. Targets: optional git-asset upload/CLI/protocol, shared
 upload_witness composition and S3 compatibility, contracts and synthetic fixtures.
 Entry: exact authorized OIDs, existing verified readers and accounted publication.
 Exit: source-preserving Basic upload/readback and honest bounded recovery/admission.
@@ -13,7 +13,7 @@ Exit: source-preserving Basic upload/readback and honest bounded recovery/admiss
 Method: one producer applying all six .roles parliament checklists against model,
 safety, foundation scenarios and current provider/publication contracts. These are
 review lenses, not six independent reviewers or human/live-operation approval.
-Owner of every finding: Tig maintainer using the named lens.
+Owner of every finding: git-asset maintainer using the named lens.
 
 | Finding / role | Severity | Disposition / evidence | Remaining qualification |
 | --- | --- | --- | --- |

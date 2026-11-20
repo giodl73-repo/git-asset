@@ -1,4 +1,4 @@
-# Tig agent instructions
+# git-asset agent instructions
 
 Start in this repository's actual checkout/worktree. Do not inherit another
 project's working directory or rely on prior chat history. Follow
@@ -15,9 +15,11 @@ name the WP/REQ/SPEC/IF/PKG controls, input SHA, allowed scope, entry/exit and
 L0/L1/L2 profile. Close verification/validation/trace/review separately from
 implementation; producer review is not independent or human approval.
 
-- Tig is generic Rust byte/asset infrastructure. docs/UNIFIED-DESIGN.md folds
-  Art's value into an optional typed-asset layer. Keep low-level placement usable
-  without it; native media semantics remain admitted adapter responsibilities.
+- git-asset coordinates asset identity, relationships and lifecycle over Git and
+  git-annex. Keep generic Rust byte/protection components usable without the
+  optional typed model; native media semantics remain adapter responsibilities.
+  Reuse git-annex for content storage and native transfer; do not build another
+  project-specific cache engine.
 - Logical paths resolve in an exact bundle snapshot. Physical paths are provider-owned.
 - No cache initialization, daemon, census, hydration, transfer, upload or deletion
   on resume. Foundation work uses synthetic fixtures only.
@@ -35,7 +37,7 @@ implementation; producer review is not independent or human approval.
   Rust fmt/locked tests/Clippy become required when Rust implementation is added.
 - No Cargo dependencies on TRACKER-relative paths. Reuse existing providers through
   adapters after fixtures; do not create another project-specific cache engine.
-- For asset find/compare/where-used tasks, start with tig-query describe and
+- For asset find/compare/where-used tasks, start with git-asset-query describe and
   docs/AGENT-QUERIES.md. Preserve coverage/basis checks; extend admitted adapters
   rather than introducing per-project media scanners or comparison scripts.
 - Before stopping, update context/RESUME.md when priorities or entry criteria

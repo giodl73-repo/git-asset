@@ -1,8 +1,11 @@
-# Tig roadmap
+# git-asset roadmap
 
-Tig connects small Git-authored references to immutable bytes and explicit storage
-obligations. It remains usable for Git/LFS without typed asset schemas, and across
-unrelated projects without built-in media or cache policy.
+git-asset is the asset relationship and lifecycle extension of git-annex.
+Git keeps small authored definitions, references and selected history. git-annex
+owns large immutable file contents, native copies/remotes and transfers.
+git-asset coordinates exact identity, versions, dependencies/usage, candidates,
+selection, jobs, placement obligations, retention and observed evidence.
+Generic byte interfaces and optional typed models remain reusable across projects.
 
 The experimental source baseline is public. Its six-role review and ongoing
 release checks are recorded in [public release](docs/PUBLIC-RELEASE.md).
@@ -15,6 +18,9 @@ This is source availability, not a stable product or full storage acceptance.
   recovery primitives with synthetic and real-client fixtures.
 - Exact commit/index extraction, source journals and download-only Git LFS cache
   interoperability. Stores are explicitly enrolled, never discovered.
+- Optional exact local annex reads, pool-pinned namespace rosters and compatible
+  shared use guards. Native publication, pruner execution and retained-output
+  consumer handoff remain separate qualification work.
 - Optional native records, schema admission, graphs, sparse variants, production
   contexts, revision/delivery history and sparse Git proposals.
 - Explicit Rust project restore, handoff/progress evidence and history inspection.
@@ -39,6 +45,14 @@ certifying full requirements or every consumer.
 
 ## Next delivery sequence
 
+First complete the native integration using existing mechanisms: positive file
+ingress with exact readback and uncertain-result recovery; retained-output
+handoff while owner adoption remains fenced; participating-pruner enforcement;
+and downstream consumer qualification. Keep registration, creative selection,
+approval and delivery separate. Do not replace git-annex's content engine.
+Team-facing commands and teaching fixtures must describe only qualified behavior.
+
+
 Public teaching parity is now a required deliverable: a portable synthetic sample
 catalogue carries the same assets through Git-style init/add/status/diff/commit,
 branch/worktree, publish, merge, revert/restore and retirement lessons. Every step
@@ -46,7 +60,7 @@ needs an executable fixture, checked expected results, a failure case and a
 catalogue view of actual engine plans and physical copies. Reuse existing
 adapters, without a demo storage engine or private assets. See the
 [teaching contract](specs/TEACHING-CATALOGUE.md) and
-[lesson sequence](examples/catalogue/README.md). A first schema-gated tig-sample
+[lesson sequence](examples/catalogue/README.md). A first schema-gated git-asset-sample
 runner now executes seven ordinary checkpoints with actual Git/source/provider
 effects, independent copy assertions and a real catalogue enrollment. Focused
 CLI/catalogue tests and strict Clippy pass. Optional recorded lesson playback now
@@ -86,7 +100,7 @@ teaching remain separate open gates.
 The [paged operator candidate](specs/PAGED-OPERATOR.md) now exposes explicit
 existing-root copy-index staging, whole-selection planning, original scope pages,
 witness peak/status and separately approved apply/resume/cancel through
-`tig-storage paged`. It reuses the existing controller and shares metadata
+`git-asset-storage paged`. It reuses the existing controller and shares metadata
 budgets across finish/readback. Synthetic20-page manual and actual-clock/registry
 workflows, native executable handoff, broad/default/all-feature/500k/strict Clippy
 and standalone checks pass locally. Hosted qualification remains separate.
@@ -415,11 +429,11 @@ an unrecorded destructive step or a ledger reset.
 
 | Existing evidence | What it covers | What it does not establish |
 | --- | --- | --- |
-| tig-store publication/accounted tests | Local immutable publication, bounded resource accounting, interruption and private partial cleanup | Arbitrary final-object eviction or cloud transfer |
-| tig-store replica tests | Completed hash/length verification, object guards, alias/domain refusals and stale evidence | Durable independent backup by itself |
-| tig-store retention and handoff tests | Durable scoped claims, restart and acknowledged ownership handoff | Source payload deletion or complete project coverage |
-| tig-store metadata_copy_cli tests | Explicit plan/apply and fresh-process metadata-store verification with source preserved | General media/payload transfer |
-| tig-git client tests | Real Git LFS current/prior checkout, parallel clients, corruption/retry and selected-source authorization | Remote upload, cloud custody or eviction |
+| git-asset-store publication/accounted tests | Local immutable publication, bounded resource accounting, interruption and private partial cleanup | Arbitrary final-object eviction or cloud transfer |
+| git-asset-store replica tests | Completed hash/length verification, object guards, alias/domain refusals and stale evidence | Durable independent backup by itself |
+| git-asset-store retention and handoff tests | Durable scoped claims, restart and acknowledged ownership handoff | Source payload deletion or complete project coverage |
+| git-asset-store metadata_copy_cli tests | Explicit plan/apply and fresh-process metadata-store verification with source preserved | General media/payload transfer |
+| git-asset client tests | Real Git LFS current/prior checkout, parallel clients, corruption/retry and selected-source authorization | Remote upload, cloud custody or eviction |
 | Catalogue storage tests | Placement/version/shared-byte classification and stale held previews | Executed cache movement/removal |
 
 The next end-to-end fixture is a synthetic work with two unchanged inputs and one
@@ -597,7 +611,7 @@ prerequisite does not replace those deliverables or complete the milestone.
 
 Priority-6 local composition: [placement reconciliation](specs/PLACEMENT-RECONCILIATION.md)
 now reuses exact namespace requirements and existing accounted/retention/handoff/
-retirement/reacquisition adapters. Explicit `tig-lifecycle reconcile` adopts the
+retirement/reacquisition adapters. Explicit `git-asset-lifecycle reconcile` adopts the
 enrolled committed ref, then reconciles one bounded page even for a no-op selection.
 Stable copy identities survive later source changes and run-budget adjustments.
 Temporary-store fixtures exercise replacement, job-end demotion, shared bytes,
@@ -649,7 +663,7 @@ now composes sparse edits, finished/read-back metadata and same-owner/class
 survivor protection before exact original predecessor retirement. Atomic
 Prepare/Adopt/Withdraw avoids transient active-use suppression; original revision
 and survivor conditions fence the final claim transition. The default-disabled
-tig-source subset CLI supports plan/status/apply/resume over existing private
+git-asset-source subset CLI supports plan/status/apply/resume over existing private
 roots. EVID-097 records focused/process/CLI/old-reader qualification and six
 producer lenses separately from implementation. This releases owned obligations,
 not payloads. Bounded bulk age/category/native selection, final-deletion intent/

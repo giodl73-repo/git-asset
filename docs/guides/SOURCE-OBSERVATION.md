@@ -1,10 +1,10 @@
 # Observe a source before deciding what to retry
 
 ```text
-tig-source inspect PRIVATE_PROFILE NEW_PRIVATE_REPORT
+git-asset-source inspect PRIVATE_PROFILE NEW_PRIVATE_REPORT
 ```
 
-Build with `cargo build --locked -p tig-store --bin tig-source`. This experimental
+Build with `cargo build --locked -p git-asset-store --bin git-asset-source`. This experimental
 command opens an existing source journal through SQLite read-only access. It
 replays the bounded hash chain, verifies the caller's trusted minimum checkpoint,
 and returns one consistent source/checkpoint observation. It creates no journal,
@@ -55,7 +55,7 @@ For several related sources, use the bounded
 [batch observation contract](../../specs/SOURCE-BATCH-OBSERVATION.md):
 
 ```text
-tig-source inspect-many PRIVATE_PROFILE NEW_PRIVATE_REPORT
+git-asset-source inspect-many PRIVATE_PROFILE NEW_PRIVATE_REPORT
 ```
 
 Use schema `tig.source-batch-observation-profile.experimental-1`, the same
@@ -70,7 +70,7 @@ read-only authority, external private report and no-overwrite rules apply.
 ## Recover an acknowledgment, without executing a command
 
 ```text
-tig-source acknowledge PRIVATE_PROFILE NEW_PRIVATE_REPORT
+git-asset-source acknowledge PRIVATE_PROFILE NEW_PRIVATE_REPORT
 ```
 
 Use schema `tig.source-acknowledgment-profile.experimental-1`, the same

@@ -4,7 +4,7 @@ Status: target contract with an experimental pure binding-state subset under
 WP-002 (checkpoint below). An explicit small-file Git proposal seam is documented
 in [Git record proposals](GIT-RECORD-PROPOSALS.md). No mounted/durable overlay,
 automatic Git adoption or released pointer format. Parent requirements:
-TIG-R01/R04/R05/R09/R10.
+GIT-ASSET-R01/R04/R05/R09/R10.
 
 ## Four states, one version authority
 
@@ -66,8 +66,8 @@ create B2 even if the pictures appear identical. Never mutate B1 to save space.
 Two supported authoring paths are planned:
 
 1. Standard Git LFS pointers at existing tracked payload paths. Git LFS keeps its
-   pointer/clean/smudge contract; Tig integrates access and retention around it.
-2. Small native Tig records, optionally typed, for independently managed assets.
+   pointer/clean/smudge contract; git-asset integrates access and retention around it.
+2. Small native git-asset records, optionally typed, for independently managed assets.
    They own authored properties/references and selected-result bindings. Type
    definitions remain separate from instances; exact result payloads live in
    immutable storage. Legacy .art adoption requires explicit parity/migration.
@@ -106,7 +106,7 @@ requirements and must not be promised conflict-free leaf edits without that code
 | Remove path | Explicit removal hides base binding | No immediate object deletion |
 | Discard private change | Authorized local overlay cleanup returns that path to base | Shared objects/other claims untouched |
 
-Tig does not automatically rewrite references inside arbitrary native files when
+git-asset does not automatically rewrite references inside arbitrary native files when
 a path is renamed. Stable typed IDs can survive path changes; path-based consumers
 need a declared adapter/refactor. Reject traversal, unsupported file/link types,
 case/normalization collisions and file/directory prefix conflicts before IO.
@@ -125,7 +125,7 @@ For base binding B1, left and right selections follow ordinary three-way intent:
 | removed | removed | Removed binding |
 
 Different independently authored leaf paths can merge independently under Git.
-Tig must not claim Git automatically merges opaque binary content. Typed records
+git-asset must not claim Git automatically merges opaque binary content. Typed records
 may need semantic reconciliation when metadata, approval and selected-result pins
 refer to different subjects. Never attach a previous subject's pass to new bytes.
 
@@ -148,9 +148,9 @@ admit/protect -> private write -> verify/seal -> propose record edits
                                    durable source-claim reconciliation
 ```
 
-There is no atomic transaction spanning file publication, Tig's journal, Git's
+There is no atomic transaction spanning file publication, git-asset's journal, Git's
 index and remote push. If sealing succeeds but record adoption fails, retain a
-recoverable candidate. If Git adoption succeeds before Tig observes it, preserve
+recoverable candidate. If Git adoption succeeds before git-asset observes it, preserve
 admission/old protection until exact-source catch-up completes. Retrying the same
 operation must identify its prior result; conflicting reuse must reject.
 
@@ -173,7 +173,7 @@ Keep these linked to F01/F03/F04/F06/F08/F10/F12 and M01/M03/M04/M06/M08/M10/M12
 
 Input: main 792578e3cb7a28f2b048eb2376e6cddb2da740cd, verified pure WP-001.
 Controls: REQ-001/004/009, SPEC-006, ARCH-004, IF-007/008, DES-006,
-PKG-001/005, PROFILE-002 (RUST). Scope: tig-core worktree module and synthetic
+PKG-001/005, PROFILE-002 (RUST). Scope: git-asset-core worktree module and synthetic
 public-API tests; broader provider/engine integration remains planned. Entry:
 design-1 trees and exact-leaf overlay semantics frozen. Exit: shared base,
 isolated puts/removals, no-op reuse, exact candidates, disjoint adoption and

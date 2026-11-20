@@ -2,7 +2,7 @@
 
 Input 07cfa97ce60a0d74f5923aaa96cdad8aad0e994b. WP-005; REQ-001/006/008/009;
 SPEC-006/007; ARCH-004; IF-008/009; DES-007; PKG-004; GIT profile.
-Entry: strict standard pointers and immutable Tig trees. Exit: real temporary Git
+Entry: strict standard pointers and immutable git-asset trees. Exit: real temporary Git
 repos establish exact commit/index extraction, partial staging, conflicts,
 historical reads, linked worktrees and failures without reading working payloads.
 L0 structure/fmt/VTRACE; L1 locked workspace/Clippy; L2 real Git plumbing fixtures.
@@ -27,7 +27,7 @@ outside coverage, including unknown uncommitted producer outputs.
 Captured source entries name immutable Git blob IDs. Content reads use those IDs,
 never mutable worktree paths. A bounded `cat-file --batch` reads pointer-sized
 blobs, not hydrated payloads; repeated blob IDs reuse a per-extraction cache.
-Git SHA-1/SHA-256 identify Git objects; Tig/LFS SHA-256 identifies payload bytes.
+Git SHA-1/SHA-256 identify Git objects; git-asset/LFS SHA-256 identifies payload bytes.
 They are never interchangeable. Binding-tree emission is allowed only after
 complete conflict-free extraction and uses the caller's metadata NodeStore.
 
@@ -72,7 +72,7 @@ handle cannot silently consume them. Worktree roots are required for index reads
 bare repositories support commit reads only. A subdirectory is not admitted as
 an apparently complete repository index. Git blob hashes are recomputed from the
 Git blob header plus content before pointer interpretation. sha1 0.11.0 supports
-legacy Git interoperability, not a new collision-resistance claim. Tig payloads
+legacy Git interoperability, not a new collision-resistance claim. git-asset payloads
 and binding metadata retain SHA-256 identities.
 
 EVID-024 executes 16 Git fixtures; EVID-025 executes the complete source-to-LFS

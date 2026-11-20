@@ -1,4 +1,4 @@
-# Tig evidence process
+# git-asset evidence process
 
 Design -> exact contract -> synthetic positive/negative fixtures -> fake-provider
 failure runs -> reviewed live adoption. L0 structural checks do not prove L1 pure
@@ -34,7 +34,7 @@ skills. Read locally from the standards checkout; no Cargo/runtime dependency
 on TRACKER is created. Its optional native structural assessment is:
 
 ```text
-cargo run --locked --manifest-path <vtrace-checkout>/Cargo.toml -- validate <tig>
+cargo run --locked --manifest-path <vtrace-checkout>/Cargo.toml -- validate <git-asset>
 ```
 
 Portable tools/validate.ps1 remains the repo-owned development entry point and

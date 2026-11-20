@@ -5,9 +5,9 @@ Target walkthrough. The LFS adapter and shared catalog remain planned.
 ## Start with exact content
 
 ```text
-Git LFS pointer       Tig bundle snapshot + path        Art asset + context
+Git LFS pointer       git-asset bundle snapshot + path        Art asset + context
        |                        |                              |
-       |                 Tig tree lookup                Art resolves semantics
+       |                 git-asset tree lookup                Art resolves semantics
        |                        |                              |
        +------------------------+------------------------------+
                                 v
@@ -53,19 +53,19 @@ Git tree stores standard pointer
               |
 Git LFS client requests exact OID/size
               |
-Tig transfer adapter -> shared caches / configured remote provider
+git-asset transfer adapter -> shared caches / configured remote provider
               |
 Git LFS local store -> ordinary hydrated worktree
 ```
 
-Tig should not require rewriting pointers into a proprietary format. Supported
+git-asset should not require rewriting pointers into a proprietary format. Supported
 plain SHA-256 OIDs identify the same exact blob bytes; extensions/transforms need
 explicit support. Upload success means the configured destination contract was
 satisfied, not automatically that a cloud service received it.
 
 The LFS local store and hydrated worktree may add physical copies. An adapter
 alone does not remove those costs. Account for them explicitly. A thin worktree
-can retain pointers while a Tig-aware consumer opens immutable objects directly;
+can retain pointers while a git-asset-aware consumer opens immutable objects directly;
 this is an optional consumer path, not a requirement to use Art.
 
 ## Keep editable files separate from immutable copies

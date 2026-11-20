@@ -88,7 +88,7 @@ acceptance or complete roadmap is closed by this slice.
 
 One producer applies all six [.roles](../../.roles/ROLE.md) checklists. This is
 neither independent reviewers, human acceptance nor permission to delete. Owner:
-Tig maintainers through each named lens. Disposition: pass_with_risk for the
+git-asset maintainers through each named lens. Disposition: pass_with_risk for the
 locally qualified component candidate, pending hosted qualification/adoption.
 
 | Finding / lens | Severity | Disposition / evidence | Remaining gate |

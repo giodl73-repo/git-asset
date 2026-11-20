@@ -5,7 +5,7 @@ L0/L1/L2 are in specs/SOURCE-SETTLEMENT.md. Targets: conditional source admissio
 unchanged Withdraw journal path, optional exact ref lookup, settlement library/CLI,
 shared private local placement, and committed/index/GitHub convergence checks.
 Method: one producer applying all six .roles checklists, not independent reviewers
-or human approval. Owner of every row: Tig maintainer using the named lens.
+or human approval. Owner of every row: git-asset maintainer using the named lens.
 
 | Finding / role | Severity and disposition | Evidence / remaining gate |
 | --- | --- | --- |

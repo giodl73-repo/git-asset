@@ -1,7 +1,7 @@
 # Producer review: usable native history inspection
 
 Entry/controls/scope: [NATIVE-ASSET-HISTORY](../../specs/NATIVE-ASSET-HISTORY.md).
-Targets: `tig-git::source::native::lifecycle`, existing `tig-resolve`, delivery
+Targets: `git-asset::source::native::lifecycle`, existing `git-asset-resolve`, delivery
 aggregate helpers, new native lifecycle tests and the schema-disabled refusal
 case. No native object, provider or journal format changes.
 

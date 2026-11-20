@@ -89,7 +89,7 @@ qualification remain open.
 | Lens | Severity / finding | Disposition and remaining evidence |
 | --- | --- | --- |
 | Identity/namespace | High: fetched ref could be mistaken for selected checkout | Exact HEAD/ref/record checks; fetch does not advance HEAD. Full native writer/source authority remains open. |
-| Placement policy | Critical: Git exchange could imply eviction permission | Only explicit adoption/reconciliation invokes placement; dirty refusal invokes no Tig action. Literal copy oracle and old/new/shared obligations are checked. |
+| Placement policy | Critical: Git exchange could imply eviction permission | Only explicit adoption/reconciliation invokes placement; dirty refusal invokes no git-asset action. Literal copy oracle and old/new/shared obligations are checked. |
 | Storage/custody | Critical: local Git remote could be presented as payload backup | Tracked-tree seed exclusion, zero publish streaming and existing synthetic-domain labels; real remote byte publication/offline backup remain open. |
 | Concurrency/recovery | High: failed pull could lose uncommitted bytes or reuse stale state | Exact dirty bytes/HEAD/copy preservation before repair; exact commit selected before admission. Full concurrent writers/restart lessons remain open. |
 | Provider/privacy | High: local transport could enable private/external access | Fresh root, fixed generated relative paths, file-only capability at selected calls, isolated config and no user URLs. Existing roots refuse; no credentials/private assets. |

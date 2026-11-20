@@ -2,18 +2,18 @@
 
 WP-010 bounded native slice; REQ-001/006/010, SPEC-010, ARCH-005, IF-010,
 DES-009, PKG-001/006; CR-001..008, RUST profile. Its explicit diagnostic CLI is
-the bounded WP-015 / IF-013 / PKG-008 subset, not a full inspector. Entry input is Tig
+the bounded WP-015 / IF-013 / PKG-008 subset, not a full inspector. Entry input is git-asset
 e2b944f5d03513c1bc6702519a29a91c4de0e3a7 and the existing design-1 schemas.
 Art donor 119c66446f2e95129d8d8f143d60ec6220d2813a remains read-only; its
 model/graph/variant tests have not been ported and are not this slice's evidence.
 
-Scope: optional tig-assets pure reader plus explicit read-only tig-record CLI.
+Scope: optional git-asset-model pure reader plus explicit read-only git-asset-record CLI.
 Exit: exact definition/schema binding, bounded malformed/conflicting negatives,
 ordered mixed streams and two synthetic consumer families. No store/REEL changes.
 L0 fmt/structure/Clippy; L1 native integration tests; L2 actual CLI with synthetic
 separate instance/definition/schema files. Full WP-010 and consumer cutover stay open.
 
-The reader accepts the design-1 envelopes using tig-core's strict 64 KiB JSON
+The reader accepts the design-1 envelopes using git-asset-core's strict 64 KiB JSON
 subset: 4,096 nodes, depth 32, safe integers, no floats, duplicate keys rejected.
 Raw byte SHA-256 identifies the received file, including whitespace. Parsed
 values have read-only access; changing source requires parsing a new revision.

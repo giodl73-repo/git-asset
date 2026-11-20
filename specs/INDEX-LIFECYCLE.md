@@ -55,11 +55,11 @@ No retained backup is deleted or new cache engine created.
 ## Operator interface
 
 ```text
-tig-lifecycle index plan PROFILE
-tig-lifecycle index status PROFILE PLAN
-tig-lifecycle index apply PROFILE PLAN
-tig-lifecycle index resume PROFILE PLAN
-tig-lifecycle index reconcile PROFILE PLACEMENT_PROFILE [CURSOR]
+git-asset-lifecycle index plan PROFILE
+git-asset-lifecycle index status PROFILE PLAN
+git-asset-lifecycle index apply PROFILE PLAN
+git-asset-lifecycle index resume PROFILE PLAN
+git-asset-lifecycle index reconcile PROFILE PLACEMENT_PROFILE [CURSOR]
 ```
 
 `describe` advertises index_profile_schema and index_operations separately from

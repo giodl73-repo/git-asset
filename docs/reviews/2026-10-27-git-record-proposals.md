@@ -4,7 +4,7 @@ Public summary: consumer identifiers generalized; original notes retained privat
 
 Entry823e15c. WP-002/005/009/010/011/016; REQ-001/004/006/009/010;
 SPEC-006/007/010/011; IF-007/008; PKG-004/005. Pulse05, GIT profile.
-Allowed: tig-git source proposal module/tests, scoped spec/guide/VTRACE closure.
+Allowed: git-asset source proposal module/tests, scoped spec/guide/VTRACE closure.
 Existing read-only extraction and standalone LFS remain usable independently.
 
 Entry: qualified native producers can retain small candidate records and exact
@@ -69,7 +69,7 @@ Cargo --list census confirms479; it is not substituted for execution. The final
 proposal run passes7.58s alone and9.36s inside the workspace suite. The unchanged
 500,000-binding persistence/sparse-history case passes in its210.06s metadata
 suite. Workspace all-target/all-feature warnings-denied Clippy, standalone
-no-default-features tig-git check and fmt check pass after the hook amendment.
+no-default-features git-asset check and fmt check pass after the hook amendment.
 An earlier default workspace run also passed before that private proposal-only
 amendment. No donor/media/private cache/runtime changes were made.
 

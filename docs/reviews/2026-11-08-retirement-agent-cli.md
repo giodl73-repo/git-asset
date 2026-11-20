@@ -5,13 +5,13 @@ implementation 19346c45930b575c1bbda5a7ee618fb4101d9d98.
 WP-003/004/006/007/008/009/015; REQ-001/002/003/004/005/006/007/008/009;
 SPEC-002/003/004/005/006/007/008/009/013;
 IF-002/003/004/005/006/008/012/013; PKG-002/003/008, with PKG-009 CI qualification.
-RUST/PROVIDER profiles. Scope: tig-storage retirement adapter, canonical library
+RUST/PROVIDER profiles. Scope: git-asset-storage retirement adapter, canonical library
 plan serialization/status, synthetic process fixtures and qualification workflow.
 Entry/exit and L0/L1/L2: [contract](../../specs/RETIREMENT-AGENT-CLI.md).
 
 Method: one producer applies .roles/ROLE.md and every parliament checklist against
 model/safety, source admission/store boundary/managed retirement contracts and
-foundation T02/03/08/09/10/12/14/15/16/20/24/25. Owner for all findings is the Tig
+foundation T02/03/08/09/10/12/14/15/16/20/24/25. Owner for all findings is the git-asset
 maintainer through the named lens. This is neither independent nor human approval.
 
 | Finding / lens | Severity, disposition and evidence obligation |

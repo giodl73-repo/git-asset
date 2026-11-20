@@ -1,4 +1,83 @@
-# Tig resume state
+# git-asset resume state
+
+## Current product rename lane
+
+Owned branch feat/git-asset-rename, immutable input
+4ce4da04cd92947a49b8f6c33c0f37ccfe8751b9. The public repository is now
+giodl73-repo/git-asset, with its existing visibility and history preserved.
+The current source/package/command names are git-asset; Git owns decisions and
+history, git-annex owns file bytes and copies, and this layer coordinates asset
+relationships and lifecycle. See docs/TEAM-OVERVIEW.md, docs/COMPATIBILITY.md and
+specs/GIT-ASSET-RENAME.md (paths relative to the repository root).
+Existing schema/hash domains, proposal refs and legacy .tig reads remain intact
+by explicit user choice. New records use .asset. No cache migration, deployment,
+transfer, rendering or deletion accompanies this rename. Native publication,
+retained-output acknowledgement and participating-pruner qualification remain
+open. Derive exact PR/check/merge state from GitHub; local qualification and
+producer review are recorded separately in EVID-123. Earlier lanes below are
+historical context and do not supersede this product identity.
+
+## Managed annex read lane
+
+Owned branch feat/annex-managed-read, input
+a16dc61d3c551dc686bfae9a566a040dd0069e0a. See
+[contract](../specs/ANNEX-MANAGED-READ.md) and
+[producer record](../docs/reviews/2026-11-20-annex-managed-read.md), EVID-122.
+Add Namespace::hold/SubjectUse on existing shared admission partitions and an
+optional annex::managed::Reader/Read with typed errors and existing ByteSource.
+Pool config pins the canonical provider Binding digest; all admitted namespaces
+and aliases must match, with every use held through read/seek/path consumption.
+Claims can adopt while uses live; exclusive fences are blocked. Two shared-use
+fixtures (including forced child death), eleven annex tests and explicitly
+admitted actual ordinary/bare native fixture pass. Strict all-feature/all-target
+Clippy, full all-feature workspace/500k with two threads, standalone/assets-only
+Git and final L0 pass. The first four-thread run hit Age(Budget) in the existing
+17-root retirement case; that unchanged case passes alone and in the two-thread
+run. Temporary diagnostics are removed; no production budgets changed. Original
+parallel failure/hosted qualification remain open. APIs/defaults/pins and
+markers are preserved. This is a prerequisite for native publication/readback
+and owner adoption, not a retained-publication implementation. No actual pruner,
+roster replacement or production custody is qualified; unmanaged annex drop does
+not honor these gates. Next: native positive file ingress/recovery and retained
+output handoff using this shared boundary. No live caches, transfers or renders.
+
+## Native job protection lane
+
+Owned branch feat/native-job-protection, input
+6eaf75904868a86201eeb55fc61e10b414fa7759. See
+[contract](../specs/NATIVE-JOB-PROTECTION.md) and
+[producer record](../docs/reviews/2026-11-20-native-job-protection.md), EVID-121.
+New optional assets SDK job::protection::freeze/verify projects an exact admitted
+JobContext into flat bindings for public guarded Namespace enrollment/select.
+Original job roots/APIs and dependency pins remain unchanged. Three focused
+fixtures pass: exact complete declared roles, malformed/budget refusal and actual
+metadata/journal reopen, peer advance, replay/stale/cancellation with synthetic
+Git unavailable. Locked all-feature workspace/500k, strict all-feature/all-target
+Clippy, standalone/assets-only git-asset and final L0 pass. This is metadata desired
+protection, not actual annex custody. No expiry releases bytes; explicit Withdraw
+preserves predecessors. No live caches or renders. Next: qualify actual annex
+pool/pruner protection binding and retained publication/readback, then downstream
+exact-source adoption. REEL retains ownership of semantic workflow behavior.
+Do not import the private archive's incompatible controller/index engine.
+
+## Public annex adapter lane
+
+Owned branch feat/native-annex-adapter, input
+21a70f5abc4340582cda3a075a3c5fe1cee13e40. The user selected an additive adapter
+in public git-asset while preserving its existing APIs. See
+[contract](../specs/ANNEX-READ-ADAPTER.md) and
+[producer record](../docs/reviews/2026-11-20-annex-read-adapter.md), EVID-120.
+Optional Rust annex-read supports exact local SHA256 format-10 ordinary/bare
+reads on Windows through existing guarded byte interfaces. Existing schema,
+history, Layout and defaults are preserved. No CLI, live cache enrollment,
+publication, persistent job protection, controller/index replacement or renders.
+Focused synthetic and explicitly enrolled native ordinary/bare fixtures pass;
+full local checks are recorded in the producer record. Derive source/hosted status
+from Git; no merge or deployed consumer change is implied. The next integration
+is REEL's exact public source pin/read-provider use, then a separately qualified
+bridge to public git-asset's durable admission/protection and retained publication.
+Keep async use on a dedicated thread outside entered Tokio runtimes. Do not
+import the private archive's incompatible controller/index APIs.
 
 Active goal: deliver PRODUCT_PLAN.md, including merge-driven placement/eviction,
 bulk final deletion and eventual metadata retirement. The full goal is not done.
@@ -158,7 +237,7 @@ source changes into running tools as a side effect. No startup cache operations.
   specs/TEACHING-CATALOGUE.md names controls and full entry/exit. Corpus:
   examples/catalogue/lifecycle.design-1.json, three pinned UTF-8 objects, two works,
   eight expected lifecycle stages and seven required counterexamples. The new
-  schema-gated tig-sample rehearse-ordinary NEW_ABSOLUTE_ROOT uses actual Git,
+  schema-gated git-asset-sample rehearse-ordinary NEW_ABSOLUTE_ROOT uses actual Git,
   Native capture/schema checks, source admission and existing placement/providers.
   It executes seven ordinary checkpoints, checks literal independent copies, saves
   plans/receipts/verified observations and emits a real catalogue enrollment.
@@ -173,7 +252,7 @@ source changes into running tools as a side effect. No startup cache operations.
   Limits::default; explicit finite limits resolve compilation.
   Final chain45958 is terminal zero: two actual CLI/provider/catalogue tests and
   strict schema bin/test Clippy. Persistent fresh rehearsal20389 terminates zero:
-  seven verified checkpoints plus real tig-catalogue check, no viewer launched.
+  seven verified checkpoints plus real git-asset-catalogue check, no viewer launched.
   External evidence root is in the dev temp root, teaching-catalogue-public-
   c45d99a0d2f74842bca17ad130e53502. Build target: teaching-catalogue. No process is
   live from that rehearsal. Broad default37159 and all-feature22165 chains are
@@ -252,7 +331,7 @@ source changes into running tools as a side effect. No startup cache operations.
 - Parent implemented lane: feat/paged-operator, input
   cec0217f5bae71b43f5ca43a3e3027b4c2fbb426. See specs/PAGED-OPERATOR.md.
   Implementation:8f5d39edb25129ad26f750e257faf2584b72cbbd; runtime is frozen here.
-  Locally qualified existing-root tig-storage paged commands compose copy-index chunks,
+  Locally qualified existing-root git-asset-storage paged commands compose copy-index chunks,
   exact selection planning, original scope pages, peak/status and separately
   approved apply/resume/cancel. Stage/apply/cancel default false. Session clones
   preserve metadata counters/deadline across finish and independent readback.
@@ -300,7 +379,7 @@ source changes into running tools as a side effect. No startup cache operations.
   Final runtime implementation134476a18234d620eec74e1c9a223374b191c392.
   specs/NATIVE-PAGED-RETIREMENT.md controls indexed native occurrence/block/
   category/optional-age selection into existing paged requests. Default-disabled
-  tig-retirement index-paged/select-paged stage only existing metadata roots,
+  git-asset-retirement index-paged/select-paged stage only existing metadata roots,
   finish and independently read back exact derivations. Held unknown/recent rows
   stay outside the fixed request; no source/provider/removal permission. Shared
   native Session preserves IO/byte/write/deadline counters across reader/writer
@@ -518,7 +597,7 @@ source changes into running tools as a side effect. No startup cache operations.
   hosted qualification passes; implementation1a344fc. Metadata/Tree/source journals preserve
   immutable conservative age observations, clock-free acknowledged retries,
   owned subset inheritance and read-only historical status. Explicit private
-  tig-storage age commands and optional native select-aged emit candidates only.
+  git-asset-storage age commands and optional native select-aged emit candidates only.
   Review tightened shared operation-wide metadata/time budgets. Twelve final
   focused library/process/vector entries, three actual CLI cases, nine native
   retirement entries (one new age-aware case) and strict workspace all-feature/
@@ -553,7 +632,7 @@ source changes into running tools as a side effect. No startup cache operations.
   production inputs; exact root assets receive independent flat bindings for
   shared objects. Header pins native archive/profile/index; privately admitted
   header identity permits inspecting owned subsets with changed source context.
-  Metadata-only tig-retirement bind/select uses existing providers and emits
+  Metadata-only git-asset-retirement bind/select uses existing providers and emits
   exact bulk selections, with default-disabled bind permission and no age fields.
   Eight focused native integration entries and one independent framing entry
   pass, including real CLI without Git, aggregate budgets,1000 native roots,
@@ -587,7 +666,7 @@ source changes into running tools as a side effect. No startup cache operations.
   lifetime/authority and eventual metadata retirement remain owed; goal active.
 
 - Previous lane: feat/bulk-execution, input6f8fdaa. Read specs/BULK-EXECUTION.md.
-  Separate tig-storage bulk execute apply/resume/cancel profile binds exact
+  Separate git-asset-storage bulk execute apply/resume/cancel profile binds exact
   admitted_plan, independent inspection enrollment/roster/jobs/minima and default-
   disabled permissions. Apply/resume require explicit LocalClock; Cancellation
   reuses the same internal controller without source metadata/time capability.
@@ -752,7 +831,7 @@ source changes into running tools as a side effect. No startup cache operations.
   passed; a new held-reader fixture deterministically makes both peers Busy and
   verifies serial convergence after release. All fifteen corrected S3 tests pass;
   unexpected error codes remain failures. No S3 runtime behavior changed.
-  Pre-final tig-storage artifact refusal passes with an accepted legacy control;
+  Pre-final git-asset-storage artifact refusal passes with an accepted legacy control;
   CI now builds pinned273e639 and explicitly runs that ignored qualification.
   Workspace compilation exposed and fixed the new placement hold's CLI mapping.
   EVID-099 and docs/reviews/2026-11-09-final-provider.md separately record
@@ -802,7 +881,7 @@ source changes into running tools as a side effect. No startup cache operations.
 - Previous lane: feat/index-lifecycle, input195bd0a, implementation51dd2b2,
   PR #26 ready at9c2a29f after hosted run42549837195 Windows/Linux/secrets pass. Read
   specs/INDEX-LIFECYCLE.md for GIT/PROVIDER controls/scope/entry/exit. Default
-  lifecycle::index/tig-lifecycle index compose exact staged pointer obligations,
+  lifecycle::index/git-asset-lifecycle index compose exact staged pointer obligations,
   finished/read-back metadata, existing atomic source adoption and one existing
   placement page. Conflict alternatives remain draft byte obligations, not merged
   content. Other source issues hold adoption. Fifteen focused entries pass (one
@@ -824,7 +903,7 @@ source changes into running tools as a side effect. No startup cache operations.
 - Previous lane: feat/github-trigger, base1c253ea, implementation503adca,
   issuer-time fixb3aced0; PR #25 is ready at195bd0a. Read
   specs/GITHUB-TRIGGER.md for input controls, bounded source/intake/coordinator
-  contract and adoption gates. Optional feature github adds tig-trigger serve,
+  contract and adoption gates. Optional feature github adds git-asset-trigger serve,
   independent RS256/OIDC verification and bounded metadata-only GitHub source;
   existing local source identities remain compatible through CommittedSource.
   Signed synthetic HTTP requests exercise actual temporary working/backup copies,
@@ -851,7 +930,7 @@ source changes into running tools as a side effect. No startup cache operations.
   lifetime claim follows. Derive later merge state live; the goal stays active.
 
 - Previous lane: feat/git-placement, inputa678381, implementation7432739, local placement
-  reconciliation through existing store mechanisms and `tig-lifecycle reconcile`.
+  reconciliation through existing store mechanisms and `git-asset-lifecycle reconcile`.
   specs/PLACEMENT-RECONCILIATION.md freezes controls/scope/entry/exit. EVID-093
   separately records local verification, synthetic validation, trace and all six
   producer lenses. Final focused coverage is sixteen placement entries
@@ -875,7 +954,7 @@ source changes into running tools as a side effect. No startup cache operations.
 - PR #14: reviewed storage roadmap, finite-backup/bulk-retirement requirements
   and direct startup. Source/merge status must be checked live.
 - PR #15, feat/storage-orchestration-contract, d18afba: bounded immutable storage
-  plans and tig-storage plan/peak/status/apply/resume through existing accounted
+  plans and git-asset-storage plan/peak/status/apply/resume through existing accounted
   publication/retention. Local checks and hosted Windows/Linux/secrets pass;
   marked ready for review. Optional publication context preserves legacy None
   encoding; old readers refuse new context-bearing records. No removal API.
@@ -918,7 +997,7 @@ source changes into running tools as a side effect. No startup cache operations.
 - Six-role roadmap re-review85ac433 records precedence, mixed-root retained-subset
   handoff and store/namespace/epoch authority handoff requirements. These remain
   implementation gates, not merely documentation acceptance.
-- PR #20, feat/retirement-agent-cli, implementation19346c4, based on3e300ca: explicit tig-storage retire
+- PR #20, feat/retirement-agent-cli, implementation19346c4, based on3e300ca: explicit git-asset-storage retire
   plan/status/apply/resume/cancel/reacquire uses existing managed retirement and
   private owner/context/domain/grant/role/budget admission. Eight CLI process
   cases and the separate real-child pending-intent CLI cancellation qualification
@@ -939,7 +1018,7 @@ source changes into running tools as a side effect. No startup cache operations.
   PR state live. Private access is absent from plans; receipts deny
   retained custody/removal. No real account, service or cloud store is attached.
 - feat/lfs-upload, implementation2f1173b, based on9b8a689: optional standalone
-  Basic upload and tig-lfs upload plan/peak/status/apply/resume reuse existing OID
+  Basic upload and git-asset-lfs upload plan/peak/status/apply/resume reuse existing OID
   authorization, guarded Git LFS readers and shared accounted local witnesses.
   Thirteen HTTP/actual Git LFS 3.4.0/CLI cases pass, including killed-process
   recovery, peer refusal and another job's progress without re-upload. Full
@@ -954,7 +1033,7 @@ source changes into running tools as a side effect. No startup cache operations.
   (3m2s) and secrets (6s), and is ready for review; derive PR state live.
   No actual server/TLS/account, remote quota, custody or live store is attached.
 - feat/git-lifecycle, implementationfc3c57f, based on d81cabe: exact enrolled
-  committed-ref selection and tig-lifecycle plan/status/apply/resume compose
+  committed-ref selection and git-asset-lifecycle plan/status/apply/resume compose
   finished/readback metadata with an atomic pair of existing Prepare/Adopt events.
   Source encodings and one-command callers remain compatible. Six added pair
   cases bring active admission entries to 26, including three actual child exits
@@ -965,7 +1044,7 @@ source changes into running tools as a side effect. No startup cache operations.
   their builds, then all nine lifecycle cases and strict all-target/all-feature
   Clippy reran. Other package implementations were unchanged. Explicit retirement
   CLI and pinned pre-pair source-reader qualifications pass. The latter requires
-  TIG_BASELINE_SOURCE_CLI and an explicit ignored/exact invocation; normal-suite
+  GIT_ASSET_BASELINE_SOURCE_CLI and an explicit ignored/exact invocation; normal-suite
   ignored output is not proof. CI separately builds pinned inputd81cabe's reader
   on both hosts. EVID-092 separates verification, validation rehearsal, trace and
   six producer lenses. Hosted current-head qualification remains separate.
@@ -984,7 +1063,7 @@ external-client discovery or full restore authority. Preserve that distinction.
 Check current-head qualification for the S3 lane before duplicating or restarting
 work. A polling timeout is not failure. Managed-retirement and CLI qualification
 and separate evidence closeout pass locally and on both hosted platforms. The cross-artifact
-pending-cancellation fixture requires a freshly built binary via TIG_RETIREMENT_CLI
+pending-cancellation fixture requires a freshly built binary via GIT_ASSET_RETIREMENT_CLI
 and an explicit --ignored --exact invocation; its ordinary-suite ignored entry is
 not executed evidence. Both hosted platforms include that qualification.
 

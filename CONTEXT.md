@@ -1,4 +1,21 @@
-# Tig maintainer context
+# git-asset maintainer context
+
+## Current product rename lane
+
+Owned branch feat/git-asset-rename, immutable input
+4ce4da04cd92947a49b8f6c33c0f37ccfe8751b9. The public repository is now
+giodl73-repo/git-asset, with its existing visibility and history preserved.
+The current source/package/command names are git-asset; Git owns decisions and
+history, git-annex owns file bytes and copies, and this layer coordinates asset
+relationships and lifecycle. See docs/TEAM-OVERVIEW.md, docs/COMPATIBILITY.md and
+specs/GIT-ASSET-RENAME.md (paths relative to the repository root).
+Existing schema/hash domains, proposal refs and legacy .tig reads remain intact
+by explicit user choice. New records use .asset. No cache migration, deployment,
+transfer, rendering or deletion accompanies this rename. Native publication,
+retained-output acknowledgement and participating-pruner qualification remain
+open. Derive exact PR/check/merge state from GitHub; local qualification and
+producer review are recorded separately in EVID-123. Earlier lanes below are
+historical context and do not supersede this product identity.
 
 Active owned lane: feat/teaching-stale-plan, input
 d200ed38e2594a6e82205067dd8aadd107a7bff4; runtime
@@ -65,7 +82,7 @@ hosted qualification, start a viewer or touch existing cache roots.
 Teaching runtime: 3ee533ce31d1f54075982976876a5a553a11933f.
 Teaching-catalogue lane: user requires public, portable Git-style teaching and
 fixtures at every workflow step. specs/TEACHING-CATALOGUE.md and
-examples/catalogue/README.md define the full course. New schema-gated tig-sample
+examples/catalogue/README.md define the full course. New schema-gated git-asset-sample
 rehearse-ordinary creates fresh external roots only, runs real Git/source/provider
 operations through seven independently checked checkpoints, and exports an actual
 catalogue plus bounded reports. Focused tests/strict Clippy and a persistent fresh
@@ -83,7 +100,7 @@ run42729638843 passes exact-head Windows/Linux/secrets at2911568. Parent PR43 ha
 exact-head Windows/Linux/secrets
 checks passed; read context/RESUME.md for current evidence and remaining gates.
 
-Paged-operator lane: explicit tig-storage paged now composes existing-root copy
+Paged-operator lane: explicit git-asset-storage paged now composes existing-root copy
 index staging, exact decisions, original scope pagination, peak/status and
 separately approved apply/resume/cancel with the existing controller. Metadata
 Session views share budgets through finish/readback; cancellation acknowledges
@@ -129,20 +146,20 @@ the durable paged controller and user surfaces remain owed. Read context/RESUME.
 Age-witness lane: specs/AGE-WITNESSES.md defines exact historical occurrence
 observations over existing asset-side Trees and an enrolled Retention source.
 Capture preserves acknowledged dates across retries; executed unchanged subsets
-can inherit age. tig-storage age and optional tig-retirement select-aged use
+can inherit age. git-asset-storage age and optional git-asset-retirement select-aged use
 private existing-root profiles, with no claim-release/removal authority. Aggregate
 metadata/time budgets span phases. EVID-106 records local/hosted qualification;
 live adoption and the complete milestone remain open. Read context/RESUME.md.
 
 Native retirement binding lane: optional declared storage closure and asset-side
 native-to-flat roots give each root asset independent bindings for shared objects.
-Explicit metadata-only tig-retirement bind/select composes exact block/category
+Explicit metadata-only git-asset-retirement bind/select composes exact block/category
 selection with the existing bulk controller, without self-approval or age inference.
 Read specs/NATIVE-RETIREMENT-BINDINGS.md and EVID-105 for local qualification.
 Bounded age witnesses are separate in EVID-106; UI/Action, native writer/adoption,
 authority/provider/lifetime and full acceptance remain open.
 
-Bulk execution lane: the distinct tig-storage bulk execute profile binds exact
+Bulk execution lane: the distinct git-asset-storage bulk execute profile binds exact
 privately admitted consent and default-disabled apply/cancel permissions. Native
 clock admission is explicit; cancellation can operate without fresh time or source
 metadata. The existing controller is reused; inspection stays observational.
@@ -155,7 +172,7 @@ window checks require the full earliest/latest interval; no generic SystemTime
 fallback or CLI activation. specs/LOCAL-CLOCK.md records native trust/minimum/
 restore/lifetime gates and qualification scope. This is not live clock adoption.
 
-Bulk operator inspection: tig-storage bulk describe/plan/peak/status uses explicit
+Bulk operator inspection: git-asset-storage bulk describe/plan/peak/status uses explicit
 private enrollment and existing roots. bulk::Inspection requires no metadata
 writer or clock; source metadata may be offline for status. Its profile grants no
 mutation permission. Read specs/BULK-OPERATOR.md; full operator execution/native
@@ -173,33 +190,33 @@ without an older consumer-repository conversation. Follow docs/DEVELOPMENT.md an
 context/RESUME.md; PRODUCT_PLAN.md orders the next product slices. Git/PR checks
 determine what actually merged. Source availability does not deploy a running UI.
 
-Tig is generic experimental Rust infrastructure. Machine-local enrollment,
+git-asset is generic experimental Rust infrastructure. Machine-local enrollment,
 cache paths, credentials, producer bindings and private acceptance evidence belong
 outside this repository. docs/ARCHITECTURE.md maps the implementation;
 PRODUCT_PLAN.md tracks remaining work. Historical test totals and target diagrams
 are not current implementation claims.
 
-The workspace contains tig-core, tig-store, tig-git and optional tig-assets.
+The workspace contains git-asset-core, git-asset-store, git-asset and optional git-asset-model.
 Basic Git/LFS does not depend on typed assets. Captured Git metadata and admitted
 schemas drive optional resolution, graphs, contexts, revisions and deliveries.
 The catalogue provides works, search, children, coverage and storage comparison.
 Project meaning remains external configuration.
 
-The explicit tig-lifecycle CLI/library connects an enrolled exact committed ref
+The explicit git-asset-lifecycle CLI/library connects an enrolled exact committed ref
 to verified persistent metadata and atomically adopted desired claims. Duplicate,
 stale, revert and active-job/history behavior have synthetic Git fixtures. Source
 journals reuse existing Prepare/Adopt event bytes in one transaction; status
 preserves historical receipts independently of Git/metadata availability.
-The explicit tig-lifecycle reconcile command now composes bounded local copy,
+The explicit git-asset-lifecycle reconcile command now composes bounded local copy,
 retention/handoff, ordinary eviction, cancellation and exact-byte reacquisition
-through tig-store::placement. EVID-093 scopes temporary Git/store qualification;
+through git-asset-store::placement. EVID-093 scopes temporary Git/store qualification;
 page success does not establish complete selection convergence. See
 specs/PLACEMENT-RECONCILIATION.md. Authenticated triggers, full lifecycle/native/
 provider adoption, unattended partial recovery, large files, bulk final deletion,
 authority handoff and lifetime remain required plan work.
 
 Optional github feature now adds strict OIDC verification, bounded independent
-GitHub metadata capture, foreground tig-trigger and multi-page coordination over
+GitHub metadata capture, foreground git-asset-trigger and multi-page coordination over
 the same selection/placement APIs. EVID-094 scopes synthetic signed-request
 working/backup copies and a separate actual hosted-issuer/CLI empty-scope test.
 The latter performs zero payload operations. An inert Action client installs
@@ -222,8 +239,8 @@ EVID-096 separates passing local broad/focused checks, synthetic validation, tra
 and producer review from pending hosted current-head/adoption gates.
 
 Existing-byte readers and explicit local publication/restore/retention primitives
-have bounded fixture evidence. The first tig-store orchestration slice composes
-input-bound plans and source-preserving copy/retention with an explicit tig-storage
+have bounded fixture evidence. The first git-asset-store orchestration slice composes
+input-bound plans and source-preserving copy/retention with an explicit git-asset-storage
 CLI; specs/STORAGE-ORCHESTRATION.md limits its scope. Protection completeness remains
 caller-declared for that copy-only CLI. The opt-in managed local library now adds
 bounded ordinary replica retirement/cancellation and explicit reacquisition under
@@ -233,15 +250,15 @@ custody, native dependency coverage and production eviction remain open. Catalog
 alignment/older-copy actions are held previews. No cache initialization, scan,
 hydration, daemon or hook installation on resume.
 
-Optional tig-git feature upload adds an explicit standalone Git LFS Basic upload
-agent and tig-lfs upload plan/peak/status/apply/resume over existing OID authority,
+Optional git-asset feature upload adds an explicit standalone Git LFS Basic upload
+agent and git-asset-lfs upload plan/peak/status/apply/resume over existing OID authority,
 guarded source readers and accounted local witnesses. Full remote hash/length
 readback and optional verify notification precede completion. Private action
 credentials are explicitly scoped and excluded from plans; upload defaults off.
 See specs/LFS-UPLOAD.md. This is bounded 8 MiB source-preserving transfer, not
 retained backup custody, remote quota or automatic Git lifecycle reconciliation.
 
-The explicit `tig-storage retire` interface now composes that library over existing
+The explicit `git-asset-storage retire` interface now composes that library over existing
 managed stores and private policy profiles: plan/apply/status/resume/cancel and
 new-operation reacquisition. See specs/RETIREMENT-AGENT-CLI.md. Survivor grants,
 domains, role assignments and finite budgets are admitted independently from
@@ -249,8 +266,8 @@ portable plans; all three execution permissions default to disabled. Status
 separates historical outcomes from freshly verified present/absent/unproven bytes.
 This does not attach a catalogue action or enable automatic lifecycle execution.
 
-Optional tig-store feature s3 adds a source-preserving conditional S3 PUT/full GET
-readback adapter and explicit tig-storage s3 plan/peak/status/apply/resume. Small
+Optional git-asset-store feature s3 adds a source-preserving conditional S3 PUT/full GET
+readback adapter and explicit git-asset-storage s3 plan/peak/status/apply/resume. Small
 intent/completion witnesses reuse existing accounted local publication/ledger;
 presigned URLs remain private and absent from portable plans. The synthetic HTTP
 fixture covers collisions, lost replies, corrupt/missing readback, denied access,
@@ -276,7 +293,7 @@ and NOTICE.md. Run tools/validate.ps1 and git diff --check before commits.
 Rust changes also require fmt, appropriate locked tests, strict Clippy and
 integration cases. Hosted Windows/Linux CI is a separate qualification.
 
-Historical subset prerequisite: source_claims::subset and explicit tig-source
+Historical subset prerequisite: source_claims::subset and explicit git-asset-source
 subset plan/status/apply/resume protect unselected flat bindings with a same-owner/
 class survivor predecessor before conditional original retirement. Atomic
 Prepare/Adopt/Withdraw exposes no artificial active use. See RETAINED-SUBSET.md

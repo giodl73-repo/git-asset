@@ -13,7 +13,7 @@ physical capacity. Observation binds checkpoints/limits/counts/bytes/set digest;
 fresh target readback verifies all nodes. No journal/cache setup, source adoption,
 discovery, selection, removal or custody/latest-source assertion.
 
-CLI: `tig-metadata plan PROFILE NEW_PLAN`, `apply PROFILE PLAN NEW_REPORT`,
+CLI: `git-asset-metadata plan PROFILE NEW_PLAN`, `apply PROFILE PLAN NEW_REPORT`,
 `verify REPORT NEW_VERIFICATION`. Bounded strict JSON; new-only reports outside
 providers. Schema `tig.metadata-provider-copy-profile.experimental-1`: absolute
 source_root, source_minimum, missing absolute target_root, target_limits, budget

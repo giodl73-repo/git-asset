@@ -3,7 +3,7 @@
 Entry1095b6fc591e7ac9155989188081a06d803bce96 (merged PR37).
 Controls, scope, entry/exit and L0/L1/L2 were recorded before code in
 specs/NATIVE-VARIANT-RETENTION.md. Six-role producer review, not independent or
-human acceptance. Owner: Tig producer. No new dependency or production-cache IO.
+human acceptance. Owner: git-asset producer. No new dependency or production-cache IO.
 
 - Identity: external exact definition/space/project-space/semantics/axes policies;
   re-admit context and resolve the exact source record, including retained frozen

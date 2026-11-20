@@ -19,7 +19,7 @@ Required Rust checks: cargo fmt --all -- --check; cargo test --workspace --locke
 cargo clippy --workspace --all-targets --locked -- -D warnings. Use an explicitly
 configured shared Cargo target; no per-worktree cache/staging tree.
 
-The dependency-free tig-core prototype has 13 synthetic handoff tests. These
+The dependency-free git-asset-core prototype has 13 synthetic handoff tests. These
 exercise pure set/transition mechanisms, not Git/LFS extraction, durable commit,
 provider IO, independent custody or a complete designed case. CI executes them
 on Windows and Linux separately from structural validation.

@@ -25,7 +25,7 @@ user can map them to one SSD and a cloud store; a team can use several servers.
 The same primitives work for media, CAD, datasets, software build artifacts or
 documents. Basic Git/LFS users do not need the optional typed asset layer.
 
-Tig can show a role/capacity plan without creating caches or copying bytes.
+git-asset can show a role/capacity plan without creating caches or copying bytes.
 Executable work requires an admitted provider, authority and resource scope.
 
 There is no required number of tiers, local disks or cloud providers. A place can
@@ -138,7 +138,7 @@ scratch + 10 GB publication overhead = **240 GB peak additional demand**. It fit
 415 GB. After expected transient cleanup its net retained growth could be 90 GB;
 that lower number cannot fund the initial 240 GB peak.
 
-A beta job needs 20 + 15 + 180 + 10 = **225 GB**. It does not fit 208 GB. Tig should
+A beta job needs 20 + 15 + 180 + 10 = **225 GB**. It does not fit 208 GB. git-asset should
 explain the 17 GB shortfall for this request, while alpha jobs can continue.
 The operator could choose a lower-peak admitted profile, use another eligible
 place, or first reclaim verified eligible copies. Planned reclaim does not count
@@ -237,4 +237,4 @@ The same rules govern shared objects, N jobs, scratch, quotas and observations.
 
 The [worked JSON fixture](../../examples/storage/capacity.design-1.json) keeps
 the arithmetic reviewable. It is synthetic data, not a runnable policy schema or
-proof that Tig's future runtime admission/measurement engine is implemented.
+proof that git-asset's future runtime admission/measurement engine is implemented.

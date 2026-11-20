@@ -4,7 +4,7 @@ Entry source `ad330ddf9e5635bc66be715f7684dc40396efba5`;
 WP-008/009/015/016, REQ-003/006/007/010, SPEC-005/008/014/015,
 IF-004/006/013, PKG-003; RUST + INTEGRATION profiles.
 
-Scope: `tig-source` stderr only. Preserve existing exit codes, report formats,
+Scope: `git-asset-source` stderr only. Preserve existing exit codes, report formats,
 read-only observations, owner/revision fencing, planned transitions and recovery
 semantics. No new persistent data, operation, discovery, retry or cleanup.
 

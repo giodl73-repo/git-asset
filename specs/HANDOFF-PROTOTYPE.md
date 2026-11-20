@@ -1,7 +1,7 @@
 # Pure branch-to-main handoff prototype
 
 Status: experimental Rust mechanism, not a released wire format or storage engine.
-Scope: TIG-R02/R03/R04/R05/R09; selected T01-T03/T08/T12/T24 and CL06/GW12
+Scope: GIT-ASSET-R02/R03/R04/R05/R09; selected T01-T03/T08/T12/T24 and CL06/GW12
 mechanisms. Full scenarios and requirements remain open.
 
 ## Minimal contract
@@ -55,7 +55,7 @@ handoff is durable remains forbidden in a real backend.
 ## Art adapter readiness
 
 Art passes exact selected result/variant objects, resolved bundle membership,
-admitted placement policy and root coverage. Tig does not reconstruct a semantic
+admitted placement policy and root coverage. git-asset does not reconstruct a semantic
 closure from filenames. A schematic Art record with `selected: null` may describe
 planning but cannot supply a playable object. Empty core inputs do not prove that
 native embedded references have been extracted completely.
@@ -68,7 +68,7 @@ prototype tests the receiving placement algebra, not an actual Art integration.
 
 ## Evidence and limits
 
-Thirteen tests in [handoff.rs](../crates/tig-core/tests/handoff.rs) execute the
+Thirteen tests in [handoff.rs](../crates/core/tests/handoff.rs) execute the
 pure mechanism, including shared branch/job protection, archive pending, separate
 scratch place, stale transitions, unknown coverage, unregistered objects, size
 conflicts and reversion. See [verification](../docs/vtrace/VERIFICATION.md).

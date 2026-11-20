@@ -7,17 +7,17 @@ install an Action or accept live-provider use. Use synthetic fixtures while the
 remaining authority/provider/adoption gates are open.
 
 ```text
-tig-storage paged describe
-tig-storage paged copies PROFILE REQUEST
-tig-storage paged plan PROFILE REQUEST
-tig-storage paged inspect PROFILE DECISION
-tig-storage paged subjects PROFILE DECISION [CURSOR]
-tig-storage paged actions PROFILE DECISION [CURSOR]
-tig-storage paged peak PROFILE DECISION
-tig-storage paged status PROFILE DECISION
-tig-storage paged apply PROFILE DECISION
-tig-storage paged resume PROFILE DECISION
-tig-storage paged cancel PROFILE DECISION
+git-asset-storage paged describe
+git-asset-storage paged copies PROFILE REQUEST
+git-asset-storage paged plan PROFILE REQUEST
+git-asset-storage paged inspect PROFILE DECISION
+git-asset-storage paged subjects PROFILE DECISION [CURSOR]
+git-asset-storage paged actions PROFILE DECISION [CURSOR]
+git-asset-storage paged peak PROFILE DECISION
+git-asset-storage paged status PROFILE DECISION
+git-asset-storage paged apply PROFILE DECISION
+git-asset-storage paged resume PROFILE DECISION
+git-asset-storage paged cancel PROFILE DECISION
 ```
 
 The strict private `tig.paged-operator-profile.design-1` supplies `enrollment`,

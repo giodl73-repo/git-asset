@@ -3,7 +3,7 @@
 Input bb51c5a13e1277c1b76e1bcdd2d865800595e733; WP-003/004/006/007/008;
 REQ-001/002/003/004/005/007/009; SPEC-002/003/004/005/008/009;
 IF-002/003/004/005/006/012/013; PKG-002/003/008. RUST/PROVIDER profiles.
-Scope: tig-store plan and source-preserving local copy composition using existing
+Scope: git-asset-store plan and source-preserving local copy composition using existing
 publication/capacity/retention primitives, with no optional asset dependency.
 Entry: enrolled owned temporary stores, existing generation/replay fences and
 explicit caller admission. Exit: bounded immutable plan identities, exact retry
@@ -60,13 +60,13 @@ retirement remain open and retain the roadmap's separate gates.
 
 ## Explicit CLI and agent surface
 
-`tig-storage describe` lists the versioned bounded interface without provider IO.
-`tig-storage plan REQUEST` emits canonical `tig.storage-plan.design-1` bytes from
+`git-asset-storage describe` lists the versioned bounded interface without provider IO.
+`git-asset-storage plan REQUEST` emits canonical `tig.storage-plan.design-1` bytes from
 a strict PlanRequest, with no provider enrollment or mutation. Store those exact
 bytes outside Git. The plan contains identities, not machine root paths.
-`tig-storage peak PROFILE PLAN` recomputes the conservative file-data peak.
-`tig-storage status PROFILE PLAN INDEX` freshly inspects one exact action.
-`tig-storage apply PROFILE PLAN INDEX` and `resume` invoke the same idempotent
+`git-asset-storage peak PROFILE PLAN` recomputes the conservative file-data peak.
+`git-asset-storage status PROFILE PLAN INDEX` freshly inspects one exact action.
+`git-asset-storage apply PROFILE PLAN INDEX` and `resume` invoke the same idempotent
 copy/retention path. Each action is explicit, so a caller can stop scheduling the
 remaining batch; there is no implicit worker, background retry or partial sweep.
 
@@ -102,6 +102,6 @@ Fresh design-7 stores expose a distinct managed-incarnation copy contract. Initi
 copy/retention uses existing accounted primitives with additional bounded lifecycle
 metadata budget. A previously retired hash requires the explicit library
 [reacquisition protocol](MANAGED-REPLICA-RETIREMENT.md); ordinary copy never silently
-revives it. tig-storage errors distinguish authorized_absence, reacquisition_required
+revives it. git-asset-storage errors distinguish authorized_absence, reacquisition_required
 and needs_recovery. The copy CLI still exposes no removal/reacquisition command;
 the new guarded retirement executor is a separate explicit library interface.

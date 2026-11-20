@@ -14,12 +14,12 @@ is available. Other current, recent, draft and job obligations remain independen
 ## Explicit existing-root commands
 
 ```text
-tig-storage age describe
-tig-storage age initialize PROFILE
-tig-storage age capture PROFILE REQUEST
-tig-storage age status PROFILE REQUEST
-tig-storage age assess PROFILE REQUEST
-tig-storage age inherit PROFILE REQUEST PLAN
+git-asset-storage age describe
+git-asset-storage age initialize PROFILE
+git-asset-storage age capture PROFILE REQUEST
+git-asset-storage age status PROFILE REQUEST
+git-asset-storage age assess PROFILE REQUEST
+git-asset-storage age inherit PROFILE REQUEST PLAN
 ```
 
 The strict private `tig.age-profile.design-1` document contains `enrollment`,
@@ -74,7 +74,7 @@ unfinished cleanup; a later retry preserves those facts and does not reset age.
 ## Native category and block selection
 
 ```text
-tig-retirement select-aged PROFILE REQUEST
+git-asset-retirement select-aged PROFILE REQUEST
 ```
 
 The schema-feature binary accepts a separate strict

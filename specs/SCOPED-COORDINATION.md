@@ -83,8 +83,8 @@ of reservations is verified. Publication still acknowledges process restart only
 
 L0: structure/VTRACE/fmt/whitespace. L1: locked workspace tests and all-target
 Clippy with warnings denied. L2: public API tests plus real temporary-store child
-processes. Commands: `cargo test -p tig-core --test capacity --locked` (18),
-`cargo test -p tig-store --test fences --locked` (11),
+processes. Commands: `cargo test -p git-asset-core --test capacity --locked` (18),
+`cargo test -p git-asset-store --test fences --locked` (11),
 `cargo test --workspace --locked` (154). EVID-012/013 record this scope;
 WP-004/006 remain in progress with full requirements/VAL runs open.
 

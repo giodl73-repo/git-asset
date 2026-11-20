@@ -1,6 +1,6 @@
 # Exact-base small-file Git proposals
 
-Experimental Rust API: `tig_git::source::Repository::propose`, independent of the
+Experimental Rust API: `git_asset::source::Repository::propose`, independent of the
 optional typed-asset feature. WP-002/005/009; SPEC-006/007. This is an explicit
 authoring operation, not a side effect of inspection or rendering.
 
@@ -41,7 +41,7 @@ create-only CAS with `--no-deref`. Same-input retries return the same commit/ref
 including concurrent retries. A foreign or symbolic ref refuses; it is never
 overwritten or used to advance another ref. The proposal ref protects this small
 Git commit from ordinary GC while present. Another writer can still change/delete
-Git refs; this is not a durable Tig owner/payload-custody acknowledgement.
+Git refs; this is not a durable git-asset owner/payload-custody acknowledgement.
 
 ```text
 frozen base B + retained candidate record bytes

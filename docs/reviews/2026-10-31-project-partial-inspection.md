@@ -25,7 +25,7 @@ Subsequent full locked all-feature workspace tests pass, including the
 whitespace checks pass. Exact-head hosted qualification remains required.
 
 An actual metadata-only consumer project check at main `72907b5`, using the immutable
-inspector built from Tig `a57a874`, reuses the exact raw profile and expected
+inspector built from git-asset `a57a874`, reuses the exact raw profile and expected
 plan of the previous handoff preview. It reports one missing planned parent,
 zero listed entries/candidates and no payload reads or destination creation.
 All ownership/liveness/cleanup flags remain false and physical reclaim remains
@@ -47,7 +47,7 @@ Producer lenses:
 - Git/adoption: ordinary Git holds the small contract/code; detailed listings
   stay asset-side. No scan is installed on resume, checkout, merge or startup.
 
-Disposition pass_with_risk for read-only visibility. Owner: Tig orchestration.
+Disposition pass_with_risk for read-only visibility. Owner: git-asset orchestration.
 No independent review or human acceptance. Authenticated attempt attribution,
 fenced authorized disposal, complete source/job coverage, custody and production
 adoption remain open. An unassociated candidate is never classified safe to delete.

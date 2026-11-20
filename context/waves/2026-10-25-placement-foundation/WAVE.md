@@ -1,6 +1,6 @@
 # Wave: placement foundation
 
-Goal: establish Tig independently of asset semantics and prove plans before live IO.
+Goal: establish git-asset independently of asset semantics and prove plans before live IO.
 
 | Pulse | Product | Status |
 | --- | --- | --- |

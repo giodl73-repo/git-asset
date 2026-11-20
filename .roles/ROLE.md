@@ -1,4 +1,4 @@
-# Tig review panel
+# git-asset review panel
 
 These are producer-applied technical checklists, not independent reviewers or
 approval authority. No role authorizes delegation, publication or deletion.

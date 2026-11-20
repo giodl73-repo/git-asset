@@ -4,7 +4,7 @@ Public summary: consumer identifiers generalized; original notes retained privat
 
 Controls and limits: [PUBLICATION-EVIDENCE](../../specs/PUBLICATION-EVIDENCE.md),
 WP-010/011/015, REQ-001/006/010, IF-010/011/013, PKG-006/008. The optional
-`tig-assets` layer owns retained evidence semantics; Git/LFS and storage remain
+`git-asset-model` layer owns retained evidence semantics; Git/LFS and storage remain
 independent. No provider or consumer binding changes.
 
 The exact schema-checked instance is required before a caller-admitted mapping
@@ -18,13 +18,13 @@ CLI, source/role/pin/target/schema negatives, missing/null values, escaped and
 invalid selectors, duplicate keys, finite decimal metadata, hard/declared bounds,
 cross-policy reuse and a 1,000-row external receipt. Full locked all-feature
 workspace tests, strict workspace/all-target/all-feature Clippy and standalone
-`tig-git --no-default-features` check pass. No existing tests are removed or skipped
+`git-asset --no-default-features` check pass. No existing tests are removed or skipped
 to qualify this change. Native identity JSON is unchanged.
 
 An owner-run local candidate also checks all 79 existing consumer project poem publication
 anchors against their exact retained receipt: 79 unique declared targets, 13
 length-bearing rows and 66 hash-only rows. Raw inputs/results remain in the
-consumer's private storage; no private assets or evidence content enter Tig.
+consumer's private storage; no private assets or evidence content enter git-asset.
 These checks read metadata only and do not refresh any past producer, approval,
 payload availability, remote identity, current sync or independent custody.
 

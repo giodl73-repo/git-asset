@@ -141,7 +141,7 @@ Producer-applied: exact raw pins/definition ID, missing versus null, immutable
 parsed identity, duplicate slots/sizes, field/default declarations, bounded IO,
 no private authored/provenance/status output and no cache/daemon initialization.
 Confirm complete_semantic_coverage remains false for opaque semantic rules;
-standalone tig-core/store/git cannot depend on the optional asset crate.
+standalone git-asset-core/store/git cannot depend on the optional asset crate.
 
 ## Native graph checks
 

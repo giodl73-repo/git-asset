@@ -7,10 +7,10 @@ See [the operator contract](../../specs/BULK-OPERATOR.md) and
 [bulk protocol](../../specs/BULK-RETIREMENT.md).
 
 ```text
-tig-storage bulk describe
-tig-storage bulk plan /absolute/private-profile.json /absolute/block-request.json
-tig-storage bulk peak /absolute/private-profile.json /absolute/exact-plan.json
-tig-storage bulk status /absolute/private-profile.json /absolute/exact-plan.json
+git-asset-storage bulk describe
+git-asset-storage bulk plan /absolute/private-profile.json /absolute/block-request.json
+git-asset-storage bulk peak /absolute/private-profile.json /absolute/exact-plan.json
+git-asset-storage bulk status /absolute/private-profile.json /absolute/exact-plan.json
 ```
 
 Capture the plan's stdout outside source Git and pass that exact canonical JSON
@@ -61,10 +61,10 @@ execution interface below requires a different profile and independent permissio
 ## Execute an explicitly approved plan
 
 ```text
-tig-storage bulk execute describe
-tig-storage bulk execute apply /absolute/execution-profile.json /absolute/exact-plan.json
-tig-storage bulk execute resume /absolute/execution-profile.json /absolute/exact-plan.json
-tig-storage bulk execute cancel /absolute/execution-profile.json /absolute/exact-plan.json
+git-asset-storage bulk execute describe
+git-asset-storage bulk execute apply /absolute/execution-profile.json /absolute/exact-plan.json
+git-asset-storage bulk execute resume /absolute/execution-profile.json /absolute/exact-plan.json
+git-asset-storage bulk execute cancel /absolute/execution-profile.json /absolute/exact-plan.json
 ```
 
 The strict tig.bulk-execution-profile.design-1 wraps the inspection profile as
