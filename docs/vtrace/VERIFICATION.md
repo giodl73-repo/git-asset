@@ -21,6 +21,36 @@ Detailed scope and remaining gates are recorded in the
 [producer record](../reviews/2026-11-20-annex-read-adapter.md). No hosted closure
 is implied by local verification.
 
+EVID-136: final90828 actual native/CLI/provider/HTTP/shipped positive plus40
+re-pinned refusals and strict schema+upload workspace/all-target Clippy pass.
+Without-feature no-root69023 and85 controls pass. Default19709/all31804 full
+profiles remain live; [review](../reviews/2026-11-11-teaching-remote-publication.md)
+retains initial integration/fixture/style failures and remaining gates.
+
+EVID-135: final native/HTTP/shipped47 semantic refusals/16 teaching and83
+controllers pass. Default2017 and corrected all-feature60982 TERMINAL0 cover
+workspace/500k/strict; standalone/fmt/fresh persisted11-step catalogue passes
+with0 payload opens/automatic_eviction=false. Default workspace used prior stricter
+age assertion; final15 age cases pass on both profiles and corrected all-feature
+passes443 SDK entries/9 ignored. Initial101 and exact Journal(Busy) assertion
+correction remain in [review](../reviews/2026-11-11-teaching-return-restore.md).
+Source08710ef CI43077356434 passes both hosts/secrets; final source remains owed.
+
+EVID-131: both workspace/500k/strict runs4118/61973 pass; final14/all-feature
+teaching/strict/fmt/fresh artifact41136, standalone82649 and79 controllers pass.
+Thirteen manual,17 paged and8 frame negatives include actual HTTP/shipped controls.
+[Review](../reviews/2026-11-10-teaching-final-retirement.md) records exact scope,
+source timing and initial corrections; hosted exact-source checks remain open.
+
+EVID-130: terminal95832 focused actual CLI/provider/API/shipped-script case and
+strict schema all-target Clippy pass; all78 controller cases pass. Explicit
+rename-lesson rendering assertion is included in broad15009/80546 qualification.
+Artifact3407 passes fmt/fresh bins/eight-step persistent sample/catalogue check
+(read_only=true,payloads_opened=0) in its own external build target. See
+[review](../reviews/2026-11-10-teaching-rename.md). Terminal15009/80546 pass both
+workspace/both500k/strict profiles, seven teaching cases and standalone Git.
+Final source pins/commit-secrets and hosted results remain separate gates.
+
 EVID-119: six native CLI/provider/catalogue cases, actual HTTP -> shipped controls,
 eleven repinned rejection negatives and all78 controller cases pass. Default89185
 workspace/500k and all48441 workspace/500k/strict pass. Final52714 qualifies the
@@ -927,3 +957,10 @@ exact-head outcomes are recorded on PR 61, separately from implementation.
 EVID-124: eight real Git classification fixtures pass. Source/links/hash/branding
 checks and hosted exact-head workflow outcomes are separate; see
 ../reviews/2026-11-20-readme-ci.md. No Rust implementation change.
+
+## Open-PR integration qualification
+
+EVID-140: immutable-input audits preserve main891 and stack1030 runtime/fixture
+identifiers; all-feature/all-target locked check passes. Complete native test
+partitions, strict Clippy, standalone and hosted qualification remain separate
+exact-source gates on the cumulative integration PR.

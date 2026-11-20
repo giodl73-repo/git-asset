@@ -107,6 +107,20 @@ This models configured-path unavailability by moving only a verified child
 directory inside the fresh root; it does not qualify actual hardware failure.
 No real drive is disconnected and no existing cache is changed.
 
+For a same-byte rename, choose another fresh root and run:
+
+```text
+cargo run -p git-asset --features schema --bin git-asset-sample --locked -- rehearse-rename ABSOLUTE_NEW_OUTPUT
+```
+
+Eight recorded steps include the ordinary seven and a final Git rename of the
+small authored record. A conflicting destination refuses first, preserving the
+index, HEAD, authored bytes and managed copies. Successful `git mv` preserves
+the record's Git blob and asset IDs; explicit adoption changes source context.
+Actual SDK reconciliation streams zero bytes and records no provider effects.
+`rename.json` pins both commits, paths, record object and unchanged copy snapshots.
+Provider-owned payload paths are independent of this authored Git path.
+
 For a protection change between planning and applying, use another fresh root:
 
 ```text
@@ -162,12 +176,13 @@ configuration roles. Every lesson will show Git references, exact object identit
 git-asset's plan and verified physical copies together.
 
 [The public input/oracle](lifecycle.design-1.json) freezes three exact UTF-8 byte
-seeds, two works, twenty-two specified checkpoints and seven baseline counterexamples.
+seeds, two works, thirty specified checkpoints and seven baseline counterexamples.
 The ordinary runner executes seven; exchange executes ten; worktree executes
 twelve; backup-outage executes nine including held/catchup stages; stale-plan
-executes ten including rejected/fresh-plan stages. Exchange/worktree
-add checked dirty-operation counterexamples. Final retirement remains
-a target-only checkpoint. Each mode produces its own bounded rehearsal, with at
+executes ten including rejected/fresh-plan stages; rename executes eight with
+unchanged bytes and zero new provider effects. Exchange/worktree
+add checked dirty-operation counterexamples. Final-retirement modes below add
+bounded synthetic final-loss lessons. Each mode produces its own rehearsal, with at
 most sixteen reports per book. A complete recorded course still needs bounded
 chapters or paging alongside the remaining lessons. Hashes
 and byte sizes identify real generated inputs. Expected copies are literal
@@ -211,3 +226,147 @@ a new fresh root, a machine-checked scenario and its corresponding catalogue
 view. The corpus is an independent oracle for existing adapters; it must not
 grow a second solver or cache implementation. Simulated time and target-only
 capabilities must be visibly labelled.
+
+For an exact category block with retained inactivity evidence, choose another
+fresh output root:
+
+```text
+cargo run -p git-asset --features schema --bin git-asset-sample --locked -- rehearse-aged-category ABSOLUTE_NEW_OUTPUT
+```
+
+Its eighth recorded checkpoint follows the ordinary seven. The fixture resolves
+the original series category at exact historical occurrences, checks independently
+retained age facts, and separately admits claim release and final loss. At
+simulated time500 the deadline refuses with unchanged claims and copies. At1000,
+with required inactivity500ms, the existing paged controller removes the two29-byte
+original copies from D and M. Shared input and current fixed bytes remain on F+M.
+The catalogue displays before/selection/observed, eligible versus protected versus
+unselected objects, and new versus historical logical removal. This is58 logical
+copy bytes, not a claim of58 bytes of filesystem free-space gain. Read-only playback
+shows recorded file allocation before new removals and labels free-space change
+unmeasured. It
+reconstructs the pinned SDK decision from exported metadata; it cannot run deletion.
+
+Additional fresh-root modes isolate the other boundaries:
+
+| Mode | What the fixture checks |
+| --- | --- |
+| `rehearse-final-enrollment` | Final-capable stores run the ordinary lifecycle; historical job protection holds the preview; no final deletion |
+| `rehearse-final-manual` | Exact manual block; separate historical job-claim retirement and synthetic consent; intent interruption, resume and completed retry |
+| `rehearse-final-cancel` | One29-byte copy removal precedes durable cancellation; remaining original copy survives; retry performs no new removal |
+| `rehearse-final-reacquire` | Ninth recorded checkpoint: same original hash returns to M as a separately authorized new birth with new retention; old deletion retry preserves it |
+| `rehearse-final-process` | Actual child exit at durable intent; parent reopens state and resumes the exact decision |
+| `rehearse-retained-age` | Reopened old/recent/unknown age facts and category preview; no final loss |
+
+Each mode uses the same command form and requires its own new absolute output
+directory. Consent, clock and declared domains are synthetic; hardware independence,
+real authority/clock/provider qualification and classroom acceptance remain open.
+Detailed metadata expiry and stale-client replay after expiry remain future lessons.
+See the [final teaching contract](../../specs/TEACHING-FINAL-RETIREMENT.md).
+
+The reacquisition chapter keeps the Git selection at v2. Its original object has
+the same hash/length as before final loss, but a new storage birth and publication
+operation. Before is empty; after is M only. Fixed/shared bytes remain on F/M.
+The actual source reads29 bytes for the new copy. Retention is verified at recording
+with an acknowledgement across process restart; this is not hardware independence.
+Retrying the completed old deletion at simulated700 reports0 new/58 historical
+logical bytes removed, with the new copy, source and ledgers unchanged. The view
+shows the conservative accounted footprint separately from unmeasured net growth
+and free-space change. Changing chapters requests only recorded metadata.
+
+This demonstrates that final loss does not permanently ban a content hash. A
+source pointer alone still cannot regenerate lost bytes: this fixture explicitly
+supplies the public seed again under new consent. Git return after final loss
+is demonstrated by the separate mode below. See the [reacquisition contract](../../specs/TEACHING-REACQUISITION.md).
+
+For Git return after final loss, use another fresh root:
+
+```text
+cargo run -p git-asset --features schema --bin git-asset-sample --locked -- rehearse-final-git-return ABSOLUTE_NEW_OUTPUT
+```
+
+The ninth checkpoint restores v1's small authored records with an explicit
+`git restore --source` and creates a new commit. Exact source adoption succeeds.
+With public seed access disabled, actual placement leaves original bytes absent
+from every provider and reports final-retirement/protection/source holds. The
+catalogue shows desired working/backup copies beside recorded physical absence.
+These available fixture providers are distinct from unknown coverage.
+
+Other useful work proceeds: fixed bytes move from working to history, with backup
+retained; shared bytes remain on working/backup. The actual report streams29 bytes
+for that fixed-version move, so this lesson does not claim zero total effects.
+`git-return.json` pins source revisions, exact authored record identities, disabled
+seed attempts, SDK plan/apply/status and physical observations. The joined mode below continues this returned source through explicit
+reacquisition and ordinary working restoration.
+
+
+For the joined eleven-checkpoint story, use another new absolute output root:
+
+```text
+cargo run -p git-asset --features schema --bin git-asset-sample --locked -- rehearse-return-restore ABSOLUTE_NEW_OUTPUT
+```
+
+This includes the ordinary seven checkpoints, final loss, and actual Git return.
+Checkpoint10 explicitly supplies the public original seed under synthetic owner
+consent, publishes a new M birth and verifies its retained grant. Original bytes
+are now M only; ordinary working restoration is still pending. Checkpoint11 uses
+actual placement to stream those verified M bytes into F. O is F/M, fixed N is
+D/M, shared S is F/M, and D deliberately has no new original birth. Provider
+identities, historical records and capacity ledgers are preserved throughout.
+
+The two streams are separate:29 input bytes for explicit backup acquisition,
+then29 ordinary working-stream bytes from M. General seed access stays disabled;
+its counter remains at the value recorded by the missing-payload checkpoint.
+The view distinguishes recorded acknowledgement, retained custody and charged
+footprint from unmeasured net growth/free space and hardware independence.
+
+Finally the real completed old deletion is retried at simulated700:0 new and58
+historical logical copy bytes removed, no removal authority, and unchanged Git,
+source, all three capacity ledgers, witness and physical copies. Its raw report
+is pinned alongside the joined observations. The catalogue reads saved metadata
+only; changing lessons cannot execute movement or deletion. These eleven steps
+do not yet complete the full course or qualify real providers, current authority,
+clock, large files, metadata expiry or classroom acceptance. See the
+[joined contract](../../specs/TEACHING-RETURN-RESTORE.md).
+
+
+The experimental remote-publication candidate adds four checkpoints after the
+ordinary seven and local Git exchange. Build both fixed sibling binaries with
+upload support, using the external development roots configured above:
+
+```text
+cargo build -p git-asset --features schema,upload --bins --locked
+cargo run -p git-asset --features schema,upload --bin git-asset-sample --locked -- rehearse-remote-publication ABSOLUTE_NEW_OUTPUT
+```
+
+Use schema,upload for the generated catalogue's check/serve command too. A
+schema-only sample rejects this operation before creating an output directory;
+a schema-only catalogue refuses its remote observations. Existing modes do not
+require upload. The receiver is a literal-loopback fixture over the existing
+accounted immutable provider, active only during the explicit sample command.
+No external server, credentials or existing root is used.
+
+| Recorded checkpoint | F/D/M copies | Fixture receiver R | Actual result |
+| --- | --- | --- | --- |
+|11 Upload disabled | O D/M; N/S F/M | empty | Git metadata is exchanged; disabled apply and unauthorized O plan refuse before HTTP |
+|12 Payload published | unchanged | N/S54 bytes | Existing git-asset-lfs CLI publishes both exact objects and independently verifies readback |
+|13 Readback held | unchanged | same literal N/S bytes | Injected corrupt GET response makes actual same-plan apply hold; witness and receiver metadata unchanged |
+|14 Rechecked | unchanged | same N/S bytes | Same plans and independent status verify again; no additional PUT or metadata writes |
+
+The upload authority is derived from the exact adopted native snapshot. Its
+native path tree and OID-indexed upload tree are distinct SDK-codec projections;
+only current N/S are admitted. Input staging exports54 verified bytes from F
+into an owned standard LFS input layout. It is separate from the54 PUT payload
+bytes. Uploader body IO also includes protocol JSON and readbacks; recorded
+receiver GET payload totals270 bytes across publication, hold and recheck.
+Neither measure claims network-interface traffic, billing or free-space gain.
+
+R is separate from placement roles and does not grant retained custody or removal
+authority. The saved reader/view never contacts that endpoint and does not claim
+current remote availability. The endpoint is stopped before the command returns;
+its actual managed bytes remain in the new fixture root. Both protocol and local
+ProcessRestart evidence remain synthetic; hardware independence, real provider/
+authority/clock/quota/custody, large files, lifetime/metadata expiry, full course
+and classroom acceptance stay open. Focused native/HTTP/shipped40 refusals and85
+controller cases pass; broad/final-source hosted qualification is pending. See
+[the remote contract](../../specs/TEACHING-REMOTE-PUBLICATION.md).

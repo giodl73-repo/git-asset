@@ -17,6 +17,43 @@ SPEC-003/004/007/009/011, IF-004/005/009/010/012, PKG-002/003/004/008 ->
 ANNEX-READ-ADAPTER.md -> shared provider guards, optional annex reader, bounded
 process and synthetic/native fixtures -> EVID-120. Durable lifecycle remains open.
 
+Remote publication: TEACHING-REMOTE-PUBLICATION -> literal14-step oracle ->
+actual Git/native authority/OID index/CLI/accounted receiver -> unchanged local
+custody and exact hold/recheck -> bounded reader/response7/GET-only view -> native
+HTTP/40 re-pinned refusals/85 controllers -> EVID-136 focused candidate.
+
+Joined return/restore: TEACHING-RETURN-RESTORE -> literal11-step oracle -> actual
+Git/source/M acquisition/F restoration/old retry -> strict paired reader/response6
+-> native bytes/HTTP/shipped controls/47 refusals/both workspace+500k/strict/
+standalone/fresh11-step artifact -> EVID-135 local; final-source hosted remains.
+
+Completed final absence: PLACEMENT-FINAL-ABSENCE -> current-birth/final-status/
+settled-capacity proof + unrequired-cache no-effect branch -> actual three-store
+bytes/grants/replay/refusals/3 exits/15 teaching cases -> both workspace+500k/
+strict/standalone/two artifacts/CI43069646518 -> EVID-134 qualified synthetic.
+Full intended-use/authority/provider/lifetime gates remain open.
+
+Git return: TEACHING-GIT-RETURN -> frozen physical oracle/actual Git/source/SDK
+held attempt -> distinct recorded decoder/response4 -> literal bytes/absence,
+HTTP/shipped controls/23 refusals/both workspace+500k/strict/standalone/fresh
+artifact/exact CI43059041378 -> EVID-133 qualified runtime81ecc27.
+
+Reacquisition teaching: TEACHING-REACQUISITION.md controls -> actual SDK accessor
+projection/new-birth grant/replay -> strict response5/read-only chapter -> native/
+physical/HTTP/30 negatives/81 controls/both workspace+500k profiles -> EVID-132
+local candidate. AGE-WITNESSES -> test-only Busy/retry correction -> exact error/
+real writer/later observation/replay evidence. Hosted/full intended-use gates stay open.
+
+Final teaching: TEACHING-FINAL-RETIREMENT.md controls -> actual SDK/independent
+bytes/native/API/negative/shipped controls -> EVID-131. Full control mapping and
+remaining hosted/provider/lifetime/intended-use gates are in the
+[review](../reviews/2026-11-10-teaching-final-retirement.md).
+
+Rename teaching: WP-004/008/010/015/016; REQ-001/005/006/007/009/010 ->
+SPEC-002/005/008/010/014, IF-002/005/008/010/011/013, PKG-002/004/006/008 ->
+TEACHING-RENAME.md -> actual Git/native/SDK + independent oracle + native/API/
+shipped controls -> EVID-130. Full course, native and product gates remain open.
+
 Stale-plan teaching: WP-004/008/009/010/015/016;
 REQ-001/005/006/007/009/010 -> SPEC-002/005/008/010/014,
 IF-002/005/008/010/011/013, PKG-002/003/004/006/008 -> TEACHING-STALE-PLAN.md ->
@@ -750,3 +787,10 @@ retained-publication and provider acceptance remain open.
 PKG-009 / SPEC-015 -> README-CI.md -> exact immutable Git comparison and
 ordinary README edit classification -> gated Rust steps with required matrix
 checks retained -> eight real Git histories and EVID-124. No runtime semantics.
+
+## Open-PR integration trace
+
+OPEN-PR-INTEGRATION.md -> original PR51..60 contracts and aliases EVID-130..139
+plus current main interfaces -> reconciled source/partitioned CI -> main891 and
+stack1030 audits, locked check and exact-source qualification -> EVID-140.
+No runtime format migration or operational activation is introduced.

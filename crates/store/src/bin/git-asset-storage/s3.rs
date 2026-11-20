@@ -3,7 +3,7 @@ use super::{Result, document, raw, report};
 use git_asset_core::Digest;
 use git_asset_store::{
     Key, Request,
-    ledger::{CapacityLedger, Checkpoint, JournalRef},
+    ledger::{CapacityLedger, Checkpoint, JournalRef, LedgerError},
     local::LocalStore,
     orchestration::Place,
     s3::{self, Budget, Client, Plan, PlanRequest, Target},
@@ -11,6 +11,13 @@ use git_asset_store::{
 use serde::Deserialize;
 use serde_json::json;
 use std::path::{Path, PathBuf};
+fn ledger_open_error(error: LedgerError) -> &'static str {
+    match error {
+        LedgerError::Busy => "busy",
+        _ => "ledger_unavailable",
+    }
+}
+
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 struct Profile {
@@ -105,7 +112,7 @@ pub(super) fn run(args: &[String]) -> Result<Vec<u8>> {
         }
         // Resolve explicit existing capacity, without creating a provider/job.
         let capacity = CapacityLedger::open(&profile.ledger_root, &profile.minimum)
-            .map_err(|_| "ledger_unavailable")?;
+            .map_err(ledger_open_error)?;
         Plan::new(PlanRequest {
             operation: input.operation,
             owner: profile.owner.clone(),
@@ -130,8 +137,8 @@ pub(super) fn run(args: &[String]) -> Result<Vec<u8>> {
         return Err("policy_denied");
     }
     let witness = LocalStore::open(&profile.witness_root).map_err(|_| "witness_unavailable")?;
-    let mut ledger = CapacityLedger::open(&profile.ledger_root, &profile.minimum)
-        .map_err(|_| "ledger_unavailable")?;
+    let mut ledger =
+        CapacityLedger::open(&profile.ledger_root, &profile.minimum).map_err(ledger_open_error)?;
     if ledger.identity() != &p.capacity {
         return Err("wrong_capacity");
     }

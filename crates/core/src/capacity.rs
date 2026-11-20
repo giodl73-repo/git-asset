@@ -2,6 +2,8 @@
 //! or filesystem observation. Physical proofs and transaction persistence belong
 //! to admitted provider/engine adapters.
 use std::collections::BTreeMap;
+pub mod checkpoint;
+pub mod history;
 
 pub const MAX_RESERVATIONS: usize = 1024;
 pub const MAX_EVENTS: usize = 4096;
@@ -111,6 +113,7 @@ pub struct CapacityDomain {
     next_generation: u64,
     allocation_sequence: u64,
     observation_nonce: u64,
+    observed_through: u64,
     pending_observation: Option<u64>,
     sampled_free: Option<u64>,
     records: BTreeMap<String, Reservation>,
@@ -132,6 +135,7 @@ impl CapacityDomain {
             next_generation: self.next_generation,
             allocation_sequence: self.allocation_sequence,
             observation_nonce: self.observation_nonce,
+            observed_through: self.observed_through,
             pending_observation: self.pending_observation,
             sampled_free: self.sampled_free,
             records: self.records.clone(),
@@ -153,6 +157,7 @@ impl CapacityDomain {
             next_generation: 0,
             allocation_sequence: 0,
             observation_nonce: 0,
+            observed_through: 0,
             pending_observation: None,
             sampled_free: None,
             records: BTreeMap::new(),
@@ -190,6 +195,7 @@ impl CapacityDomain {
         }
         self.debits
             .retain(|sequence, _| *sequence > ticket.watermark);
+        self.observed_through = ticket.watermark;
         self.sampled_free = Some(sampled_free);
         self.pending_observation = None;
         Ok(())
@@ -396,6 +402,20 @@ impl CapacityDomain {
     }
     pub fn is_closed(&self, token: &ReservationToken) -> Result<bool> {
         Ok(self.record(token)?.closed)
+    }
+    /// Current bounded accounting only, in stable ID order. Tokens are not new
+    /// reservations, free-space observations or authorization to remove bytes.
+    pub fn closed_reservations(&self, limit: usize) -> Result<Vec<ReservationToken>> {
+        if !(1..=256).contains(&limit) {
+            return Err(CapacityError::Budget);
+        }
+        Ok(self
+            .records
+            .values()
+            .filter(|record| record.closed)
+            .take(limit)
+            .map(|record| record.token.clone())
+            .collect())
     }
     /// Retire only finished working state, preserving unobserved debits and
     /// monotonically increasing generations. Callers must retain an operation

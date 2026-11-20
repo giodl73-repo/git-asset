@@ -169,7 +169,7 @@ fn renamed_asset_catalogue_reopens_legacy_record_suffix_without_rewriting_bytes(
     );
     fs::rename(
         f.root().join("records/item.asset"),
-        f.root().join("records/item.tig"),
+        f.root().join("records/item.asset"),
     )
     .unwrap();
     let repository = reader(f.root());

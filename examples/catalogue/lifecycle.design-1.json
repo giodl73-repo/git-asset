@@ -566,6 +566,196 @@
           "backup"
         ]
       }
+    },
+    {
+      "id": "same-byte-rename",
+      "event": "Git renames the authored record without changing its bytes or asset ID. Explicit adoption changes source context, while actual placement streams zero bytes and records no provider effects. A conflicting destination refuses without changing the index, HEAD or copies.",
+      "requires": [
+        "current-source-fencing",
+        "verified-copy-and-retention"
+      ],
+      "expected_copies": {
+        "shared": [
+          "working",
+          "backup"
+        ],
+        "original": [
+          "history",
+          "backup"
+        ],
+        "fixed": [
+          "working",
+          "backup"
+        ]
+      }
+    },
+    {
+      "id": "git-return-after-final-loss",
+      "event": "Git restores the original small records under a new commit and source revision after final loss. The payload remains absent; actual placement reports its final-retirement fence while useful work can demote the fixed version. Public seed access is disabled.",
+      "requires": [
+        "current-source-fencing",
+        "explicit-final-loss",
+        "no-implicit-reacquisition"
+      ],
+      "expected_copies": {
+        "shared": [
+          "working",
+          "backup"
+        ],
+        "original": [],
+        "fixed": [
+          "history",
+          "backup"
+        ]
+      }
+    },
+    {
+      "id": "returned-backup-acquired",
+      "event": "Explicit owner acquisition restores original to backup under a new retained birth; working bytes remain absent.",
+      "requires": [
+        "explicit-final-reacquisition",
+        "verified-copy-and-retention"
+      ],
+      "expected_copies": {
+        "original": [
+          "backup"
+        ],
+        "fixed": [
+          "history",
+          "backup"
+        ],
+        "shared": [
+          "working",
+          "backup"
+        ]
+      }
+    },
+    {
+      "id": "returned-working-restored",
+      "event": "Ordinary placement restores working bytes from retained backup with the public seed disabled; history stays deliberately absent. The completed expired old deletion retry removes no new bytes.",
+      "requires": [
+        "explicit-final-reacquisition",
+        "verified-copy-and-retention"
+      ],
+      "expected_copies": {
+        "original": [
+          "working",
+          "backup"
+        ],
+        "fixed": [
+          "history",
+          "backup"
+        ],
+        "shared": [
+          "working",
+          "backup"
+        ]
+      }
+    },
+    {
+      "id": "remote-upload-disabled",
+      "event": "Git metadata is exchanged; explicit disabled payload upload and unauthorized original refuse before HTTP.",
+      "requires": [
+        "local-git-exchange",
+        "explicit-lfs-upload"
+      ],
+      "expected_copies": {
+        "original": [
+          "history",
+          "backup"
+        ],
+        "fixed": [
+          "working",
+          "backup"
+        ],
+        "shared": [
+          "working",
+          "backup"
+        ]
+      },
+      "expected_remote_receiver": [],
+      "remote_retained_custody": false
+    },
+    {
+      "id": "remote-payload-published",
+      "event": "Explicit existing LFS CLI publishes current fixed and shared payloads; fresh readback verifies availability without retained-custody authority.",
+      "requires": [
+        "local-git-exchange",
+        "explicit-lfs-upload"
+      ],
+      "expected_copies": {
+        "original": [
+          "history",
+          "backup"
+        ],
+        "fixed": [
+          "working",
+          "backup"
+        ],
+        "shared": [
+          "working",
+          "backup"
+        ]
+      },
+      "expected_remote_receiver": [
+        "fixed",
+        "shared"
+      ],
+      "remote_retained_custody": false
+    },
+    {
+      "id": "remote-readback-held",
+      "event": "Corrupt fixture GET response makes the existing uploader hold; actual receiver bytes and all local protection remain unchanged.",
+      "requires": [
+        "local-git-exchange",
+        "explicit-lfs-upload"
+      ],
+      "expected_copies": {
+        "original": [
+          "history",
+          "backup"
+        ],
+        "fixed": [
+          "working",
+          "backup"
+        ],
+        "shared": [
+          "working",
+          "backup"
+        ]
+      },
+      "expected_remote_receiver": [
+        "fixed",
+        "shared"
+      ],
+      "remote_retained_custody": false
+    },
+    {
+      "id": "remote-publication-rechecked",
+      "event": "Exact same upload plans recheck verified remote bytes with no new PUT; receiver availability still grants no backup or removal authority.",
+      "requires": [
+        "local-git-exchange",
+        "explicit-lfs-upload"
+      ],
+      "expected_copies": {
+        "original": [
+          "history",
+          "backup"
+        ],
+        "fixed": [
+          "working",
+          "backup"
+        ],
+        "shared": [
+          "working",
+          "backup"
+        ]
+      },
+      "expected_remote_receiver": [
+        "fixed",
+        "shared"
+      ],
+      "remote_retained_custody": false
     }
   ],
   "counterexamples": [

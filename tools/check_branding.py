@@ -20,7 +20,7 @@ NOT_IDENTITIES = {"tig.git", "tig.yml", "tig.path", "tig.args", "tig.direction",
 LEGACY = re.compile(
     r"urn:tig:[A-Za-z0-9_.:-]+|\btig\.[A-Za-z0-9_.:-]*|TIG\\0|"
     r"refs/tig/proposals\b|\btig-(?:delivery-policy|revision-history|delivery-history|selected-revision)\b|"
-    r"\.tig-restore-|\.tig\b", re.I)
+    r"\.tig-restore-|\.tig\b|TIG_ACTIVATION_(?:CASE|READY|RELEASE)\b", re.I)
 BRAND = re.compile(r"(?<![A-Za-z0-9])tig(?=[^a-z]|$)", re.I)
 CAMEL = re.compile(r"\b[A-Za-z_]*Tig[A-Z][A-Za-z0-9_]*")
 
@@ -47,7 +47,8 @@ def main():
         names.update(subprocess.check_output(command, cwd=ROOT).decode().split("\0"))
     pins = json.loads((ROOT / "tools/vendor/pins.json").read_text(encoding="utf-8"))
     upstream = {entry["path"] for entry in pins["files"]}
-    allowed = upstream | {"docs/COMPATIBILITY.md", "tools/check_branding.py"}
+    allowed = upstream | {"docs/COMPATIBILITY.md", "tools/check_branding.py",
+                          "tools/qualify_activation_legacy.py", "tools/fixtures/activation_legacy_writer.rs"}
     errors, current = [], {}
     for name in sorted(names - {""}):
         path = ROOT / name
@@ -67,6 +68,10 @@ def main():
             if name == ".github/workflows/validate.yml" and ("$baselineRoot/crates/" in line or '$baselineBuild "debug/' in line):
                 continue  # Historical artifacts must match their pinned commits.
             cleaned = LEGACY.sub(lambda m: m[0] if m[0].lower() in NOT_IDENTITIES - {"tig."} else "", line)
+            if name.endswith(".md"):
+                # Preserve actual historical development locations and old pinned source URLs.
+                cleaned = re.sub(r"\b[A-Za-z]:[/\\][^\s`\"'<>()[\]]+", "", cleaned)
+                cleaned = re.sub(r"https://github\.com/giodl73-repo/git-asset/blob/[0-9a-f]{7,40}/[^\s)]+", "", cleaned)
             old_url = re.search(r"github.com/giodl73-repo/tig(?:$|[./\s])", line)
             if old_url or BRAND.search(cleaned) or CAMEL.search(cleaned):
                 errors.append(f"old branding outside compatibility at {name}:{number}")

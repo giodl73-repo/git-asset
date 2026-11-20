@@ -52,6 +52,115 @@ and downstream consumer qualification. Keep registration, creative selection,
 approval and delivery separate. Do not replace git-annex's content engine.
 Team-facing commands and teaching fixtures must describe only qualified behavior.
 
+### Integrated teaching and journal-continuation scope
+
+Next activation: [durable continuation](specs/JOURNAL-ACTIVATION.md) requires
+transactional legacy mutation fencing, an independent activation minimum, exact
+working state/original dependencies, bounded global indexes and durable recovery.
+A private SQL-fence proof is only an entry step; no seal-only public operation or
+journal cap waiver is allowed. Parent history candidate qualification is running.
+The [bounded staged tree editor](specs/STAGED-TREE-EDIT.md) now persists only final
+reachable metadata without changing canonical roots. Actual4096-base/16384-delta,
+physical finish/reopen, negative/budget, core/metadata regression and strict checks
+pass (EVID-139). This supports global indexes; it does not supply a successor,
+independent minimum, durable activation/recovery or expiry. The next joined
+[successor protocol](specs/JOURNAL-SUCCESSOR.md) freezes those integration boundaries
+before implementation. Its private operation/sequence index now passes real full16384 legacy import plus
+full16384 immutable index delta, old receipt/prefix lookups, physical readback,
+full core/archive/500k metadata regression and strict checks. Conditional staged
+insertion proves absence in the mutation traversal and fits the original budget;
+two earlier full failures remain recorded. New-source broader qualification and
+actual successor SQL/control/ancestry/minimum/recovery remain required. Controller
+review also requires digest-addressed prior controls and genuine metadata capacity
+admission for full sources; index bounds alone do not grant that admission.
+The private read-only SQL-tail adapter now qualifies a real full original16384
+journal plus a physically committed16384-row tail, retaining old active state and
+completion outcomes. Same-workload joined preparation now fits the original shared
+budget after a measured failed diagnostic; private staging defers name absence to
+conditional index insertion before state release. Private cfg(test) integration
+now routes existing CapacityLedger methods and qualifies actual continued writes:
+full original16384 plus method-written tail16384, exact old/new retries, peer
+catch-up, lost reply/reopen and bounded local outputs. Final35364 focused/full/
+regression/strict/fmt passes. Private continued-source SQL sealing now passes final3708: exact original codec,
+actual full32768 source seal, paused writer, process exits and original regressions.
+Private general source locator/open now passes exact prior archive/header/seal
+checks and actual49153 scale: original16384 plus two full continued tails, then a
+new generation3 command, preserving exact retries and inherited in-flight/zero
+state under unchanged shared budgets. Manual synthetic publication is not the
+atomic controller/recovery protocol. Public entry, durable controller/recovery,
+genuine metadata admission and new-source broad/hosted checks remain required.
+First-legacy private preparation now also shares one unchanged budget across
+actual export/index/proof/Data/physical readback/control serialization; full16384
+and source-race/budget/clocked cases pass. This closes that preparation profile,
+not complete atomic controller publication/recovery or native physical admission.
+Exact858595b hosted all17 jobs passes; later-source qualification remains separate. CI partitions
+preserve coverage after the previous Windows monolith timed out; new-source broad
+and hosted results are still required.
+
+Next continuation input: [original ledger history](specs/LEDGER-HISTORY.md) must
+preserve exact original requests/replies and typed dependencies in bounded immutable
+records, with lazy lookup and historical probes that cannot restore admission.
+The archive candidate now exports original typed outputs, lazily reads exact
+receipts and explicitly validates a bounded segment. Actual legacy/clock metadata
+reopen, peer progress, all kinds and16384-command/in-flight fixtures pass. Fresh
+full default/all/500k/strict/standalone/fmt/fresh14 artifact checks and exact1c1f3ca
+Windows/Linux/secrets pass. Documentation closeout27e8792 also passes exact43135967822;
+PR59 is ready for review. This is not activated compaction or expiry. Parent working-checkpoint PR58 passes all local/hosted gates
+and is ready; the joined lifetime target below remains required.
+
+Next lifetime implementation: [journal continuation](specs/JOURNAL-CONTINUATION.md)
+requires active/in-flight accounting, exact historical replies and scoped durable
+activation before sustained use; expiry additionally needs surviving authority/
+replay fences. First [paged working checkpoint](specs/CAPACITY-CHECKPOINT.md)
+builds a bounded core state codec and read-only existing-ledger export. This is
+implemented and qualified locally and on exact Windows/Linux/secrets in PR58. It does not deliver segment activation, history pruning or expiry.
+No current cap, format or root is changed. Full plan/acceptance remains open.
+
+Next teaching integration: [remote byte publication](specs/TEACHING-REMOTE-PUBLICATION.md)
+composes actual Git exchange with the existing optional LFS upload CLI and a
+fresh bounded loopback receiver over existing providers. Its four frozen stages
+require disabled0HTTP, actual54-byte publication, corrupt-readback hold and exact
+recheck without new PUTs; F/D/M remain unchanged and remote custody stays false.
+The experimental14-step candidate now executes all four phases with actual
+existing CLI/provider APIs and a strict optional response7/GET-only view. Final
+native/HTTP/shipped40 re-pinned refusals,85 controllers, without-feature/no-root
+and focused strict Clippy pass. Both broad profiles/artifact/source/hosted gates
+remain pending. Full course, actual provider/current authority/clock/lifetime/
+metadata expiry and independent/human acceptance remain open.
+
+The [joined return and restore](specs/TEACHING-RETURN-RESTORE.md) now
+carries one fresh catalogue through final loss, accepted Git return with missing
+bytes, explicit retained M reacquisition and actual F/M convergence with D absent.
+Runtimeacbd4a9 preserves the same providers/history and records separate29-byte
+input/working streams, then actual expired old retry with0 new/58 historical
+removed bytes. Final focused native/HTTP/shipped/47 semantic refusals,83 controls
+and both workspace+500k/strict profiles, standalone/fresh persisted11-step
+artifact pass. Test-only exact Journal(Busy) correctionc2fcd06 preserves serial
+convergence/immutable facts; final age15 cases pass both profiles. Initial failed
+all-feature run is retained separately from corrected60982. Source08710ef
+passes Windows/Linux/secrets; final correction/closeout hosted proof remains.
+EVID-135 keeps
+implementation, verification, synthetic validation, trace and producer lenses
+separate; complete course and full product acceptance remain required.
+
+[Completed final absence](specs/PLACEMENT-FINAL-ABSENCE.md) allows an unrequired,
+validated completed-deleted history copy to remain absent after explicit backup
+reacquisition/working restoration. Required stores retain their final-reacquisition
+fence. Runtime923a40c/source8e948d4 passes13 focused entries/3 actual exits,
+all15 teaching/81 controls, both workspace+500k/strict profiles, standalone/two
+fresh persisted artifacts and exact Windows/Linux/secrets43069646518. Parent
+PR55 is ready; this does not qualify current authority or actual providers.
+
+Next bounded teaching slice: [Git return after final loss](specs/TEACHING-GIT-RETURN.md)
+will admit an exact old-version snapshot under a new Git/source revision and show
+actual missing bytes and final-retirement holds with public seed access disabled.
+The fresh-root ninth chapter now implements this flow with independently checked
+absence, useful fixed-version demotion, real native HTTP/shipped controls and23
+semantic refusals. All15/81 controls/both workspace+500k/strict/standalone/fresh
+artifact and exact Windows/Linux/secrets qualify runtime81ecc27. The joined
+candidate above extends it; full teaching acceptance remains required work. Parent
+reacquisition PR53 and Git-return PR54 are ready for review;
+derive exact-head hosted qualification from GitHub.
 
 Public teaching parity is now a required deliverable: a portable synthetic sample
 catalogue carries the same assets through Git-style init/add/status/diff/commit,
@@ -96,6 +205,35 @@ Fresh plans retain the job's F copy and demote only after its explicit end.
 Ten recorded checkpoints expose historical desired versus observed state in the
 same read-only catalogue. General races, crash/restart and final-loss/expiry
 teaching remain separate open gates.
+
+The [final-loss teaching contract](specs/TEACHING-FINAL-RETIREMENT.md) now has
+fresh final-capable enrollment, exact manual and native category/retained-age
+rehearsals, separately admitted claim/final consent, actual loss, cancellation,
+intent resume/process recovery and same-hash new-birth replay protection.
+Distinct bounded-bulk and paged readers reconstruct actual SDK scope and show
+before/selection/observed copies, exclusions, new/historical logical removal and
+recorded file allocation; free-space change remains unmeasured. Fourteen teaching
+cases,13 manual/17 paged report negatives,8 malformed recovery frames,79 controller
+cases, both workspace/500k profiles, strict checks and a fresh eight-step artifact
+pass locally. [EVID-131](docs/reviews/2026-11-10-teaching-final-retirement.md)
+separates this synthetic checkpoint from complete teaching, wider crash/provider/
+authority/clock/large-file qualification, metadata lifetime and human acceptance.
+Exact-head hosted checks remain required. This does not complete priority7 or the
+full product plan.
+
+The [reacquisition chapter](specs/TEACHING-REACQUISITION.md) now exposes actual
+same-hash ingest/retention and old deletion retry as a ninth readonly checkpoint.
+It captures SDK receipt accessors and validates new-birth/source/grant/capacity/
+replay bindings, with truthful copy/ack/charge observations. Fourteen teaching
+cases/strict checks,30 repinned acquisition negatives and81 controller cases pass
+locally; broader/fresh/hosted qualification remains pending. Git return after
+final loss, complete teaching and lifetime remain open.
+
+The [same-byte rename rehearsal](specs/TEACHING-RENAME.md) adds a real conflicting
+destination refusal and successful Git record rename with unchanged blob/asset
+identity. Explicit native adoption and SDK reconciliation preserve verified
+copies with zero streaming/provider effects. Eight recorded checkpoints use
+the same catalogue; qualification is tracked separately in EVID-130.
 
 The [paged operator candidate](specs/PAGED-OPERATOR.md) now exposes explicit
 existing-root copy-index staging, whole-selection planning, original scope pages,
