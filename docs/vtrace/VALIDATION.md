@@ -545,3 +545,10 @@ EVID-123: the team overview explains the CRM-like asset relationship/lifecycle
 layer over Git and git-annex. Synthetic command discovery and unchanged legacy
 record identity demonstrate naming/reader compatibility, not cache migration,
 complete native publication or production acceptance.
+
+## README-only CI intended use
+
+EVID-124: root README-only narrative edits keep quick checks and skip expensive
+Rust qualification. Required matrix check names remain present. A following
+one-file README PR provides the hosted fast-path demonstration; full product
+and independent/human acceptance remain separate.

@@ -47,7 +47,17 @@ jobs:
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0, Node 24
         with:
           python-version: '3.x'
+      - name: Determine README-only scope
+        id: scope
+        run: python -B tools/ci_scope.py
+      - name: Check CI scope classification
+        env:
+          TEMP: ${{ runner.temp }}
+          TMP: ${{ runner.temp }}
+          TMPDIR: ${{ runner.temp }}
+        run: python -B tools/test_ci_scope.py
       - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
+        if: steps.scope.outputs.readme_only != 'true'
         with:
           components: rustfmt, clippy
       - name: Validate foundation
@@ -62,6 +72,7 @@ jobs:
       - name: Check opt-in GitHub request client
         run: node --test examples/github/request.test.mjs
       - name: Rust format, handoff tests and Clippy
+        if: steps.scope.outputs.readme_only != 'true'
         shell: pwsh
         run: |
           git --version
@@ -110,6 +121,7 @@ jobs:
           cargo check -p git-asset --no-default-features --locked
           exit $LASTEXITCODE
       - name: Qualify pre-final provider writer refusal
+        if: steps.scope.outputs.readme_only != 'true'
         shell: pwsh
         run: |
           $baseline = '273e639cd9515f0860140c926240b18e4ca69a1b'
@@ -131,6 +143,7 @@ jobs:
           cargo test -p git-asset-store --test retirement_cli --locked pre_final_writer_refuses_new_manifest_and_accepts_legacy_control -- --ignored --exact
           exit $LASTEXITCODE
       - name: Qualify pre-pair source reader compatibility
+        if: steps.scope.outputs.readme_only != 'true'
         shell: pwsh
         run: |
           $baseline = 'd81cabe662e0efb976f9ac1c230a1de2ace8e23f'
@@ -153,3 +166,6 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cargo test -p git-asset-store --lib --locked source_claims::subset::tests::baseline_reader_preserves_subset_states_and_retirement_receipt -- --ignored --exact
           exit $LASTEXITCODE
+      - name: Report README-only fast path
+        if: steps.scope.outputs.readme_only == 'true'
+        run: echo "README-only edit; documentation and secret checks retained, Rust qualification skipped."

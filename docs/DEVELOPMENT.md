@@ -37,6 +37,19 @@ pwsh -NoProfile -File tools/validate.ps1
 git diff --check
 ```
 
+Root README.md-only edits use a lightweight CI path: documentation/source checks
+and the secret scan still run; Rust toolchain setup, builds/tests/Clippy and pinned
+historical-reader builds skip. Required Windows/Linux job names remain present.
+Other files (including other Markdown), mixed changes, missing comparison commits
+and unknown events select the normal full path. CI uses exact Git comparisons,
+not an API changed-file list or workflow-level path filter.
+
+The mutable product README is deliberately excluded from
+`docs/reviews/foundation-targets.json`; it still receives link, naming and source
+budget checks. Do not add a companion hash-only change for a README edit. Formal
+specifications, CI tooling and every other reviewed target remain pinned.
+Run `python -B tools/test_ci_scope.py` when changing this classification.
+
 For catalogue controller work, run the shipped-script synthetic workflows:
 
 ```text
