@@ -38,14 +38,15 @@ front-door execution and renamed command discovery. Large logs stay external.
 Verification, intended-use validation, trace and producer review close separately;
 producer checklists are not independent/human acceptance. Repository rename and
 source publication are authorized; protected-main checks remain mandatory.
-The CI harness uses one thread for serial scheduling of heavy admitted-
-budget fixtures. Every routine test still runs, including explicit multi-process
-concurrency actors; assertions and production budgets remain unchanged. Both the
-earlier four-thread Age(Budget) and this lane's two-thread Age(Admission(Budget))
-remain recorded qualification failures, not fixed production defects. The
-unchanged seventeen-root case passes in isolation; the complete serial profile
-is required before source closure. Scheduling sensitivity is an inference, not
-a confirmed diagnosis of the original budget failures.
+The CI qualification has two mandatory phases: run the exact seventeen-root
+aged-retirement case alone with one harness thread, then the full workspace
+with four threads omitting only that already-qualified exact case. Preflight
+checks that the isolated case exists exactly once; its failure stops CI.
+Every routine assertion and explicit concurrency actor still runs. Production
+budgets are unchanged. Both the earlier four-thread Age(Budget) and this lane's
+two-thread Age(Admission(Budget)) remain recorded qualification failures, not
+fixed production defects. The unchanged case passes in isolation and in the
+serial native-source target. Scheduling sensitivity remains an inference.
 
 Qualification follow-up, input 8e03c00a95840dfb91c4b82309d928c43295f214: WP-003/004/008/009/014/015;
 REQ-001/003/004/005/006/007/009; SPEC-003/004/005/008/009/014;
@@ -55,10 +56,10 @@ a fresh CLI attempt after clock_held, at most four attempts within a retry windo
 checked against five seconds between calls. Other errors and final held results
 are returned unchanged to existing assertions. No production timer, budget,
 clock identity, floor or admission logic changes. Require focused real-clock,
-full serial workspace and strict Clippy qualification. Host trust/sampling
+complete two-phase workspace and strict Clippy qualification. Host trust/sampling
 availability and parallel budget failures remain separate open limits.
 
-Serial-harness follow-up, input 814e898736f48edd12d41dc3784a4bf2d9bbb064:
+Helper-harness follow-up, input 814e898736f48edd12d41dc3784a4bf2d9bbb064:
 WP-004/009/014; existing RUST/PROVIDER fixture scope. The fences integration
 helper now passes libtest --quiet so READY remains a standalone protocol line
 under one test thread. No fence algorithm, assertion or actor count changes.

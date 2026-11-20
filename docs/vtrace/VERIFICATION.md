@@ -919,5 +919,5 @@ EVID-123: immutable-input branding/891-identity audit, all-target/all-feature
 check and strict Clippy, two front-door cases, legacy committed-record readback,
 82 JavaScript and three Python cases pass. Standalone/assets-only, actual native ordinary/bare reads and Git command
 discovery pass. The producer record preserves both broad-run failures and the
-focused corrected clock fixture/strict Clippy result. Complete serial and hosted
+focused corrected clock fixture/strict Clippy result. Complete two-phase and hosted
 exact-head outcomes are recorded on PR 61, separately from implementation.

@@ -32,8 +32,8 @@ jobs:
       CARGO_INCREMENTAL: '0'
       CARGO_PROFILE_DEV_DEBUG: '0'
       CARGO_PROFILE_TEST_DEBUG: '0'
-      # Heavy admitted-budget fixtures run serially; tests still spawn real peers.
-      RUST_TEST_THREADS: '1'
+      # The single heavy admitted-budget fixture is qualified alone below.
+      RUST_TEST_THREADS: '4'
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest]
@@ -75,7 +75,15 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cargo build --workspace --all-features --bins --locked
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          cargo test --workspace --all-features --locked
+          # Require this heavy default-budget case alone before the parallel suite.
+          # The second invocation omits only the case already required above.
+          $agedCase = 'retirement_cases::paged_cases::native_seventeen_root_age_block_executes_paged_claims_and_only_eligible_copy_loss'
+          $caseList = & cargo test -p git-asset --all-features --test native_source --locked -- --list
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if (@($caseList | Where-Object { $_ -eq "$($agedCase): test" }).Count -ne 1) { throw 'Required isolated case must exist exactly once' }
+          cargo test -p git-asset --all-features --test native_source --locked $agedCase -- --exact --test-threads=1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo test --workspace --all-features --locked -- --skip $agedCase
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           $suffix = if ($IsWindows) { '.exe' } else { '' }
           $env:GIT_ASSET_RETIREMENT_CLI = Join-Path $env:CARGO_TARGET_DIR "debug/git-asset-storage$suffix"

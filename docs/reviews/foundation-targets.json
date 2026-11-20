@@ -44,8 +44,8 @@
     },
     {
       "path": ".github/workflows/validate.yml",
-      "bytes": 8569,
-      "sha256": "17701d7d43e03b38c74ff6071244b09aa9acc6ebba081124d1818a27e56a969f"
+      "bytes": 9362,
+      "sha256": "18f88176258dfe1e9c29784db87cc4d708655aab31958e2e4fd42b160fe5722b"
     },
     {
       "path": ".gitignore",
@@ -2384,8 +2384,8 @@
     },
     {
       "path": "docs/reviews/2026-11-20-git-asset-rename.md",
-      "bytes": 7240,
-      "sha256": "cc34f1fe9ec98f513dad406cee34fa7e25dcc69ce98c60a9ef2bbb66cde98782"
+      "bytes": 7492,
+      "sha256": "1897819490ebcbe43e2fd596b31ea2b8a3a10d31a303ea59e9955e00eed2c4c4"
     },
     {
       "path": "docs/reviews/2026-11-20-native-job-protection.md",
@@ -2554,8 +2554,8 @@
     },
     {
       "path": "docs/vtrace/VERIFICATION.md",
-      "bytes": 61692,
-      "sha256": "25d571e1732ca87c4dc575216cad6385058280eee105dcbe447d8f301962ca05"
+      "bytes": 61695,
+      "sha256": "336bebb5b1d34b671e579d3dfa2892a55cfbc45e5f9d9cdf9b0aaa30c48cee0d"
     },
     {
       "path": "docs/vtrace/WORK_PACKAGES.md",
@@ -2699,8 +2699,8 @@
     },
     {
       "path": "specs/GIT-ASSET-RENAME.md",
-      "bytes": 4725,
-      "sha256": "4b1a03fd6adfb2211fdb53b5ce19ee785342e54d49b5de4cb2218ec45c9a0f32"
+      "bytes": 4817,
+      "sha256": "8acd0034b2fed98975d98aae2ad0059e2d786d409dae92057c24b2c49da5d743"
     },
     {
       "path": "specs/GIT-LIFECYCLE-RECONCILIATION.md",

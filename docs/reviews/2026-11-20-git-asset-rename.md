@@ -64,13 +64,16 @@ passes afterward. This changes test stdout framing only, not production locks
 or assertions. Retain the interrupted original local target as a failure; do
 not label that original complete command an uninterrupted passing run.
 
-Final complete serial-workspace and exact-head hosted Windows/Linux/secrets
+Final complete workspace and exact-head hosted Windows/Linux/secrets
 outcomes are recorded on [PR 61](https://github.com/giodl73-repo/git-asset/pull/61).
 They are publication gates separate from this producer review; do not infer their
-status from a local implementation commit. The serial profile runs every routine
-test, including the explicit multi-process concurrency actors. Earlier parallel
-budget qualification remains open; no throughput or universal clock-availability
-claim follows. Full serial qualification is required before marking the PR ready.
+status from a local implementation commit. The CI profile requires the exact heavy seventeen-root case alone first,
+checks that it exists exactly once, and stops on failure. The four-thread full
+workspace then omits only that already-qualified case. Every routine test and
+explicit concurrency actor still runs. This avoids serializing unrelated cases
+while retaining the original budgets and assertions. Earlier qualification of
+the aged case under inter-test load remains open; no throughput or universal
+clock-availability claim follows. Both phases are required before PR readiness.
 
 ## Intended-use validation
 
@@ -100,9 +103,9 @@ retained-publication/provider acceptance remain open beyond this rename scope.
 - Concurrency/recovery: no journal/budget/fencing behavior changes; new partial
   names also recognize the old prefix. The initial two-thread rerun
   also hit Age(Admission(Budget)); the unchanged case passes alone in 73.41s.
-  Require the complete one-thread harness before closure; real concurrent actor
-  fixtures and production budgets are unchanged. Parallel qualification remains
-  open. Scheduling sensitivity is an inference, not a confirmed root cause.
+  Require both CI phases before closure; real concurrent actor fixtures and
+  production budgets are unchanged. Qualification of the heavy aged case under
+  inter-test load remains open. Scheduling sensitivity remains an inference.
 - Provider/privacy: sibling allowlist rejects traversal and shell metacharacters;
   no private archive, assets or cache binding enters this public source. Resolved.
 - Git/adoption: historical CI artifacts retain their actual old paths/names;
