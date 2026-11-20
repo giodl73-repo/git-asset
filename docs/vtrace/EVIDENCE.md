@@ -21,6 +21,59 @@ Rust read implementation, focused/native verification, intended-use limits,
 trace and producer lenses. No durable native lifecycle, live adoption or full
 REEL acceptance is claimed. Existing public history APIs remain supported.
 
+EVID-136 (focused candidate): [remote publication](../reviews/2026-11-11-teaching-remote-publication.md)
+records actual14-step Git/existing LFS CLI/accounted receiver path,54 PUT bytes,
+corrupt-readback hold and same-plan recheck. Final40 refusals/85 controllers/
+without-feature no-root/strict pass; broad/artifact/source/hosted/full gates remain.
+
+EVID-135 (locally qualified): [joined return/restore](../reviews/2026-11-11-teaching-return-restore.md)
+records actual11-step source/M acquisition/F restoration and expired old retry.
+Final47 refusals/16 teaching/83 controllers, both workspace+500k/strict profiles,
+standalone/fresh11-step artifact and final15 age cases in both profiles pass.
+Initial all-feature age-assertion failure101 is preserved; exact Journal(Busy)
+test-only correctionc2fcd06 passes corrected full60982. Source08710ef passes
+Windows/Linux/secrets43077356434; correction/closeout needs new-head hosted proof.
+Full intended-use/course/provider/authority/lifetime/human gates remain open.
+
+EVID-134 (qualified synthetic runtime923a40c/source8e948d4):
+[final-absence review](../reviews/2026-11-11-placement-final-absence.md) records
+read-only/no-effect settled absence and required-destination fences.13 focused/
+3 actual exits/15 teaching/81 controls, both workspace+500k/strict profiles,
+standalone/two fresh artifacts and Windows/Linux/secrets43069646518 pass.
+Documentation-only closeouta25552a also passes exact43077203826 on both hosts
+and secrets. Full intended-use/authority/provider/lifetime gates remain open.
+
+EVID-133 (qualified synthetic runtime81ecc27): [Git return review](../reviews/2026-11-11-teaching-git-return.md)
+records accepted exact Git/source return, held missing bytes and useful sibling
+work. All15/23/81/focused strict, both workspace/500k/strict6457/57936, standalone,
+fresh nine-checkpoint artifact and exact Windows/Linux/secrets43059041378 pass.
+Full intended-use/provider/authority/lifetime/human gates remain open.
+
+EVID-132 (locally qualified candidate): [reacquisition review](../reviews/2026-11-11-teaching-reacquisition.md)
+records actual ninth-chapter SDK/publication/grant/replay and readonly observations.
+Native96542,28-negative/strict89877, final30-negative/full14/strict61275 and81
+controllers pass. Schema5050/500k/strict, artifact82212 and all-feature complete
+Cargo output (71 summaries/1335 passes/500k) qualify locally; original broad shell
+exit is unavailable, final strict Clippy exits0. The review records inherited age
+test failure and explicit Busy recovery. Hosted/full intended-use gates remain open.
+
+EVID-131 (locally qualified candidate): [review](../reviews/2026-11-10-teaching-final-retirement.md)
+records actual manual and aged/category loss, retry/cancel/new-birth/process
+recovery and strict readonly bulk/paged playback. Workspace/500k/strict4118/61973
+pass; final14/all-feature/strict/artifact41136, standalone82649,13 manual/17 paged/
+8 frame negatives and79 controllers pass. Hosted exact-source, complete teaching,
+provider/authority/lifetime and human/full product acceptance remain open.
+
+Rename runtime: b69684f408d036d9e11a0911d6031167e822b566. Local qualification passes; derive current PR/hosted status from GitHub.
+
+EVID-130 (focused candidate), input21a70f5abc4340582cda3a075a3c5fe1cee13e40:
+[review](../reviews/2026-11-10-teaching-rename.md) separates actual rename/conflict,
+stable bytes/copies and zero SDK effects from general native rename semantics.
+Terminal95832 focused native/strict and all78 controller cases pass. Broad runs
+15009/80546 terminate0: workspace/both500k/strict/standalone and seven native cases.
+Artifact3407 passes fmt/fresh bins/eight-step sample/
+read-only catalogue validation. Final pins/hosted/human gates remain pending.
+
 EVID-119 (locally qualified candidate), input d200ed38e2594a6e82205067dd8aadd107a7bff4:
 runtime617540154fedfd7aa51d33c37f31cfd0223941a8.
 [review](../reviews/2026-11-10-teaching-stale-plan.md) separates actual stale apply
@@ -1459,3 +1512,11 @@ verification, intended-use validation and trace. Eight real Git fixtures pass.
 README is mutable narrative, checked directly and excluded from current review
 digests; formal source/spec targets remain pinned. Hosted full and README-only
 proofs remain exact-head GitHub outcomes, not producer approval.
+
+## EVID-140: integrate open PR source
+
+Inputs stack66f8b4b and maine78cabf plus landed README/CI source.
+[Producer record](../reviews/2026-11-20-open-pr-integration.md) separates
+implementation, verification, intended-use validation and trace. Imported
+EVID-120..129 use current aliases130..139. Original commits and legacy data
+identities remain; operational activation and full product acceptance stay open.

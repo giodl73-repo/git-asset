@@ -18,6 +18,33 @@ validate durable job leases, retained publication, remote/hardware custody,
 Linux subprocess containment or full REEL integration. See the separate
 [intended-use limits](../reviews/2026-11-20-annex-read-adapter.md).
 
+EVID-136 demonstrates actual Git metadata exchange separately from explicit
+remote byte publication, corrupt readback and exact recheck. R availability does
+not become retained custody or removal authority; F/D/M/source stay unchanged.
+This synthetic14-step native/HTTP/shipped scope does not qualify real providers,
+current authority/clock/quota, complete course or classroom acceptance. See
+[review](../reviews/2026-11-11-teaching-remote-publication.md).
+
+EVID-135 joins accepted Git return with missing payload, explicit new retained
+M birth, then ordinary F restoration with D absent. Actual old expired retry
+removes0 new/58 historical bytes and preserves current source/custody. Literal
+synthetic bytes and native HTTP/shipped controls qualify this bounded lesson;
+complete course, providers/current authority/clock/large files/lifetime/operator/
+Action and browser/human acceptance stay OPEN. See
+[review](../reviews/2026-11-11-teaching-return-restore.md).
+
+EVID-131 connects exact Git/native category and retained-age selection through
+actual synthetic claim settlement/final loss to readonly catalogue observations,
+with intent process recovery, cancel, new-birth replay and honest allocation.
+Synthetic domains/consent/time do not prove hardware, real clock or human approval.
+Complete course, operator/Action, provider/authority/lifetime and browser/human
+acceptance remain OPEN; [review](../reviews/2026-11-10-teaching-final-retirement.md).
+
+EVID-130 teaches authored Git path versus immutable bytes through real conflict
+refusal and zero-effect rename reconciliation. Eight recorded reports; no
+browser/classroom or general native writer acceptance. See
+[review](../reviews/2026-11-10-teaching-rename.md). Full course/product remains open.
+
 EVID-119 demonstrates rejection of historical demotion after new job admission,
 unchanged observed F+M and fresh plans before/after job end. Ten actual reports
 render through read-only catalogue controls. Explicit fixture admission does not
@@ -552,3 +579,10 @@ EVID-124: root README-only narrative edits keep quick checks and skip expensive
 Rust qualification. Required matrix check names remain present. A following
 one-file README PR provides the hosted fast-path demonstration; full product
 and independent/human acceptance remain separate.
+
+## Open-PR intended use
+
+EVID-140: preserve the existing synthetic teaching/history/continuation scope
+while reconciling current public naming. No live cache rollout, private controller,
+physical metadata admission, native publication or complete product acceptance
+follows from code inclusion. See the separate producer record and exact PR checks.

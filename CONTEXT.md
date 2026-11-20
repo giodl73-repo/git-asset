@@ -1,327 +1,113 @@
 # git-asset maintainer context
 
-## Current product rename lane
+## Current integration lane
 
-Owned branch feat/git-asset-rename, immutable input
-4ce4da04cd92947a49b8f6c33c0f37ccfe8751b9. The public repository is now
-giodl73-repo/git-asset, with its existing visibility and history preserved.
-The current source/package/command names are git-asset; Git owns decisions and
-history, git-annex owns file bytes and copies, and this layer coordinates asset
-relationships and lifecycle. See docs/TEAM-OVERVIEW.md, docs/COMPATIBILITY.md and
-specs/GIT-ASSET-RENAME.md (paths relative to the repository root).
-Existing schema/hash domains, proposal refs and legacy .tig reads remain intact
-by explicit user choice. New records use .asset. No cache migration, deployment,
-transfer, rendering or deletion accompanies this rename. Native publication,
-retained-output acknowledgement and participating-pruner qualification remain
-open. Derive exact PR/check/merge state from GitHub; local qualification and
-producer review are recorded separately in EVID-123. Earlier lanes below are
-historical context and do not supersede this product identity.
+The canonical public product is git-asset, coordinating asset lifecycle over Git
+and git-annex. The user requests PR51..60 and README/CI PR62 on main. Owned
+integration work is integrate/open-prs; inputs and gates are in
+specs/OPEN-PR-INTEGRATION.md. Preserve all original commits, existing data
+identifiers and default-off prototype limits. No private controller worktree,
+live cache operation is included. The observed CI S3 busy-classification blocker
+is narrowly repaired under specs/OPEN-PR-INTEGRATION.md. Read Git/GitHub for exact
+branch/check/merge state. Imported stack evidence uses EVID-130..139; historical
+source 66f8b4b retains its original EVID-120..129 aliases.
 
-Active owned lane: feat/teaching-stale-plan, input
-d200ed38e2594a6e82205067dd8aadd107a7bff4; runtime
-617540154fedfd7aa51d33c37f31cfd0223941a8. Contract:
-specs/TEACHING-STALE-PLAN.md; actual stale SDK apply is rejected before effects.
-Actual status against the new protection basis is recorded separately, never as
-a successful apply receipt. Fresh plans honor the new job and demote only after
-its explicit end. Final52714 passes six native cases, strict schema workspace,
-standalone Git, fmt and fresh ten-checkpoint executable/catalogue validation;
-all78 controller cases pass. Default89185 workspace/500k passes; its Clippy style
-failure is fixed and final52714 qualifies it. All-feature48441 workspace/500k/
-strict passes in the separate external target; all local handles are terminal.
-Logs stale-*.log in bulk-retirement dev temp. Source structure/pins/diff/secrets
-pass; derive the current branch PR and exact-head hosted status from GitHub.
-Parent PR49 exact-head run42762379566 passes Windows/Linux/secrets.
-No merge/deploy/live cache/viewer. Full goal and browser/human gates remain open.
-Older lane entries below are historical; see context/RESUME.md.
+Historical qualification and development observations follow. They do not
+supersede the current user authorization to merge qualified source into main.
 
-Active owned lane: feat/teaching-backup-outage, input9310d0c; runtime
-73069222eaa0999b2eebb69786373917353f0162. Contract:
-specs/TEACHING-BACKUP-OUTAGE.md; review/EVID-118 separate implementation,
-verification/validation/trace/six producer lenses. Real SDK held merge/job-end,
-unknown M coverage, protected F and same-plan catchup with seed reads disabled
-are locally qualified. Five native/API/shipped-controls cases,76 controller cases,
-both workspace/both500k/strict/standalone profiles and fresh artifact pass. All
-local handles terminal. Parent PR48 exact-head run42753891927 passes Windows/
-Linux/secrets and is ready; no merge/deploy. Source is pinned; derive this branch
-draft PR/hosted status from GitHub. Browser/human qualification remains open.
+User-selected checkout: C:/src/Tig; preserve its dirty user changes. Active owned
+work is F:/src/Tig-worktrees/journal-activation, feat/journal-activation. Start with
+[resume state](context/RESUME.md) and derive actual HEAD/status/processes before
+relying on any historical note. GitHub: giodl73-repo/git-asset; draft/ready PRs are not
+merged or deployment authority. Full PRODUCT_PLAN remains the active objective.
 
-Active owned lane: feat/teaching-worktree, input27a6eb4; runtime
-6812e1086bf4fc9fb58849a5e77718c4dd051da9. Contract:
-specs/TEACHING-WORKTREE.md; review/EVID-117 separate implementation/verification/
-validation/trace/six producer lenses. Linked worktree/index capture, dirty-removal
-preservation and a job that outlives checkout closure are locally qualified.
-Four native/API/shipped-controls cases,73 controller cases, both workspace/
-both500k/strict/standalone profiles and fresh persistent artifact pass. All local
-handles are terminal. Parent PR47 exact-head run42748580854 passes Windows/Linux/
-secrets and is ready; no merge/deploy. Source is pinned; derive the branch draft
-PR/hosted status from GitHub. Browser/human qualification remains; see RESUME.
+The private capacity-journal continuation lane has focused evidence for an atomic
+SQL mutation fence (including a hashed timing-instrumented old writer), paged exact
+working/history state and bounded operation/sequence indexes. New conditional
+staged insertion preserves canonical roots and proves absence during mutation.
+The real full16384 legacy source plus16384 immutable index delta reaches32768
+under unchanged budgets; full core, physical reopen, original archive,500k metadata,
+strict/fmt pass. See [EVID-139](docs/reviews/2026-11-11-journal-activation.md).
+The private cfg(test) CapacityLedger mode now has actual full three-generation
+proof: original16384 + two method-written tails16384 each, then a generation3
+command reaches49153. General open uses exactly one checked predecessor archive,
+complete source header and observed SQL seal; old/current minima and original
+receipts survive while handle freshness stays empty. Full46476 and all-feature
+workspace strict44924 pass with pinned sources and unchanged logical/local caps.
+No public activation API, atomic controller/recovery, native physical metadata
+admission or expiry is delivered. These and full product acceptance remain open.
+Exact20a3865 hosted43159604450 passes all native suites/secrets/foundation checks;
+exact858595b hosted43170309914 now passes all17 jobs, including full49153 Windows/
+Linux rotation groups. This excludes later private first-legacy preparation work.
+That helper now passes full16384 shared export/index/readback under one original
+budget (13356), plus workspace all-feature strict53584. It writes only immutable
+metadata and returns a prepared artifact; source seal/publication/admission remain
+separate unfinished controller steps.
 
-Active owned lane: feat/teaching-exchange at input618628a; runtime
-8f17aa9a711fcb6d372fb2f267f67ef2ac313692. Contract:
-specs/TEACHING-EXCHANGE.md; review/EVID-116 separate implementation/verification/
-validation/trace/six producer lenses. Fresh-root local push/clone/fetch/pull,
-dirty-pull preservation and three extra actual placement checkpoints are locally
-qualified. Three native/API/shipped-controls cases,73 controller cases, both
-workspace/both500k/strict/standalone profiles and fresh persistent artifact pass.
-All local handles are terminal. Parent PR46 exact-head run42744449594 passes
-Windows/Linux/secrets; PR46 is ready, no merge/deploy. Current exchange source is pinned; derive its draft PR/hosted status from GitHub.
-Browser/human qualification remains; see RESUME.md.
+Parent PR59 runtime1c1f3ca passes both full local profiles/500k/strict/standalone/
+fresh14 artifact and exact hosted43119762645. Documentation closeout27e8792 is
+integrated locally; exact43135967822 passes all hosts/secrets, PR59 ready. No remote PR merge.
+Older runtime d29a576 passes full local both profiles/500k/strict/standalone/bins/
+fresh14 artifact/catalogue: owned44636 terminal0. Newer joined source needs its
+own broad/hosted checks. Derive active ownership from RESUME and external runner
+state. Final35364 released the separate activation target. Exact7caf201 hosted
+Linux/secrets passed; Windows hit60minutes. CI is partitioned with unchanged
+coverage/deadlines; new exact-head hosted results remain required.
 
-Active lane: feat/teaching-playback, input6d9a2e0; runtime
-3c423315d1901d9015572a5507643939e79605ae. Read
-specs/TEACHING-PLAYBACK.md and context/RESUME.md. Optional bounded recorded
-lesson API, actual sample evidence export and shipped controls are implemented
-and locally qualified. Native sample/HTTP -> shipped-controls, semantic negatives,
-all73 controller cases, default/500k/strict/standalone and final schema strict/
-persistent CLI, all-feature/second500k/strict and final L0/source-secrets pass.
-Hosted qualification and browser/human acceptance remain.
-Parent PR45 exact-head run42737465924 failed Windows in
-the inherited simultaneous age-capture test; Linux/secrets passed. Do not claim
-hosted qualification, start a viewer or touch existing cache roots.
+Next joined contract: [JOURNAL-SUCCESSOR](specs/JOURNAL-SUCCESSOR.md), alongside
+[JOURNAL-ACTIVATION](specs/JOURNAL-ACTIVATION.md) and
+[JOURNAL-CONTINUATION](specs/JOURNAL-CONTINUATION.md). It requires active/in-flight
+state, exact old results, ancestry/minima, bounded tail reopen, source/old-writer
+fences and complete recovery. Review findings require digest-addressed control
+records to locate prior tails, genuine metadata admission for already-full sources,
+no silent repair of published loss, and exact decoded domain/instance/floor checks.
+The pure checked-context/closed-working-set seams now pass focused core/physical/
+strict checks; actual continued-mode adoption is still required.
+Private successor records/read-only base validation now pass nine focused cases,
+including real finished metadata reopen, prior/current minima, foreign empty state,
+missing nodes, canonical vectors and shared budgets. Above-base minima remain
+explicit unverified tail requirements. Index8/history8/checkpoint3 regressions pass;
+strict flagged a redundant unit expression, fixed without a semantic change.
+Owned13720 is terminal0 for final pinned records/strict/fmt; see RESUME. The
+private SQL-tail replay (precontractabdab3a) now passes final42044: short21, real
+full original16384 plus SQL tail16384, index8, strict/fmt and pinned source checks.
+The separate activation target is free. Full replay retains active state/old50-byte
+completion, with351309 metadata reads/147040227 bytes and0 writes. This is not
+an activated writer or full rotation. Joined preparation now also passes final
+59288 on the same real16384+16384 workload:1123418 reads447596663 bytes and668057
+writes258673542 bytes, including base/SQL/output/index/ancestry/working Data and
+hidden logical work. A private bound staged result defers name checks to conditional
+insertion without exposing state first; ordinary strict replay remains unchanged.
+Failed diagnostic50172 is preserved. Short25, original strict maximum, index8,
+strict/fmt and all source-pin phases pass. ST-04 closes for this scoped preparation
+fixture; actual writer/controller, physical admission and full-product gates remain.
+No public seal-only operation or cap waiver. Provider/source/witness continuation
+and separately authorized detail expiry remain required; replay fences must survive.
 
-Teaching runtime: 3ee533ce31d1f54075982976876a5a553a11933f.
-Teaching-catalogue lane: user requires public, portable Git-style teaching and
-fixtures at every workflow step. specs/TEACHING-CATALOGUE.md and
-examples/catalogue/README.md define the full course. New schema-gated git-asset-sample
-rehearse-ordinary creates fresh external roots only, runs real Git/source/provider
-operations through seven independently checked checkpoints, and exports an actual
-catalogue plus bounded reports. Focused tests/strict Clippy and a persistent fresh
-CLI/catalogue-check rehearsal pass. Full playback/UI, publish/fetch/pull, failure
-rehearsals, final retirement/lifetime and broad/hosted/browser checks remain open.
-See context/RESUME.md; do not replace shared viewers or touch existing roots.
+git-asset is generic Rust byte/asset infrastructure, usable for Git/LFS without typed
+assets. Optional typed records incorporate Art's generic value under
+[unified design](docs/UNIFIED-DESIGN.md); media semantics remain adapter-owned.
+Logical paths resolve in exact bundle snapshots, physical paths are provider-owned.
+Desired/planned/observed state and historical/current evidence remain distinct.
+Unknown coverage is never zero use. A dropped label/claim is not deletion consent.
+No global cache lock; use scoped admission and stale-operation fencing.
+Keep records bounded and expanding operational state asset-side.
 
-Held-copy runtime: eb94c7228935549a0893456ca55bfacee54090e0.
-Held-copy follow-up lane: specs/HELD-COPY-FOLLOWUP.md defines PO-07's fresh
-decision after original claim settlement. It retains original scope/outcome
-provenance, rechecks current content-wide protection/provider facts, and needs
-new final-loss approval. Copy-only runtime and explicit CLI are implemented;
-focused/process/final artifact and local broad qualification pass. PR44 is ready:
-run42729638843 passes exact-head Windows/Linux/secrets at2911568. Parent PR43 has
-exact-head Windows/Linux/secrets
-checks passed; read context/RESUME.md for current evidence and remaining gates.
+Read AGENTS.md, README.md, PRODUCT_PLAN.md, active wave/pulses and the
+[VTRACE router](docs/vtrace/README.md). Before code name controls/input/scope/
+entry/exit/profiles; close implementation/verification/scoped validation/trace/
+producer review separately. Six roles are checklists, not independent approval.
+No delegates. No new dependency on TRACKER-relative paths or another cache engine.
 
-Paged-operator lane: explicit git-asset-storage paged now composes existing-root copy
-index staging, exact decisions, original scope pagination, peak/status and
-separately approved apply/resume/cancel with the existing controller. Metadata
-Session views share budgets through finish/readback; cancellation acknowledges
-the witness stop before optional cleanup. Synthetic20-page manual/aged CLI,
-native-executable handoff, default/all-feature/500k/strict Clippy and standalone
-checks pass locally; hosted checks remain. Read context/RESUME.md for exact scope.
-Full native/current-authority, agent/UI/Action, provider/large-file/restore/lifetime,
-metadata expiry and intended-use acceptance remain open. No live roots are enabled.
+No live cache init, daemon, census, hydration, transfer, upload, payload deletion,
+viewer/browser, PR merge or deployment on resume. Foundation tests use only new
+explicit synthetic roots. Do not copy private assets, prompts, credentials,
+screenshots or voice credits. Existing roots and interrupted evidence are retained.
+Run validate.ps1/diff checks before commits; Rust also needs fmt/locked tests/strict
+Clippy and appropriate integration. Use external TEMP/TMP/Cargo targets, UTF8/LF,
+source pins and exact process/result evidence as detailed in RESUME.
 
-Native-paged lane: optional indexed occurrence/block/category/age selection now
-stages existing paged requests through a default-disabled metadata-only CLI.
-Unknown/recent exclusions remain fixed and source drift refuses. The native
-Session shares budgets through independent finish/readback. Synthetic17-root
-aged controller/copy effects and1000-asset/4000-binding selection pass locally;
-broad/framing/artifact qualification passes locally; exact-head CI remains.
-Read context/RESUME.md. Full
-operator/agent/UI/Action, actual writer/authority/provider/lifetime and acceptance
-remain open. No payload IO or source mutation occurs in selection.
-
-Paged-age lane: explicit `paged::control::aged` planning/execution now composes
-pinned retained age and exact survivor inheritance with page completion. It
-admits a separate metadata-only registry boundary, preserves manual framing and
-shares metadata budgets. Seven focused aged controller fixtures, four actual
-child exits and independent aged framing pass locally. Broad pre-tightening and
-final changed-scope/artifact qualification pass; exact-head hosted checks remain.
-Read context/RESUME.md. Full native/operator/agent/UI/Action, current
-authority/writer/time/provider/restore/lifetime and human acceptance remain open.
-
-Paged-controller lane: specs/PAGED-EXECUTION.md controls a synthetic manual Rust
-candidate over existing prepared pages, accounted witnesses and final providers.
-Separate exact claim/final-copy permissions, durable global/page intent, actual
-receipt/checkpoint completion, shared metadata budgets and cancellation/status
-are being qualified. It performs no live operations or startup discovery. Full
-age-aware/native/operator/UI/Action and authority/provider/lifetime acceptance
-remain open. Read context/RESUME.md for exact checks and the next integration.
-
-Paged-retirement lane: specs/PAGED-RETIREMENT.md freezes the whole-selection and
-future controller boundaries for NB-07. The in-progress final_retirement::paged
-library compiles asset-side requests/manifests and original-binding pages using
-existing metadata/source ports. It grants no claim-release/removal authority;
-the durable paged controller and user surfaces remain owed. Read context/RESUME.md.
-
-Age-witness lane: specs/AGE-WITNESSES.md defines exact historical occurrence
-observations over existing asset-side Trees and an enrolled Retention source.
-Capture preserves acknowledged dates across retries; executed unchanged subsets
-can inherit age. git-asset-storage age and optional git-asset-retirement select-aged use
-private existing-root profiles, with no claim-release/removal authority. Aggregate
-metadata/time budgets span phases. EVID-106 records local/hosted qualification;
-live adoption and the complete milestone remain open. Read context/RESUME.md.
-
-Native retirement binding lane: optional declared storage closure and asset-side
-native-to-flat roots give each root asset independent bindings for shared objects.
-Explicit metadata-only git-asset-retirement bind/select composes exact block/category
-selection with the existing bulk controller, without self-approval or age inference.
-Read specs/NATIVE-RETIREMENT-BINDINGS.md and EVID-105 for local qualification.
-Bounded age witnesses are separate in EVID-106; UI/Action, native writer/adoption,
-authority/provider/lifetime and full acceptance remain open.
-
-Bulk execution lane: the distinct git-asset-storage bulk execute profile binds exact
-privately admitted consent and default-disabled apply/cancel permissions. Native
-clock admission is explicit; cancellation can operate without fresh time or source
-metadata. The existing controller is reused; inspection stays observational.
-Read specs/BULK-EXECUTION.md and EVID-104 for bounded local qualification; no live
-root, service, migration, trust adoption or full-plan acceptance is enabled.
-
-Local-clock lane: a fresh explicit clock-enabled capacity ledger and LocalClock
-adapter persist time floors and provide bounded native OS observations. Final
-window checks require the full earliest/latest interval; no generic SystemTime
-fallback or CLI activation. specs/LOCAL-CLOCK.md records native trust/minimum/
-restore/lifetime gates and qualification scope. This is not live clock adoption.
-
-Bulk operator inspection: git-asset-storage bulk describe/plan/peak/status uses explicit
-private enrollment and existing roots. bulk::Inspection requires no metadata
-writer or clock; source metadata may be offline for status. Its profile grants no
-mutation permission. Read specs/BULK-OPERATOR.md; full operator execution/native
-selection, current clock/authority, provider/large-file/lifetime gates remain.
-
-Explicit fresh roster-scope bindings and design-2 placement enrollment now
-resolve advisory history against active use across admitted namespaces. Planner
-and live ordinary-retirement assessment share that rule; hard/additive retention
-survives. Legacy namespace-local scope remains unchanged. EVID-101 and
-specs/ROSTER-PRECEDENCE.md bound this synthetic qualification; live migration,
-native/provider/clock/authority/lifetime and human adoption remain open.
-
-This repository is the development source of truth. A new session can start here
-without an older consumer-repository conversation. Follow docs/DEVELOPMENT.md and
-context/RESUME.md; PRODUCT_PLAN.md orders the next product slices. Git/PR checks
-determine what actually merged. Source availability does not deploy a running UI.
-
-git-asset is generic experimental Rust infrastructure. Machine-local enrollment,
-cache paths, credentials, producer bindings and private acceptance evidence belong
-outside this repository. docs/ARCHITECTURE.md maps the implementation;
-PRODUCT_PLAN.md tracks remaining work. Historical test totals and target diagrams
-are not current implementation claims.
-
-The workspace contains git-asset-core, git-asset-store, git-asset and optional git-asset-model.
-Basic Git/LFS does not depend on typed assets. Captured Git metadata and admitted
-schemas drive optional resolution, graphs, contexts, revisions and deliveries.
-The catalogue provides works, search, children, coverage and storage comparison.
-Project meaning remains external configuration.
-
-The explicit git-asset-lifecycle CLI/library connects an enrolled exact committed ref
-to verified persistent metadata and atomically adopted desired claims. Duplicate,
-stale, revert and active-job/history behavior have synthetic Git fixtures. Source
-journals reuse existing Prepare/Adopt event bytes in one transaction; status
-preserves historical receipts independently of Git/metadata availability.
-The explicit git-asset-lifecycle reconcile command now composes bounded local copy,
-retention/handoff, ordinary eviction, cancellation and exact-byte reacquisition
-through git-asset-store::placement. EVID-093 scopes temporary Git/store qualification;
-page success does not establish complete selection convergence. See
-specs/PLACEMENT-RECONCILIATION.md. Authenticated triggers, full lifecycle/native/
-provider adoption, unattended partial recovery, large files, bulk final deletion,
-authority handoff and lifetime remain required plan work.
-
-Optional github feature now adds strict OIDC verification, bounded independent
-GitHub metadata capture, foreground git-asset-trigger and multi-page coordination over
-the same selection/placement APIs. EVID-094 scopes synthetic signed-request
-working/backup copies and a separate actual hosted-issuer/CLI empty-scope test.
-The latter performs zero payload operations. An inert Action client installs
-nothing; external ingress/OS isolation, full lifecycle/provider/large-file/lifetime
-adoption and later final-deletion/metadata milestones remain open.
-
-The bounded staged-index lane adds explicit draft-only plan/status/apply/
-resume/reconcile over existing guarded metadata/placement. Conflict-stage pointer
-alternatives are unique byte obligations, never a merged source selection. Fifteen
-focused entries (one child helper/two abrupt exits) pass; EVID-095 separately records
-passing local broad qualification, synthetic validation, trace and producer review.
-Hosted current-head qualification remains separate. No hook or live cache is attached.
-
-Owned source settlement is bounded under SOURCE-SETTLEMENT.md: local branch
-absence and an adopted committed successor can authorize withdrawal of only the
-owned current source, preserving predecessors. Bounded source-revision conditions
-are checked in the existing transaction; event bytes are unchanged. Shared local
-storage preflight and fresh admitted-source observations prevent false convergence.
-EVID-096 separates passing local broad/focused checks, synthetic validation, trace
-and producer review from pending hosted current-head/adoption gates.
-
-Existing-byte readers and explicit local publication/restore/retention primitives
-have bounded fixture evidence. The first git-asset-store orchestration slice composes
-input-bound plans and source-preserving copy/retention with an explicit git-asset-storage
-CLI; specs/STORAGE-ORCHESTRATION.md limits its scope. Protection completeness remains
-caller-declared for that copy-only CLI. The opt-in managed local library now adds
-bounded ordinary replica retirement/cancellation and explicit reacquisition under
-specs/MANAGED-REPLICA-RETIREMENT.md. It requires scoped protection, retained
-survivors and incarnation-bound recovery in synthetic stores. Full live-project
-custody, native dependency coverage and production eviction remain open. Catalogue
-alignment/older-copy actions are held previews. No cache initialization, scan,
-hydration, daemon or hook installation on resume.
-
-Optional git-asset feature upload adds an explicit standalone Git LFS Basic upload
-agent and git-asset-lfs upload plan/peak/status/apply/resume over existing OID authority,
-guarded source readers and accounted local witnesses. Full remote hash/length
-readback and optional verify notification precede completion. Private action
-credentials are explicitly scoped and excluded from plans; upload defaults off.
-See specs/LFS-UPLOAD.md. This is bounded 8 MiB source-preserving transfer, not
-retained backup custody, remote quota or automatic Git lifecycle reconciliation.
-
-The explicit `git-asset-storage retire` interface now composes that library over existing
-managed stores and private policy profiles: plan/apply/status/resume/cancel and
-new-operation reacquisition. See specs/RETIREMENT-AGENT-CLI.md. Survivor grants,
-domains, role assignments and finite budgets are admitted independently from
-portable plans; all three execution permissions default to disabled. Status
-separates historical outcomes from freshly verified present/absent/unproven bytes.
-This does not attach a catalogue action or enable automatic lifecycle execution.
-
-Optional git-asset-store feature s3 adds a source-preserving conditional S3 PUT/full GET
-readback adapter and explicit git-asset-storage s3 plan/peak/status/apply/resume. Small
-intent/completion witnesses reuse existing accounted local publication/ledger;
-presigned URLs remain private and absent from portable plans. The synthetic HTTP
-fixture covers collisions, lost replies, corrupt/missing readback, denied access,
-bounded cancellation and source preservation. It grants no retained custody or
-removal authority. See specs/S3-PUBLICATION.md; real cloud/IAM/TLS/provider and
-remote quota qualification, LFS upload and remaining roadmap gates stay separate.
-
-Read AGENTS.md and the active wave/pulse. docs/vtrace/README.md routes controls
-and evidence. Preserve stable IDs and distinguish historical results, current
-code and target behavior. Roles are producer checklists, not independent reviewers.
-
-The public repository began with a clean source snapshot. Private consumer notes,
-original history and hosting context remain outside this repository. Historical
-evidence SHAs in documentation identify original checkpoints; they are not
-promises that those commits exist in public history. Port reviewed generic
-patches rather than importing private ancestry. See docs/PUBLIC-RELEASE.md.
-
-Source/docs remain below 8 MiB, individual files below 128 KiB. No media, builds,
-runtime databases, inventories, raw receipts or private fixtures in Git.
-Use explicit build/temp roots. No portfolio/renderer checkout is a runtime
-dependency. Vendored checkers retain source pins/licenses; see docs/INTAKE.md
-and NOTICE.md. Run tools/validate.ps1 and git diff --check before commits.
-Rust changes also require fmt, appropriate locked tests, strict Clippy and
-integration cases. Hosted Windows/Linux CI is a separate qualification.
-
-Historical subset prerequisite: source_claims::subset and explicit git-asset-source
-subset plan/status/apply/resume protect unselected flat bindings with a same-owner/
-class survivor predecessor before conditional original retirement. Atomic
-Prepare/Adopt/Withdraw exposes no artificial active use. See RETAINED-SUBSET.md
-and EVID-097. These are claim transitions, never payload deletion or full bulk/
-age/native selection. Source/journal lifetime and all later full-plan gates remain.
-
-Final-retirement prerequisite: final_retirement::claims guards object membership
-across a separately admitted content-scope namespace/policy/minimum roster,
-independent of target-place requirements. Shared ancestry checks refuse weaker
-handle minima/restored known history. Roster summaries grant no removal or release.
-FINAL-RETIREMENT.md and EVID-098 separate this bounded implementation from the
-remaining provider format, grant-release/intent/unlink/cancellation executor,
-intentional-absence placement integration, bulk selection and metadata lifetime.
-
-The bounded final-provider layer implements the fresh design-8 local layer
-under specs/FINAL-PROVIDER.md: immutable intent/release/terminal, exact owner grant
-release, unlink/cancellation, explicit fresh same-hash acquisition and read-only
-status, using existing capacity/publication/fences. It is under qualification,
-not live enabled or production accepted. Bulk selection/consent/source settlement,
-complete age/native closure, large-file/provider/authority qualification, operator
-interfaces and metadata lifetime remain required. Do not infer goal completion
-from this library layer; derive current checks from the active lane and PR.
-
-The bulk-retirement lane composes exact flat historical block selection, complete-
-scope held/eligible projection, durable consent and sequential owned subsets with
-the final provider. Source command history is checked under live content fences;
-transient prepared/aborted demand invalidates pending approval. Cancelled scopes
-cannot silently resume source work or expand held membership. Existing private
-cleanup closes unused metadata reservations. BULK-RETIREMENT.md separates this
-bounded library from remaining native age/category, operator/UI, current authority/
-clock/provider/large-file, metadata lifetime and human acceptance gates.
+Full course/operator/UI/Action/native/current-authority/time/quota/provider/large-
+file/lifetime/independent/human gates remain open where the product plan says so.
+The earlier source/project checkpoints are preserved by Git history and linked
+review records; this file is a current routing note rather than a process log.

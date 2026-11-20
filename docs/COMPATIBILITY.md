@@ -63,3 +63,13 @@ Repository-scoped workflow allowlists, OIDC subjects and external consumer pins
 that include the old repository name need an explicit consumer update. GitHub
 redirects do not rewrite trust-policy strings. Existing open feature branches
 need rebasing onto the renamed source layout before their changes can merge.
+
+Pinned activation legacy-writer qualification retains its original crate paths,
+source template and TIG_ACTIVATION_CASE/READY/RELEASE handshake. They target the
+exact historical writer, not the current SDK. Historical development artifact
+paths and commit-specific source URLs also retain their actual old locations.
+
+Imported PR51..60 records originally used EVID-120..129 at source 66f8b4b. Their
+current aliases are EVID-130..139, avoiding collisions with already-landed native
+and rename records. Original qualified commits, artifact paths and data identities
+remain unchanged; the integration itself uses EVID-140.

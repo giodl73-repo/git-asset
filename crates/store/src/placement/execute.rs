@@ -4,6 +4,7 @@ use crate::{
     AckLevel, Request,
     accounted::{self, PublicationPlan},
     existing::ByteSource,
+    final_retirement::provider as final_provider,
     replica::ReplicaEnrollment,
     retention::{self, RetentionGrant, RetentionPlan, RetentionRequest, handoff},
     retirement,
@@ -105,6 +106,29 @@ fn initial(config: &Config, pin: &Provider, object: &Object) -> Result<Request> 
         object: object.clone(),
         required: AckLevel::ProcessRestart,
     })
+}
+/// Resolve publication identity for an exact enrolled provider/object without
+/// applying effects. This is not a custody observation or deletion authority.
+/// Retirement recipes require their existing recovery/reacquisition path.
+pub fn publication(
+    config: &Config,
+    pin: &Provider,
+    store: &LocalStore,
+    object: &Object,
+) -> Result<Request> {
+    config.id()?;
+    let identity = digest(pin)?;
+    let mut admitted = false;
+    for provider in &config.providers {
+        admitted |= digest(provider)? == identity;
+    }
+    if !admitted {
+        return Err(Error::WrongEnrollment);
+    }
+    match recipe(config, pin, store, object)? {
+        Recipe::Publication { request, .. } => Ok(request),
+        Recipe::Retirement(_) => Err(Error::ReacquisitionRequired),
+    }
 }
 fn retention_plan(store: &LocalStore, publication: &Request) -> Result<RetentionPlan> {
     Ok(retention::plan(
@@ -258,12 +282,68 @@ pub struct Report {
     pub holds: Vec<Error>,
     pub next: Option<Cursor>,
 }
+/// Read-only intentional absence; never activation or removal authority.
+fn settled_final_absence(pin: &Provider, runtime: &mut Local<'_>, object: &Object) -> Result<bool> {
+    if !runtime.store.supports_retirement() || runtime.store.final_policy().is_none() {
+        return Ok(false);
+    }
+    if Place::local(runtime.store, pin.place.generation).map_err(|_| Error::Unavailable)?
+        != pin.place
+        || runtime.ledger.identity() != &pin.capacity
+    {
+        return Err(Error::WrongEnrollment);
+    }
+    let Some(head) = runtime.store.life_head(object)? else {
+        return Ok(false);
+    };
+    let Some(state) = &head.final_state else {
+        return Ok(false);
+    };
+    if !state.retired() {
+        return Ok(false);
+    }
+    let status = final_provider::status::inspect(
+        runtime.store,
+        runtime.ledger,
+        runtime.job,
+        &state.intent.plan,
+    )
+    .map_err(|error| match error {
+        final_provider::Error::Store(e) => Error::from(e),
+        final_provider::Error::Ledger(e) => Error::from(e),
+        final_provider::Error::WrongAuthority => Error::WrongEnrollment,
+        _ => Error::Recovery,
+    })?;
+    if status.phase != final_provider::status::Phase::Deleted
+        || !status.grants_released
+        || status.charged_metadata.is_none()
+    {
+        return Err(Error::Recovery);
+    }
+    match status.observed {
+        final_provider::Observation::Absent => (),
+        final_provider::Observation::PresentUnverified => return Err(Error::Recovery),
+        final_provider::Observation::Unknown => return Err(Error::Unavailable),
+    }
+    let current = runtime.store.life_head(object)?.ok_or(Error::Recovery)?;
+    if current.birth.index != head.birth.index
+        || current.birth.placement != head.birth.placement
+        || runtime.store.object_present(object)?
+    {
+        return Err(Error::Recovery);
+    }
+    Ok(true)
+}
 fn observe(
     config: &Config,
     pin: &Provider,
     runtime: &mut Local<'_>,
     object: &Object,
+    required: bool,
 ) -> Result<Observation> {
+    if !required && settled_final_absence(pin, runtime, object)? {
+        return Ok(Observation::AuthorizedAbsence);
+    }
     match recipe(config, pin, runtime.store, object)? {
         Recipe::Retirement(plan) => {
             let status =
@@ -461,7 +541,8 @@ where
                         self.config,
                         &self.config.providers[index],
                         &mut self.places[index],
-                        &row.object
+                        &row.object,
+                        row.required[index]
                     ),
                     Ok(Observation::Published | Observation::Partial)
                 ) {
@@ -485,6 +566,7 @@ where
                     &self.config.providers[index],
                     &mut self.places[index],
                     &row.object,
+                    row.required[index],
                 ) {
                     Ok(Observation::Retained | Observation::Released) => {
                         let result = if self.allow_eviction {
@@ -648,6 +730,15 @@ where
         effects: &mut Vec<Effect>,
     ) -> Result<()> {
         let object = &row.object;
+        if !row.required[index]
+            && settled_final_absence(
+                &self.config.providers[index],
+                &mut self.places[index],
+                object,
+            )?
+        {
+            return Ok(());
+        }
         if let Recipe::Retirement(plan) = recipe(
             self.config,
             &self.config.providers[index],
@@ -677,6 +768,7 @@ where
             &self.config.providers[index],
             &mut self.places[index],
             object,
+            row.required[index],
         )?;
         if observed == Observation::NotStarted {
             return Ok(());
@@ -788,6 +880,7 @@ where
                     &self.config.providers[index],
                     runtime,
                     &row.object,
+                    row.required[index],
                 ) {
                     Ok(state) => state,
                     Err(e) => {
@@ -866,6 +959,7 @@ where
             &self.config.providers[index],
             &mut self.places[index],
             object,
+            true,
         )?;
         if matches!(state, Observation::Retained | Observation::Released) {
             return Ok(());

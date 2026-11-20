@@ -1,5 +1,12 @@
 //! Bounded recorded fixture observations. No current custody or execution authority.
 use super::*;
+mod final_observation;
+mod git_return;
+mod paged_observation;
+mod reacquisition;
+#[cfg(feature = "upload")]
+mod remote;
+mod restoration;
 use git_asset_core::{Digest, identity};
 use git_asset_store::{
     existing::{ByteSource, Profile as ReaderProfile, ReadCache},
@@ -166,11 +173,7 @@ fn rejected_attempt<'de, D: serde::Deserializer<'de>>(
 ) -> std::result::Result<Option<Rejected>, D::Error> {
     Rejected::deserialize(decoder).map(Some)
 }
-fn document<T: serde::de::DeserializeOwned>(
-    reader: &mut ReadCache,
-    object: &Object,
-    left: &mut u64,
-) -> Result<T> {
+fn raw_document(reader: &mut ReadCache, object: &Object, left: &mut u64) -> Result<Vec<u8>> {
     if object.bytes == 0 || object.bytes > 65536 || object.bytes > *left {
         return Err("Teaching read budget exceeded".into());
     }
@@ -187,6 +190,14 @@ fn document<T: serde::de::DeserializeOwned>(
     if Object::from_bytes(&raw) != *object {
         return Err("Teaching metadata integrity failed".into());
     }
+    Ok(raw)
+}
+fn document<T: serde::de::DeserializeOwned>(
+    reader: &mut ReadCache,
+    object: &Object,
+    left: &mut u64,
+) -> Result<T> {
+    let raw = raw_document(reader, object, left)?;
     let value = parse_json(&raw).map_err(|_| "Invalid teaching JSON")?;
     if identity::canonical_json(&value).map_err(|_| "Invalid teaching JSON")? != raw {
         return Err("Noncanonical teaching JSON".into());
@@ -245,6 +256,15 @@ pub fn execute(request: Request) -> Result<Value> {
     let mut providers = None;
     let mut coverage_v2 = false;
     let mut rejection_v3 = false;
+    let mut final_v4 = false;
+    let mut reacquisition_v5 = false;
+    let mut joined = None;
+    let mut returned_source = None;
+    let mut returned_seed = None;
+    #[cfg(feature = "upload")]
+    let mut remote_token = None;
+    #[cfg(feature = "upload")]
+    let mut ordinary_source = None;
     for entry in trace.completed {
         if !token(&entry.lesson)
             || !names.insert(entry.lesson.clone())
@@ -260,7 +280,133 @@ pub fn execute(request: Request) -> Result<Value> {
         {
             return Err("Invalid teaching lesson".into());
         }
-        let report: Report = document(&mut reader, &entry.report, &mut left)?;
+        let value: Value = document(&mut reader, &entry.report, &mut left)?;
+        if value["schema"] == "tig.teaching-remote-publication-observation.design-1" {
+            #[cfg(not(feature = "upload"))]
+            return Err("Remote teaching metadata requires upload support".into());
+            #[cfg(feature = "upload")]
+            {
+                let (lesson, token) = remote::decode(
+                    value,
+                    remote::Context {
+                        entry: &entry,
+                        previous: lessons.last().ok_or("Missing exchange lesson")?,
+                        binding: providers.as_ref().ok_or("Missing remote enrollment")?,
+                        roles: &p.roles,
+                        identities: &identities,
+                        source: ordinary_source
+                            .as_ref()
+                            .ok_or("Missing exact exchange checkpoint")?,
+                        commits: &request.commits,
+                    },
+                    remote_token.as_ref(),
+                )?;
+                remote_token = Some(token);
+                lessons.push(lesson);
+                coverage_v2 = true;
+                continue;
+            }
+        }
+        #[cfg(feature = "upload")]
+        if remote_token.is_some() {
+            return Err("Mixed remote teaching phases".into());
+        }
+        if value["schema"] == "tig.teaching-return-restore-observation.design-1" {
+            let (lesson, token) = restoration::decode(
+                value,
+                restoration::Context {
+                    entry: &entry,
+                    lessons: &lessons,
+                    binding: providers.as_ref().ok_or("Missing joined enrollment")?,
+                    roles: &p.roles,
+                    identities: &identities,
+                    commits: &request.commits,
+                    seed_attempts: returned_seed.ok_or("Missing returned seed counter")?,
+                    source: returned_source
+                        .as_ref()
+                        .ok_or("Missing exact returned checkpoint")?,
+                },
+                joined.as_ref(),
+            )?;
+            joined = Some(token);
+            lessons.push(lesson);
+            coverage_v2 = true;
+            continue;
+        }
+        if value["schema"] == "tig.teaching-git-return-observation.design-1" {
+            let exact_seed = value["git_return"]["seed_attempts_after"]
+                .as_u64()
+                .ok_or("Invalid returned seed counter")?;
+            let exact_source: git_asset_store::source_claims::Checkpoint =
+                serde_json::from_value(value["source_checkpoint"].clone())
+                    .map_err(|_| "Invalid returned checkpoint")?;
+            lessons.push(git_return::decode(
+                value,
+                &entry,
+                lessons.last().ok_or("Missing pre-return final lesson")?,
+                providers.as_ref().ok_or("Missing pre-return enrollment")?,
+                &p.roles,
+                &identities,
+                &request.commits,
+            )?);
+            returned_source = Some(exact_source);
+            returned_seed = Some(exact_seed);
+            final_v4 = true;
+            coverage_v2 = true;
+            continue;
+        }
+        if value["schema"] == "tig.teaching-reacquisition-observation.design-1" {
+            lessons.push(reacquisition::decode(
+                value,
+                reacquisition::Context {
+                    entry: &entry,
+                    previous: lessons
+                        .last()
+                        .ok_or("Missing preceding acquisition lesson")?,
+                    expected: &expected_providers,
+                    roles: &p.roles,
+                    identities: &identities,
+                    commits: &request.commits,
+                },
+            )?);
+            reacquisition_v5 = true;
+            coverage_v2 = true;
+            continue;
+        }
+        if value["schema"] == "tig.teaching-paged-final-observation.design-1" {
+            lessons.push(paged_observation::decode(
+                value,
+                paged_observation::Context {
+                    previous: lessons.last().ok_or("Missing preceding paged lesson")?,
+                    entry: &entry,
+                    expected: &expected_providers,
+                    roles: &p.roles,
+                    commits: &request.commits,
+                    identities: &identities,
+                    reader: &mut reader,
+                    left: &mut left,
+                },
+            )?);
+            final_v4 = true;
+            coverage_v2 = true;
+            continue;
+        }
+        if value["schema"] == "tig.teaching-final-observation.design-1" {
+            lessons.push(final_observation::decode(
+                value,
+                &entry,
+                &expected_providers,
+                &p.roles,
+                &request.commits,
+                &identities,
+                lessons.last().ok_or("Missing preceding final lesson")?,
+            )?);
+            final_v4 = true;
+            coverage_v2 = true;
+            continue;
+        }
+        let report: Report =
+            serde_json::from_value(value).map_err(|_| "Unsupported teaching metadata")?;
         let id = report.plan.id().map_err(|_| "Invalid teaching plan")?;
         let binding = (
             report.plan.enrollment.clone(),
@@ -517,6 +663,10 @@ pub fn execute(request: Request) -> Result<Value> {
             "source_sequence":report.source_checkpoint.sequence(),"objects":rows,"stream_bytes":report.receipt.stream_bytes,
             "basis_current":report.receipt.basis_current,"converged":report.receipt.page_converged,"storage_converged":report.receipt.storage_converged,
             "remaining_page":report.receipt.next.is_some(),"holds":report.receipt.holds,"effects":effects}));
+        #[cfg(feature = "upload")]
+        {
+            ordinary_source = Some(report.source_checkpoint.clone());
+        }
         if let Some(rejected) = report.rejection {
             let lesson = lessons.last_mut().ok_or("Missing rejected lesson")?;
             lesson["rejection"] = json!({"error":rejected.error,"planning_basis":report.plan.basis,"observed_basis":rejected.observed_basis});
@@ -534,7 +684,19 @@ pub fn execute(request: Request) -> Result<Value> {
             }
         }
     }
-    let response = json!({"schema":if rejection_v3 {"tig.catalogue-teaching.design-3"}else if coverage_v2 {"tig.catalogue-teaching.design-2"}else{"tig.catalogue-teaching.design-1"},"basis":p.trace,"project":p.project,"roles":p.roles,
+    if joined.as_ref().is_some_and(|t| !t.finished) {
+        return Err("Incomplete joined restoration book".into());
+    }
+    #[cfg(feature = "upload")]
+    let remote_v7 = {
+        if remote_token.as_ref().is_some_and(|t| !t.finished) {
+            return Err("Incomplete remote teaching book".into());
+        }
+        remote_token.is_some()
+    };
+    #[cfg(not(feature = "upload"))]
+    let remote_v7 = false;
+    let response = json!({"schema":if remote_v7 {"tig.catalogue-teaching.design-7"}else if joined.is_some(){"tig.catalogue-teaching.design-6"}else if reacquisition_v5 {"tig.catalogue-teaching.design-5"}else if final_v4 {"tig.catalogue-teaching.design-4"}else if rejection_v3 {"tig.catalogue-teaching.design-3"}else if coverage_v2 {"tig.catalogue-teaching.design-2"}else{"tig.catalogue-teaching.design-1"},"basis":p.trace,"project":p.project,"roles":p.roles,
         "lessons":lessons,"pending":trace.pending,"native_scope":trace.fixture_native_scope,
         "mode":"recorded-rehearsal","synthetic_domains":true,"independent_hardware_backup_proven":false,"authorizes_storage":false});
     if serde_json::to_vec(&response)
