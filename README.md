@@ -1,40 +1,127 @@
 # git-asset
 
-**The asset relationship and lifecycle layer for git-annex.**
+**Track an asset's identity, versions, dependencies and storage policyâ€”with Git
+for decisions and git-annex for file bytes.**
 
-git-asset is a CRM-like extension of git-annex: it keeps the record around an
-asset—its identity, versions, relationships, candidates, selection, usage, jobs,
-retention obligations and observed storage locations. Here CRM means a durable record of an asset's relationships and lifecycle.
+git-asset is a CRM-like layer for assets: a durable record of what an asset is,
+which version is selected, what uses it, and where its bytes need to live.
+Projects define their own asset types, categories and workflow rules.
 
-Git versions small authored definitions, references and decisions. git-annex
-manages large file contents, native copies, remotes and transfers. git-asset
-connects those two layers so a team can understand what an asset is, what uses
-it, which version is selected and what storage policy requires.
+Experimental: the diagrams describe the lifecycle contract. See
+[what works today](#what-works-today) for the qualified implementation scope.
 
-```text
-Git commits: definitions, references, selections and review
-                         |
-                      git-asset
-       identity / versions / relationships / jobs / policy
-                         |
-                      git-annex
-          immutable file bytes / copies / remotes
+## The story in one minute
+
+A studio produces **episodes** and **music videos**. Its library contains images,
+audio, camera originals, 3D sources and rendered outputs. Current work needs fast
+access; historical versions and large originals need affordable bulk storage;
+retained work needs an independently verified backup.
+
+The team chooses a policy: episode working sets live on **F:**, music-video
+working sets on **E:**, bulk originals and retained older versions on **J:**,
+and backups on the external **M:** drive. One project can use several locations;
+one exact asset version can have copies in several places.
+
+Git records small authored definitions, references and selection history.
+git-annex manages the actual file contents, copies and native transfers.
+git-asset connects identity, dependencies, active jobs and retention obligations
+to the team's placement policy. The team can explain both **what should be where**
+and **which copies have actually been verified**.
+
+## Four disks, different jobs
+
+This is an example policy. Drive names, project categories and asset-type rules
+are configurable; observed copy availability and custody are recorded separately.
+
+```mermaid
+flowchart TB
+    G["Git commits<br/>Definitions Â· references Â· selected versions"]
+    A["git-asset<br/>Asset records Â· dependencies Â· jobs Â· placement policy"]
+    G --> A
+    A -->|Episode working sets| F["F: Episode working cache<br/>E01 image v4 Â· narration v3 Â· render v13"]
+    A -->|Music-video working sets| E["E: Music-video working cache<br/>MV01 clip v9 Â· music mix v6 Â· master v4"]
+    A -->|Large originals and retained history| J["J: Bulk storage<br/>Camera originals Â· layered images Â· 3D sources<br/>Retained older versions from both categories"]
+    F -->|Eligible older versions| J
+    E -->|Eligible older versions| J
+    F -.->|Verified backup copies| M["M: External backup drive<br/>Selected and retained originals / outputs<br/>Independent custody, retained by policy"]
+    E -.->|Verified backup copies| M
+    J -.->|Verified backup copies| M
 ```
 
-A new candidate does not silently become the selected version. Selecting a new
-version does not erase the old one. Losing a label, ending a job or expiring a
-request does not authorize deleting the last copy. Desired placement, planned
-operations and verified observations are separate.
+| Example asset or use | Working location | Bulk/history location | Backup |
+| --- | --- | --- | --- |
+| Episode images, narration and current render | F: | J: for retained older versions | M: |
+| Music-video clips, music mix and current master | E: | J: for retained older versions | M: |
+| Large camera originals, layered images and 3D source masters | J:; named inputs can be prepared on F: or E: for a job | J: | M: |
+| A music cue used by both an episode and a music video | F: and E: when both working sets require it | J: for retained older versions | M: |
 
-Start with the [team overview](docs/TEAM-OVERVIEW.md),
-[current architecture](docs/ARCHITECTURE.md) and
-[roadmap](PRODUCT_PLAN.md). The product is experimental. The native adapter is
-currently qualified for explicit guarded local reads; native ingress, retained
-publication and participating-pruner execution are still being integrated.
-Existing local/LFS components remain interoperability and qualification tools.
-This rename does not claim that every native-annex lifecycle operation is ready.
+The same cue can have one identity and exact content hash while serving both
+projects. Asset type, project category, selected version and active job needs
+combine to determine placement. A folder or drive letter alone does not establish
+independent custody. A configured M: backup is desired placement; verification
+and retention evidence establish what is actually protected there.
 
-The front door is `git asset` (or `git-asset`):
+## Fix an asset, rebuild the affected work
+
+An artist fixes **E01's hero image v3**, producing **v4**. The episode currently
+selects image v3 and render v12. The music video is unrelated and keeps its
+existing selections.
+
+```mermaid
+flowchart TB
+    B["Baseline Git commit<br/>Selected: image v3 + render v12"]
+    C["Register corrected image v4<br/>Immutable candidate + original bytes + provenance"]
+    I["Preview declared dependency impact<br/>Which shots and outputs consume this image?"]
+    W["Workflow builds / rerenders affected work<br/>Job pins exact image v4 + other input versions"]
+    O["Retain and verify returned bytes<br/>New render v13 remains a candidate"]
+    R["Review and propose new selections<br/>Expected committed baseline must still match"]
+    N["Merge accepted selections<br/>Image v4 + render v13 become current"]
+    P["Plan placement from the new state<br/>F: current Â· J: retained history Â· M: backup"]
+    B --> C --> I --> W --> O --> R --> N --> P
+```
+
+1. **Register the fix.** Keep the original returned bytes, content hash, byte
+   length and provenance. The asset keeps its logical identity; v4 is a new
+   immutable version. Registration alone does not select or approve it.
+2. **Find the affected work.** Preview the declared dependency closure. A
+   consuming workflow such as REEL decides which tasks are invalid and invokes
+   the editor, builder or renderer. Missing relationship coverage stays explicit.
+3. **Build from exact inputs.** Pin image v4 and the other required input versions
+   into the job. Prepare named inputs in an owned workspace and preserve their
+   protection through long-running or interrupted work. Advancing another branch
+   does not silently change those inputs.
+4. **Keep results before finishing.** Record returned output bytes as immutable
+   candidates with provenance. Retain and reopen/verify them before declaring
+   completion or retiring owned scratch. Creative review stays with the workflow.
+5. **Select explicitly.** Review image v4 and render v13, then propose their
+   selection against the expected Git baseline. Another writer advancing that
+   baseline causes a conflict. Until acceptance, v3 and render v12 remain selected.
+6. **Reconcile storage after the merge.** An explicitly enrolled worker can use
+   the new commit to request a placement plan. Current episode work belongs on F:;
+   eligible older versions belong on J:; backup policy still requires M: evidence.
+
+Old versions stay accessible through exact historical references without changing
+current selections. A job, branch or another project can keep an old version in a
+working cache. Eviction requires current protection checks and verified retained
+custody. Final deletion is a separate explicit retirement decision; losing the
+selected label is insufficient.
+
+These diagrams describe the lifecycle contract and product direction. The current
+native-annex adapter is qualified for explicit guarded local reads on Windows.
+Native ingress, retained publication and participating-pruner execution remain
+integration work. Existing local-provider teaching fixtures demonstrate bounded
+lifecycle slices; consuming workflows own build execution, rerender decisions and
+creative approval. The capability table below defines today's implemented scope.
+
+## Try the public sample
+
+Start with the [sample catalogue course](examples/catalogue/README.md). It uses
+portable synthetic assets and real Git/provider checkpoints, compares expected
+and observed copies, and exports a catalogue with before/desired/observed lessons.
+The complete Git-style course remains in development.
+
+The front door is `git asset` (or `git-asset`), after building the workspace
+binaries together:
 
 ```text
 git asset describe
@@ -42,23 +129,10 @@ git asset query describe
 git asset sample describe
 ```
 
-Build the workspace binaries together using the commands below. Existing data
-formats retain their exact identifiers and hashes; see
-[compatibility and migration](docs/COMPATIBILITY.md). No cache is initialized,
-hydrated, moved or pruned merely by opening a repository or requesting help.
-
-Experimental partial history settlement is specified in
-[retained-subset handoff](specs/RETAINED-SUBSET.md). `git-asset-source subset` previews
-and explicitly settles an owner's selected historical binding paths while
-preserving unselected members. It performs no payload deletion.
-Dropping a reference **does not authorize deletion**.
-
-For reproducible public teaching, start with the
-[sample catalogue course](examples/catalogue/README.md). Its first runnable
-rehearsal follows real Git changes through seven source/provider checkpoints,
-checks actual copies against independent expectations, and exports a catalogue.
-The catalogue can play those recorded lessons with before/desired/observed copy
-sets. The complete Git-style course remains in development.
+See the [team overview](docs/TEAM-OVERVIEW.md),
+[current architecture](docs/ARCHITECTURE.md), [roadmap](PRODUCT_PLAN.md) and
+[existing-data compatibility](docs/COMPATIBILITY.md). Opening a repository or
+requesting help performs no cache initialization, hydration, transfer or deletion.
 
 ## What works today
 
