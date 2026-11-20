@@ -49,6 +49,7 @@ sets. The complete Git-style course remains in development.
 | Git LFS | Explicit existing-cache download adapter; optional bounded standalone Basic upload with full readback |
 | Local storage | Bounded publication, capacity admission, source journals, retention and recovery primitives |
 | Optional typed assets | Schema admission, declared graphs, sparse variants, production contexts and revision/delivery history |
+| Job resources | [Exact flat job bindings](specs/NATIVE-JOB-PROTECTION.md) for explicit adoption into durable guarded namespaces; metadata obligations remain separate from byte custody |
 | Local catalogue | Multi-project works, child navigation, search, versions, metadata coverage and storage comparison |
 | Agent queries | Discoverable JSON interface for inspect/admission and profile previews, find, compare, shared bytes, direct bindings and explained transitive impact |
 | Storage review | Named copy observations, placement preferences, explicit verification and held dry runs |

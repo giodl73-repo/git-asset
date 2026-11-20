@@ -1,5 +1,11 @@
 # Intended-use validation
 
+EVID-121 demonstrates flat declared job obligations through actual metadata
+finish/reopen and guarded namespace reopen while the synthetic Git checkout is
+unavailable. It does not qualify abrupt integrated process death, actual annex
+pool/pruner enforcement, publication or full consumer workflow acceptance.
+See [scope](../reviews/2026-11-20-native-job-protection.md).
+
 EVID-120 demonstrates exact guarded local native-annex reads using fresh
 synthetic ordinary/bare repositories and one opaque object. This does not
 validate durable job leases, retained publication, remote/hardware custody,

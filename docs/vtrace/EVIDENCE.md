@@ -1,5 +1,12 @@
 # Evidence index
 
+EVID-121 (scoped job-projection candidate), input
+6eaf75904868a86201eeb55fc61e10b414fa7759:
+[producer record](../reviews/2026-11-20-native-job-protection.md) separates flat
+native job projection, exact metadata readback, guarded lifecycle verification,
+intended-use limits, trace and six producer lenses. This does not qualify native
+annex pruning, retained publication or complete REEL adoption.
+
 EVID-120 (scoped local read candidate), input
 21a70f5abc4340582cda3a075a3c5fe1cee13e40:
 [producer record](../reviews/2026-11-20-annex-read-adapter.md) separates additive

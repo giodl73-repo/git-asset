@@ -12,6 +12,7 @@ use tig_core::{
     tree::{NodeStore, Tree, TreeLimits},
 };
 use tig_store::source_claims::Selection;
+pub mod protection;
 
 pub struct OutputEvidence<'a> {
     pub claim: &'a Claim,

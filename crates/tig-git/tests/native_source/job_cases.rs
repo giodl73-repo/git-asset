@@ -17,6 +17,8 @@ use tig_store::{
 };
 #[path = "job_dependency_cases.rs"]
 mod dependency_cases;
+#[path = "job_protection_cases.rs"]
+mod protection_cases;
 
 fn fixture() -> (Fixture, AssetSnapshot, Plan, ProductionContext, MemoryNodes) {
     let f = Fixture::new();

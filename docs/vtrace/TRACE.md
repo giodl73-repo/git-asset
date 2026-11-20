@@ -1,5 +1,11 @@
 # Tig trace
 
+Native job projection: WP-004/008/009/010/011;
+REQ-001/003/004/006/007/008/010 -> SPEC-002/003/004/005/007/008/010/011,
+IF-002/004/005/008/010/012, PKG-001/003/004/006 -> NATIVE-JOB-PROTECTION.md ->
+exact flat resource projection/readback and existing guarded namespace lifecycle
+fixtures -> EVID-121. Native custody and full IF-004 acceptance remain open.
+
 Annex read: WP-004/005/007/011; REQ-001/003/004/006/007/008/010 ->
 SPEC-003/004/007/009/011, IF-004/005/009/010/012, PKG-002/003/004/008 ->
 ANNEX-READ-ADAPTER.md -> shared provider guards, optional annex reader, bounded

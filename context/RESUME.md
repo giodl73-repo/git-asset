@@ -1,5 +1,24 @@
 # Tig resume state
 
+## Native job protection lane
+
+Owned branch feat/native-job-protection, input
+6eaf75904868a86201eeb55fc61e10b414fa7759. See
+[contract](../specs/NATIVE-JOB-PROTECTION.md) and
+[producer record](../docs/reviews/2026-11-20-native-job-protection.md), EVID-121.
+New optional assets SDK job::protection::freeze/verify projects an exact admitted
+JobContext into flat bindings for public guarded Namespace enrollment/select.
+Original job roots/APIs and dependency pins remain unchanged. Three focused
+fixtures pass: exact complete declared roles, malformed/budget refusal and actual
+metadata/journal reopen, peer advance, replay/stale/cancellation with synthetic
+Git unavailable. Locked all-feature workspace/500k, strict all-feature/all-target
+Clippy, standalone/assets-only tig-git and final L0 pass. This is metadata desired
+protection, not actual annex custody. No expiry releases bytes; explicit Withdraw
+preserves predecessors. No live caches or renders. Next: qualify actual annex
+pool/pruner protection binding and retained publication/readback, then downstream
+exact-source adoption. REEL retains ownership of semantic workflow behavior.
+Do not import the private archive's incompatible controller/index engine.
+
 ## Public annex adapter lane
 
 Owned branch feat/native-annex-adapter, input

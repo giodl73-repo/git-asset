@@ -1,5 +1,12 @@
 # Verification record
 
+EVID-121: three native job-projection fixtures pass exact membership,
+header/flat substitution, missing/corrupt metadata, aggregate budgets and
+finished/reopened guarded namespace replay/stale/peer/cancellation cases.
+Locked all-feature workspace/500k, strict all-feature/all-target Clippy,
+standalone/assets-only tig-git, fmt, structure/hash pins and diff pass. Scope and
+open gates are in the [producer record](../reviews/2026-11-20-native-job-protection.md).
+
 EVID-120: three provider-file tests, thirteen existing byte-reader regressions,
 seven annex parser/process tests and explicitly enrolled native ordinary/bare
 fixture pass. Locked all-feature workspace (including 500k persistence), strict
