@@ -1,6 +1,6 @@
 # git-asset
 
-**Track an asset's identity, versions, dependencies and storage policyâ€”with Git
+**Track an asset's identity, versions, dependencies and storage policy, with Git
 for decisions and git-annex for file bytes.**
 
 git-asset is a CRM-like layer for assets: a durable record of what an asset is,
@@ -35,17 +35,15 @@ are configurable; observed copy availability and custody are recorded separately
 
 ```mermaid
 flowchart TB
-    G["Git commits<br/>Definitions Â· references Â· selected versions"]
-    A["git-asset<br/>Asset records Â· dependencies Â· jobs Â· placement policy"]
+    G["Git: choices and history"]
+    A["git-asset: assets, versions and policy"]
     G --> A
-    A -->|Episode working sets| F["F: Episode working cache<br/>E01 image v4 Â· narration v3 Â· render v13"]
-    A -->|Music-video working sets| E["E: Music-video working cache<br/>MV01 clip v9 Â· music mix v6 Â· master v4"]
-    A -->|Large originals and retained history| J["J: Bulk storage<br/>Camera originals Â· layered images Â· 3D sources<br/>Retained older versions from both categories"]
-    F -->|Eligible older versions| J
-    E -->|Eligible older versions| J
-    F -.->|Verified backup copies| M["M: External backup drive<br/>Selected and retained originals / outputs<br/>Independent custody, retained by policy"]
-    E -.->|Verified backup copies| M
-    J -.->|Verified backup copies| M
+    A -->|Episodes| F["F: Episode cache<br/>Image v4 / render v13"]
+    A -->|Music videos| E["E: Music-video cache<br/>Clip v9 / mix v6"]
+    A -->|Originals and history| J["J: Bulk storage<br/>Original masters / retained v1-v3"]
+    F -.->|Verified backup| M["M: External backup<br/>Verified retained copies"]
+    E -.->|Verified backup| M
+    J -.->|Verified backup| M
 ```
 
 | Example asset or use | Working location | Bulk/history location | Backup |
@@ -68,16 +66,20 @@ selects image v3 and render v12. The music video is unrelated and keeps its
 existing selections.
 
 ```mermaid
-flowchart TB
-    B["Baseline Git commit<br/>Selected: image v3 + render v12"]
-    C["Register corrected image v4<br/>Immutable candidate + original bytes + provenance"]
-    I["Preview declared dependency impact<br/>Which shots and outputs consume this image?"]
-    W["Workflow builds / rerenders affected work<br/>Job pins exact image v4 + other input versions"]
-    O["Retain and verify returned bytes<br/>New render v13 remains a candidate"]
-    R["Review and propose new selections<br/>Expected committed baseline must still match"]
-    N["Merge accepted selections<br/>Image v4 + render v13 become current"]
-    P["Plan placement from the new state<br/>F: current Â· J: retained history Â· M: backup"]
-    B --> C --> I --> W --> O --> R --> N --> P
+sequenceDiagram
+    participant Artist
+    participant A as git-asset
+    participant W as Build / render workflow
+    participant G as Git review
+    Artist->>A: Register corrected image v4 as a candidate
+    A-->>W: Declared impact and exact input pins
+    W->>W: Rebuild / rerender affected outputs
+    W->>A: Register render v13 as a candidate
+    A-->>W: Retained output bytes verified
+    W-->>Artist: Results ready for review
+    Artist->>G: Propose image v4 + render v13 against baseline
+    G->>A: Merge accepted selections
+    Note over A,W: Plan F working / J history / M backup
 ```
 
 1. **Register the fix.** Keep the original returned bytes, content hash, byte
