@@ -1,5 +1,29 @@
 # Tig resume state
 
+## Managed annex read lane
+
+Owned branch feat/annex-managed-read, input
+a16dc61d3c551dc686bfae9a566a040dd0069e0a. See
+[contract](../specs/ANNEX-MANAGED-READ.md) and
+[producer record](../docs/reviews/2026-11-20-annex-managed-read.md), EVID-122.
+Add Namespace::hold/SubjectUse on existing shared admission partitions and an
+optional annex::managed::Reader/Read with typed errors and existing ByteSource.
+Pool config pins the canonical provider Binding digest; all admitted namespaces
+and aliases must match, with every use held through read/seek/path consumption.
+Claims can adopt while uses live; exclusive fences are blocked. Two shared-use
+fixtures (including forced child death), eleven annex tests and explicitly
+admitted actual ordinary/bare native fixture pass. Strict all-feature/all-target
+Clippy, full all-feature workspace/500k with two threads, standalone/assets-only
+Git and final L0 pass. The first four-thread run hit Age(Budget) in the existing
+17-root retirement case; that unchanged case passes alone and in the two-thread
+run. Temporary diagnostics are removed; no production budgets changed. Original
+parallel failure/hosted qualification remain open. APIs/defaults/pins and
+markers are preserved. This is a prerequisite for native publication/readback
+and owner adoption, not a retained-publication implementation. No actual pruner,
+roster replacement or production custody is qualified; unmanaged annex drop does
+not honor these gates. Next: native positive file ingress/recovery and retained
+output handoff using this shared boundary. No live caches, transfers or renders.
+
 ## Native job protection lane
 
 Owned branch feat/native-job-protection, input

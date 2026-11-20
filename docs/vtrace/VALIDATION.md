@@ -1,5 +1,11 @@
 # Intended-use validation
 
+EVID-122 demonstrates actual native pool-roster binding and held byte/use guards
+while owner adoption remains possible, plus lock release on child death without
+claim release. It does not qualify native pruner execution, retained publication,
+roster handoff, remote/hardware custody or complete REEL acceptance. See
+[scope](../reviews/2026-11-20-annex-managed-read.md).
+
 EVID-121 demonstrates flat declared job obligations through actual metadata
 finish/reopen and guarded namespace reopen while the synthetic Git checkout is
 unavailable. It does not qualify abrupt integrated process death, actual annex

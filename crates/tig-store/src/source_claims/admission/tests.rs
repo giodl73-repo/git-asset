@@ -1026,6 +1026,7 @@ fn replaced_marker_and_missing_anchor_refuse_without_repair() {
     )
     .unwrap();
     assert!(f.namespace.fence(&f.a).is_err());
+    assert!(f.namespace.hold(&f.a).is_err());
     assert!(
         f.namespace
             .apply(
@@ -1047,6 +1048,8 @@ fn replaced_marker_and_missing_anchor_refuse_without_repair() {
         .join(format!("{:02x}", partition(&f.a.sha256).unwrap()));
     fs::remove_file(&anchor).unwrap();
     assert!(f.namespace.fence(&f.a).is_err());
+    assert!(!anchor.exists());
+    assert!(f.namespace.hold(&f.a).is_err());
     assert!(!anchor.exists());
 }
 #[test]
@@ -1118,8 +1121,17 @@ fn admission_child() {
         serde_json::from_slice(&fs::read(root.join("child-input.json")).unwrap()).unwrap();
     let mut namespace = Namespace::open(&root, &input.minimum).unwrap();
     let mode = std::env::var("TIG_ADMISSION_CHILD_MODE").unwrap();
-    if mode == "hold" {
-        let _fence = namespace.fence(&input.object).unwrap();
+    if mode == "hold" || mode == "shared" {
+        let _fence = if mode == "hold" {
+            Some(namespace.fence(&input.object).unwrap())
+        } else {
+            None
+        };
+        let _usage = if mode == "shared" {
+            Some(namespace.hold(&input.object).unwrap())
+        } else {
+            None
+        };
         fs::write(root.join("child-ready"), b"ready").unwrap();
         // Only the owned test parent terminates this helper. Deadline bounds a
         // lost parent's lifetime; expiry itself grants no mutation authority.
@@ -1269,6 +1281,67 @@ fn another_process_blocks_overlapping_admission_until_actual_exit() {
             .pending
             .is_some()
     );
+}
+
+#[test]
+fn shared_use_allows_adoption_blocks_fences_and_outlives_namespace_handle() {
+    let mut f = Fixture::new(true);
+    f.enroll("main", Kind::Job);
+    let usage = f.namespace.hold(&f.a).unwrap();
+    assert_eq!(usage.object(), &f.a);
+    assert_eq!(usage.authority(), f.namespace.identity());
+    let peer = Namespace::open(&f.root(), &f.namespace.checkpoint()).unwrap();
+    let second = peer.hold(&f.a).unwrap();
+    assert!(matches!(peer.fence(&f.a), Err(Error::Busy)));
+    let alias = Object {
+        sha256: f.a.sha256.clone(),
+        bytes: f.a.bytes + 1,
+    };
+    assert!(matches!(peer.fence(&alias), Err(Error::Busy)));
+    assert_ne!(
+        partition(&f.a.sha256).unwrap(),
+        partition(&f.b.sha256).unwrap()
+    );
+    drop(peer.fence(&f.b).unwrap());
+    f.selected("main", f.old.clone());
+    let state = f.namespace.source(&key("main")).unwrap().unwrap();
+    let root = f.root();
+    let checkpoint = f.namespace.checkpoint();
+    drop(second);
+    drop(peer);
+    drop(f.namespace);
+    let mut reopened = Namespace::open(&root, &checkpoint).unwrap();
+    assert!(matches!(reopened.fence(&f.a), Err(Error::Busy)));
+    drop(usage);
+    let fence = reopened.fence(&f.a).unwrap();
+    assert!(matches!(reopened.hold(&f.a), Err(Error::Busy)));
+    drop(fence);
+    assert_eq!(reopened.source(&key("main")).unwrap().unwrap(), state);
+}
+
+#[test]
+fn shared_use_process_death_releases_only_lock_and_preserves_job_history() {
+    let mut f = Fixture::new(true);
+    f.enroll("main", Kind::Job);
+    f.selected("main", f.old.clone());
+    child_input(&f);
+    let mut child = spawn(&f.root(), "shared");
+    let start = Instant::now();
+    while !f.root().join("child-ready").exists() {
+        assert!(child.0.try_wait().unwrap().is_none());
+        assert!(start.elapsed().as_secs() < 10);
+        std::thread::sleep(std::time::Duration::from_millis(20));
+    }
+    assert!(matches!(f.namespace.fence(&f.a), Err(Error::Busy)));
+    f.selected("main", f.new.clone());
+    assert!(child.0.try_wait().unwrap().is_none());
+    child.0.kill().unwrap();
+    child.0.wait().unwrap();
+    drop(f.namespace.fence(&f.a).unwrap());
+    assert!(!f.absent(&f.a.clone(), "backup"));
+    let state = f.namespace.source(&key("main")).unwrap().unwrap();
+    assert!(state.predecessors.iter().any(|p| p.selection == f.old));
+    assert_eq!(state.current.unwrap().selection, f.new);
 }
 
 fn select(f: &mut Fixture, label: &str, selection: Selection) -> Select {

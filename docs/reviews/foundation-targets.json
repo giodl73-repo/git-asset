@@ -304,8 +304,8 @@
     },
     {
       "path": "docs/vtrace/EVIDENCE.md",
-      "bytes": 110379,
-      "sha256": "c34d73445b8a93c1cb83e694971ec02793470fbf26b015acd2aea511a43d349e"
+      "bytes": 110786,
+      "sha256": "6f81ecb39924023577c7d02859b9bff2b2e7258dd2183eae61be098f6863a664"
     },
     {
       "path": "docs/vtrace/IMPLEMENTATION_PLAN.md",
@@ -359,8 +359,8 @@
     },
     {
       "path": "docs/vtrace/REVIEW.md",
-      "bytes": 131060,
-      "sha256": "368ce3abc2844f266b105f0c241b1de6e544b794374cb7b166183c5d79253e32"
+      "bytes": 131061,
+      "sha256": "7cd37ee5b0fc45d3b8676959ab7c7702677779923912fd7a39ac22f9f995c4cd"
     },
     {
       "path": "docs/vtrace/RISKS.md",
@@ -379,18 +379,18 @@
     },
     {
       "path": "docs/vtrace/TRACE.md",
-      "bytes": 50126,
-      "sha256": "36b8f5daf10b5723ca7102d6ba4c097871832703fa918bcf2fac621140a89538"
+      "bytes": 50462,
+      "sha256": "592ae650ef65598d99eecce4c87644b5ac9855ea0509785904baf51b92c863c5"
     },
     {
       "path": "docs/vtrace/VALIDATION.md",
-      "bytes": 35681,
-      "sha256": "0dd15ae5869bada918a604db3f5a48c8c8475c90ec09ac4ed57c02a6c7ca55a6"
+      "bytes": 36052,
+      "sha256": "1cdfe69f88f43587ae3efabceaa11488767f0f2880235992b8d5c4de55a368ef"
     },
     {
       "path": "docs/vtrace/VERIFICATION.md",
-      "bytes": 60573,
-      "sha256": "2dc22baf2d667f31a816c0c947a665663222fa1614f3ddbf55a52aab071533db"
+      "bytes": 60975,
+      "sha256": "bef1a2559fa9a50ca9609fc13da464beacab178d5d32ead8175628f198b18c5e"
     },
     {
       "path": "docs/vtrace/WORK_PACKAGES.md",
@@ -409,13 +409,13 @@
     },
     {
       "path": "PRODUCT_PLAN.md",
-      "bytes": 49438,
-      "sha256": "34de89d2d3da895b96208ef83b311537b2ee4f459f40aa641e23101977a22763"
+      "bytes": 49652,
+      "sha256": "4a1854d861bff7033e267bfe664266652003ac21dcde55a3c12181848947988e"
     },
     {
       "path": "README.md",
-      "bytes": 13102,
-      "sha256": "8e0152904eea97adf630ac33e891e17a98db69dbcd15c52ec1345bc6e153b649"
+      "bytes": 13278,
+      "sha256": "426f268f7062b62077718a20506c07dd6a59160376d7a39a4381fae570e6650e"
     },
     {
       "path": "specs/BYTE-WORKTREE.md",
@@ -1848,9 +1848,9 @@
       "sha256": "03ae7ab0cc4ee374e6b0a5ecaaace6f304c85c34aeb1be9af5e9622033fe20b8"
     },
     {
-      "bytes": 81055,
+      "bytes": 82650,
       "path": "context/RESUME.md",
-      "sha256": "c98bd3b09e34a437fe90f9ae191ee36b5d6a33ae691bcf7deb545e5071bd1b6d"
+      "sha256": "b56150b14f3b445664840f517561a8290e90023379c8cc3e53e84e9bd403d1e2"
     },
     {
       "bytes": 16453,
@@ -1899,13 +1899,13 @@
     },
     {
       "path": "crates/tig-store/src/source_claims/admission.rs",
-      "bytes": 30114,
-      "sha256": "4b7f60b633aab7a9a5c188942cdf2bb5d6573ce91e372238ab78a13522184d41"
+      "bytes": 31141,
+      "sha256": "f987d0d4b974488cd05f92d2107fb6b16eb2e6813901ae0e7dc01dac7c1f08e0"
     },
     {
       "path": "crates/tig-store/src/source_claims/admission/tests.rs",
-      "bytes": 61045,
-      "sha256": "755796027e225ba65f478f7a973591d74785ec170b75eb3470780adbee09ec72"
+      "bytes": 63810,
+      "sha256": "fbc2263a68669906d033ab2c93b752ce792cd03cfcc85ef57dced809bf20b3f1"
     },
     {
       "path": "specs/MANDATORY-SOURCE-ADMISSION.md",
@@ -2904,8 +2904,8 @@
     },
     {
       "path": "crates/tig-git/src/annex.rs",
-      "bytes": 8741,
-      "sha256": "38c68232368d9f0291afd975d079caccae180a722b62855a6d217a7995d51ed1"
+      "bytes": 9380,
+      "sha256": "633159f81e399479de1931cd5537aab7bcdded3f320ef718f60e40e5dea4f3f5"
     },
     {
       "path": "crates/tig-git/src/annex/process.rs",
@@ -2914,8 +2914,8 @@
     },
     {
       "path": "crates/tig-git/src/annex/tests.rs",
-      "bytes": 13392,
-      "sha256": "98a5beb70d4706c1e6459482da7bdd0eb66958b76b6361924ffe736a407348ae"
+      "bytes": 14995,
+      "sha256": "00d76d2924bd645c0acf32d71ff3b97c529b4a268591b1eac0dd5c7513767352"
     },
     {
       "path": "crates/tig-store/src/existing/provider.rs",
@@ -2949,8 +2949,28 @@
     },
     {
       "path": "specs/NATIVE-JOB-PROTECTION.md",
-      "bytes": 5729,
-      "sha256": "5f9ed003b4a60742fe73ce0a2e4875f7c6c48522782f7f1ff79c84f27beab325"
+      "bytes": 5951,
+      "sha256": "d2ecd00dcd5919b69bac0bcf5da89af0f10064a3471c248c2c6be6f45b1bbe45"
+    },
+    {
+      "path": "crates/tig-git/src/annex/managed.rs",
+      "bytes": 6082,
+      "sha256": "e6423a3b7f2b13b720db317af23aa7879a384b5ab1b65ea400b04b47caf79955"
+    },
+    {
+      "path": "crates/tig-git/src/annex/tests/managed_tests.rs",
+      "bytes": 9199,
+      "sha256": "b390c8dba8db85e1021d1e6c854a7b5f3f0c35ebd469dc5e122eb761f901e737"
+    },
+    {
+      "path": "docs/reviews/2026-11-20-annex-managed-read.md",
+      "bytes": 5673,
+      "sha256": "5d5110cb5572cf98ada8a8c4d5cbd53bb978683d55d532573c0c54a1b1091513"
+    },
+    {
+      "path": "specs/ANNEX-MANAGED-READ.md",
+      "bytes": 5706,
+      "sha256": "fd669305449385797d4babba0fa8eb1b3679a3ccb3e3fe4ec479b4db4c198179"
     }
   ]
 }

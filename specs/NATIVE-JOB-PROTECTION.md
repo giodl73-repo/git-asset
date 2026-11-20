@@ -91,3 +91,6 @@ the optional annex read provider. Binding an actual annex pool to a complete
 protection roster and contained publication/readback/retention still requires
 separate qualification. These metadata obligations do not constrain unmanaged
 `git annex drop`, raw filesystem deletion or other nonparticipating pruners.
+The [managed read boundary](ANNEX-MANAGED-READ.md) now checks a pool-pinned full
+roster and holds compatible shared uses during reads. Publication, actual pruner
+execution and roster replacement remain separate open work.

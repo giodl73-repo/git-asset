@@ -1,5 +1,11 @@
 # Tig trace
 
+Managed annex reads: WP-004/007/008/009/011;
+REQ-001/003/004/006/007/008/010 -> SPEC-003/004/005/007/008/009/011,
+IF-002/004/005/010/012, PKG-002/003/004 -> ANNEX-MANAGED-READ.md -> existing
+shared partitions, full pool binding and guarded reads -> EVID-122. Native
+publication/pruner and complete IF-004/custody acceptance stay open.
+
 Native job projection: WP-004/008/009/010/011;
 REQ-001/003/004/006/007/008/010 -> SPEC-002/003/004/005/007/008/010/011,
 IF-002/004/005/008/010/012, PKG-001/003/004/006 -> NATIVE-JOB-PROTECTION.md ->

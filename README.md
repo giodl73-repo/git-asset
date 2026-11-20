@@ -46,6 +46,7 @@ sets. The complete Git-style course remains in development.
 | Identity and metadata | Immutable objects/trees, bounded persistent metadata and exact Git snapshots |
 | Existing stores | Guarded verified reads from configured flat, CAS and Git LFS layouts |
 | Git annex | Optional Rust `annex-read` adapter for exact guarded local reads from explicitly enrolled format-10 ordinary/bare repositories on Windows; see [contract](specs/ANNEX-READ-ADAPTER.md) |
+| Managed annex reads | [Pool-pinned namespace roster](specs/ANNEX-MANAGED-READ.md) and shared use guards allow owner adoption while blocking participating exclusive pruners |
 | Git LFS | Explicit existing-cache download adapter; optional bounded standalone Basic upload with full readback |
 | Local storage | Bounded publication, capacity admission, source journals, retention and recovery primitives |
 | Optional typed assets | Schema admission, declared graphs, sparse variants, production contexts and revision/delivery history |

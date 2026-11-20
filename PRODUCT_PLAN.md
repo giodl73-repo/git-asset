@@ -15,6 +15,9 @@ This is source availability, not a stable product or full storage acceptance.
   recovery primitives with synthetic and real-client fixtures.
 - Exact commit/index extraction, source journals and download-only Git LFS cache
   interoperability. Stores are explicitly enrolled, never discovered.
+- Optional exact local annex reads, pool-pinned namespace rosters and compatible
+  shared use guards. Native publication, pruner execution and retained-output
+  consumer handoff remain separate qualification work.
 - Optional native records, schema admission, graphs, sparse variants, production
   contexts, revision/delivery history and sparse Git proposals.
 - Explicit Rust project restore, handoff/progress evidence and history inspection.

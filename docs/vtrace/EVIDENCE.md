@@ -1,5 +1,12 @@
 # Evidence index
 
+EVID-122 (scoped managed-read candidate), input
+a16dc61d3c551dc686bfae9a566a040dd0069e0a:
+[producer record](../reviews/2026-11-20-annex-managed-read.md) separates shared
+namespace use, pool-pinned full roster, actual native exact reads, verification,
+intended-use limits, trace and producer lenses. Retained publication, participating
+pruner execution and complete consumer/custody acceptance remain open.
+
 EVID-121 (scoped job-projection candidate), input
 6eaf75904868a86201eeb55fc61e10b414fa7759:
 [producer record](../reviews/2026-11-20-native-job-protection.md) separates flat

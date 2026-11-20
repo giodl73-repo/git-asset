@@ -5,6 +5,7 @@ use tig_core::{Digest, Object};
 use tig_store::existing::{
     self, ByteSource, Limits, ProviderPath, ReadCache, RequiredProtection, VerifiedRead,
 };
+pub mod managed;
 mod process;
 #[cfg(test)]
 mod tests;
@@ -106,6 +107,11 @@ impl Reader {
     }
     /// Synchronous Windows adapter; use a dedicated thread outside entered Tokio runtimes.
     pub fn open(&mut self, object: &Object) -> Result<VerifiedRead> {
+        self.preflight(object)?;
+        let _configuration = self.admit_repository()?;
+        self.open_local(object)
+    }
+    fn preflight(&self, object: &Object) -> Result<()> {
         if !process::supported() {
             return Err(Error::Unsupported);
         }
@@ -120,13 +126,19 @@ impl Reader {
         {
             return Err(Error::Budget);
         }
+        Ok(())
+    }
+    fn admit_repository(&mut self) -> Result<VerifiedRead> {
+        if !process::supported() {
+            return Err(Error::Unsupported);
+        }
         let config = ProviderPath::parse(if self.profile.bare {
             "config"
         } else {
             ".git/config"
         })
         .map_err(Error::Configuration)?;
-        let _config = self
+        let config = self
             .metadata
             .open_provider_file(
                 &self.profile.repository,
@@ -180,6 +192,14 @@ impl Reader {
         if line(&version.stdout)? != "10" {
             return Err(Error::Unsupported);
         }
+        Ok(config)
+    }
+    fn open_local(&mut self, object: &Object) -> Result<VerifiedRead> {
+        let prefix = if self.profile.bare {
+            "annex/objects/"
+        } else {
+            ".git/annex/objects/"
+        };
         let key = format!("SHA256-s{}--{}", object.bytes, object.sha256.as_str());
         let location = process::run(&self.profile, true, &["contentlocation", &key]);
         let location = match location {
@@ -187,7 +207,7 @@ impl Reader {
             other => other?,
         };
         let path = location_path(&location.stdout, prefix, &key)?;
-        // The data guard is acquired while the configuration guard is still live.
+        // Caller keeps the configuration guard live while acquiring this data guard.
         // Config edits after return cannot mutate/replace the held payload namespace.
         self.data
             .open_provider_file(&self.profile.repository, &path, object)
@@ -197,15 +217,18 @@ impl Reader {
 impl ByteSource for Reader {
     type Reader = VerifiedRead;
     fn open_verified(&mut self, object: &Object) -> existing::Result<VerifiedRead> {
-        self.open(object).map_err(|e| match e {
-            Error::Invalid => existing::Error::Invalid,
-            Error::Unsupported => existing::Error::Unsupported,
-            Error::WrongIdentity => existing::Error::Denied,
-            Error::Observation => existing::Error::Io,
-            Error::Missing => existing::Error::Missing,
-            Error::Budget => existing::Error::Budget,
-            Error::Configuration(e) | Error::Bytes(e) => e,
-        })
+        self.open(object).map_err(byte_error)
+    }
+}
+fn byte_error(error: Error) -> existing::Error {
+    match error {
+        Error::Invalid => existing::Error::Invalid,
+        Error::Unsupported => existing::Error::Unsupported,
+        Error::WrongIdentity => existing::Error::Denied,
+        Error::Observation => existing::Error::Io,
+        Error::Missing => existing::Error::Missing,
+        Error::Budget => existing::Error::Budget,
+        Error::Configuration(e) | Error::Bytes(e) => e,
     }
 }
 fn absolute(p: &Path) -> bool {

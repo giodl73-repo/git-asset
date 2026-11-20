@@ -2,6 +2,7 @@ use super::*;
 #[cfg(windows)]
 use std::{fs, io::Read};
 const UUID: &str = "00000000-0000-0000-0000-000000000001";
+mod managed_tests;
 
 fn profile(root: &Path, program: &Path) -> Profile {
     Profile {
@@ -111,6 +112,9 @@ fn main() {
     }
     if args==["config","--local","--no-includes","--get-all","annex.version"] {
         println!("{}",if mode=="old-version" {"7"} else {"10"}); return;
+    }
+    if args==["config","--local","--no-includes","--get-all","tig.protectionbinding"] {
+        print!("{}",fs::read_to_string("binding").unwrap()); return;
     }
     if args.len()==2 && args[0]=="contentlocation" {
         if mode=="missing" {std::process::exit(1);}
@@ -298,7 +302,7 @@ fn actual_native_ordinary_and_bare_reads_are_exact_local_and_guarded() {
         let cfg = repo.join(if bare { "config" } else { ".git/config" });
         p.configuration = Object::from_bytes(&fs::read(&cfg).unwrap());
         let before = p.configuration.clone();
-        let mut reader = Reader::new(p).unwrap();
+        let mut reader = Reader::new(p.clone()).unwrap();
         let mut held = reader.open(&object).unwrap();
         let mut bytes = vec![];
         held.read_to_end(&mut bytes).unwrap();
@@ -308,12 +312,51 @@ fn actual_native_ordinary_and_bare_reads_are_exact_local_and_guarded() {
                 .unwrap()
                 .is_err()
         );
-        assert_eq!(Object::from_bytes(&fs::read(cfg).unwrap()), before);
+        assert_eq!(Object::from_bytes(&fs::read(&cfg).unwrap()), before);
         drop(held);
         assert!(matches!(
             reader.open(&Object::from_bytes(b"absent")),
             Err(Error::Missing)
         ));
+        let (mut managed, namespaces) = managed_tests::roster(p, root.path());
+        let binding = managed.binding.id().unwrap();
+        process::fixture_command(
+            &managed.pool,
+            false,
+            &[
+                "config",
+                "--local",
+                "tig.protectionbinding",
+                binding.as_str(),
+            ],
+        )
+        .unwrap();
+        managed.pool.configuration = Object::from_bytes(&fs::read(&cfg).unwrap());
+        let expected_config = managed.pool.configuration.clone();
+        let mut reader = super::managed::Reader::new(managed).unwrap();
+        let mut held = reader.open(&object).unwrap();
+        let mut bytes = vec![];
+        held.read_to_end(&mut bytes).unwrap();
+        assert_eq!(bytes, b"synthetic native bytes");
+        assert_eq!(held.held_namespaces(), 2);
+        assert!(namespaces.iter().all(|n| matches!(
+            n.fence(&object),
+            Err(tig_store::source_claims::admission::Error::Busy)
+        )));
+        assert!(
+            held.with_path(|path| fs::remove_file(path))
+                .unwrap()
+                .is_err()
+        );
+        drop(reader);
+        drop(held);
+        for namespace in namespaces {
+            drop(namespace.fence(&object).unwrap());
+        }
+        assert_eq!(
+            Object::from_bytes(&fs::read(&cfg).unwrap()),
+            expected_config
+        );
     }
 }
 #[cfg(windows)]

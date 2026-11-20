@@ -232,6 +232,21 @@ pub struct SubjectFence {
     object: Object,
     _locks: Locks,
 }
+/// Live shared use only, not a durable claim or removal/custody grant.
+/// Compatible with guarded claim admission; blocks exclusive subject fences.
+pub struct SubjectUse {
+    authority: Digest,
+    object: Object,
+    _locks: Locks,
+}
+impl SubjectUse {
+    pub fn authority(&self) -> &Digest {
+        &self.authority
+    }
+    pub fn object(&self) -> &Object {
+        &self.object
+    }
+}
 impl SubjectFence {
     pub fn authority(&self) -> &Digest {
         &self.authority
@@ -763,6 +778,22 @@ impl Namespace {
         Ok(self
             .journal
             .apply_admitted(operation, command, &permit, hook)?)
+    }
+    /// Hold an existing namespace partition shared through read/publication/adoption.
+    /// Process exit releases only this lock, never durable claims or payload bytes.
+    pub fn hold(&self, object: &Object) -> Result<SubjectUse> {
+        self.journal.check_guarded_marker()?;
+        let held = locks(
+            &self.journal.root,
+            &[partition(&object.sha256)?].into_iter().collect(),
+            false,
+        )?;
+        self.journal.check_guarded_marker()?;
+        Ok(SubjectUse {
+            authority: self.identity().clone(),
+            object: object.clone(),
+            _locks: held,
+        })
     }
     /// Mutual exclusion only. This neither initializes a byte store nor deletes.
     pub fn fence(&self, object: &Object) -> Result<SubjectFence> {

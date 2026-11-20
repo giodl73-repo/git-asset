@@ -1,5 +1,11 @@
 # Verification record
 
+EVID-122: two shared-use store tests (including forced process death), eleven
+annex tests and actual native ordinary/bare fixture pass. Locked all-feature
+workspace/500k with two threads, strict all-target Clippy, standalone/assets-only
+Git and final L0 pass. The earlier four-thread Age(Budget) scale-fixture failure
+is retained in the [producer record](../reviews/2026-11-20-annex-managed-read.md).
+
 EVID-121: three native job-projection fixtures pass exact membership,
 header/flat substitution, missing/corrupt metadata, aggregate budgets and
 finished/reopened guarded namespace replay/stale/peer/cancellation cases.
