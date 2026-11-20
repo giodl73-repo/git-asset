@@ -46,3 +46,14 @@ remain recorded qualification failures, not fixed production defects. The
 unchanged seventeen-root case passes in isolation; the complete serial profile
 is required before source closure. Scheduling sensitivity is an inference, not
 a confirmed diagnosis of the original budget failures.
+
+Qualification follow-up, input 8e03c00a95840dfb91c4b82309d928c43295f214: WP-003/004/008/009/014/015;
+REQ-001/003/004/005/006/007/009; SPEC-003/004/005/008/009/014;
+IF-003/004/005/006/012; PKG-002/003/008/009; existing LOCAL-CLOCK.md and
+AGE-WITNESSES.md. Allowed scope is the real-clock synthetic fixture only:
+a fresh CLI attempt after clock_held, at most four attempts within a retry window
+checked against five seconds between calls. Other errors and final held results
+are returned unchanged to existing assertions. No production timer, budget,
+clock identity, floor or admission logic changes. Require focused real-clock,
+full serial workspace and strict Clippy qualification. Host trust/sampling
+availability and parallel budget failures remain separate open limits.

@@ -984,8 +984,8 @@
     },
     {
       "path": "crates/git-asset/tests/native_source/retirement_cases/age_cases.rs",
-      "bytes": 9813,
-      "sha256": "68cd081f3e292bd040b7847b3e1158d2582c089e91cad6bf07578866d16ce737"
+      "bytes": 10797,
+      "sha256": "3997fa7f1a2d145124225c205f0c01690f00964dff67d2d36ca9c22821ba26f7"
     },
     {
       "path": "crates/git-asset/tests/native_source/retirement_cases/bulk_cases.rs",
@@ -2384,8 +2384,8 @@
     },
     {
       "path": "docs/reviews/2026-11-20-git-asset-rename.md",
-      "bytes": 5543,
-      "sha256": "f8117299dca167074270077c1ac541987ba01cc75c3f9c433aece451f3aae1e5"
+      "bytes": 6474,
+      "sha256": "e384d788cd0173e00420db55a614565cd76c4f35fa75d75dfacd529a314ec5df"
     },
     {
       "path": "docs/reviews/2026-11-20-native-job-protection.md",
@@ -2554,8 +2554,8 @@
     },
     {
       "path": "docs/vtrace/VERIFICATION.md",
-      "bytes": 61501,
-      "sha256": "b5111690e7eb60196ef4a69888f6c3421a8ffeb23e6d791e6f3e4624ed174f33"
+      "bytes": 61692,
+      "sha256": "25d571e1732ca87c4dc575216cad6385058280eee105dcbe447d8f301962ca05"
     },
     {
       "path": "docs/vtrace/WORK_PACKAGES.md",
@@ -2699,8 +2699,8 @@
     },
     {
       "path": "specs/GIT-ASSET-RENAME.md",
-      "bytes": 3273,
-      "sha256": "c47cc6950213a417f3d299f78c82fda13a1bc10a06a8bb409b8c61dcb574a8af"
+      "bytes": 4047,
+      "sha256": "1dbaf1f10af7714ef7dadff7f43a9096b0246bcc5fd97bf831269c38aed23379"
     },
     {
       "path": "specs/GIT-LIFECYCLE-RECONCILIATION.md",

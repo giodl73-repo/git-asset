@@ -4,6 +4,24 @@ use git_asset_store::{clock, ledger::CapacityLedger, source_claims::age};
 fn digest(v: &impl serde::Serialize) -> Digest {
     Digest::blob(&identity::canonical_json(&serde_json::to_value(v).unwrap()).unwrap())
 }
+// Real OS sampling may temporarily refuse its admitted uncertainty window.
+// Retry only this explicit hold, with fresh CLI invocations and finite bounds;
+// malformed evidence, admission failures and all other errors remain failures.
+fn with_clock_retry(mut run: impl FnMut() -> std::process::Output) -> std::process::Output {
+    let started = std::time::Instant::now();
+    for attempt in 0..4 {
+        let out = run();
+        let held = !out.status.success()
+            && serde_json::from_slice::<Value>(&out.stdout)
+                .is_ok_and(|v| v["code"] == "clock_held");
+        if !held || attempt == 3 || started.elapsed() >= std::time::Duration::from_secs(5) {
+            return out;
+        }
+        std::thread::sleep(std::time::Duration::from_millis(25));
+    }
+    unreachable!("finite clock attempt loop returns on its final attempt")
+}
+
 #[test]
 fn aged_native_cli_holds_unknown_and_recent_then_emits_only_exact_proven_block() {
     let (f, mut snapshot) = fixture();
@@ -104,12 +122,14 @@ fn aged_native_cli_holds_unknown_and_recent_then_emits_only_exact_proven_block()
             serde_json::to_vec(request).unwrap(),
         )
         .unwrap();
-        let out = Command::new(env!("CARGO_BIN_EXE_git-asset-retirement"))
-            .arg("select-aged")
-            .arg(root.join("profile.json"))
-            .arg(root.join("request.json"))
-            .output()
-            .unwrap();
+        let out = with_clock_retry(|| {
+            Command::new(env!("CARGO_BIN_EXE_git-asset-retirement"))
+                .arg("select-aged")
+                .arg(root.join("profile.json"))
+                .arg(root.join("request.json"))
+                .output()
+                .unwrap()
+        });
         let v: Value = serde_json::from_slice(&out.stdout).unwrap();
         assert!(out.stderr.is_empty(), "{out:?}");
         assert!(!String::from_utf8_lossy(&out.stdout).contains("PRIVATE AUTHORING TEXT"));
@@ -229,12 +249,14 @@ fn aged_native_cli_holds_unknown_and_recent_then_emits_only_exact_proven_block()
         .unwrap(),
     )
     .unwrap();
-    let out = Command::new(env!("CARGO_BIN_EXE_git-asset-retirement"))
-        .arg("select-paged")
-        .arg(root.join("paged-profile.json"))
-        .arg(root.join("paged-request.json"))
-        .output()
-        .unwrap();
+    let out = with_clock_retry(|| {
+        Command::new(env!("CARGO_BIN_EXE_git-asset-retirement"))
+            .arg("select-paged")
+            .arg(root.join("paged-profile.json"))
+            .arg(root.join("paged-request.json"))
+            .output()
+            .unwrap()
+    });
     let result: Value = serde_json::from_slice(&out.stdout).unwrap();
     assert!(out.status.success(), "{result}");
     assert_eq!(result["preview"]["selected_roots"], 1);

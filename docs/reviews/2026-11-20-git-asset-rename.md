@@ -27,19 +27,39 @@ The naming audit compares against the immutable input and preserves 891 frozen
 runtime/fixture identifier occurrences. Cargo registry versions/checksums are
 unchanged. All-target/all-feature workspace check, warnings-denied Clippy, two
 front-door tests, the explicit legacy-record readback test, 82 JavaScript cases
-and three Python restore-path cases pass. Final broad Rust, feature-profile,
-actual native fixture and L0 outcomes are recorded below when complete.
+and three Python restore-path cases pass. Standalone and assets-only builds,
+fresh real Git external-command discovery and the explicitly admitted native
+ordinary/bare annex fixture also pass. Final source/links/hash/diff checks include
+an audit that staged Git-tree bytes match the reviewed source hashes.
+
 The first broad run exposed mismatched renamed LFS fixture agent keys: the
 selected agent was git-asset but its customtransfer configuration used asset.
 Align both download/upload fixture keys with their selected agent; no transfer
-implementation, protection or byte checks are relaxed. All six real-client and thirteen upload cases pass after correction.
-The two-thread workspace then reached 160 passing native-source cases, one
-ignored explicit-artifact case and a failure in the existing seventeen-root
-aged-retirement case: Age(Admission(Budget)) at paged_cases.rs:1019. The unchanged
-case passes alone in 73.41s. A complete one-thread workspace rerun is required
-before closure; no filters, assertions or production budgets are changed. The
-parallel failures remain open and do not prove a particular underlying cause.
-Hosted exact-head Windows/Linux/secrets checks remain a separate publication gate.
+implementation, protection or byte checks are relaxed. All six real-client and
+thirteen upload cases pass after correction.
+
+The two-thread workspace reached 160 passing native-source cases, one ignored
+explicit-artifact case and an existing seventeen-root aged-retirement failure:
+Age(Admission(Budget)) at paged_cases.rs:1019. The unchanged case passes alone in
+73.41s and in the complete native-source target's one-thread run. That serial
+target reached 160 passing cases and one ignored case but failed separately at
+age_cases.rs:146 on an explicit clock_held response from the actual enrolled
+OS clock. Neither result establishes a particular underlying cause.
+
+The synthetic real-clock fixture now makes at most four fresh CLI attempts after
+clock_held, with a five-second retry window checked between calls. Other errors,
+final holds and all original state/selection/protection assertions remain.
+No production clock policy, floor, admission code or resource budget changes.
+The focused corrected fixture passes in 2.75s, and strict all-feature/all-target
+Clippy passes afterward. Deterministic clock-rejection tests remain unchanged.
+
+Final complete serial-workspace and exact-head hosted Windows/Linux/secrets
+outcomes are recorded on [PR 61](https://github.com/giodl73-repo/git-asset/pull/61).
+They are publication gates separate from this producer review; do not infer their
+status from a local implementation commit. The serial profile runs every routine
+test, including the explicit multi-process concurrency actors. Earlier parallel
+budget qualification remains open; no throughput or universal clock-availability
+claim follows. Full serial qualification is required before marking the PR ready.
 
 ## Intended-use validation
 
@@ -79,10 +99,6 @@ retained-publication/provider acceptance remain open beyond this rename scope.
   consumer pins require explicit consumer updates; existing feature PRs need
   rebasing. Maintainers own those follow-ups; no external deployment is claimed.
 
-Source naming/identity review is complete; broad runtime qualification remains
-open. The serial run also reports a failure in aged_native_cli_holds_unknown_
-and_recent_then_emits_only_exact_proven_block; await its detailed output and
-retain both failures rather than assuming a scheduling diagnosis. Publish only
-a draft until local findings and required exact-head hosted checks are settled.
-Independent review, human acceptance and full native lifecycle qualification
-remain open.
+Source naming/identity review is complete, with the runtime qualification gates
+and remaining risks recorded separately above. Independent review, human
+acceptance and complete native lifecycle qualification remain open.
