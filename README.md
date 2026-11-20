@@ -115,6 +115,92 @@ integration work. Existing local-provider teaching fixtures demonstrate bounded
 lifecycle slices; consuming workflows own build execution, rerender decisions and
 creative approval. The capability table below defines today's implemented scope.
 
+## Move old versions off the working disk
+
+After image v4 and render v13 are selected, the policy can stop requiring v3 and
+render v12 on F:. Their exact historical references remain. First establish and
+verify the required retained copies on J: and M:, then recheck all projects, jobs
+and retention obligations before evicting the eligible **F: copies**. A job still
+using v3 keeps it protected. An unavailable backup holds eviction; it does not
+turn an unknown copy into a verified survivor. Removing the last retained copy
+is a separate final-retirement operation, never ordinary cache eviction.
+
+The current command surfaces are below. `PROFILE`, `REQUEST`, `PLAN` and
+`PLACEMENT_PROFILE` stand for explicitly admitted absolute file paths outside the
+repository; discovery does not create them. These are existing **experimental
+local-provider** interfaces. Native-annex publication/pruning still needs its
+separate qualification; these examples do not enable production annex eviction.
+
+```text
+git asset lifecycle describe
+git asset storage retire describe
+```
+
+For one exact local copy, prepare a plan and inspect it before execution:
+
+```text
+git asset storage retire plan PROFILE REQUEST > PLAN
+git asset storage retire status PROFILE PLAN
+```
+
+The [retirement profile](specs/RETIREMENT-AGENT-CLI.md) admits the exact source,
+current protection scopes, independently retained survivors, capacity and private
+policy. Eviction defaults disabled. After that policy explicitly enables the
+planned operation, `git asset storage retire apply PROFILE PLAN` executes it;
+`git asset storage retire resume PROFILE PLAN` reconciles the **same plan** after
+interruption. Preserve the plan and returned recovery handles. A failed or lost
+response is not permission to delete files or invent a replacement operation.
+
+For an enrolled project's committed selection,
+`git asset lifecycle reconcile PROFILE REQUEST PLACEMENT_PROFILE [CURSOR]`
+composes copy, retained backup, handoff and eligible working-cache eviction.
+This is an **execution** command when private permissions enable those actions.
+Copy, eviction and reacquisition have separate default-false flags. Each call
+handles a bounded page, not an entire disk; save the exact returned cursor and
+distinguish page completion from a complete same-basis pass. See
+[placement reconciliation](specs/PLACEMENT-RECONCILIATION.md). A Git merge can
+request this work from a trusted enrolled executor; it does not prove backup
+custody or install a worker automatically.
+
+## Estimate how much storage each area needs
+
+Start with workload counts and explicit assumptions, then refine them with
+admitted measurements. There is no automatic disk-sizing command today. An agent
+can help build a worksheet without scanning caches or changing placement:
+
+> Estimate F:/E:/J:/M: capacity for 24 episodes and 8 music videos, with 12 episodes
+> and 4 videos active at once. Use 120 GiB per episode and 180 GiB per video,
+> 1,200 GiB of additional unique historical versions, 400/240 GiB of peak scratch
+> on F:/E:, and a 20% free-space target. Show assumptions, uncertainty and growth.
+> Separate unique bytes, retained copies, peak scratch and backup capacity.
+
+For that **illustrative workload**, assume the per-title sizes are distinct
+retained bytes, J: includes every retained current version, F:/E: are working
+subsets of J:, and M: holds a complete retained backup of that same set:
+
+| Area | Example demand before headroom | Capacity with 20% left free |
+| --- | --- | ---: |
+| F: active episodes | `12 × 120 + 400` = 1,840 GiB | 2.25 TiB |
+| E: active music videos | `4 × 180 + 240` = 960 GiB | 1.17 TiB |
+| J: retained catalogue | `24 × 120 + 8 × 180 + 1,200` = 5,520 GiB | 6.74 TiB |
+| M: retained backup | Same 5,520 GiB union; working duplicates counted once | 6.74 TiB |
+
+Use `required TiB = (unique assigned GiB + peak additional GiB) / 1024 / (1 - free fraction)`.
+One TiB is 1,024 GiB; a drive sold as 8 TB provides about 7.28 TiB before filesystem
+overhead. The example excludes metadata, filesystem overhead and provider-specific
+admission guards; add those explicitly. It is not a reading of your disks or a
+capacity reservation. An offline M: offers no currently verified headroom.
+
+Count shared cues once per area using their content identity. Estimate retained
+versions from additional **unique bytes**, rather than multiplying every asset
+by a version count. Include unfinished candidates, protected outputs, concurrent
+jobs, ingest bursts and the temporary overlap while both old and new copies are
+retained. Do not spend expected eviction savings before reclaim is observed.
+Show low/expected/high asset sizes and a delivery horizon: episodes per month,
+videos per month, retention age and review delay determine how quickly J:/M: grow.
+Final deletion of aged material requires its own explicit policy and protection
+checks; a sizing worksheet grants no deletion authority.
+
 ## Try the public sample
 
 Start with the [sample catalogue course](examples/catalogue/README.md). It uses
