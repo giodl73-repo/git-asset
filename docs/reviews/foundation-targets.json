@@ -44,8 +44,8 @@
     },
     {
       "path": ".github/workflows/validate.yml",
-      "bytes": 9385,
-      "sha256": "d78237f2c62426bbd1fbee24b2974802dbb93150f96878e134111dea4a5d8aff"
+      "bytes": 10116,
+      "sha256": "ef5c9a1e6d8a4f740ec6355998234ad47bfb52a6e2423bf7dd332a94c36e8cfb"
     },
     {
       "path": ".gitignore",
@@ -138,19 +138,14 @@
       "sha256": "b7cafcbde82f08fdc9fd50d25fcc54dfe4ce09e9a6c8eeb2d9f325615b688478"
     },
     {
-      "path": "README.md",
-      "bytes": 14510,
-      "sha256": "2c6130c0805ce2cd266c4928bf724fdf284a783faced3ba4653cba690d673420"
-    },
-    {
       "path": "SECURITY.md",
       "bytes": 1229,
       "sha256": "0d6efe90bb6ef3e5fc1c4d44155e6265529578dd4a61fb326ec1a73411f1590f"
     },
     {
       "path": "context/RESUME.md",
-      "bytes": 83845,
-      "sha256": "272b58dfa04bb3f677477de3484c9fff2a57eec67ab0d2ec4f69a732ffcd493f"
+      "bytes": 84573,
+      "sha256": "e8a06d189fd694386ac5ebd427196957b96754ff97f6acda292894d8e638b4cc"
     },
     {
       "path": "context/waves/2026-10-25-placement-foundation/WAVE.md",
@@ -1869,8 +1864,8 @@
     },
     {
       "path": "docs/DEVELOPMENT.md",
-      "bytes": 3147,
-      "sha256": "1b92a04eaf0a87c5983fedc9123804c63722365d3e3c4100a3bd429c2148dc16"
+      "bytes": 3983,
+      "sha256": "2fb6e2316a488da9ebd9a7b194bad17af466590e2a32704fd3cc0c30d8366b6d"
     },
     {
       "path": "docs/INTAKE.md",
@@ -2393,6 +2388,11 @@
       "sha256": "3d8eb4c2b87b36bdba908b627ed26a627a05a2991d3d41afd3d4e4d72761d74a"
     },
     {
+      "path": "docs/reviews/2026-11-20-readme-ci.md",
+      "bytes": 3079,
+      "sha256": "a603555f0fa280d8301215be8a66f82b950e2e9b5deee1dbe03eb3c17631f2e8"
+    },
+    {
       "path": "docs/scenarios/BN.md",
       "bytes": 2716,
       "sha256": "86f7164af4328adb6c22fa904e39d18af8591daeffe392fe667ef56078fa0b30"
@@ -2469,8 +2469,8 @@
     },
     {
       "path": "docs/vtrace/EVIDENCE.md",
-      "bytes": 111390,
-      "sha256": "b8253a26f8c9c10c1846a9939415602ba630bef61ebbe51ddc0167514917d3de"
+      "bytes": 111850,
+      "sha256": "9fe37896dcc871030acbe9148f5413a897c06d7b3d26084013be27287bbdf393"
     },
     {
       "path": "docs/vtrace/IMPLEMENTATION_PLAN.md",
@@ -2519,8 +2519,8 @@
     },
     {
       "path": "docs/vtrace/REVIEW.md",
-      "bytes": 461,
-      "sha256": "7028fb161d6f7e8ce1b0bf0984d8bd8c09fe126dbec4ff2d35bb10d076317626"
+      "bytes": 543,
+      "sha256": "2f1b9e6cbfa8d07af0798094e79fcfaad269ee86c1dff1ba706a87d4469492d5"
     },
     {
       "path": "docs/vtrace/REVIEW_CHECKLISTS.md",
@@ -2544,18 +2544,18 @@
     },
     {
       "path": "docs/vtrace/TRACE.md",
-      "bytes": 51086,
-      "sha256": "c1bcbc591b8f4fa1acec6452ecb7631b08fa1e95fe89678dfecf1559583fdbb5"
+      "bytes": 51342,
+      "sha256": "eab5bc855919e59341a00acea6a97420d7ef896bc733900b354cdc814fa77505"
     },
     {
       "path": "docs/vtrace/VALIDATION.md",
-      "bytes": 36381,
-      "sha256": "dff20ce6fb1be62a07f9c8eddd9ebd795061d12560bc911c46219f7e164e34ab"
+      "bytes": 36697,
+      "sha256": "dac410bdf949b87d7ac418e2ac41e6cfeaf3528fea20afdac75160f5f2e7d283"
     },
     {
       "path": "docs/vtrace/VERIFICATION.md",
-      "bytes": 61695,
-      "sha256": "336bebb5b1d34b671e579d3dfa2892a55cfbc45e5f9d9cdf9b0aaa30c48cee0d"
+      "bytes": 61942,
+      "sha256": "3910370afb1d8b6969072506b09b9fedfeaea58ebe8ed7d335091b4258944e78"
     },
     {
       "path": "docs/vtrace/WORK_PACKAGES.md",
@@ -2953,6 +2953,11 @@
       "sha256": "5d08ae445929a9570053f87c6f6ea6f5b54067ca47f716e7ffcc8101b02ed2c9"
     },
     {
+      "path": "specs/README-CI.md",
+      "bytes": 2203,
+      "sha256": "2bcba5de78be830762b03acb3e510f8660de877604270817257a8b0b49475400"
+    },
+    {
       "path": "specs/REPLICA-VERIFICATION.md",
       "bytes": 4271,
       "sha256": "47fa6763c3eb82e177d796055daa21d77ae7e056158536e799c91fd207f8379e"
@@ -3153,9 +3158,19 @@
       "sha256": "a7f6aee6c6830e9afb02ce9c6771470ed77034dca1d2ff10a83a47475dec308f"
     },
     {
+      "path": "tools/ci_scope.py",
+      "bytes": 2848,
+      "sha256": "2e13c6fc74206a8c1e874ecbd536d25110c5cb0a838ef2b618e9da680865a832"
+    },
+    {
       "path": "tools/restore_project.py",
       "bytes": 6106,
       "sha256": "b158ad60b726e7c4d0bbcdb3530006f33db6b8125f58723e464a8a1ad32df56d"
+    },
+    {
+      "path": "tools/test_ci_scope.py",
+      "bytes": 4540,
+      "sha256": "3b7370e653947b64c2dfb280f91dda4e9879856dd5f68bf83ee0dfb6c16f7e90"
     },
     {
       "path": "tools/test_restore_project.py",
@@ -3164,8 +3179,8 @@
     },
     {
       "path": "tools/validate.ps1",
-      "bytes": 21608,
-      "sha256": "0e0f1c8f917f2ac60a73664d0980a65e7901cd04139a76b9393b70d55f99a3e7"
+      "bytes": 21777,
+      "sha256": "69ffd93ec62f88ffbfeb342a415508a4a40b6c9a103491aeb08d14082f18f839"
     },
     {
       "path": "tools/vendor/README.md",

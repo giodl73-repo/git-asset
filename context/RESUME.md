@@ -1,5 +1,17 @@
 # git-asset resume state
 
+## README and CI lane
+
+Input e78cabff8bb6d49f80065b924c2f685c6a3e3060. Current work is README clarity
+and a narrow README-only CI path; contract specs/README-CI.md, EVID-124.
+CI setup is an owned branch; README prose follows as a one-file change to prove
+that full Rust qualification skips while required job names/quick checks remain.
+Examples use episodes on F:, music videos on E:, bulk originals/history on J:
+and external backup on M:. The fix/rebuild/rerender story keeps execution and
+creative review consumer-owned and distinguishes current native scope from the
+lifecycle contract. No runtime, cache, media or unrelated S3 work in this lane.
+Derive PR/merge/check status from GitHub. Older lanes below are historical.
+
 ## Current product rename lane
 
 Owned branch feat/git-asset-rename, immutable input

@@ -1450,3 +1450,12 @@ use git-asset while exact existing-data identities remain.
 [Producer record](../reviews/2026-11-20-git-asset-rename.md) separates
 implementation, verification, synthetic intended-use validation and trace.
 No live cache operations, private-archive import or native-publication claim.
+
+## EVID-124: README-only CI
+
+Input e78cabff8bb6d49f80065b924c2f685c6a3e3060.
+[Producer record](../reviews/2026-11-20-readme-ci.md) separates implementation,
+verification, intended-use validation and trace. Eight real Git fixtures pass.
+README is mutable narrative, checked directly and excluded from current review
+digests; formal source/spec targets remain pinned. Hosted full and README-only
+proofs remain exact-head GitHub outcomes, not producer approval.

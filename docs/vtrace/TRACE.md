@@ -744,3 +744,9 @@ front door, .asset/.tig compatibility and immutable-input identity audit ->
 front_door.rs/native_source.rs/check_branding.py -> EVID-123 and separate
 verification, intended-use validation and six producer lenses. Full native
 retained-publication and provider acceptance remain open.
+
+## README-only CI trace
+
+PKG-009 / SPEC-015 -> README-CI.md -> exact immutable Git comparison and
+ordinary README edit classification -> gated Rust steps with required matrix
+checks retained -> eight real Git histories and EVID-124. No runtime semantics.

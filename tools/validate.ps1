@@ -261,6 +261,7 @@ foreach ($pin in $pins.files) {
     Require ($hash -eq $pin.sha256) "Vendored checker/notice drift: $($pin.path)"
 }
 $review = Get-Content (Join-Path $repoRoot 'docs/reviews/foundation-targets.json') -Raw | ConvertFrom-Json -AsHashtable
+Require (@($review.targets | Where-Object path -eq 'README.md').Count -eq 0) 'README narrative is checked directly, not hash-pinned; keep README-only edits independent'
 Require (-not $review.runtime_behavior_proven -and $review.method -eq 'producer-applied-foundation-review') 'Invalid review scope'
 foreach ($target in $review.targets) {
     $item = Get-Item -Force -LiteralPath (Join-Path $repoRoot $target.path)

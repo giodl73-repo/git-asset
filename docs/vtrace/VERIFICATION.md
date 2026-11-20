@@ -921,3 +921,9 @@ check and strict Clippy, two front-door cases, legacy committed-record readback,
 discovery pass. The producer record preserves both broad-run failures and the
 focused corrected clock fixture/strict Clippy result. Complete two-phase and hosted
 exact-head outcomes are recorded on PR 61, separately from implementation.
+
+## README-only CI verification
+
+EVID-124: eight real Git classification fixtures pass. Source/links/hash/branding
+checks and hosted exact-head workflow outcomes are separate; see
+../reviews/2026-11-20-readme-ci.md. No Rust implementation change.

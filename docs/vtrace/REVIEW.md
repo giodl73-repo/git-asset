@@ -10,3 +10,5 @@ Historical producer records are preserved in bounded chapters:
 
 Current product rename: [producer record](../reviews/2026-11-20-git-asset-rename.md),
 EVID-123. Exact hosted qualification remains separate.
+
+README-only CI: [producer record](../reviews/2026-11-20-readme-ci.md), EVID-124.
