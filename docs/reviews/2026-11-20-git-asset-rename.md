@@ -64,6 +64,14 @@ passes afterward. This changes test stdout framing only, not production locks
 or assertions. Retain the interrupted original local target as a failure; do
 not label that original complete command an uninterrupted passing run.
 
+On c0993d6, hosted Linux completes both mandatory functional-test phases but
+strict Clippy rejects the unused fixture_command helper: all its callers are
+Windows-only. Gate that helper with cfg(all(test, windows)); production code
+and Windows fixture behavior are unchanged. Matrix fail-fast had canceled the
+Windows run before a result, so disable fail-fast while retaining both required
+checks. The Linux warning and canceled Windows result remain historical, not
+passing qualification.
+
 Final complete workspace and exact-head hosted Windows/Linux/secrets
 outcomes are recorded on [PR 61](https://github.com/giodl73-repo/git-asset/pull/61).
 They are publication gates separate from this producer review; do not infer their

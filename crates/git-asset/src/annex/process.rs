@@ -32,7 +32,7 @@ pub(super) fn run(p: &Profile, annex: bool, args: &[&str]) -> Result<Output> {
         .map_err(|_| Error::Observation)?;
     runtime.block_on(execute(p, annex, args, true))
 }
-#[cfg(test)]
+#[cfg(all(test, windows))]
 pub(super) fn fixture_command(p: &Profile, annex: bool, args: &[&str]) -> Result<Output> {
     let runtime = tokio::runtime::Builder::new_current_thread()
         .enable_all()

@@ -35,6 +35,7 @@ jobs:
       # The single heavy admitted-budget fixture is qualified alone below.
       RUST_TEST_THREADS: '4'
     strategy:
+      fail-fast: false
       matrix:
         os: [windows-latest, ubuntu-latest]
     runs-on: ${{ matrix.os }}

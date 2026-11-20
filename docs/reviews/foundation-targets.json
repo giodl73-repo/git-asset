@@ -44,8 +44,8 @@
     },
     {
       "path": ".github/workflows/validate.yml",
-      "bytes": 9362,
-      "sha256": "18f88176258dfe1e9c29784db87cc4d708655aab31958e2e4fd42b160fe5722b"
+      "bytes": 9385,
+      "sha256": "d78237f2c62426bbd1fbee24b2974802dbb93150f96878e134111dea4a5d8aff"
     },
     {
       "path": ".gitignore",
@@ -269,8 +269,8 @@
     },
     {
       "path": "crates/git-asset/src/annex/process.rs",
-      "bytes": 4724,
-      "sha256": "9ce15f1234cd71821b74f24fb963f0a1d24fd92172e221c5582ef6b6d8a5b732"
+      "bytes": 4738,
+      "sha256": "e2ed260d74d1a870026a9dd129bd08be8bd96d6473a3a6b080813d71226bb98c"
     },
     {
       "path": "crates/git-asset/src/annex/tests.rs",
@@ -2384,8 +2384,8 @@
     },
     {
       "path": "docs/reviews/2026-11-20-git-asset-rename.md",
-      "bytes": 7492,
-      "sha256": "1897819490ebcbe43e2fd596b31ea2b8a3a10d31a303ea59e9955e00eed2c4c4"
+      "bytes": 7982,
+      "sha256": "64ddc51bc2c995b860f30cbd0ad62c693653e1e020a762fdea2db69d686fee68"
     },
     {
       "path": "docs/reviews/2026-11-20-native-job-protection.md",
