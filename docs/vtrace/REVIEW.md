@@ -51,3 +51,6 @@ actual synthetic browser evidence does not replace team/independent acceptance.
 
 EVID-144: [review-sample producer record](../reviews/2026-11-21-review-sample.md);
 fresh-root/privacy/adoption/custody lenses; no independent or human approval.
+
+Initial offering: [six-role plan review](../../PRODUCT_PLAN.md#six-role-review-of-this-plan);
+R1-R6 plan corrections only; runtime/adoption proof remains OPEN.
