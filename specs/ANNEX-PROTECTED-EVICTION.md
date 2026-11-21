@@ -162,3 +162,31 @@ Dependency closed: PR71 merged f12a1634a8833f822edf2a78b4df75a2b3851538;
 its tree equals qualifieda61cb94. Both full workspace profiles, standalone and18
 hosted checks pass. P1's EVID-145 pending paragraph is a historical checkpoint;
 final source qualification is in PR71 and its external exact-source packet.
+
+Incarnation factor entry e493bac: WP-003/004/007/008/009, REQ-001/003/004/005/
+007/009, SPEC-003/004/005/008/009, IF-003/004/005/006/008/012, PKG-002/003/004.
+RUST/PROVIDER. Extract existing Birth codec/transitions for reuse by local and
+native adapters, preserving all old schemas/hash domains and MAX_BIRTHS16.
+No new journal, IO, authority or deletion entry. Entry: existing local lifecycle
+and retirement recovery fixtures. Exit L0 pins/fmt/links/diff; L1 independent
+literal wire vectors, cancellation/reacquisition/bounds and existing guarded
+retirement/final-state regressions; L2 existing temporary-store process exits.
+Native durable gate integration remains required before P2 execution closes.
+
+Writer-gate API: expose LocalStore::read_published over its existing guarded
+completed_reader. Exact original publication, completion and current incarnation
+are checked under a shared object guard; pending retirement holds even when bytes
+remain readable. No repair, fallback, initialization or new persisted state.
+This can protect native operation metadata; metadata bytes are NOT native custody.
+Fixture: live guard blocks removal; reopened pending state refuses; cancellation
+preserves identity; retired/old publication refuses after same-hash restoration.
+
+Incarnation checkpoint: shared lifecycle::Incarnation now constructs the same
+initial/cancel/reacquire/final-reacquire records used by local replay and writers.
+Two independent-vector/boundary fixtures pass; ordinary retirement24 active and
+final provider28 regressions pass, including actual child exits. read_published's
+new reopen/cancel/restore fixture passes and checks conflict before a different
+object's missing fence; unknown operation is needs_recovery. Exact guarded reads
+reuse completed_reader, with no second hash pass. Both identifier audits pass;
+strict all-feature/all-target Clippy and standalone pass. Full P2 broad/native
+execution/authority/independent-custody/handoff acceptance remains OPEN.

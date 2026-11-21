@@ -1488,3 +1488,69 @@ fn known_missing_managed_anchors_are_not_recreated_by_reads_or_new_publications(
     assert!(!anchor.exists());
     assert!(f.object_path().exists());
 }
+
+#[test]
+fn exact_publication_guard_refuses_pending_after_reopen_and_old_birth_after_restore() {
+    let mut f = Fixture::new();
+    let mut wrong = f.publication.clone();
+    wrong.object = Object::from_bytes(b"never-seen conflicting identity");
+    assert!(matches!(
+        f.store.read_published(&wrong),
+        Err(crate::Error::OperationConflict)
+    ));
+    let mut unknown = f.publication.clone();
+    unknown.operation = key("never-started");
+    assert!(matches!(
+        f.store.read_published(&unknown),
+        Err(crate::Error::NeedsRecovery)
+    ));
+    let p = f.plan();
+    let (receipt, mut read) = f.store.read_published(&f.publication).unwrap();
+    assert_eq!(receipt.request(), &f.publication);
+    let mut bytes = vec![];
+    read.read_to_end(&mut bytes).unwrap();
+    assert_eq!(bytes, b"target");
+    assert!(matches!(
+        f.apply(&p),
+        Err(Error::Protection(store_protection::Error::Busy))
+    ));
+    drop(read);
+    assert!(matches!(
+        f.apply_hook(&p, |s| if s == Stage::Intent {
+            Err(Error::Injected)
+        } else {
+            Ok(())
+        }),
+        Err(Error::Injected)
+    ));
+    let reopened = LocalStore::open(&f.root.path().join("working")).unwrap();
+    // Read-only recovery can inspect surviving bytes; new writes must stay gated.
+    reopened.read_object(&f.publication.object).unwrap();
+    assert!(matches!(
+        reopened.read_published(&f.publication),
+        Err(crate::Error::NeedsRecovery)
+    ));
+    let before = f.ledger.checkpoint();
+    assert!(f.cancel(&p).unwrap().cancelled);
+    let (receipt, read) = reopened.read_published(&f.publication).unwrap();
+    assert_eq!(receipt.request(), &f.publication);
+    drop(read);
+    assert_ne!(f.ledger.checkpoint(), before);
+    let next = plan(&f.store, f.request("later-retirement")).unwrap();
+    f.apply(&next).unwrap();
+    assert!(matches!(
+        reopened.read_published(&f.publication),
+        Err(crate::Error::AuthorizedAbsence)
+    ));
+    let restore = f.restored_plan(&next, "fresh-restoration");
+    f.restore(&restore).unwrap();
+    assert!(matches!(
+        reopened.read_published(&f.publication),
+        Err(crate::Error::AuthorizedAbsence)
+    ));
+    let (receipt, mut read) = reopened.read_published(restore.publication()).unwrap();
+    assert_eq!(receipt.request(), restore.publication());
+    let mut actual = vec![];
+    read.read_to_end(&mut actual).unwrap();
+    assert_eq!(actual, b"target");
+}

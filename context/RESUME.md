@@ -10,9 +10,14 @@ per-asset namespace workaround or raw hash-wide retry.
 Snapshot4/protection18/assessment1, keeper2 and explicit real ordinary/bare keeper pass. ReplayBasis pins full source
 checkpoints; actual same-hash reingest/claim settlement stales the old basis while
 preserving new bytes. Live fences permit unrelated progress; recovery may hold.
-No removal API exists. ReplayBasis is NOT an incarnation protocol. Next: reuse
-existing per-key pending/retirement/birth state and gate EVERY native writer,
-including uncertain child commands; then independent custody, native recovery,
-bounded CLI and actor handoff. P2 remains incomplete; P3-P6 still follow.
+No removal API exists. Shared lifecycle::Incarnation wire/bounds2, ordinary24,
+final-provider28 and exact read_published reopen/cancel/restore1 pass. Strict
+Clippy/standalone/both identifier audits pass. Incarnation records grant no IO;
+read_published guards metadata bytes only, not native custody.
+Next: native writer gate over existing per-key engine. External candidate:
+F:/src/tig-dev-temp/git-asset-protected-eviction-20261121/NATIVE-CONTROL-ADAPTER-CANDIDATE.md
+Review/freeze mapping first; no second lifecycle journal. Independently qualify
+native custody, in-flight command quiescence, recovery/CLI and actor handoff.
+P2 incomplete; P3-P6 follow. ReplayBasis alone is NOT an incarnation protocol.
 Build/temp/evidence outside source; preserve other lanes and runtime bindings.
 Resume starts no scan, cache, hydration, transfer, render or deletion.

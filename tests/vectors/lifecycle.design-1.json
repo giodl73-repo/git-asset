@@ -1,0 +1,28 @@
+{
+  "method": "independent Python hashlib and sorted ASCII JSON; legacy formulas frozen before refactor",
+  "store": "6bfd83e4b0a9061f84a1ab24ef6351518f40cbf8ac6bfed173b92d2f5456654c",
+  "terminal": "3db6120dc760e8c9ffff825db4b502607c17bec17c05c88eebff4e2cfb69f6ba",
+  "final_context": "1885c7f3ab452decdeae9eafeb00028a1801dc320180dcecb7f163aa5d4325a4",
+  "frames": [
+    {
+      "name": "initial",
+      "canonical": "{\"index\":0,\"object\":{\"bytes\":6,\"sha256\":\"25e2b6b106523880e27763084ffa6a0756335be0d7106022535365b9ad39b4b1\"},\"placement\":\"37653858016953b77c04645ac3dc15f5fecf5122fa6e2f67538cd65dab3ef660\",\"previous\":null,\"reacquire\":null,\"schema\":\"tig.local-lifecycle.design-1\",\"store\":\"6bfd83e4b0a9061f84a1ab24ef6351518f40cbf8ac6bfed173b92d2f5456654c\"}",
+      "sha256": "e7af16d229f00d5c902cdd4ffc7d138c99c26f2c17b250f81f7a826a0aed7ff7"
+    },
+    {
+      "name": "cancelled",
+      "canonical": "{\"index\":1,\"object\":{\"bytes\":6,\"sha256\":\"25e2b6b106523880e27763084ffa6a0756335be0d7106022535365b9ad39b4b1\"},\"placement\":\"37653858016953b77c04645ac3dc15f5fecf5122fa6e2f67538cd65dab3ef660\",\"previous\":\"3db6120dc760e8c9ffff825db4b502607c17bec17c05c88eebff4e2cfb69f6ba\",\"reacquire\":null,\"schema\":\"tig.local-lifecycle.design-1\",\"store\":\"6bfd83e4b0a9061f84a1ab24ef6351518f40cbf8ac6bfed173b92d2f5456654c\"}",
+      "sha256": "cd23e3d43aa6b8a5fd9db52f7f951bd05cfad7bd80a1d7c85ae152e45249a6ae"
+    },
+    {
+      "name": "reacquired",
+      "canonical": "{\"index\":1,\"object\":{\"bytes\":6,\"sha256\":\"25e2b6b106523880e27763084ffa6a0756335be0d7106022535365b9ad39b4b1\"},\"placement\":\"00029f417309ddb6ac1e52a6f69e1d9030def3f8d716702aaa955fda5692da51\",\"previous\":\"3db6120dc760e8c9ffff825db4b502607c17bec17c05c88eebff4e2cfb69f6ba\",\"reacquire\":{\"object\":{\"bytes\":6,\"sha256\":\"25e2b6b106523880e27763084ffa6a0756335be0d7106022535365b9ad39b4b1\"},\"operation\":\"restore\",\"owner\":\"owner\",\"required\":\"process_restart\"},\"schema\":\"tig.local-lifecycle.design-1\",\"store\":\"6bfd83e4b0a9061f84a1ab24ef6351518f40cbf8ac6bfed173b92d2f5456654c\"}",
+      "sha256": "1d6860345d026f93b3797975203e0d91f8700596e6e2a28a51bbf5b28b8b290c"
+    },
+    {
+      "name": "final-reacquired",
+      "canonical": "{\"final_context\":\"1885c7f3ab452decdeae9eafeb00028a1801dc320180dcecb7f163aa5d4325a4\",\"index\":1,\"object\":{\"bytes\":6,\"sha256\":\"25e2b6b106523880e27763084ffa6a0756335be0d7106022535365b9ad39b4b1\"},\"placement\":\"e2809ad9465917271e65f71a973d7258cfa43eb513933f735ae79f445de17533\",\"previous\":\"3db6120dc760e8c9ffff825db4b502607c17bec17c05c88eebff4e2cfb69f6ba\",\"reacquire\":{\"object\":{\"bytes\":6,\"sha256\":\"25e2b6b106523880e27763084ffa6a0756335be0d7106022535365b9ad39b4b1\"},\"operation\":\"restore\",\"owner\":\"owner\",\"required\":\"process_restart\"},\"schema\":\"tig.local-lifecycle.design-1\",\"store\":\"6bfd83e4b0a9061f84a1ab24ef6351518f40cbf8ac6bfed173b92d2f5456654c\"}",
+      "sha256": "40a6b1ffad3cd3ce345172a2c1fe8f7794320334e70a4130684ea4943cf04e7e"
+    }
+  ]
+}

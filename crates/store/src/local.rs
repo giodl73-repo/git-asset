@@ -216,15 +216,21 @@ impl LocalStore {
     /// Query a possibly never-started operation without creating a byte anchor.
     /// A caller with a settled allocation must separately require Some evidence.
     pub(crate) fn optional_completed_receipt(&self, request: &Request) -> Result<Option<Receipt>> {
+        if !self.completed_identity(request)? {
+            return Ok(None);
+        }
+        self.completed_receipt(request)
+    }
+    fn completed_identity(&self, request: &Request) -> Result<bool> {
         self.guard()?;
         let done = self.op_path(&request.operation, "done");
         if !path_present(&done)? {
-            return Ok(None);
+            return Ok(false);
         }
-        // Reject conflicting original operations before looking for a different
-        // object's fence. completed_reader rechecks the record under its guard.
+        // Check immutable operation identity before looking up a different byte fence.
+        // completed_reader rechecks records/incarnation under the returned guard.
         self.check_record(&done, request, "tig.publication-completion.design-1")?;
-        self.completed_receipt(request)
+        Ok(true)
     }
     /// One bounded hash pass with a guard spanning records, bytes and rechecks.
     pub(crate) fn completed_reader(
@@ -280,6 +286,16 @@ impl LocalStore {
                 object: request.object.clone(),
             },
         )))
+    }
+    /// Reopen an exact completion with a byte/subject guard spanning use.
+    /// Managed stores also require the current live incarnation: pending retirement
+    /// holds admission even if read_object can still inspect surviving bytes.
+    /// A metadata publication proves only its metadata bytes, not external custody.
+    pub fn read_published(&self, request: &Request) -> Result<(Receipt, ObjectRead)> {
+        if !self.completed_identity(request)? {
+            return Err(Error::NeedsRecovery);
+        }
+        self.completed_reader(request)?.ok_or(Error::NeedsRecovery)
     }
     pub(crate) fn attempt(&self, request: &Request) -> Result<LocalAttempt> {
         self.attempt_mode(request, true)

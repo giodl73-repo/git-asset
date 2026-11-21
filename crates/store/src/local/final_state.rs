@@ -278,29 +278,16 @@ impl LocalStore {
             return Err(Error::OperationConflict);
         }
         let previous = digest(terminal)?;
-        let placement = if let Some(request) = &reacquire {
-            digest(&(
-                "final-reacquired-placement",
-                &self.instance,
-                &intent.plan.birth.object,
-                &previous,
-                request,
-                context.as_ref().ok_or(Error::OperationConflict)?,
-            ))?
-        } else {
-            intent.plan.birth.placement.clone()
-        };
-        Ok(Birth {
-            schema: lifecycle::SCHEMA.into(),
-            store: self.instance.clone(),
-            object: intent.plan.birth.object.clone(),
-            index: intent.plan.birth.index + 1,
-            previous: Some(previous),
-            reacquire,
-            placement,
-            final_context: context,
-        })
+        match (reacquire, context) {
+            (Some(request), Some(context)) => intent
+                .plan
+                .birth
+                .final_reacquired(previous, request, context),
+            (None, None) => intent.plan.birth.cancelled(previous),
+            _ => Err(Error::OperationConflict),
+        }
     }
+
     pub(crate) fn begin_final_reacquisition(
         &self,
         intent: &Intent,
