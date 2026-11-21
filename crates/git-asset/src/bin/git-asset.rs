@@ -27,7 +27,7 @@ const COMMANDS: &[&str] = &[
 ];
 fn help() {
     println!(
-        "git-asset — asset relationships and lifecycle over git-annex\n\nUsage: git asset <command> [arguments]\n       git-asset <command> [arguments]\n\nCommands: {}\n\nUse 'git asset describe' for machine-readable discovery.\nGit versions authored decisions; git-annex manages file bytes and native transfers.\nThe current native adapter supports explicit guarded local reads; native publication\nand the complete retained lifecycle are still being qualified.\nBuild/install the workspace service binaries alongside this front door.",
+        "git-asset — asset relationships and lifecycle over git-annex\n\nUsage: git asset <command> [arguments]\n       git-asset <command> [arguments]\n\nCommands: {}\n\nUse 'git asset describe' for machine-readable discovery.\nGit versions authored decisions; git-annex manages file bytes and native transfers.\nOptional native Rust adapters support guarded local reads and candidate publication.\nNative-publication CLI execution and the complete retained lifecycle remain separate.\nBuild/install the workspace service binaries alongside this front door.",
         COMMANDS.join(", ")
     );
 }

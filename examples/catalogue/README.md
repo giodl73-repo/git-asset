@@ -1,5 +1,9 @@
 # Learn git-asset through one sample catalogue
 
+For a two-project team review, run `git-asset-sample rehearse-review NEW_ABSOLUTE_ROOT`.
+It composes the existing ordinary and return/restoration courses and emits one
+catalogue without starting a viewer. See the [review walkthrough](../../docs/guides/CATALOGUE-REVIEW.md).
+
 Delivery contract: [TEACHING-CATALOGUE](../../specs/TEACHING-CATALOGUE.md).
 The first runnable rehearsal covers seven ordinary lifecycle checkpoints using
 real Git, source journals and provider operations. The catalogue's **Learn git-asset ·

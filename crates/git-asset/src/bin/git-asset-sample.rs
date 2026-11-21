@@ -21,6 +21,8 @@ mod remote_endpoint;
 mod remote_publication;
 #[path = "git-asset-sample/return_restore.rs"]
 mod return_restore;
+#[path = "git-asset-sample/review.rs"]
+mod review;
 use git_asset::source::{GitId, Limits, Repository, Scope, native};
 use git_asset_core::{
     Digest, LogicalPath, Object, identity,
@@ -224,17 +226,21 @@ struct Demo {
     reports: Vec<Value>,
     final_roster: Option<final_claims::Roster>,
 }
+fn fresh_root(requested: &Path) -> Result<PathBuf> {
+    if !requested.is_absolute() || requested.exists() {
+        return Err("sample requires a fresh absolute root".into());
+    }
+    let parent = fs::canonicalize(requested.parent().ok_or("sample parent missing")?)?;
+    if parent.ancestors().any(|p| p.join(".git").exists()) {
+        return Err("sample output must be outside a Git checkout".into());
+    }
+    let root = parent.join(requested.file_name().ok_or("sample root name missing")?);
+    fs::create_dir(&root)?;
+    Ok(root)
+}
 impl Demo {
     fn new(requested: &Path, mode: Mode) -> Result<Self> {
-        if !requested.is_absolute() || requested.exists() {
-            return Err("sample requires a fresh absolute root".into());
-        }
-        let parent = fs::canonicalize(requested.parent().ok_or("sample parent missing")?)?;
-        if parent.ancestors().any(|p| p.join(".git").exists()) {
-            return Err("sample output must be outside a Git checkout".into());
-        }
-        let root = parent.join(requested.file_name().ok_or("sample root name missing")?);
-        fs::create_dir(&root)?;
+        let root = fresh_root(requested)?;
         let fixture: Value = serde_json::from_str(FIXTURE)?;
         let git_exe = git_executable()?;
         let repo = root.join("project");
@@ -2043,7 +2049,7 @@ fn run() -> Result<Value> {
         return recovery::child(args[1].to_str().ok_or("invalid fixture digest")?);
     }
     if args.len() == 1 && args[0] == "describe" {
-        let mut value = json!({"schema":"tig.sample-interface.design-1","operations":["describe","rehearse-ordinary NEW_ABSOLUTE_ROOT","rehearse-exchange NEW_ABSOLUTE_ROOT","rehearse-worktree NEW_ABSOLUTE_ROOT","rehearse-backup-outage NEW_ABSOLUTE_ROOT","rehearse-stale-plan NEW_ABSOLUTE_ROOT","rehearse-rename NEW_ABSOLUTE_ROOT","rehearse-final-enrollment NEW_ABSOLUTE_ROOT","rehearse-final-manual NEW_ABSOLUTE_ROOT","rehearse-final-git-return NEW_ABSOLUTE_ROOT","rehearse-return-restore NEW_ABSOLUTE_ROOT","rehearse-final-cancel NEW_ABSOLUTE_ROOT","rehearse-final-reacquire NEW_ABSOLUTE_ROOT","rehearse-final-process NEW_ABSOLUTE_ROOT","rehearse-retained-age NEW_ABSOLUTE_ROOT","rehearse-aged-category NEW_ABSOLUTE_ROOT"],"fixture_only":true,"opens_existing_roots":false,"complete_course":false});
+        let mut value = json!({"schema":"tig.sample-interface.design-1","operations":["describe","rehearse-review NEW_ABSOLUTE_ROOT","rehearse-ordinary NEW_ABSOLUTE_ROOT","rehearse-exchange NEW_ABSOLUTE_ROOT","rehearse-worktree NEW_ABSOLUTE_ROOT","rehearse-backup-outage NEW_ABSOLUTE_ROOT","rehearse-stale-plan NEW_ABSOLUTE_ROOT","rehearse-rename NEW_ABSOLUTE_ROOT","rehearse-final-enrollment NEW_ABSOLUTE_ROOT","rehearse-final-manual NEW_ABSOLUTE_ROOT","rehearse-final-git-return NEW_ABSOLUTE_ROOT","rehearse-return-restore NEW_ABSOLUTE_ROOT","rehearse-final-cancel NEW_ABSOLUTE_ROOT","rehearse-final-reacquire NEW_ABSOLUTE_ROOT","rehearse-final-process NEW_ABSOLUTE_ROOT","rehearse-retained-age NEW_ABSOLUTE_ROOT","rehearse-aged-category NEW_ABSOLUTE_ROOT"],"fixture_only":true,"opens_existing_roots":false,"complete_course":false});
         if cfg!(feature = "upload") {
             value["operations"]
                 .as_array_mut()
@@ -2054,6 +2060,9 @@ fn run() -> Result<Value> {
     }
     if args.len() != 2 {
         return Err("usage: git-asset-sample describe | OPERATION NEW_ABSOLUTE_ROOT (see describe for operations)".into());
+    }
+    if args[0] == "rehearse-review" {
+        return review::run(Path::new(&args[1]));
     }
     let mode = match args[0].to_str() {
         Some("rehearse-ordinary") => Mode::Ordinary,

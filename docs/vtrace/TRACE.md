@@ -802,3 +802,6 @@ observation and synthetic/native fixtures -> EVID-142; no creative-selection aut
 
 CATALOGUE-REVIEW-UX.md -> web controllers/HTML/CSS/fixed icon, controller/native
 fixtures and actual browser walkthrough -> EVID-143; no storage authority.
+
+CATALOGUE-REVIEW-SAMPLE.md -> existing rehearsals plus derived enrollment/receipt
+and front-door discovery/help -> review_sample tests and EVID-144.

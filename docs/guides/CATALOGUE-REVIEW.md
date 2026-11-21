@@ -6,27 +6,36 @@ and temporary roots as described in [development setup](../DEVELOPMENT.md).
 its parent must already exist. No production enrollment or media is needed.
 
 ```text
-cargo build -p git-asset --features schema --bin git-asset-sample --bin git-asset-catalogue --locked
-git-asset-sample rehearse-ordinary NEW_SAMPLE
-git-asset-catalogue check NEW_SAMPLE/catalogue.json
-git-asset-catalogue serve NEW_SAMPLE/catalogue.json 8801
+cargo run -p git-asset --features schema --bin git-asset-sample --locked -- rehearse-review NEW_SAMPLE
+cargo run -p git-asset --features schema --bin git-asset-catalogue --locked -- check NEW_SAMPLE/catalogue.json
+cargo run -p git-asset --features schema --bin git-asset-catalogue --locked -- serve NEW_SAMPLE/catalogue.json 8801
 ```
 
+Installed service binaries also accept `git asset sample rehearse-review NEW_SAMPLE`.
+Generation runs the existing7- and11-checkpoint rehearsals and can take a minute
+or two. Progress labels go to stderr; one bounded JSON result goes to stdout.
+The new workspace opens at **All projects**, with independent intro-v2 and
+recovery-v1 projects, one shared selected25-byte object and eleven recorded
+recovery lessons. Each original catalogue/trace remains in its own subdirectory;
+`review.json` and the child result receipts pin completion. No viewer starts
+automatically. A failed/interrupted root is preserved; retry in a new root.
+
 Open `http://127.0.0.1:8801` on the same computer. Stop the serving process to
-stop this explicitly launched preview. The seven-step sample uses tiny synthetic
+stop this explicitly launched preview. The sample uses tiny synthetic
 bytes, real Git commits and local fixture providers; it is not native-annex
 production acceptance. Its cache labels are symbolic, configurable policy roles,
 not permission to operate the machine's actual drives.
 
 ## Five-minute walkthrough
 
-1. Open **Series study**. Browse its source record, versions and related files.
+1. Open **Intro sample · current v2**, then **Series study**. Browse its source record, versions and related files.
    Confirm that work counts describe works rather than every rendition/record.
 2. Close the inspector with Escape, its close button or the surrounding backdrop.
    Focus should return to the original card. Tab and Shift+Tab should stay inside
    an open inspector, including after switching sections or opening a source.
 3. Open **Objects · placement & versions**. Compare content size, observations
-   and primary-cache preference. **Not observed** means coverage is unknown;
+   and primary-cache preference. **Refresh observed copies** explicitly checks
+   the registered synthetic scope. **Not observed** means coverage is unknown;
    zero observed bytes is not proof that no copy exists. Review controls produce
    held dry runs; they do not move or delete assets.
 4. Open **Learn git-asset · sample lessons**. Compare **release v1**, **draft v2**,
@@ -43,15 +52,17 @@ not permission to operate the machine's actual drives.
    view collapses that menu. Narrow inspectors use the full width; wide tables
    scroll within their own region rather than widening the page.
 
-The ordinary sample has one project. **Shared assets** requires two different
-enrolled projects and should explain that requirement. Cross-project comparison,
+**Shared assets** compares the intro and recovery projects and finds their shared
+25-byte reference; their selected series versions differ. The original
+`rehearse-ordinary` still creates just one project and comparison must explain
+the need for two. Cross-project comparison,
 duplicate titles, stale replies, partial coverage and failed requests also have
 shipped synthetic controller fixtures; they do not establish private-project or
 screen-reader acceptance.
 
 ## Review the later advances too
 
-The default command above loads only the seven-checkpoint introduction. Other
+The review command includes the introduction and return/restoration course. Other
 teaching modes are already in the same source; each needs its own new absolute
 output root. Use the resulting catalogue.json with the same check/serve commands.
 `git-asset-sample describe` lists operations supported by the compiled features.

@@ -12,6 +12,13 @@ fn discovery_names_the_native_backend_without_starting_providers() {
     assert_eq!(value["backend"], "git-annex");
     assert_eq!(value["automatic_cache_operations"], false);
     assert_eq!(value["native_publication_qualified"], false);
+    let help = Command::new(env!("CARGO_BIN_EXE_git-asset"))
+        .arg("help")
+        .output()
+        .unwrap();
+    let text = String::from_utf8(help.stdout).unwrap();
+    assert!(text.contains("native Rust adapters"));
+    assert!(text.contains("Native-publication CLI execution"));
     for bad in ["../query", "query;echo", "not-a-command"] {
         let out = Command::new(env!("CARGO_BIN_EXE_git-asset"))
             .arg(bad)

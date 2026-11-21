@@ -48,3 +48,6 @@ independent/human and production acceptance remain separate.
 
 EVID-143: [catalogue UX producer lenses](../reviews/2026-11-20-catalogue-review-ux.md);
 actual synthetic browser evidence does not replace team/independent acceptance.
+
+EVID-144: [review-sample producer record](../reviews/2026-11-21-review-sample.md);
+fresh-root/privacy/adoption/custody lenses; no independent or human approval.
