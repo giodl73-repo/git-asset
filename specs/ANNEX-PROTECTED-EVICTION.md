@@ -149,3 +149,16 @@ pass. Fixture paths come from the verified provider, never assumed annex layout.
 A Windows-only scoped lint exception clears the owned fixture readonly attribute
 so write refusal proves handle exclusion, with a successful write-open beforehand.
 Fake keeper/replay3 pass; full P2 execution/independence/handoff remains OPEN.
+
+Pending-command gate: ReplayBasis is supplemental stale-plan evidence, not the
+retirement/incarnation protocol. Every native writer must honor durable per-key
+pending retirement before any effect. Parent exit/timeout or a namespace vector
+alone cannot prove an earlier native child has stopped. Recovery must fence or
+prove completion of that command before admitting the next incarnation. Factor
+existing pending/intent/completion/birth machinery; do not promote this replay
+fixture into destructive permission. This proof remains OPEN.
+
+Dependency closed: PR71 merged f12a1634a8833f822edf2a78b4df75a2b3851538;
+its tree equals qualifieda61cb94. Both full workspace profiles, standalone and18
+hosted checks pass. P1's EVID-145 pending paragraph is a historical checkpoint;
+final source qualification is in PR71 and its external exact-source packet.
