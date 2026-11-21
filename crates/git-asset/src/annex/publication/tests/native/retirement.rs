@@ -18,7 +18,7 @@ fn settle(f: &mut Fixture) {
     if source.current.is_some() {
         f.namespaces[0]
             .apply(
-                k("withdraw"),
+                k(&format!("withdraw-{}", source.revision)),
                 Command::Withdraw {
                     source: k("asset"),
                     owner: k("owner"),
@@ -36,7 +36,7 @@ fn settle(f: &mut Fixture) {
         .revision;
     f.namespaces[0]
         .apply(
-            k("retire"),
+            k(&format!("retire-{revision}")),
             Command::Retire {
                 source: k("asset"),
                 owner: k("owner"),
@@ -328,4 +328,112 @@ fn shared_authority_keeper_borrows_source_fence_and_rejects_cloned_location() {
     drop(read);
     drop(held);
     ns.hold(&pin.object).unwrap();
+}
+
+#[test]
+fn same_hash_reingest_changes_replay_basis_even_after_new_claim_is_retired() {
+    let mut f = Fixture::new(b"same bytes later incarnation");
+    publish(&mut f);
+    let original = f.plan.clone();
+    settle(&mut f);
+    let held = Assessor::new(f.profile.pool.clone())
+        .unwrap()
+        .assess(
+            &original.candidate().object,
+            &f.metadata,
+            &Fixture::limits(),
+        )
+        .unwrap();
+    let before = held.replay_basis().unwrap();
+    held.check_replay(&before).unwrap();
+    before.id().unwrap();
+    let mut input = f.input();
+    assert!(matches!(
+        f.publisher()
+            .apply(&original, &mut f.resources(), &mut input),
+        Err(Error::Busy)
+    ));
+    f.namespaces[1]
+        .apply(
+            k("unrelated"),
+            Command::Enroll {
+                source: k("another"),
+                owner: k("owner"),
+                class: Kind::Branch,
+            },
+            &f.metadata,
+            &Fixture::limits(),
+        )
+        .unwrap();
+    held.check_replay(&before).unwrap(); // live subject predicates remain stable
+    drop(held);
+    let held = Assessor::new(f.profile.pool.clone())
+        .unwrap()
+        .assess(
+            &original.candidate().object,
+            &f.metadata,
+            &Fixture::limits(),
+        )
+        .unwrap();
+    assert_eq!(held.check_replay(&before).unwrap_err().code(), "stale");
+    let before = held.replay_basis().unwrap();
+    drop(held); // models lost live fences, not a persisted removal authorization
+    // Owned fake-protocol fixture effect only; production exposes no unlink method.
+    fs::remove_file(f.output_path()).unwrap();
+    let imports = |f: &Fixture| {
+        fs::read_to_string(f.profile.pool.pool.repository.join("calls"))
+            .unwrap()
+            .lines()
+            .filter(|s| s.starts_with("reinject "))
+            .count()
+    };
+    let calls = imports(&f);
+    let capacity = f.ledger.checkpoint();
+    let mut input = f.input();
+    assert!(matches!(
+        f.publisher()
+            .apply(&original, &mut f.resources(), &mut input),
+        Err(Error::MissingAcknowledged)
+    ));
+    assert_eq!(imports(&f), calls);
+    assert_eq!(f.ledger.checkpoint(), capacity);
+    assert!(!f.output_path().exists());
+    // Fresh admitted publication must first advance hard retention in the same roster.
+    let mut metadata =
+        MetadataStore::open(&f.root.join("metadata"), f.metadata.checkpoint()).unwrap();
+    let mut request = original.request.clone();
+    request.operation = k("reingest-same-hash");
+    request.expected_revision = f.namespaces[0]
+        .source(&k("asset"))
+        .unwrap()
+        .unwrap()
+        .revision;
+    let frozen = freeze(&request, &mut metadata, TreeLimits::default()).unwrap();
+    let cp = metadata.finish().unwrap();
+    drop(metadata);
+    f.metadata = MetadataReader::open(&f.root.join("metadata"), &cp).unwrap();
+    f.plan = Plan::new(&f.profile, request, frozen, original.admission.clone()).unwrap();
+    publish(&mut f);
+    assert_eq!(
+        Object::from_bytes(&fs::read(f.output_path()).unwrap()),
+        original.candidate().object
+    );
+    settle(&mut f);
+    let current = Assessor::new(f.profile.pool.clone())
+        .unwrap()
+        .assess(
+            &original.candidate().object,
+            &f.metadata,
+            &Fixture::limits(),
+        )
+        .unwrap();
+    assert_eq!(current.check_replay(&before).unwrap_err().code(), "stale");
+    assert_ne!(
+        before.id().unwrap(),
+        current.replay_basis().unwrap().id().unwrap()
+    );
+    assert_eq!(
+        Object::from_bytes(&fs::read(f.output_path()).unwrap()),
+        original.candidate().object
+    );
 }

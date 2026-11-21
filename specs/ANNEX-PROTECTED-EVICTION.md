@@ -124,3 +124,20 @@ namespace/byte guards. A different UUID alone is NOT independent custody; this
 adds no eviction grant. Tree metrics remain caller-metered across the operation.
 Keeper2/assessment1 and strict all-feature/all-target Clippy pass (fake native
 protocol). Actual native keeper/incarnation/handoff/CLI and full P2 remain OPEN.
+
+Replay seam input0e30be2: ReplayBasis binds source pool/config/locations/binding,
+exact object and every Checked checkpoint to an immutable intent. A fresh explicit
+assessment rejects changed bases. Live scoped fences allow unrelated progress;
+after restart unrelated progress may conservatively stale the old operation.
+This is NOT physical birth or removal authority. A candidate namespace-based
+incarnation proof requires EVERY admitted writer to hold the same subject uses
+and establish effective source-place demand before IO. Current Publisher uses
+hard Retention; generic future writers must preserve that rule. Unmanaged or
+legacy writers, metadata rollback/current minima and old-actor handoff remain
+separate unresolved gates. Local lifecycle/retirement reuse remains required
+unless this alternative is fully qualified; no destructive execution is added.
+
+Replay fixture passes: same-hash reingest remains after stale check; old publisher
+refuses missing acknowledged bytes; live fences block writes but allow unrelated
+admission. Initial log equality wrongly counted readonly commands; only imports
+and capacity are effect measures. Physical birth/old-actor/native-crash proof OPEN.

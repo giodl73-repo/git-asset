@@ -265,3 +265,58 @@ impl std::io::Seek for RetainedRead<'_> {
         std::io::Seek::seek(&mut self.read, position)
     }
 }
+
+/// Exact recovery basis, not a physical birth certificate or a removal capability.
+#[derive(Clone, Debug, PartialEq, Eq, serde::Serialize)]
+pub struct ReplayBasis {
+    store: Digest,
+    configuration: Object,
+    binding: Digest,
+    locations: Digest,
+    object: Object,
+    checked: Vec<store_protection::Checked>,
+}
+impl Assessment {
+    /// Captures existing scoped absence evidence for an immutable operation intent.
+    pub fn replay_basis(&self) -> Result<ReplayBasis> {
+        self.check_current()?;
+        let locations = git_asset_core::identity::canonical_json(&serde_json::json!([
+            &self.profile.pool.repository,
+            self.profile
+                .members
+                .iter()
+                .map(|m| (&m.root, &m.minimum))
+                .collect::<Vec<_>>()
+        ]))
+        .map_err(|_| publication::Error::Invalid)?;
+        Ok(ReplayBasis {
+            store: self.store(),
+            configuration: self.profile.pool.configuration.clone(),
+            binding: self.facts.binding().clone(),
+            locations: Digest::blob(&locations),
+            object: self.facts.object().clone(),
+            checked: self.facts.checked().to_vec(),
+        })
+    }
+    /// New explicit assessment is required after restart. Changed basis always holds.
+    /// Unrelated progress can conservatively stale recovery; live fences stay scoped.
+    pub fn check_replay(&self, expected: &ReplayBasis) -> Result<()> {
+        if &self.replay_basis()? != expected {
+            return Err(publication::Error::Stale.into());
+        }
+        Ok(())
+    }
+}
+impl ReplayBasis {
+    pub fn id(&self) -> Result<Digest> {
+        let bytes = git_asset_core::identity::canonical_json(&serde_json::json!([
+            "git-asset.annex-replay-basis.experimental-1",
+            self
+        ]))
+        .map_err(|_| publication::Error::Invalid)?;
+        if bytes.len() > 16384 {
+            return Err(publication::Error::Budget.into());
+        }
+        Ok(Digest::blob(&bytes))
+    }
+}

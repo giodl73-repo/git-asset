@@ -7,10 +7,10 @@ remain separate; never restart it from a log/timeout alone.
 P2: specs/ANNEX-PROTECTED-EVICTION.md; freeze lifecycle/incarnation,
 independent custody and actor handoff before deletion. No new engine,
 per-asset namespace workaround or raw hash-wide retry.
-Snapshot/fenced proofs4, namespace protection18, native assessment1 pass.
-Keeper read binds exact snapshot to actual pool/place and verified bytes under
-all subject/config guards, borrowing overlapping source fences. Keeper2 (including predecessor-retirement refusal) and strict Clippy pass.
-Next: enforced incarnation/write model, independent custody, native execution/
-recovery/CLI/handoff. No removal API or production activation exists yet.
+Snapshot4/protection18/assessment1 and keeper2 pass. ReplayBasis pins full source
+checkpoints; actual same-hash reingest/claim settlement stales the old basis while
+preserving new bytes. Live fences permit unrelated progress; recovery may hold.
+No removal API exists. Next: fully qualify all-writer incarnation proof, independent
+custody, native intent/drop/completion recovery, bounded CLI and actor handoff.
 Build/temp/evidence outside source; preserve other lanes and runtime bindings.
 Resume starts no scan, cache, hydration, transfer, render or deletion.
