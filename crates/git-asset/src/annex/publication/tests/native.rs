@@ -1070,3 +1070,5 @@ fn native_retirement_assessment_holds_configuration_and_all_subjects() {
     drop(held);
     f.namespaces[0].hold(&plan.candidate().object).unwrap();
 }
+
+mod retirement;

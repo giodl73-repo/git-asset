@@ -1,6 +1,9 @@
 //! Explicit native ordinary-retirement assessment. No removal/initialization API.
-use super::{managed, process, publication};
-use git_asset_core::{Digest, Object, tree::NodeStore};
+use super::{managed, process, publication, snapshot};
+use git_asset_core::{
+    Digest, Object,
+    tree::{NodeStore, TreeLimits},
+};
 use git_asset_store::{
     existing::VerifiedRead,
     protection::Limits,
@@ -81,6 +84,25 @@ impl Assessor {
         nodes: &impl NodeStore,
         limits: &Limits,
     ) -> Result<Assessment> {
+        let (configuration, directory, mut namespaces) = self.pin(object)?;
+        let facts = store_protection::assess_namespaces(
+            &self.profile.binding,
+            object,
+            &mut namespaces,
+            nodes,
+            limits,
+        )
+        .map_err(protection_error)?;
+        Ok(Assessment {
+            profile: self.profile,
+            reader: self.reader,
+            _configuration: configuration,
+            _directory: directory,
+            namespaces,
+            facts,
+        })
+    }
+    fn pin(&mut self, object: &Object) -> Result<(VerifiedRead, std::fs::File, Vec<Namespace>)> {
         self.reader.preflight(object)?;
         let configuration = self.reader.admit_repository_mode(true)?;
         let directory = self.reader.hold_annex_directory()?;
@@ -105,28 +127,26 @@ impl Assessor {
         {
             return Err(publication::Error::Stale.into());
         }
-        let mut namespaces = self
+        let namespaces = self
             .profile
             .members
             .iter()
             .map(|m| Namespace::open(&m.root, &m.minimum).map_err(Error::from))
             .collect::<Result<Vec<_>>>()?;
-        let facts = store_protection::assess_namespaces(
-            &self.profile.binding,
-            object,
-            &mut namespaces,
-            nodes,
-            limits,
-        )
-        .map_err(protection_error)?;
-        Ok(Assessment {
-            profile: self.profile,
-            reader: self.reader,
-            _configuration: configuration,
-            _directory: directory,
-            namespaces,
-            facts,
-        })
+        for (namespace, member) in namespaces.iter().zip(self.profile.binding.members()) {
+            if !member.places.iter().all(|place| {
+                namespace.policy().classes.values().any(|p| {
+                    p.current
+                        .iter()
+                        .chain(&p.pending)
+                        .chain(&p.predecessor)
+                        .any(|p| p == place)
+                })
+            }) {
+                return Err(publication::Error::Denied.into());
+            }
+        }
+        Ok((configuration, directory, namespaces))
     }
 }
 impl Assessment {
@@ -150,5 +170,98 @@ impl Assessment {
         self.reader
             .open_local(self.facts.object())
             .map_err(Error::from)
+    }
+}
+
+/// A retained exact member plus pinned keeper bytes. No independence/removal grant.
+pub struct RetainedRead<'a> {
+    read: VerifiedRead,
+    store: Digest,
+    snapshot: snapshot::Snapshot,
+    metrics: git_asset_core::tree::TreeMetrics,
+    _source: &'a Assessment,
+    _configuration: VerifiedRead,
+    _directory: std::fs::File,
+    _fences: Vec<SubjectFence>,
+}
+impl Assessment {
+    /// Overlapping authorities borrow existing fences instead of reacquiring shared uses.
+    /// Caller meters tree work across the whole operation; this is one point proof.
+    pub fn open_keeper<'a>(
+        &'a self,
+        profile: managed::Profile,
+        snapshot: &snapshot::Snapshot,
+        nodes: &mut impl NodeStore,
+        limits: TreeLimits,
+    ) -> Result<RetainedRead<'a>> {
+        self.check_current()?;
+        if &snapshot.object != self.facts.object()
+            || !profile.binding.members().iter().any(|member| {
+                member.namespace == snapshot.namespace && member.places.contains(&snapshot.place)
+            })
+        {
+            return Err(publication::Error::Denied.into());
+        }
+        if profile.members.iter().any(|member| {
+            self.profile.members.iter().any(|source| {
+                source.minimum.identity() == member.minimum.identity() && source.root != member.root
+            })
+        }) {
+            return Err(publication::Error::Denied.into());
+        }
+        let mut keeper = Assessor::new(profile)?;
+        if keeper.reader.store() == self.store() {
+            return Err(publication::Error::Denied.into());
+        }
+        let (configuration, directory, mut namespaces) = keeper.pin(&snapshot.object)?;
+        let mut fences = Vec::new();
+        for namespace in &namespaces {
+            if self.fence(namespace.identity()).is_none() {
+                fences.push(namespace.fence(&snapshot.object)?);
+            }
+        }
+        let namespace = namespaces
+            .iter_mut()
+            .find(|n| n.identity() == &snapshot.namespace)
+            .ok_or(publication::Error::Denied)?;
+        let fence = self
+            .fence(&snapshot.namespace)
+            .or_else(|| fences.iter().find(|f| f.authority() == &snapshot.namespace))
+            .ok_or(publication::Error::Denied)?;
+        let proof = snapshot.verify_fenced(namespace, fence, nodes, limits)?;
+        let metrics = proof.metrics().clone();
+        let read = keeper.reader.open_local(&snapshot.object)?;
+        self.check_current()?;
+        Ok(RetainedRead {
+            read,
+            store: keeper.reader.store(),
+            snapshot: snapshot.clone(),
+            metrics,
+            _source: self,
+            _configuration: configuration,
+            _directory: directory,
+            _fences: fences,
+        })
+    }
+}
+impl RetainedRead<'_> {
+    pub fn store(&self) -> &Digest {
+        &self.store
+    }
+    pub fn snapshot(&self) -> &snapshot::Snapshot {
+        &self.snapshot
+    }
+    pub fn metrics(&self) -> &git_asset_core::tree::TreeMetrics {
+        &self.metrics
+    }
+}
+impl std::io::Read for RetainedRead<'_> {
+    fn read(&mut self, bytes: &mut [u8]) -> std::io::Result<usize> {
+        std::io::Read::read(&mut self.read, bytes)
+    }
+}
+impl std::io::Seek for RetainedRead<'_> {
+    fn seek(&mut self, position: std::io::SeekFrom) -> std::io::Result<u64> {
+        std::io::Seek::seek(&mut self.read, position)
     }
 }

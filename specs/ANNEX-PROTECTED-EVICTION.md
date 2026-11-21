@@ -115,3 +115,12 @@ all-target Clippy passes. Tests cover refusal/unrelated progress, root settlemen
 pinned config, two exclusive fences and exact bytes; protected has its own code. This adds no eviction
 method; keeper custody, incarnation model, handoff and operator execution remain
 OPEN. Local source-provider exclusion ordering and old record formats are intact.
+
+Keeper seam inputd3f3c3b: Assessment::open_keeper pins the exact native pool,
+complete roster, snapshot namespace/place and verified bytes. All keeper subjects
+are fenced; overlaps borrow source fences only at the same admitted location.
+The returned read borrows the source assessment and owns keeper fences/config/
+namespace/byte guards. A different UUID alone is NOT independent custody; this
+adds no eviction grant. Tree metrics remain caller-metered across the operation.
+Keeper2/assessment1 and strict all-feature/all-target Clippy pass (fake native
+protocol). Actual native keeper/incarnation/handoff/CLI and full P2 remain OPEN.
