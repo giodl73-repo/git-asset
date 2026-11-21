@@ -9,7 +9,7 @@ One explicit fresh-root command composes existing7/11-checkpoint rehearsals into
 independent intro/recovery projects with a combined catalogue and completion
 receipts. No automatic viewer, production enrollment or new lifecycle engine.
 CLI/HTTP/browser, fmt and strict Clippy pass; EVID-144 records producer evidence.
-Finish exact hosted checks and integrate. Team/full-course/production acceptance remain separate.
+PR70: add README entry and receipt/retry walkthrough, then check exact hosted CI. Team/full-course/production acceptance remain separate.
 
 All builds/temp/reports/images stay outside source. Existing private/archive and
 other-lane worktrees, runtime bindings and live caches remain untouched. Reading

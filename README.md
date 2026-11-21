@@ -204,12 +204,27 @@ checks; a sizing worksheet grants no deletion authority.
 
 ## Try the public sample
 
-For a team UX review, follow the [catalogue walkthrough](docs/guides/CATALOGUE-REVIEW.md).
+Create a two-project review workspace, then check and serve its catalogue:
 
-Start with the [sample catalogue course](examples/catalogue/README.md). It uses
-portable synthetic assets and real Git/provider checkpoints, compares expected
-and observed copies, and exports a catalogue with before/desired/observed lessons.
-The complete Git-style course remains in development.
+```text
+cargo run -p git-asset --features schema --bin git-asset-sample --locked -- rehearse-review NEW_SAMPLE
+cargo run -p git-asset --features schema --bin git-asset-catalogue --locked -- check NEW_SAMPLE/catalogue.json
+cargo run -p git-asset --features schema --bin git-asset-catalogue --locked -- serve NEW_SAMPLE/catalogue.json 8801
+```
+
+Use the [development setup](docs/DEVELOPMENT.md) for external build/temp roots.
+Replace `NEW_SAMPLE` with a new absolute path outside Git checkouts; its parent
+must exist. With service binaries on PATH, generation is also
+`git asset sample rehearse-review NEW_SAMPLE`.
+
+Open `http://127.0.0.1:8801`. Compare intro-v2 and recovery-v1 projects, find their
+shared 25-byte asset, and step through eleven recovery lessons. These use tiny
+synthetic bytes, real Git commits and local fixture providers. Cache labels are
+symbolic; the viewer does not move or delete assets. Generation starts no viewer.
+
+The [five-minute walkthrough](docs/guides/CATALOGUE-REVIEW.md) explains what to
+inspect, receipts and interrupted retries. The [sample course](examples/catalogue/README.md)
+adds individual scenarios; the complete Git-style course remains in development.
 
 The front door is `git asset` (or `git-asset`), after building the workspace
 binaries together:

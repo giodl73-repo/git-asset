@@ -12,13 +12,19 @@ cargo run -p git-asset --features schema --bin git-asset-catalogue --locked -- s
 ```
 
 Installed service binaries also accept `git asset sample rehearse-review NEW_SAMPLE`.
-Generation runs the existing7- and11-checkpoint rehearsals and can take a minute
+Generation runs the existing 7- and 11-checkpoint rehearsals and can take a minute
 or two. Progress labels go to stderr; one bounded JSON result goes to stdout.
 The new workspace opens at **All projects**, with independent intro-v2 and
-recovery-v1 projects, one shared selected25-byte object and eleven recorded
+recovery-v1 projects, one shared selected 25-byte object and eleven recorded
 recovery lessons. Each original catalogue/trace remains in its own subdirectory;
 `review.json` and the child result receipts pin completion. No viewer starts
 automatically. A failed/interrupted root is preserved; retry in a new root.
+
+Keep `review.json`, `intro-result.json` and `recovery-result.json` with the
+workspace: the review report pins the child receipts and combined catalogue by
+hash and byte length. It records one shared selected object, 25 bytes, eleven
+recovery checkpoints and `viewer_started: false`. Stop the server with Ctrl+C.
+
 
 Open `http://127.0.0.1:8801` on the same computer. Stop the serving process to
 stop this explicitly launched preview. The sample uses tiny synthetic
