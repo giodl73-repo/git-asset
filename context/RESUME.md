@@ -13,6 +13,11 @@ Current UX slice fixes inspector keyboard containment/return and inert backgroun
 compact view navigation, responsive typography/layout and branding/static icon.
 EVID-143 separates90 controller tests,13 native catalogue cases, fixed HTTP icon,
 strict Clippy and actual public synthetic browser review from hosted/team gates.
+The branch audit finds all committed UX/storage/teaching source included; metadata
+copy and role clarifications were already ported. The separate journal-controller
+prototype remains unmerged. An uncommitted public Windows no-console fix is now
+adopted in the owned branch; other worktrees remain untouched. The advanced
+return/restoration sample supplies11 checkpoints; the introductory sample has7.
 Use docs/guides/CATALOGUE-REVIEW.md for a repeatable seven-checkpoint walkthrough.
 No production assets, media renders, eviction or runtime deployment occurred.
 

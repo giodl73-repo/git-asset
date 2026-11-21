@@ -66,3 +66,30 @@ fixtures, native catalogue/HTTP tests and browser tasks above.
 
 Owner: git-asset maintainers. Media previews/playback, interactive enrollment,
 authoring-tool handoff, real-project adoption and native eviction remain OPEN.
+
+## Branch-completeness audit
+
+At review inputbd2fa4a,142 local/remote branch references and70 source worktrees
+were inspected.138 references are ancestors of that input. All committed
+catalogue collection/impact/compare/object/fencing, agent-query, storage-view and
+teaching branches are included. Ancestry alone does not prove runtime acceptance.
+
+| Non-ancestor branch / finding | Content disposition |
+| --- | --- |
+| `docs/storage-role-rereview`135d85b | All six AR findings are already in the current storage-role record; later specs cover precedence, retained subsets and authority handoff. Do not restore the older roadmap wholesale. |
+| `fixes/checked-metadata-copy-20261107`c407edb, local/remote | Provider-copy implementation and tests match after package-name normalization. CLI differences are branding/import ordering; current metadata additionally has capacity and finished-reader APIs. Already ported, not missing. |
+| `feat/journal-controller`55b022b | Five commits contain an additional activation/publication/successor-creation/controller prototype absent from current source. This is genuinely separate backend work, not missing catalogue UX. Requires its own source/qualification review; no import here. |
+
+The three dirty public source worktrees contained an uncommitted Windows Git
+window-suppression patch and two legacy-writer qualification fixtures. The exact
+five-line CREATE_NO_WINDOW patch is adopted into the current metadata Git runner;
+existing source/catalogue regressions and strict Clippy qualify it. Original
+worktrees and legacy fixtures remain untouched. The separate private archive is
+not a public source donor or a completed migration.
+
+Code availability, enabled build features and loaded demonstration data are
+different: the original preview loads only seven ordinary checkpoints. The
+eleven-checkpoint return/restoration fixture also succeeds, including synthetic
+final loss and explicit recovery. The walkthrough now lists advanced modes and
+the upload feature requirement; it never labels one sample as the whole course.
+Full ref/content/worktree audit data and runtime reports stay outside source.

@@ -1,11 +1,12 @@
 # Catalogue review readiness
 
-Input 96da4503aea1b290fd1cefcdad621d607ec0f52a. WP-015;
-REQ-006/007/010; SPEC-014; IF-010/011/013; PKG-004/006/008.
-UI/INTEGRATION profiles. Entry: bundled catalogue, authenticated loopback API,
+Input 96da4503aea1b290fd1cefcdad621d607ec0f52a; branch audit bd2fa4a58dca4ed7713a7e1ccd52918d6e66127c.
+WP-005/015; REQ-001/006/007/008/009/010; SPEC-006/007/014;
+IF-008/009/010/011/013; PKG-004/006/008.
+UI/INTEGRATION/GIT profiles. Entry: bundled catalogue, authenticated loopback API,
 public synthetic sample and shipped controller fixtures. Allowed scope: frontend
 navigation, accessible interaction, responsive presentation, a fixed bundled
-same-origin icon response, truthful copy and
+same-origin icon response, suppression of Windows metadata-Git console windows, truthful copy and
 bounded review instructions/fixtures. No provider, schema, enrollment, selection,
 storage mutation, cache census, production assets, runtime replacement or rendering.
 

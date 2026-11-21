@@ -49,6 +49,29 @@ duplicate titles, stale replies, partial coverage and failed requests also have
 shipped synthetic controller fixtures; they do not establish private-project or
 screen-reader acceptance.
 
+## Review the later advances too
+
+The default command above loads only the seven-checkpoint introduction. Other
+teaching modes are already in the same source; each needs its own new absolute
+output root. Use the resulting catalogue.json with the same check/serve commands.
+`git-asset-sample describe` lists operations supported by the compiled features.
+
+| Sample operation | Additional review scope |
+| --- | --- |
+| `rehearse-exchange` | Push/fetch/pull, local metadata exchange and exact selection |
+| `rehearse-worktree` | Linked worktree/index changes and independent active-job protection |
+| `rehearse-backup-outage` | Missing backup observations and held convergence |
+| `rehearse-stale-plan` | Source changes invalidate an old plan |
+| `rehearse-rename` | Logical rename with retained byte identity |
+| `rehearse-return-restore` | Eleven checkpoints: final loss, historical Git return, missing bytes, explicit reacquisition and verified working restoration |
+| `rehearse-aged-category` | Explicit aged-category block and separate final-loss authority |
+| `rehearse-remote-publication` | Bounded loopback upload/readback/uncertain observation; requires `schema,upload` and its fixed sibling tools |
+
+See the [full sample course](../../examples/catalogue/README.md) for each mode's
+limits, consent, simulated clock and provider boundary. Advanced synthetic
+deletion/publication lessons are not permission to operate live caches. No single
+enrollment or build automatically enables every optional provider or experiment.
+
 ## Review boundaries
 
 This is a metadata/library and recorded-lifecycle review. Media previews/playback,
