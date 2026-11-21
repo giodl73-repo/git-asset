@@ -966,3 +966,6 @@ partitions, strict Clippy, standalone and hosted qualification remain separate
 exact-source gates on the cumulative integration PR.
 
 EVID-141: locked capacity/legacy-NTFS/crash fixtures and strict Clippy; see packet.
+
+EVID-142: exact-plan native candidate tests, real ordinary/bare ingress/readback,
+process exits/recovery and strict Clippy; hosted current-head is a separate gate.

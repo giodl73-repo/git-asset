@@ -14,6 +14,7 @@ path = "src/bin/git-asset.rs"
 assets = ["dep:git-asset-model"]
 schema = ["assets", "git-asset-model/schema", "dep:regex", "dep:flate2"]
 annex-read = ["dep:process-wrap", "dep:tokio"]
+annex-publish = ["annex-read", "git-asset-store/upload-witness"]
 upload = ["git-asset-store/upload-witness", "dep:ureq"]
 github = ["dep:base64", "dep:ring", "dep:ureq"]
 

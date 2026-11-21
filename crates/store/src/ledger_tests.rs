@@ -40,6 +40,41 @@ fn reserved(l: &mut CapacityLedger, id: &str, peak: u64) -> Receipt {
 }
 
 #[test]
+fn exact_generic_allocation_observation_is_read_only_and_survives_closed_retirement() {
+    let f = Fixture::new(0);
+    let mut l = f.open();
+    let before = l.checkpoint();
+    assert!(l.allocation_observation(&key("missing")).unwrap().is_none());
+    assert_eq!(l.checkpoint(), before);
+    let job = reserved(&mut l, "job", 100);
+    assert!(matches!(
+        l.allocation_observation(&key("job")),
+        Err(LedgerError::Conflict)
+    ));
+    let a = l
+        .begin_allocation(key("allocate"), job.reference(), key("event"), 100)
+        .unwrap();
+    let before = l.checkpoint();
+    let observed = l.allocation_observation(&key("allocate")).unwrap().unwrap();
+    assert_eq!(&observed.reference, a.reference());
+    assert!(observed.charged_bytes.is_none());
+    assert_eq!(l.checkpoint(), before);
+    l.complete_allocation(key("complete"), a.reference(), 30)
+        .unwrap();
+    l.finish(key("finish"), job.reference()).unwrap();
+    l.retire_closed(job.reference()).unwrap();
+    let before = l.checkpoint();
+    assert_eq!(
+        l.allocation_observation(&key("allocate"))
+            .unwrap()
+            .unwrap()
+            .charged_bytes,
+        Some(30)
+    );
+    assert_eq!(l.checkpoint(), before);
+}
+
+#[test]
 fn closed_retirement_reopens_with_original_receipts_and_accounting() {
     let f = Fixture::new(0);
     let mut l = f.open();
