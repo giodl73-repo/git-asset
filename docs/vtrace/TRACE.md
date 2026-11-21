@@ -807,3 +807,5 @@ CATALOGUE-REVIEW-SAMPLE.md -> existing rehearsals plus derived enrollment/receip
 and front-door discovery/help -> review_sample tests and EVID-144.
 
 ANNEX-RETAINED-COPY.md -> replication/publication/local witness -> copy fixtures; EVID-145.
+
+ANNEX-PROTECTED-EVICTION.md -> snapshot -> four fixture families; EVID-146.

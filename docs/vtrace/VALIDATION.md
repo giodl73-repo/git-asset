@@ -599,3 +599,5 @@ EVID-144: portable two-project team rehearsal; no automatic server or production
 enrollment. Full curriculum, physical custody and human acceptance remain open.
 
 EVID-145: synthetic retained copy/reopen; no native pruning or production acceptance.
+
+EVID-146: exact shared-root metadata only, not bytes/pruning/production.
