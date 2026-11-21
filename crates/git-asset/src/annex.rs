@@ -12,6 +12,8 @@ pub mod publication;
 #[cfg(feature = "annex-publish")]
 pub mod replication;
 #[cfg(feature = "annex-publish")]
+pub mod retirement;
+#[cfg(feature = "annex-publish")]
 pub mod snapshot;
 #[cfg(test)]
 mod tests;

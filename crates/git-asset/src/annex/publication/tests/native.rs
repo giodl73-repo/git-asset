@@ -994,3 +994,79 @@ fn previous_candidate_version_reopens_without_retargeting_current_registration()
 }
 
 mod replication;
+
+#[test]
+fn native_retirement_assessment_holds_configuration_and_all_subjects() {
+    use crate::annex::retirement::{Assessor, Error as RetirementError};
+    let mut f = Fixture::new(b"native source under exclusive namespace fences");
+    let plan = f.plan.clone();
+    let mut input = f.input();
+    f.refresh();
+    f.publisher()
+        .apply(&plan, &mut f.resources(), &mut input)
+        .unwrap();
+    assert!(matches!(
+        Assessor::new(f.profile.pool.clone()).unwrap().assess(
+            &plan.candidate().object,
+            &f.metadata,
+            &Fixture::limits()
+        ),
+        Err(RetirementError::Protected)
+    ));
+    let source = f.namespaces[0].source(&k("asset")).unwrap().unwrap();
+    let version = source.current.unwrap();
+    f.namespaces[0]
+        .apply(
+            k("withdraw-source"),
+            Command::Withdraw {
+                source: k("asset"),
+                owner: k("owner"),
+                expected_revision: source.revision,
+            },
+            &f.metadata,
+            &Fixture::limits(),
+        )
+        .unwrap();
+    let revision = f.namespaces[0]
+        .source(&k("asset"))
+        .unwrap()
+        .unwrap()
+        .revision;
+    f.namespaces[0]
+        .apply(
+            k("retire-source"),
+            Command::Retire {
+                source: k("asset"),
+                owner: k("owner"),
+                expected_revision: revision,
+                predecessor_revision: version.revision,
+            },
+            &f.metadata,
+            &Fixture::limits(),
+        )
+        .unwrap();
+    let mut held = Assessor::new(f.profile.pool.clone())
+        .unwrap()
+        .assess(&plan.candidate().object, &f.metadata, &Fixture::limits())
+        .unwrap();
+    assert_eq!(held.facts().checked().len(), 2);
+    assert!(matches!(
+        f.namespaces[0].hold(&plan.candidate().object),
+        Err(admission::Error::Busy)
+    ));
+    let config = f.profile.pool.pool.repository.join(".git/config");
+    assert!(
+        std::fs::OpenOptions::new()
+            .write(true)
+            .open(&config)
+            .is_err()
+    );
+    let mut read = held.read_source().unwrap();
+    let mut bytes = vec![];
+    read.read_to_end(&mut bytes).unwrap();
+    assert_eq!(Object::from_bytes(&bytes), plan.candidate().object);
+    drop(read);
+    held.check_current().unwrap();
+    drop(held);
+    f.namespaces[0].hold(&plan.candidate().object).unwrap();
+}

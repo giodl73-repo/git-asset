@@ -892,3 +892,78 @@ fn actual_process_exit_releases_provider_and_all_namespace_fences_and_restart_re
     }
     f.assess().unwrap().check_current().unwrap();
 }
+
+#[test]
+fn namespace_only_assessment_reuses_guards_and_allows_unrelated_progress() {
+    let mut f = Fixture::new();
+    let binding = f.store.protection().unwrap().clone();
+    let guard =
+        assess_namespaces(&binding, &f.object, &mut f.namespaces, &f.nodes, &limits()).unwrap();
+    assert_eq!(guard.checked().len(), 2);
+    assert_eq!(guard.object(), &f.object);
+    assert_eq!(guard.binding(), &binding.id().unwrap());
+    let mut peer = f.peer(0);
+    assert!(matches!(peer.fence(&f.object), Err(admission::Error::Busy)));
+    assert!(guard.fence(peer.identity()).is_some());
+    peer.apply(
+        key("unrelated-enrollment"),
+        Command::Enroll {
+            source: key("unrelated"),
+            owner: key("owner"),
+            class: Kind::Job,
+        },
+        &f.nodes,
+        &limits(),
+    )
+    .unwrap();
+    guard.check_current(&binding, &f.namespaces).unwrap();
+    drop(guard);
+    peer.fence(&f.object).unwrap();
+}
+#[test]
+fn namespace_only_assessment_refuses_incomplete_required_and_exhausted_scope() {
+    let mut f = Fixture::new();
+    let binding = f.store.protection().unwrap().clone();
+    assert!(matches!(
+        assess_namespaces(
+            &binding,
+            &f.object,
+            &mut f.namespaces[..1],
+            &f.nodes,
+            &limits()
+        ),
+        Err(Error::IncompleteRoster)
+    ));
+    let pending = prepare(
+        &mut f.namespaces[0],
+        "required",
+        f.selection.clone(),
+        &f.nodes,
+    );
+    assert!(matches!(
+        assess_namespaces(&binding, &f.object, &mut f.namespaces, &f.nodes, &limits()),
+        Err(Error::Required)
+    ));
+    let revision = f.namespaces[0]
+        .source(&key("main"))
+        .unwrap()
+        .unwrap()
+        .revision;
+    f.namespaces[0]
+        .apply(
+            key("abort-required"),
+            Command::Abort {
+                source: key("main"),
+                owner: key("owner"),
+                expected_revision: revision,
+                prepared: pending.reference,
+            },
+            &f.nodes,
+            &limits(),
+        )
+        .unwrap();
+    let mut small = limits();
+    small.reads = 0;
+    assert!(assess_namespaces(&binding, &f.object, &mut f.namespaces, &f.nodes, &small).is_err());
+    f.namespaces[0].fence(&f.object).unwrap();
+}

@@ -92,3 +92,26 @@ OPEN for native execution; this metadata guard is not byte custody or removal.
 This seam passes focused L1 and strict all-feature/all-target Clippy; P2/L2/hosted
 qualification remains outstanding. Historical summaries pin original full records
 and hashes to keep the unchanged8 MiB source ceiling.
+
+Namespace seam input715b98c: factor canonical roster fencing and shared-meter
+absence evaluation from store_protection::assess without changing local-provider
+ordering or frames. The provider-neutral result owns subject fences/checkpoints;
+it grants no provider/custody/deletion authority. Native code must separately hold
+and revalidate actual pool configuration, bytes and authorization. Fixtures:
+namespace_only_assessment_reuses_guards_and_allows_unrelated_progress;
+namespace_only_assessment_refuses_incomplete_required_and_exhausted_scope.
+
+Native inspection seam: annex::retirement::Assessor is pure at construction.
+Explicit assessment pins initialized pool config/directory/UUID/current binding,
+opens exactly enrolled namespace minima and holds the provider-neutral subject
+fences. Native source readback occurs under those fences, never via a managed
+reader that reacquires shared locks. No mutation/removal method is exposed yet.
+Fixture native_retirement_assessment_holds_configuration_and_all_subjects tests
+required-claim refusal, explicit claim settlement, readonly source bytes and
+configuration/fence lifetime. Invalid/disabled runtime remains no-IO.
+
+Assessment: protection18/snapshot4/native-readonly1 pass; strict all-feature/
+all-target Clippy passes. Tests cover refusal/unrelated progress, root settlement,
+pinned config, two exclusive fences and exact bytes; protected has its own code. This adds no eviction
+method; keeper custody, incarnation model, handoff and operator execution remain
+OPEN. Local source-provider exclusion ordering and old record formats are intact.
