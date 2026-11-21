@@ -297,3 +297,32 @@ fixtures. L0 pins/fmt/links/branding/diff; L1 original context/job binding,
 guarded corrupt/missing refusal, pending no-repeat and completed read-only
 reopen; L2 actual exit from inside a callback, then original-operation reopen
 and refusal without a second effect. Full P2 custody/handoff/CLI stays OPEN.
+
+Native device-view entry input9427fdf: same P2 controls, RUST/PROVIDER, CR-005
+exception scoped to windows-process::storage. Generic core/store/Git crates keep
+unsafe forbidden. Compare only the already pinned source/keeper directory
+handles: normalized volume GUID, at most16 physical extents per volume and
+bounded4096-byte direct-device descriptors. No disk/volume/cache enumeration,
+transfer or deletion. Same volume, overlapping disk numbers or equal normalized
+serial identities refuse separation. Unknown/virtual/RAID/network/opaque buses,
+missing/ambiguous serials, truncated/oversized responses and denied access hold.
+Admit only ATA/SATA/NVMe/USB device views; this does not prove what hardware or
+fault domains lie behind firmware/bridges. Private owner admission of unshared
+direct backing and distinct failure domains remains mandatory before eviction.
+Kernel observations never substitute for that declaration or native byte custody.
+Keep volume/device handles live and recheck the exact observation before effect;
+hash identifiers in reports, never export raw serials or discovered paths.
+FFI contract: live borrowed handles, fixed initialized buffers and exact bounded
+byte counts; parse returned bytes with checked offsets, not typed pointer casts.
+Safe std File owns every device handle; no raw handles or unsafe Send/Sync escape.
+L0 fmt/pins/unsafe/dependency/identifier checks; L1 byte-layout/truncation/count/
+bus/serial/alias negatives; L2 owned temporary directory same-volume refusal and
+native keeper comparison under actual namespace/config/byte guards. Distinct-
+device positive qualification and owner authority/handoff remain required before
+any native removal capability. No admission or observation runs on construction.
+Device calls are synchronous/cooperatively budgeted, not preemptible kernel IO
+deadlines. Unknown descriptor versions and duplicate device serials also hold.
+The explicit F:/M: device-view fixture and native keeper fixture use only newly
+owned temporary directories. No existing cache or asset is opened by those tests.
+References: [selected volume extents](https://learn.microsoft.com/en-us/windows/win32/api/winioctl/ni-winioctl-ioctl_volume_get_volume_disk_extents),
+[device descriptors](https://learn.microsoft.com/en-us/windows/win32/api/winioctl/ns-winioctl-storage_device_descriptor).

@@ -80,7 +80,21 @@ impl Fixture {
         Self::build(bytes, None, false)
     }
     fn build(bytes: &[u8], tools: Option<(PathBuf, PathBuf, Vec<PathBuf>)>, bare: bool) -> Self {
-        let temp = tempfile::tempdir().unwrap();
+        Self::build_in(bytes, tools, bare, None)
+    }
+    fn build_in(
+        bytes: &[u8],
+        tools: Option<(PathBuf, PathBuf, Vec<PathBuf>)>,
+        bare: bool,
+        base: Option<&Path>,
+    ) -> Self {
+        let temp = match base {
+            Some(base) => tempfile::Builder::new()
+                .prefix("git-asset-native-fixture-")
+                .tempdir_in(base)
+                .unwrap(),
+            None => tempfile::tempdir().unwrap(),
+        };
         let root = temp.path().to_path_buf();
         let mut p = profile(&root);
         p.pool.pool.repository = root.join("pool");

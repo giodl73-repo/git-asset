@@ -477,6 +477,7 @@ dependencies = [
 name = "git-asset-windows-process"
 version = "0.1.0"
 dependencies = [
+ "sha2",
  "tempfile",
  "windows-sys 0.61.2",
 ]

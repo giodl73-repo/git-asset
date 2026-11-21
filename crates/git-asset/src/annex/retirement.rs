@@ -244,7 +244,28 @@ impl Assessment {
         })
     }
 }
-impl RetainedRead<'_> {
+impl<'source> RetainedRead<'source> {
+    /// Selected-device comparison, not owner fault-domain admission or removal permission.
+    pub fn compare_source_storage(&self) -> Result<StorageSeparation<'_, 'source>> {
+        self._source.check_current()?;
+        #[cfg(windows)]
+        {
+            let view = git_asset_windows_process::storage::Separation::compare_with_limit(
+                &self._source._directory,
+                &self._directory,
+                self._source.profile.pool.command_millis,
+            )
+            .map_err(storage_error)?
+            .ok_or(publication::Error::Denied)?;
+            let guard = StorageSeparation { keeper: self, view };
+            guard.revalidate()?;
+            Ok(guard)
+        }
+        #[cfg(not(windows))]
+        {
+            Err(publication::Error::Unsupported.into())
+        }
+    }
     pub fn store(&self) -> &Digest {
         &self.store
     }
@@ -253,6 +274,62 @@ impl RetainedRead<'_> {
     }
     pub fn metrics(&self) -> &git_asset_core::tree::TreeMetrics {
         &self.metrics
+    }
+}
+#[cfg(windows)]
+fn storage_error(e: std::io::Error) -> Error {
+    match e.kind() {
+        std::io::ErrorKind::Unsupported => publication::Error::Unsupported,
+        std::io::ErrorKind::PermissionDenied => publication::Error::Denied,
+        std::io::ErrorKind::TimedOut => publication::Error::Budget,
+        _ => publication::Error::Uncertain,
+    }
+    .into()
+}
+/// Pinned byte/config/namespace guards plus separated observed device views.
+/// Distinct privately admitted direct backing/fault domains remain required.
+pub struct StorageSeparation<'read, 'source> {
+    keeper: &'read RetainedRead<'source>,
+    #[cfg(windows)]
+    view: git_asset_windows_process::storage::Separation,
+}
+impl StorageSeparation<'_, '_> {
+    pub fn revalidate(&self) -> Result<()> {
+        self.keeper._source.check_current()?;
+        #[cfg(windows)]
+        {
+            if !self.view.revalidate().map_err(storage_error)? {
+                return Err(publication::Error::Stale.into());
+            }
+            Ok(())
+        }
+        #[cfg(not(windows))]
+        {
+            Err(publication::Error::Unsupported.into())
+        }
+    }
+    /// Hashed identity only: no raw serial, discovered path or custody grant.
+    pub fn id(&self) -> Result<Digest> {
+        self.revalidate()?;
+        #[cfg(windows)]
+        {
+            let bytes = git_asset_core::identity::canonical_json(&serde_json::json!([
+                "git-asset.native-device-separation.v1",
+                self.keeper._source.store(),
+                self.keeper.store(),
+                self.keeper.snapshot(),
+                self.view.fingerprints()
+            ]))
+            .map_err(|_| publication::Error::Invalid)?;
+            if bytes.len() > 16384 {
+                return Err(publication::Error::Budget.into());
+            }
+            Ok(Digest::blob(&bytes))
+        }
+        #[cfg(not(windows))]
+        {
+            Err(publication::Error::Unsupported.into())
+        }
     }
 }
 impl std::io::Read for RetainedRead<'_> {

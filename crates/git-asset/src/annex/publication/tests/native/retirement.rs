@@ -70,9 +70,9 @@ fn keeper_requires_exact_pool_place_retention_and_bytes() {
     let source = Fixture::new(b"retained keeper");
     let keeper = Fixture::new(b"retained keeper");
     assert_ne!(source.profile.pool.pool.uuid, keeper.profile.pool.pool.uuid);
-    keeper_checks(source, keeper);
+    keeper_checks(source, keeper, false);
 }
-fn keeper_checks(mut source: Fixture, mut keeper: Fixture) {
+fn keeper_checks(mut source: Fixture, mut keeper: Fixture, separated: bool) {
     publish(&mut source);
     publish(&mut keeper);
     let keeper_path = crate::annex::Reader::new(keeper.profile.pool.pool.clone())
@@ -133,6 +133,18 @@ fn keeper_checks(mut source: Fixture, mut keeper: Fixture) {
         .unwrap();
     assert_eq!(read.snapshot(), &pin);
     assert_ne!(read.store(), &held.store());
+    if separated {
+        let device_view = read.compare_source_storage().unwrap();
+        let id = device_view.id().unwrap();
+        device_view.revalidate().unwrap();
+        assert_eq!(device_view.id().unwrap(), id);
+    } else {
+        // These owned pools intentionally share one volume. UUIDs are not independent custody.
+        assert_eq!(
+            read.compare_source_storage().err().unwrap().code(),
+            "denied"
+        );
+    }
     assert!(matches!(
         keeper.namespaces[0].fence(&pin.object),
         Err(admission::Error::Busy)
@@ -462,6 +474,36 @@ fn actual_native_keeper_fences_verified_bytes_and_retention_in_ordinary_and_bare
             bare,
         );
         assert_ne!(source.profile.pool.pool.uuid, keeper.profile.pool.pool.uuid);
-        keeper_checks(source, keeper);
+        keeper_checks(source, keeper, false);
+    }
+}
+
+#[test]
+#[ignore = "explicit native tools and source/keeper volume roots; fresh synthetic pools only"]
+fn actual_native_keeper_device_views_on_declared_distinct_volumes() {
+    let git: PathBuf = std::env::var_os("GIT_ASSET_TEST_GIT_EXE").unwrap().into();
+    let annex: PathBuf = std::env::var_os("GIT_ASSET_TEST_ANNEX_EXE").unwrap().into();
+    let path = std::env::split_paths(&std::env::var_os("GIT_ASSET_TEST_ANNEX_PATH").unwrap())
+        .collect::<Vec<_>>();
+    let source_root: PathBuf = std::env::var_os("GIT_ASSET_TEST_SOURCE_VOLUME_ROOT")
+        .unwrap()
+        .into();
+    let keeper_root: PathBuf = std::env::var_os("GIT_ASSET_TEST_KEEPER_VOLUME_ROOT")
+        .unwrap()
+        .into();
+    for bare in [false, true] {
+        let source = Fixture::build_in(
+            &vec![42; 256 * 1024],
+            Some((git.clone(), annex.clone(), path.clone())),
+            !bare,
+            Some(&source_root),
+        );
+        let keeper = Fixture::build_in(
+            &vec![42; 256 * 1024],
+            Some((git.clone(), annex.clone(), path.clone())),
+            bare,
+            Some(&keeper_root),
+        );
+        keeper_checks(source, keeper, true);
     }
 }

@@ -22,9 +22,9 @@ Art-checkout-relative runtime dependency. Extraction pins source and parity
 vectors before a shared primitive changes identity semantics. Mature provider
 libraries require explicit capability/operational fit checks and license intake.
 
-PKG-002 native process boundary: optional crates/windows-process owns named
-Windows job handles through a CR-005 reviewed FFI exception; depends only on
-pinned windows-sys. Git's annex adapter consumes its safe handle API under scoped
+PKG-002 native boundary: optional crates/windows-process owns named job and
+selected storage-device handles through CR-005 FFI contracts; depends on pinned
+windows-sys and SHA256. Git's annex adapter consumes safe handle APIs under scoped
 admission fences. No core/store/semantic dependency or lifecycle state enters
 the platform crate. Actual child/grandchild and adapter-order fixtures qualify
 composition; cross-epoch handoff, custody and destructive permission stay separate.

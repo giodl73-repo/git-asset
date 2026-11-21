@@ -1,7 +1,8 @@
-//! Bounded named Windows jobs, not asset authority or proof of byte custody.
+//! Selected Windows job/storage handle primitives, not asset authority or byte custody.
 //! Safety contract: specs/ANNEX-PROTECTED-EVICTION.md, native command fence entry.
 #![cfg(windows)]
 #![deny(unsafe_op_in_unsafe_fn)]
+pub mod storage;
 use std::{
     io,
     os::windows::io::{AsRawHandle, BorrowedHandle, FromRawHandle, OwnedHandle},
