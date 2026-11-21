@@ -346,3 +346,20 @@ fixed dropkey --force --json --json-error-messages plus one exact SHA256 key,
 under the retained native guards, and validates its bounded response and absence.
 The native plumbing supplies no other-copy guarantee; no production command or
 owner admission is inferred. See [upstream semantics](https://git-annex.branchable.com/git-annex-dropkey/).
+
+Producer closure entry input36b7de1: same P2 controls, plus candidate publication's
+WP/REQ/SPEC/IF/PKG controls; RUST/PROVIDER/INTEGRATION. Before native eviction,
+source producer completion must prove the original command finished. Earlier
+publication recovery inferred completion from visible bytes after incomplete
+intent, although a lost job name cannot prove quiescence. Replace that path with
+prepared one-shot publication under the existing packet operation fence: staging
+precedes effect intent, actual original group spans durable completion, and an
+old intent without completion is Uncertain without another import or implicit
+acknowledgement. Preserve scoped staging retry, old-plan readability and defaults;
+new plans explicitly identify guarded effect semantics. Old completion records
+are historical evidence, not retroactive process-closure qualification. No new
+cache/journal engine. L0 pins/fmt/links/budget/audits; L1 guarded preparation,
+peer exclusion and unknown no-repeat; L2 real exits before intent/during staging/
+after import/after completion, native ordinary/bare and connected eviction/restore.
+Old acknowledgements stay readable; new eviction admission must refuse legacy
+unqualified producer completion. Producer roles remain non-independent checklists.

@@ -77,3 +77,17 @@ this checkpoint, not independent or human approval. Remaining tests/gates above
 stay OPEN. Trace: named controls -> replication/context/witness inspection ->
 pure, fake protocol, native and child-exit fixtures. Broad verification/validation
 and production acceptance close separately.
+
+### Recovery correction after producer-closure review
+
+Input36b7de1: the Imported-exit/lost-reply recovery claim above is superseded.
+Visible destination bytes do not prove the earlier native group finished. Current
+publication uses prepared one-shot ingress: staging before intent retries under
+its existing fence; intent without completion returns Uncertain without another
+import or implicit acknowledgement. Destination bytes/registration remain retained
+and independently readable. Durable completion can still settle/reopen without
+source availability. New plans bind guarded-effect semantics; legacy plans and
+completed bytes stay readable but are not native eviction closure authority.
+See [the current recovery contract](ANNEX-CANDIDATE-PUBLICATION.md#guarded-effect-recovery).
+Exact-head native/copy/crash verification is required for this changed behavior;
+earlier historical checkpoint counts do not qualify the correction.

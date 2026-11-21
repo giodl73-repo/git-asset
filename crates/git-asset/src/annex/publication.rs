@@ -253,6 +253,13 @@ pub struct Plan {
     context: Option<Digest>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     control: Option<ControlAdmission>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    effect_protocol: Option<EffectProtocol>,
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+enum EffectProtocol {
+    #[serde(rename = "one_shot_guarded_v1")]
+    GuardedV1,
 }
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -405,6 +412,7 @@ impl Plan {
             budget: profile.budget,
             context: None,
             control,
+            effect_protocol: Some(EffectProtocol::GuardedV1),
         })
     }
     pub(super) fn with_context(mut self, context: Option<Digest>) -> Self {
@@ -412,7 +420,7 @@ impl Plan {
         self
     }
     pub(super) fn check_profile(&self, profile: &Profile) -> Result<()> {
-        let rebuilt = Self::build(
+        let mut rebuilt = Self::build(
             profile,
             self.request.clone(),
             self.selection.selection.clone(),
@@ -420,6 +428,7 @@ impl Plan {
             self.control.clone(),
         )?
         .with_context(self.context.clone());
+        rebuilt.effect_protocol = self.effect_protocol;
         if &rebuilt != self {
             return Err(Error::Stale);
         }
@@ -427,6 +436,11 @@ impl Plan {
     }
     pub fn id(&self) -> Result<Digest> {
         digest(self)
+    }
+    /// Legacy plans remain readable; their earlier completion is not proof of
+    /// the guarded one-shot process protocol needed for native eviction.
+    pub fn has_guarded_effect(&self) -> bool {
+        self.effect_protocol == Some(EffectProtocol::GuardedV1)
     }
     pub fn candidate(&self) -> &Candidate {
         &self.request.candidate
@@ -560,6 +574,17 @@ impl Work {
         self.remaining = self.remaining.checked_sub(n).ok_or(Error::Budget)?;
         Ok(())
     }
+}
+fn native_footprint(profile: &Profile, plan: &Plan, read: &existing::VerifiedRead) -> Result<u64> {
+    let bytes =
+        read.with_path(|path| File::open(path).and_then(|f| fs2::FileExt::allocated_size(&f)))??;
+    let footprint = bytes
+        .checked_add(staging::footprint(profile, plan)?)
+        .ok_or(Error::Budget)?;
+    if footprint > plan.payload_peak()? {
+        return Err(Error::Budget);
+    }
+    Ok(footprint)
 }
 pub struct Publisher {
     profile: Profile,
@@ -894,16 +919,6 @@ impl Publisher {
         Self::protected(p, r.namespace)?;
         hook(Stage::Registered)?;
         work.check()?;
-        let _marker = self.staging.open_provider_file(
-            &self.profile.staging,
-            &ProviderPath::parse(".git-asset-staging")?,
-            &p.staging_marker,
-        )?;
-        if fs2::available_space(&self.profile.staging)? < p.payload_peak()?
-            || fs2::available_space(&self.profile.pool.pool.repository)? < p.payload_peak()?
-        {
-            return Err(Error::Budget);
-        }
         let payload = r.ledger.begin_allocation(
             key(&p.scope()?, "payload")?,
             &p.admission.job,
@@ -911,58 +926,120 @@ impl Publisher {
             p.payload_peak()?,
         )?;
         let packet = p.packet(r.witness)?;
-        let pending = packet.begin(r.witness, r.ledger, &p.admission.job)?;
-        hook(Stage::Intent)?;
-        work.check()?;
-        let read = match observed.read.take() {
-            Some(read) => read,
+        let mut prior_read = observed.read.take();
+        let mut preparation_error = None;
+        let result = packet.apply_once_prepared(
+            r.witness,
+            r.ledger,
+            &p.admission.job,
+            || {
+                let marker = match (|| -> Result<_> {
+                    let marker = self.staging.open_provider_file(
+                        &self.profile.staging,
+                        &ProviderPath::parse(".git-asset-staging")?,
+                        &p.staging_marker,
+                    )?;
+                    if fs2::available_space(&self.profile.staging)? < p.payload_peak()?
+                        || fs2::available_space(&self.profile.pool.pool.repository)?
+                            < p.payload_peak()?
+                    {
+                        return Err(Error::Budget);
+                    }
+                    Ok(marker)
+                })() {
+                    Ok(marker) => marker,
+                    Err(e) => {
+                        preparation_error = Some(e);
+                        return Err(upload_witness::Error::NeedsRecovery);
+                    }
+                };
+                let path = if prior_read.is_none() {
+                    let prepared = staging::prepare(&self.profile, p, &mut work, source, hook)
+                        .and_then(|path| {
+                            hook(Stage::Staged)?;
+                            work.check()?;
+                            Ok(path)
+                        });
+                    match prepared {
+                        Ok(path) => Some(path),
+                        Err(e) => {
+                            preparation_error = Some(e);
+                            return Err(upload_witness::Error::NeedsRecovery);
+                        }
+                    }
+                } else {
+                    None
+                };
+                Ok((prior_read.take(), path, &mut work, &mut *hook, marker))
+            },
+            |(read, path, work, hook, marker)| {
+                let effect = || -> Result<_> {
+                    hook(Stage::Intent)?;
+                    work.check()?;
+                    let output = if let Some(path) = path {
+                        let output = process::run_for_object(
+                            &self.profile.pool.pool,
+                            &p.candidate().object,
+                            true,
+                            &[
+                                "reinject",
+                                "--guesskeys",
+                                "--json",
+                                "--json-error-messages",
+                                "--",
+                                path.to_str().ok_or(Error::Invalid)?,
+                            ],
+                        )
+                        .map_err(|_| Error::Uncertain)?;
+                        let line = super::line(&output.stdout).map_err(|_| Error::Uncertain)?;
+                        let response =
+                            identity::parse_json(line.as_bytes()).map_err(|_| Error::Uncertain)?;
+                        let native_key = format!(
+                            "SHA256-s{}--{}",
+                            p.candidate().object.bytes,
+                            p.candidate().object.sha256.as_str()
+                        );
+                        if response.get("success") != Some(&serde_json::Value::Bool(true))
+                            || response.get("key").and_then(|v| v.as_str())
+                                != Some(native_key.as_str())
+                        {
+                            return Err(Error::Uncertain);
+                        }
+                        hook(Stage::Imported)?;
+                        work.consume(p.candidate().object.bytes)?;
+                        Some(output)
+                    } else {
+                        None
+                    };
+                    let read = match read {
+                        Some(read) => read,
+                        None => self.reader.lookup(&p.candidate().object, &observed.hold)?,
+                    };
+                    work.check()?;
+                    Self::protected(p, r.namespace)?;
+                    let footprint = native_footprint(&self.profile, p, &read)?;
+                    Ok((read, output, footprint, marker))
+                };
+                effect().map_err(|_| upload_witness::Error::NeedsRecovery)
+            },
+        );
+        let (_completed, effect) =
+            result.map_err(|e| preparation_error.unwrap_or_else(|| e.into()))?;
+        let (read, _original_group, footprint, _marker) = match effect {
+            Some(effect) => effect,
             None => {
-                let path = staging::prepare(&self.profile, p, &mut work, source, hook)?;
-                hook(Stage::Staged)?;
-                work.check()?;
-                let output = process::run_for_object(
-                    &self.profile.pool.pool,
-                    &p.candidate().object,
-                    true,
-                    &[
-                        "reinject",
-                        "--guesskeys",
-                        "--json",
-                        "--json-error-messages",
-                        "--",
-                        path.to_str().ok_or(Error::Invalid)?,
-                    ],
-                )
-                .map_err(|_| Error::Uncertain)?;
-                let line = super::line(&output.stdout).map_err(|_| Error::Uncertain)?;
-                let response =
-                    identity::parse_json(line.as_bytes()).map_err(|_| Error::Uncertain)?;
-                let native_key = format!(
-                    "SHA256-s{}--{}",
-                    p.candidate().object.bytes,
-                    p.candidate().object.sha256.as_str()
-                );
-                if response.get("success") != Some(&serde_json::Value::Bool(true))
-                    || response.get("key").and_then(|v| v.as_str()) != Some(native_key.as_str())
-                {
-                    return Err(Error::Uncertain);
-                }
-                hook(Stage::Imported)?;
-                work.consume(p.candidate().object.bytes)?;
-                self.reader.lookup(&p.candidate().object, &observed.hold)?
+                let read = prior_read.ok_or(Error::MissingAcknowledged)?;
+                let marker = self.staging.open_provider_file(
+                    &self.profile.staging,
+                    &ProviderPath::parse(".git-asset-staging")?,
+                    &p.staging_marker,
+                )?;
+                let footprint = native_footprint(&self.profile, p, &read)?;
+                (read, None, footprint, marker)
             }
         };
         work.check()?;
         Self::protected(p, r.namespace)?;
-        let final_bytes = read
-            .with_path(|path| File::open(path).and_then(|f| fs2::FileExt::allocated_size(&f)))??;
-        let footprint = final_bytes
-            .checked_add(staging::footprint(&self.profile, p)?)
-            .ok_or(Error::Budget)?;
-        if footprint > p.payload_peak()? {
-            return Err(Error::Budget);
-        }
-        pending.complete().map_err(|_| Error::Uncertain)?;
         hook(Stage::Completed)?;
         r.ledger
             .complete_allocation(key(&p.scope()?, "settled")?, payload.reference(), footprint)

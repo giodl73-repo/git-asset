@@ -408,6 +408,14 @@ fn publication_crash_worker() {
     let p = f.plan.clone();
     let mut input = f.input();
     let mode = std::env::var("GIT_ASSET_CANDIDATE_FIXTURE_MODE").unwrap();
+    if mode == "recover-uncertain" {
+        f.refresh();
+        assert!(matches!(
+            f.publisher().resume(&p, &mut f.resources()),
+            Err(Error::Uncertain)
+        ));
+        return;
+    }
     if mode == "recover" {
         f.refresh();
         let mut ready = f
@@ -483,6 +491,18 @@ fn crash_and_recover(f: &mut Fixture, stage: Stage) {
         Stage::Staged | Stage::Imported | Stage::Completed | Stage::Settled
     ) {
         fs::rename(f.root.join("input"), f.root.join("input-offline")).unwrap();
+    }
+    if matches!(stage, Stage::Intent | Stage::Imported) {
+        for _ in 0..2 {
+            let output = worker(f, "recover-uncertain");
+            assert!(output.status.success(), "{output:?}");
+        }
+        assert!(!f.root.join("recovered-receipt.json").exists());
+        let plan = f.plan.clone();
+        let status = f.publisher().status(&plan, &mut f.resources()).unwrap();
+        assert!(status.intent_recorded && !status.historical_completion && status.protected);
+        assert_eq!(status.bytes_verified, stage == Stage::Imported);
+        return;
     }
     let output = worker(f, "recover");
     assert!(
@@ -640,7 +660,7 @@ fn native_candidate_roundtrip_preserves_source_and_reopens_after_scratch_retirem
     );
 }
 #[test]
-fn unknown_native_outcome_recovers_original_operation_without_source_or_duplicate_registration() {
+fn unknown_native_outcome_holds_original_operation_despite_visible_bytes() {
     let mut f = Fixture::new(b"original result");
     let p = f.plan.clone();
     let mut input = f.input();
@@ -656,8 +676,18 @@ fn unknown_native_outcome_recovers_original_operation_without_source_or_duplicat
         .unwrap()
         .revision;
     fs::rename(f.root.join("input"), f.root.join("input-offline")).unwrap();
-    let ready = f.publisher().resume(&p, &mut f.resources()).unwrap();
-    drop(ready);
+    fs::rename(&f.profile.staging, f.root.join("staging-offline")).unwrap();
+    assert!(matches!(
+        f.publisher().resume(&p, &mut f.resources()),
+        Err(Error::Uncertain)
+    ));
+    let status = f.publisher().status(&p, &mut f.resources()).unwrap();
+    assert!(
+        status.bytes_verified
+            && status.intent_recorded
+            && !status.historical_completion
+            && status.protected
+    );
     assert_eq!(
         f.namespaces[0]
             .source(&k("asset"))
@@ -1107,3 +1137,32 @@ fn native_retirement_assessment_holds_configuration_and_all_subjects() {
 mod retirement;
 
 mod control;
+
+#[test]
+fn legacy_plan_encoding_and_retained_bytes_remain_readable_without_closure_qualification() {
+    let mut f = Fixture::new(b"legacy readable candidate");
+    assert!(f.plan.has_guarded_effect());
+    f.plan.effect_protocol = None;
+    let plan = f.plan.clone();
+    let encoded = serde_json::to_vec(&plan).unwrap();
+    assert!(
+        serde_json::from_slice::<serde_json::Value>(&encoded)
+            .unwrap()
+            .get("effect_protocol")
+            .is_none()
+    );
+    let old: Plan = serde_json::from_slice(&encoded).unwrap();
+    assert_eq!(old, plan);
+    assert!(!old.has_guarded_effect());
+    let mut input = f.input();
+    f.refresh();
+    let ready = f
+        .publisher()
+        .apply(&old, &mut f.resources(), &mut input)
+        .unwrap();
+    drop(ready);
+    let mut reopened = f.publisher().reopen(&old, &mut f.resources()).unwrap();
+    let mut bytes = Vec::new();
+    reopened.read_to_end(&mut bytes).unwrap();
+    assert_eq!(bytes, b"legacy readable candidate");
+}

@@ -32,6 +32,16 @@ fixture validates its exact-key JSON response. ReacquisitionPlan::payload_plan
 is now a readonly public accessor; wire/hash domains and limits are unchanged.
 This is fixture orchestration, not a shipped controller/admission/CLI.
 
+Producer-closure correction (input36b7de1): native import recovery formerly
+acknowledged visible bytes after incomplete intent without durable quiescence.
+Packet::apply_once_prepared now fences retryable staging before effect intent;
+native command/read guards span completion. Intent without completion stays
+Uncertain, even with visible bytes/offline scratch; registration/credit remain.
+New native plans bind effect_protocol=one_shot_guarded_v1 and expose
+has_guarded_effect(); absent-field legacy plans/acknowledgements remain readable
+but are not qualified eviction closure. Actual producer completion still needs
+exact witness reopen and physical-origin control binding, never just the flag. See producer-* logs for this revision.
+
 Next: implement the admitted native controller using this connected proof:
 private direct-backing/failure-domain and actor-boundary admission, historical
 fence-only completion recovery, uncertainty-safe cancellation/reacquisition and

@@ -264,3 +264,69 @@ fn exit_worker() {
     });
     panic!("worker must exit inside the effect");
 }
+
+#[test]
+fn prepared_effect_retries_preparation_under_fence_before_any_intent() {
+    let f = Fixture::new();
+    let (s, mut l, p) = f.open();
+    let (_peer_store, mut peer_ledger, peer_packet) = f.open();
+    let first = p.apply_once_prepared(
+        &s,
+        &mut l,
+        &f.job,
+        || {
+            assert!(matches!(
+                peer_packet.apply_once(&s, &mut peer_ledger, &f.job, || Ok(())),
+                Err(OnceError::Witness(Error::Busy))
+            ));
+            Err::<(), _>(Error::Budget)
+        },
+        |()| -> Result<()> { panic!("preparation failure must not invoke effect") },
+    );
+    assert!(matches!(first, Err(OnceError::Witness(Error::Budget))));
+    let state = p.inspect(&s, &mut l, &f.job).unwrap();
+    assert!(!state.intent && !state.completion);
+    let (completed, value) = p
+        .apply_once_prepared(&s, &mut l, &f.job, || Ok(17), |value| Ok(value + 1))
+        .unwrap();
+    assert_eq!(value, Some(18));
+    drop(completed);
+    let (_, historical) = p
+        .apply_once_prepared(
+            &s,
+            &mut l,
+            &f.job,
+            || -> Result<()> { panic!("historical replay cannot prepare again") },
+            |()| -> Result<()> { panic!("historical replay cannot repeat effect") },
+        )
+        .unwrap();
+    assert!(historical.is_none());
+}
+
+#[test]
+fn prepared_effect_unknown_never_prepares_or_invokes_effect_again() {
+    let f = Fixture::new();
+    let (s, mut l, p) = f.open();
+    assert!(matches!(
+        p.apply_once_prepared(
+            &s,
+            &mut l,
+            &f.job,
+            || Ok(()),
+            |()| -> Result<()> { Err(Error::NeedsRecovery) }
+        ),
+        Err(OnceError::Uncertain)
+    ));
+    drop(l);
+    let (s, mut l, p) = f.open();
+    assert!(matches!(
+        p.apply_once_prepared(
+            &s,
+            &mut l,
+            &f.job,
+            || -> Result<()> { panic!("unknown operation cannot prepare again") },
+            |()| -> Result<()> { panic!("unknown operation cannot repeat effect") }
+        ),
+        Err(OnceError::Uncertain)
+    ));
+}

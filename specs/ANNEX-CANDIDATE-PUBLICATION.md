@@ -73,6 +73,29 @@ guess another key/version. Missing/corrupt acknowledged bytes are incidents,
 never an automatic reupload. Completion requires fresh exact native readback and
 durable protection; returned live guards bridge downstream owner handoff.
 
+## Guarded effect recovery
+
+Input36b7de1's P2 closure review found that visible bytes after incomplete native
+intent do not prove the earlier command finished. New plans bind
+`effect_protocol: one_shot_guarded_v1`; `has_guarded_effect()` distinguishes them
+from readable legacy plans. Existing absent-field encodings and hash domains stay
+unchanged. Legacy completion is not retroactive command-closure qualification.
+
+The existing packet fence now spans retryable staging before effect intent.
+After intent, native ingress runs once; actual original process-group and verified
+byte guards span durable completion and settlement. Missing/recreated job names,
+child exit alone, timeout, visible bytes and a successful later lookup cannot
+complete an earlier unknown effect. `resume` and `apply` return Uncertain for
+intent without completion, preserving registration, reservations and bytes.
+Use readonly status and retain protection; do not cancel, replace the operation
+or reupload as an implicit repair. Explicit reconciliation needs qualified
+original-handle continuity or durable completion, not a time delay or assertion.
+Before effect intent, partial/complete staging can retry under the same operation
+fence. After durable completion, settlement/reopen can retry without native IO.
+The Imported hook is before completion: a process exit there now stays uncertain;
+a Completed exit can recover without original input. All post-intent callback
+failures are uncertain; pre-intent preparation preserves its original typed error.
+
 ## Rust consumer contract
 
 Enable the `annex-publish` feature on package `git-asset`; consume

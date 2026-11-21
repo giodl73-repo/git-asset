@@ -168,23 +168,39 @@ impl Packet {
         job: &JournalRef,
         effect: impl FnOnce() -> Result<G>,
     ) -> OnceResult<Completed> {
+        self.apply_once_prepared(store, ledger, job, || Ok(()), |()| effect())
+            .map(|(completed, _guard)| completed)
+    }
+    /// Preparation is retryable and must not perform the external effect. It runs
+    /// under this operation's fence before durable effect intent. Earlier unknown
+    /// intent skips both callbacks. A fresh returned guard survives completion and
+    /// settlement and is returned to the caller; historical replay returns None.
+    pub fn apply_once_prepared<P, G>(
+        &self,
+        store: &LocalStore,
+        ledger: &mut CapacityLedger,
+        job: &JournalRef,
+        prepare: impl FnOnce() -> Result<P>,
+        effect: impl FnOnce(P) -> Result<G>,
+    ) -> OnceResult<(Completed, Option<G>)> {
         let state = self.inspect(store, ledger, job)?;
         if state.completion && state.settled {
-            return self.reopen(store, ledger, job).map_err(OnceError::from);
+            return Ok((self.reopen(store, ledger, job)?, None));
         }
-        let pending = self.begin(store, ledger, job)?;
+        let mut pending = self.prepare(store, ledger, job)?;
         let effect_guard = if !pending.state.completion {
             if pending.state.intent {
                 return Err(OnceError::Uncertain);
             }
-            Some(effect().map_err(|_| OnceError::Uncertain)?)
+            let prepared = prepare()?;
+            pending.record_intent()?;
+            Some(effect(prepared).map_err(|_| OnceError::Uncertain)?)
         } else {
             None
         };
         pending.complete()?;
         let completed = self.reopen(store, ledger, job)?;
-        drop(effect_guard);
-        Ok(completed)
+        Ok((completed, effect_guard))
     }
     pub fn new(
         store: &LocalStore,
@@ -255,6 +271,16 @@ impl Packet {
         ledger: &'a mut CapacityLedger,
         job: &'a JournalRef,
     ) -> Result<Pending<'a>> {
+        let mut pending = self.prepare(store, ledger, job)?;
+        pending.record_intent()?;
+        Ok(pending)
+    }
+    fn prepare<'a>(
+        &'a self,
+        store: &'a LocalStore,
+        ledger: &'a mut CapacityLedger,
+        job: &'a JournalRef,
+    ) -> Result<Pending<'a>> {
         self.inspect(store, ledger, job)?;
         let a = accounted::admit(ledger, store, job, &self.entries[0].plan)?;
         let b = accounted::admit(ledger, store, job, &self.entries[1].plan)?;
@@ -269,13 +295,6 @@ impl Packet {
             }
         }
         let state = self.inspect(store, ledger, job)?;
-        accounted::publish_accounted(
-            ledger,
-            store,
-            job,
-            &self.entries[0].plan,
-            &mut Cursor::new(&self.entries[0].bytes),
-        )?;
         Ok(Pending {
             packet: self,
             store,
@@ -295,6 +314,17 @@ pub struct Pending<'a> {
     pub state: State,
 }
 impl Pending<'_> {
+    fn record_intent(&mut self) -> Result<()> {
+        let intent = &self.packet.entries[0];
+        accounted::publish_accounted(
+            self.ledger,
+            self.store,
+            self.job,
+            &intent.plan,
+            &mut Cursor::new(&intent.bytes),
+        )?;
+        Ok(())
+    }
     pub fn complete(self) -> Result<()> {
         drop(self.guard);
         let done = &self.packet.entries[1];
