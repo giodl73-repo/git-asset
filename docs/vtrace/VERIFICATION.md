@@ -964,3 +964,5 @@ EVID-140: immutable-input audits preserve main891 and stack1030 runtime/fixture
 identifiers; all-feature/all-target locked check passes. Complete native test
 partitions, strict Clippy, standalone and hosted qualification remain separate
 exact-source gates on the cumulative integration PR.
+
+EVID-141: locked capacity/legacy-NTFS/crash fixtures and strict Clippy; see packet.

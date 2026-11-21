@@ -1520,3 +1520,5 @@ Inputs stack66f8b4b and maine78cabf plus landed README/CI source.
 implementation, verification, intended-use validation and trace. Imported
 EVID-120..129 use current aliases130..139. Original commits and legacy data
 identities remain; operational activation and full product acceptance stay open.
+
+EVID-141: [metadata capacity packet](../reviews/2026-11-20-metadata-capacity.md).

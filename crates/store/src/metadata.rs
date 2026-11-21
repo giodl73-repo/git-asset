@@ -1,4 +1,5 @@
 //! Owned immutable metadata NodeStore. No media ingest, deletion or discovery.
+pub mod capacity;
 pub mod copy;
 use crate::local;
 use git_asset_core::{
