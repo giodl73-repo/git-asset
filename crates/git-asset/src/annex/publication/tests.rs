@@ -119,6 +119,41 @@ fn plan_freeze_exact_membership_and_constructors_are_pure() {
     );
 }
 #[test]
+fn provider_failures_remain_distinct_from_corruption_and_admission() {
+    use git_asset_core::tree::{TreeError, TreeResult};
+    struct Failing(TreeError);
+    impl NodeStore for Failing {
+        fn get(&self, _: &Object) -> TreeResult<Option<Vec<u8>>> {
+            Err(self.0.clone())
+        }
+        fn put(&mut self, _: &[u8]) -> TreeResult<Object> {
+            Err(self.0.clone())
+        }
+    }
+    let root = tempfile::tempdir().unwrap();
+    let mut nodes = MemoryNodes::default();
+    let request = request(&mut nodes);
+    let p = plan(&mut nodes, &profile(root.path()), request.clone());
+    for (failure, expected) in [
+        (
+            TreeError::Store("provider unavailable".into()),
+            Error::NeedsRecovery,
+        ),
+        (TreeError::Budget, Error::Budget),
+        (TreeError::Integrity, Error::Integrity),
+    ] {
+        let mut failing = Failing(failure);
+        assert_eq!(
+            freeze(&request, &mut failing, TreeLimits::default()).unwrap_err(),
+            expected
+        );
+        assert_eq!(
+            verify(&p, &mut failing, TreeLimits::default()).unwrap_err(),
+            expected
+        );
+    }
+}
+#[test]
 fn missing_provenance_and_finite_metadata_and_payload_budgets_refuse() {
     let root = tempfile::tempdir().unwrap();
     let mut p = profile(root.path());

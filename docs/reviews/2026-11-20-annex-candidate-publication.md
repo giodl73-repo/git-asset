@@ -15,13 +15,14 @@ Return a live byte/namespace guard plus stable receipt and recovery minima.
 
 ## Verification
 
-Windows synthetic annex regression: 26 passed, three explicit-native entries
+Windows synthetic annex regression: 27 passed, three explicit-native entries
 ignored by default. This includes seven actual process-exit boundaries, original
 operation recovery, prefix retry, unknown native reply, peer Busy/unrelated
 allocation progress, original bytes, history without retargeting, closed-job
 retirement, corruption/acknowledged loss and explicit owner retirement.
 Changed stage location, wrong marker/unowned file, held native namespace and
-changed same-operation provenance/stale baseline are negative fixtures.
+changed same-operation provenance/stale baseline are negative fixtures. Metadata provider failure, budget denial and corruption
+remain distinct in an injected provider-failure regression.
 The separate generic allocation observation regression passes without appending,
 including absent/wrong-kind operations and closed-job historical settlement.
 
@@ -40,7 +41,7 @@ see the PR checks for their current outcome. CI's default Windows fixtures use a
 bounded protocol executable; actual-native tests require explicit local runtime
 enrollment and do not silently skip when invoked with missing tools.
 
-SDK manifest SHA256: `a11e39cf7b909108d1bb35c2dac9428b4439c460b19f77a86d55df44c2ab4db9`.
+SDK manifest SHA256: `237875974d3465ab76135ea18fd56a4c1387116c025409450c8da793a64c1e2c`.
 Sorted root Cargo.toml/lock and all crates files: path/bytes/sha256, compact ASCII
 JSON with sorted keys. Tool/source/lock/test/log hashes and full logs are external
 qualification artifacts under the owned native-candidate evidence prefix.

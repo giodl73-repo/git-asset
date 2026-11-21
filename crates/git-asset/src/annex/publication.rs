@@ -145,6 +145,19 @@ impl From<std::io::Error> for Error {
         Self::NeedsRecovery
     }
 }
+impl From<git_asset_core::tree::TreeError> for Error {
+    fn from(e: git_asset_core::tree::TreeError) -> Self {
+        use git_asset_core::tree::TreeError as T;
+        match e {
+            T::Budget => Self::Budget,
+            T::MissingNode(_) => Self::Missing,
+            T::Integrity | T::InvalidNode => Self::Integrity,
+            T::PathConflict => Self::Conflict,
+            T::StaleRoot => Self::Stale,
+            T::Store(_) => Self::NeedsRecovery,
+        }
+    }
+}
 fn encode(v: &impl Serialize) -> Result<Vec<u8>> {
     let b = identity::canonical_json(&serde_json::to_value(v).map_err(|_| Error::Invalid)?)
         .map_err(|_| Error::Invalid)?;
@@ -260,7 +273,7 @@ pub fn freeze(
         .ok_or(Error::Budget)?;
     let provenance = nodes
         .get(&request.candidate.provenance)
-        .map_err(|_| Error::Integrity)?
+        .map_err(Error::from)?
         .ok_or(Error::Missing)?;
     if Object::from_bytes(&provenance) != request.candidate.provenance {
         return Err(Error::Integrity);
@@ -270,11 +283,11 @@ pub fn freeze(
         .max_write_bytes
         .checked_sub(raw.len())
         .ok_or(Error::Budget)?;
-    let header = nodes.put(&raw).map_err(|_| Error::Budget)?;
+    let header = nodes.put(&raw)?;
     if header != Object::from_bytes(&raw) {
         return Err(Error::Integrity);
     }
-    let (tree, _) = Tree::build(&bindings(request)?, nodes, limits).map_err(|_| Error::Budget)?;
+    let (tree, _) = Tree::build(&bindings(request)?, nodes, limits)?;
     Ok(Selection {
         root: tree.root().clone(),
         context: header.sha256,
@@ -299,18 +312,14 @@ fn verify(plan: &Plan, nodes: &mut impl NodeStore, mut limits: TreeLimits) -> Re
     for object in [&header, &plan.candidate().provenance] {
         let bytes = nodes
             .get(object)
-            .map_err(|_| Error::Integrity)?
+            .map_err(Error::from)?
             .ok_or(Error::Missing)?;
         if Object::from_bytes(&bytes) != *object || object == &header && bytes != raw {
             return Err(Error::Integrity);
         }
     }
-    let (actual, _) = Tree::from_root(plan.selection.selection.root.clone())
-        .entries(nodes, limits)
-        .map_err(|e| match e {
-            git_asset_core::tree::TreeError::Budget => Error::Budget,
-            _ => Error::Integrity,
-        })?;
+    let (actual, _) =
+        Tree::from_root(plan.selection.selection.root.clone()).entries(nodes, limits)?;
     if actual != expected {
         return Err(Error::Integrity);
     }
