@@ -5,6 +5,8 @@ use git_asset_store::existing::{
 };
 use serde::Deserialize;
 use std::path::{Component, Path, PathBuf};
+#[cfg(feature = "annex-publish")]
+pub mod control;
 pub mod managed;
 mod process;
 #[cfg(feature = "annex-publish")]

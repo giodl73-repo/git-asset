@@ -14,10 +14,22 @@ No removal API exists. Shared lifecycle::Incarnation wire/bounds2, ordinary24,
 final-provider28 and exact read_published reopen/cancel/restore1 pass. Strict
 Clippy/standalone/both identifier audits pass. Incarnation records grant no IO;
 read_published guards metadata bytes only, not native custody.
-Next: native writer gate over existing per-key engine. External candidate:
+Native writer gate connects the existing per-key engine. External candidate:
 F:/src/tig-dev-temp/git-asset-protected-eviction-20261121/NATIVE-CONTROL-ADAPTER-CANDIDATE.md
-Review/freeze mapping first; no second lifecycle journal. Independently qualify
+No second lifecycle journal. Independently qualify
 native custody, in-flight command quiescence, recovery/CLI and actor handoff.
 P2 incomplete; P3-P6 follow. ReplayBasis alone is NOT an incarnation protocol.
 Build/temp/evidence outside source; preserve other lanes and runtime bindings.
 Resume starts no scan, cache, hydration, transfer, render or deletion.
+
+Native connection: publication Plan/Publisher::controlled and
+replication::Copier::controlled hold an accounted::reopen guard of a genuine
+small per-object control document. No native media enters the metadata engine.
+Configured pools refuse gate omission; original producer context binds missing-
+byte ingress. Alias reuse requires existing bytes. Live reads block metadata
+retirement; pending holds writes after child reopen; cancellation permits reopen;
+unrelated keys progress. apply_with_effect runs after durable metadata intent,
+then rechecks custody. Unsettled callbacks may repeat; done replay skips them.
+This qualifies no native removal effect. Next: independent native custody,
+command quiescence/uncertain-outcome reconciliation and authority handoff before
+native eviction/CLI. Keep current caches untouched. P2 and P3-P6 remain open.

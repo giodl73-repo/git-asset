@@ -1554,3 +1554,77 @@ fn exact_publication_guard_refuses_pending_after_reopen_and_old_birth_after_rest
     read.read_to_end(&mut actual).unwrap();
     assert_eq!(actual, b"target");
 }
+
+#[test]
+fn adapter_effect_failure_stays_pending_and_historical_replay_never_repeats_effect() {
+    let mut f = Fixture::new();
+    let plan = f.plan();
+    let mut calls = 0;
+    let auth = plan.authorize().unwrap();
+    {
+        let mut backups = f
+            .keepers
+            .iter_mut()
+            .map(|k| Backup {
+                store: &k.store,
+                ledger: &mut k.ledger,
+                enrollment: &k.enrollment,
+            })
+            .collect::<Vec<_>>();
+        let mut execution = Execution {
+            store: &f.store,
+            ledger: &mut f.ledger,
+            job: &f.job,
+            namespaces: &mut f.namespaces,
+            nodes: &f.nodes,
+            limits: &limits(),
+            backups: &mut backups,
+            admitted_context: &f.context,
+            source_enrollment: &f.enrollment,
+        };
+        assert!(matches!(
+            execution.apply_with_effect(&plan, &auth, |_| {
+                calls += 1;
+                Err(Error::Injected)
+            }),
+            Err(Error::Injected)
+        ));
+    }
+    assert_eq!(calls, 1);
+    assert!(f.object_path().exists());
+    assert!(matches!(
+        f.store.read_published(&f.publication),
+        Err(crate::Error::NeedsRecovery)
+    ));
+    for expected in 2..=3 {
+        let mut backups = f
+            .keepers
+            .iter_mut()
+            .map(|k| Backup {
+                store: &k.store,
+                ledger: &mut k.ledger,
+                enrollment: &k.enrollment,
+            })
+            .collect::<Vec<_>>();
+        let mut execution = Execution {
+            store: &f.store,
+            ledger: &mut f.ledger,
+            job: &f.job,
+            namespaces: &mut f.namespaces,
+            nodes: &f.nodes,
+            limits: &limits(),
+            backups: &mut backups,
+            admitted_context: &f.context,
+            source_enrollment: &f.enrollment,
+        };
+        let receipt = execution
+            .apply_with_effect(&plan, &auth, |_| {
+                calls += 1;
+                Ok(())
+            })
+            .unwrap();
+        assert_eq!(calls, 2);
+        assert_eq!(receipt.historical_replay, expected == 3);
+    }
+    assert!(!f.object_path().exists());
+}

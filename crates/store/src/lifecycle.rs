@@ -119,6 +119,9 @@ impl Incarnation {
     pub fn placement(&self) -> &Digest {
         &self.placement
     }
+    pub fn reacquisition(&self) -> Option<&Request> {
+        self.reacquire.as_ref()
+    }
     pub fn to_json(&self) -> Result<Vec<u8>> {
         encode(self)
     }

@@ -13,6 +13,9 @@ use git_asset_store::{
 use serde::Deserialize;
 use std::{io, path::PathBuf};
 
+#[cfg(feature = "annex-publish")]
+pub(super) const PROTECTION_CONFIG: &str = "tig.protectionbinding";
+
 #[derive(Clone, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Member {

@@ -148,10 +148,25 @@ pub struct Copier {
 impl Copier {
     /// Pure; no repository initialization, byte lookup or source census.
     pub fn new(profile: Profile) -> Result<Self> {
+        Self::controlled(profile, None, None)
+    }
+    pub fn controlled(
+        profile: Profile,
+        source: Option<super::control::Profile>,
+        destination: Option<super::control::Profile>,
+    ) -> Result<Self> {
+        let source_publisher = match source {
+            Some(c) => publication::Publisher::controlled(profile.source.clone(), c)?,
+            None => publication::Publisher::new(profile.source.clone())?,
+        };
+        let destination_publisher = match destination {
+            Some(c) => publication::Publisher::controlled(profile.destination.clone(), c)?,
+            None => publication::Publisher::new(profile.destination.clone())?,
+        };
         Ok(Self {
-            source: publication::Publisher::new(profile.source.clone())?,
+            source: source_publisher,
             input: managed::Reader::new(profile.source.pool.clone())?,
-            destination: publication::Publisher::new(profile.destination.clone())?,
+            destination: destination_publisher,
             profile,
         })
     }

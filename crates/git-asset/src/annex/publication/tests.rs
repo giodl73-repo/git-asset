@@ -299,6 +299,10 @@ fn main(){
  if a==["config","--local","--no-includes","--get-all","annex.uuid"] {println!("{}",fs::read_to_string("uuid").unwrap_or("00000000-0000-0000-0000-000000000001".into()));return;}
  if a==["config","--local","--no-includes","--get-all","annex.version"] {println!("10");return;}
  if a==["config","--local","--no-includes","--get-all","tig.protectionbinding"] {println!("{}",fs::read_to_string("binding").unwrap());return;}
+ if a.len()==5 && a[..4]==["config","--local","--no-includes","--get-regexp"] {
+  println!("tig.protectionbinding {}",fs::read_to_string("binding").unwrap());
+  if let Ok(c)=fs::read_to_string("control") {println!("gitasset.lifecyclecontrol {}",c);}return;
+ }
  let prefix=if std::env::var("GIT_DIR").unwrap()=="." {"annex/objects"}else{".git/annex/objects"};
  if a.len()==2 && a[0]=="contentlocation" {
   let p=format!("{prefix}/a/b/{0}/{0}",a[1]);if !Path::new(&p).exists(){std::process::exit(1);}println!("{p}");return;

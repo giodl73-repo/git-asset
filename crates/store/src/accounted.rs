@@ -36,7 +36,7 @@ impl std::fmt::Display for AccountedError {
 }
 impl std::error::Error for AccountedError {}
 pub type Result<T> = std::result::Result<T, AccountedError>;
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct PublicationPlan {
     store: Digest,
@@ -50,6 +50,12 @@ pub struct PublicationPlan {
     context: Option<Digest>,
 }
 impl PublicationPlan {
+    pub fn request(&self) -> &Request {
+        &self.request
+    }
+    pub fn context(&self) -> Option<&Digest> {
+        self.context.as_ref()
+    }
     pub fn required_peak(&self) -> u64 {
         self.limit
     }
@@ -144,6 +150,54 @@ fn plan_with_context(
         limit,
         basis: "conservative-allocated-file-data-footprint".into(),
         context,
+    })
+}
+/// A read-only exact settled publication, not custody of any described external bytes.
+pub struct Published {
+    _read: crate::local::ObjectRead,
+    publication: Receipt,
+    origin: Option<crate::lifecycle::Incarnation>,
+}
+impl Published {
+    pub fn publication(&self) -> &Receipt {
+        &self.publication
+    }
+    pub fn origin(&self) -> Option<&crate::lifecycle::Incarnation> {
+        self.origin.as_ref()
+    }
+}
+/// No admission, settlement, source opening or repair; the returned guard spans use.
+pub fn reopen(
+    ledger: &mut CapacityLedger,
+    store: &LocalStore,
+    job: &JournalRef,
+    planned: &PublicationPlan,
+) -> Result<Published> {
+    let current = plan_with_context(store, &planned.request, planned.context.clone())?;
+    if encode(&current)? != encode(planned)? {
+        return Err(AccountedError::InvalidPlan);
+    }
+    let (publication, read) = store.read_published(&planned.request)?;
+    let identity = Digest::blob(&encode(&(store.identity(), &planned.request.operation))?);
+    let allocation = ledger
+        .allocation_reference(
+            &Key::parse(&format!("publish-{}", identity.as_str()))?,
+            false,
+        )?
+        .ok_or(AccountedError::MissingSettledPublication)?;
+    let binding = Digest::blob(&encode(&(planned, job))?);
+    ledger
+        .publication_status(&allocation, &binding)?
+        .ok_or(AccountedError::MissingSettledPublication)?;
+    let origin = if store.supports_retirement() {
+        store.placement_origin(&planned.request.object)?
+    } else {
+        None
+    };
+    Ok(Published {
+        _read: read,
+        publication,
+        origin,
     })
 }
 pub fn publish_accounted(

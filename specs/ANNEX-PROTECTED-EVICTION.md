@@ -190,3 +190,60 @@ object's missing fence; unknown operation is needs_recovery. Exact guarded reads
 reuse completed_reader, with no second hash pass. Both identifier audits pass;
 strict all-feature/all-target Clippy and standalone pass. Full P2 broad/native
 execution/authority/independent-custody/handoff acceptance remains OPEN.
+
+Native writer connection input528fd27: same P2 controls, RUST/PROVIDER/GIT.
+Use one small genuine content-addressed control document per raw native object,
+managed by the existing LocalStore/accounted/retirement engine; no native payload
+enters that store, no per-asset namespace and no second journal. Its place binds
+one native UUID. Private control profile pins root/store, ledger identity/minimum
+and owner. Actual config gitasset.lifecyclecontrol binds that profile and native
+UUID; every Publisher entry refuses omitted/mismatched control on enrolled pools.
+Absent optional fields preserve old plan encodings; old config pins stay frozen.
+Read-only accounted reopen checks original plan/job/settlement and publication
+incarnation under its guard. Only the physical placement's original control
+publication is admitted; aliases cannot invent another producer context. A missing
+native body is writable only by the bound original producer; other logical
+registrations require existing native bytes. Returned guards span native IO.
+Initial/control publication remains explicit accounted SDK work, not resume/init.
+Metadata retirement may expose a validated pre-unlink effect callback after durable
+intent/current keeper revalidation. Failure leaves intent pending; historical replay
+never repeats the effect. Callback is not native custody, authority or quiescence.
+L0 fmt/pins/identifier/diff; L1 exact binding/origin/context/unknown/pending/stale
+refusals and existing engine regressions; L2 owned fake/actual ordinary/bare native
+publication and an actual child reopening pending metadata. Native deletion,
+independence, cancellation effects, actor handoff and command quiescence stay OPEN.
+
+### Native control SDK checkpoint
+
+Implementation: `annex::control::{Profile,Plan,document,place,initial_request,
+writer_context}` maps genuine small control documents to the existing managed
+LocalStore. `accounted::reopen` requires the exact settled plan/job and returns
+an incarnation-checked guard without admission or repair. Native
+`publication::{Plan,Publisher}::controlled` and `replication::Copier::controlled`
+retain that guard through IO/readback. Existing public profile structs and
+uncontrolled plan encodings remain unchanged. Enrolled native configuration
+refuses omitted/mismatched control. Only the original bound producer may supply
+absent bytes; unfinished aliases need recovery, acknowledged absence stays an
+error. `retirement::Execution::apply_with_effect` calls an adapter after durable
+intent under live metadata fences, then revalidates before metadata unlink.
+Unsettled retries may repeat the callback; completed historical replay skips it.
+This hook grants no external custody, command-quiescence or deletion authority.
+
+Verification/validation: owned synthetic publication/copy fixtures exercise
+guard lifetime, pending restart in an actual child, cancellation, unrelated-key
+progress and omitted-control/alias refusals. A separately selected real-native
+fixture exercises ordinary and bare pools. Metadata-only retirement deliberately
+leaves native bytes untouched. Engine/accounting regressions and exact reopen
+negative bindings qualify this seam only; full P2 remains OPEN.
+
+Producer `.roles` dispositions: identity checks bind original placement/context;
+placement keeps configured admission explicit and limits unchanged; custody
+rejects counting control documents as native replicas; recovery requires pending
+fences and still holds command quiescence; provider preserves existing legacy
+config spelling without adding dependencies/unsafe; Git/adoption preserves old
+public profile literals and requires separate production handoff. Owners are the
+corresponding six producer checklists, not independent people or approval.
+High-severity native custody/quiescence/handoff findings remain P2 blockers.
+Trace: same controls/input528fd27 above; full exact-source logs live outside Git.
+Local metadata bounds remain16 births,16384 commands and16MiB journal; this is
+not a continuation/scale qualification. No native removal API is exposed.

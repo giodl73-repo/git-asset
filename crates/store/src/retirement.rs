@@ -313,6 +313,7 @@ enum Stage {
     Bound,
     Assessed,
     KeepersVerified,
+    BeforeUnlink,
     Intent,
     Unlinked,
     Completed,
@@ -433,6 +434,25 @@ impl<S: NodeStore> Execution<'_, '_, S> {
     pub fn apply(&mut self, plan: &Plan, authorization: &Authorization) -> Result<Receipt> {
         self.apply_hook(plan, authorization, |_| Ok(()))
     }
+    /// Adapter effect under live metadata fences after intent and fresh keeper checks.
+    /// Caller must separately qualify external authority/custody/incarnation/quiescence.
+    /// Interrupted attempts may call it again: reconcile the original effect, never
+    /// blindly repeat it. Failure preserves pending intent; completed replay skips it.
+    pub fn apply_with_effect(
+        &mut self,
+        plan: &Plan,
+        authorization: &Authorization,
+        mut effect: impl FnMut(&Plan) -> Result<()>,
+    ) -> Result<Receipt> {
+        self.apply_hook(plan, authorization, |stage| {
+            if stage == Stage::BeforeUnlink {
+                effect(plan)
+            } else {
+                Ok(())
+            }
+        })
+    }
+
     #[cfg(test)]
     pub(crate) fn fixture_pending_intent(&mut self, plan: &Plan) -> Result<Receipt> {
         self.apply_hook(plan, &plan.authorize()?, |stage| {
@@ -673,6 +693,16 @@ impl<S: NodeStore> Execution<'_, '_, S> {
             plan.publication.required,
         )? {
             return Err(Error::MissingCustody);
+        }
+        hook(Stage::BeforeUnlink)?;
+        assessment.check_current()?;
+        for (keeper, live) in plan.request.keepers.iter().zip(&mut retained) {
+            let backup = self
+                .backups
+                .iter_mut()
+                .find(|b| b.store.identity() == keeper.grant.store())
+                .ok_or(Error::MissingCustody)?;
+            live.revalidate(backup.ledger, backup.store)?;
         }
         self.store
             .unlink_retirement(&intent, assessment.provider())?;

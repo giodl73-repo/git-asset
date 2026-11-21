@@ -15,6 +15,7 @@ struct Fixture {
     witness: LocalStore,
     ledger: CapacityLedger,
     _temp: Option<tempfile::TempDir>,
+    control_profile: Option<crate::annex::control::Profile>,
 }
 #[derive(Deserialize)]
 struct Saved {
@@ -23,6 +24,8 @@ struct Saved {
     metadata: git_asset_store::metadata::Checkpoint,
     namespaces: Vec<Checkpoint>,
     capacity: git_asset_store::ledger::Checkpoint,
+    #[serde(default)]
+    control_profile: Option<crate::annex::control::Profile>,
 }
 impl Fixture {
     fn save(&self) {
@@ -42,7 +45,7 @@ impl Fixture {
             "retained_place":self.profile.retained_place,"staging":self.profile.staging,"staging_marker":self.profile.staging_marker,
             "budget":self.profile.budget,"allow_publish":self.profile.allow_publish});
         let saved = serde_json::json!({"profile":profile,"plan":self.plan,"metadata":self.metadata.checkpoint(),
-            "namespaces":self.namespaces.iter().map(|n|n.checkpoint()).collect::<Vec<_>>(),"capacity":self.ledger.checkpoint()});
+            "control_profile":self.control_profile,"namespaces":self.namespaces.iter().map(|n|n.checkpoint()).collect::<Vec<_>>(),"capacity":self.ledger.checkpoint()});
         fs::write(
             self.root.join("fixture.json"),
             serde_json::to_vec(&saved).unwrap(),
@@ -70,6 +73,7 @@ impl Fixture {
             witness,
             ledger,
             _temp: None,
+            control_profile: s.control_profile,
         }
     }
     fn new(bytes: &[u8]) -> Self {
@@ -275,6 +279,7 @@ impl Fixture {
         .unwrap();
         Self {
             _temp: Some(temp),
+            control_profile: None,
             root,
             profile: p,
             plan,
@@ -321,7 +326,10 @@ impl Fixture {
         .unwrap()
     }
     fn publisher(&self) -> Publisher {
-        Publisher::new(self.profile.clone()).unwrap()
+        match &self.control_profile {
+            Some(control) => Publisher::controlled(self.profile.clone(), control.clone()).unwrap(),
+            None => Publisher::new(self.profile.clone()).unwrap(),
+        }
     }
     fn refresh(&mut self) {
         if self
@@ -1072,3 +1080,5 @@ fn native_retirement_assessment_holds_configuration_and_all_subjects() {
 }
 
 mod retirement;
+
+mod control;

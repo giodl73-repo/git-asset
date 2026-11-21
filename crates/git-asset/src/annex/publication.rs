@@ -1,6 +1,6 @@
 //! Unselected candidate registration, native ingress and retained readback.
 //! Uses existing namespace/metadata/ledger/witness engines; never selects Git.
-use super::{managed, process};
+use super::{control, managed, process};
 use git_asset_core::{
     Digest, LogicalPath, Object, identity,
     tree::{NodeStore, Tree, TreeLimits},
@@ -243,6 +243,14 @@ pub struct Plan {
     budget: Budget,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     context: Option<Digest>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    control: Option<ControlAdmission>,
+}
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct ControlAdmission {
+    binding: Digest,
+    plan: control::Plan,
 }
 fn descriptor(request: &Request) -> Result<Vec<u8>> {
     if request.candidate.logical_id.is_empty()
@@ -334,6 +342,31 @@ impl Plan {
         frozen: Selection,
         admission: Admission,
     ) -> Result<Self> {
+        Self::build(profile, request, frozen, admission, None)
+    }
+    pub fn controlled(
+        profile: &Profile,
+        request: Request,
+        frozen: Selection,
+        admission: Admission,
+        control_profile: &control::Profile,
+        control: control::Plan,
+    ) -> Result<Self> {
+        let native = super::Reader::new(profile.pool.pool.clone())?.store();
+        control_profile.check(&native, &request.candidate.object, &control)?;
+        let control = ControlAdmission {
+            binding: control_profile.binding(&native)?,
+            plan: control,
+        };
+        Self::build(profile, request, frozen, admission, Some(control))
+    }
+    fn build(
+        profile: &Profile,
+        request: Request,
+        frozen: Selection,
+        admission: Admission,
+        control: Option<ControlAdmission>,
+    ) -> Result<Self> {
         profile.budget.validate()?;
         descriptor(&request)?;
         if request.candidate.object.bytes > profile.budget.object_bytes
@@ -363,6 +396,7 @@ impl Plan {
             staging_location: digest(&profile.staging)?,
             budget: profile.budget,
             context: None,
+            control,
         })
     }
     pub(super) fn with_context(mut self, context: Option<Digest>) -> Self {
@@ -370,11 +404,12 @@ impl Plan {
         self
     }
     pub(super) fn check_profile(&self, profile: &Profile) -> Result<()> {
-        let rebuilt = Self::new(
+        let rebuilt = Self::build(
             profile,
             self.request.clone(),
             self.selection.selection.clone(),
             self.admission.clone(),
+            self.control.clone(),
         )?
         .with_context(self.context.clone());
         if &rebuilt != self {
@@ -456,6 +491,7 @@ pub struct Ready {
     receipt: Receipt,
     read: managed::Read,
     recovery: Recovery,
+    _control: Option<control::Use>,
 }
 impl Ready {
     pub fn receipt(&self) -> &Receipt {
@@ -519,6 +555,7 @@ impl Work {
 }
 pub struct Publisher {
     profile: Profile,
+    control: Option<control::Profile>,
     reader: managed::Reader,
     staging: ReadCache,
 }
@@ -538,15 +575,25 @@ struct Observed {
     hold: managed::HeldUse,
     read: Option<existing::VerifiedRead>,
     charged: Option<u64>,
+    control: Option<control::Use>,
 }
 impl Publisher {
     pub fn new(profile: Profile) -> Result<Self> {
+        Self::build(profile, None)
+    }
+    pub fn controlled(profile: Profile, control: control::Profile) -> Result<Self> {
+        Self::build(profile, Some(control))
+    }
+    fn build(profile: Profile, control: Option<control::Profile>) -> Result<Self> {
         profile.budget.validate()?;
         if !super::absolute(&profile.staging)
             || profile.staging_marker.bytes == 0
             || profile.staging_marker.bytes > 65536
         {
             return Err(Error::Invalid);
+        }
+        if let Some(control) = &control {
+            control.binding(&super::Reader::new(profile.pool.pool.clone())?.store())?;
         }
         let staging = ReadCache::provider(
             RequiredProtection::PreventMutation,
@@ -561,12 +608,24 @@ impl Publisher {
         let reader = managed::Reader::new(profile.pool.clone())?;
         Ok(Self {
             profile,
+            control,
             reader,
             staging,
         })
     }
     fn check(&self, p: &Plan, r: &mut Resources<'_>) -> Result<()> {
         p.check_profile(&self.profile)?;
+        match (&self.control, &p.control) {
+            (Some(profile), Some(admission)) => {
+                if profile.binding(&self.reader.store())? != admission.binding {
+                    return Err(Error::Stale);
+                }
+                profile.check(&self.reader.store(), &p.candidate().object, &admission.plan)?;
+            }
+            (None, None) => (),
+            _ => return Err(Error::Stale),
+        }
+
         if self.reader.store() != p.pool
             || self.reader.binding() != &p.binding
             || r.namespace.identity() != &p.admission.namespace
@@ -627,6 +686,23 @@ impl Publisher {
         }
         self.check(p, r)?;
         let hold = self.reader.hold_for_publication(&p.candidate().object)?;
+        let expected = self
+            .control
+            .as_ref()
+            .map(|c| c.binding(&self.reader.store()))
+            .transpose()?;
+        control::configuration(
+            &self.profile.pool.pool,
+            &self.profile.pool.binding.id().map_err(|_| Error::Invalid)?,
+            expected.as_ref(),
+        )?;
+        let control = match (&self.control, &p.control) {
+            (Some(profile), Some(plan)) => {
+                Some(profile.open(&self.reader.store(), &p.candidate().object, &plan.plan)?)
+            }
+            (None, None) => None,
+            _ => return Err(Error::Invalid),
+        };
         let registration = r
             .namespace
             .selection_status(&p.selection)?
@@ -656,6 +732,18 @@ impl Publisher {
         if state.completion && read.is_none() {
             return Err(Error::MissingAcknowledged);
         }
+        if read.is_none()
+            && let (Some(held), Some(plan)) = (&control, &p.control)
+            && !held.allows_missing(
+                &self.profile,
+                self.control.as_ref().ok_or(Error::Invalid)?,
+                &p.request,
+                &plan.plan,
+            )?
+        {
+            // Another producer may still be unfinished; absence is not evidence of its acknowledgement.
+            return Err(Error::NeedsRecovery);
+        }
         Ok(Observed {
             status: Status {
                 plan: p.id()?,
@@ -670,6 +758,7 @@ impl Publisher {
             hold,
             read,
             charged,
+            control,
         })
     }
     /// Exact read-only state and fresh bytes; never reconstructs missing evidence.
@@ -699,6 +788,7 @@ impl Publisher {
         Ok(Ready {
             receipt,
             recovery,
+            _control: observed.control,
             read: managed::Reader::finish_read(
                 observed.hold,
                 observed.read.ok_or(Error::MissingAcknowledged)?,
