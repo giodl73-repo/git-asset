@@ -594,3 +594,6 @@ handoff; REEL production adoption, independent custody and native pruning stay o
 
 EVID-143: synthetic team walkthrough; observations/held review remain distinct
 from custody/execution. Team, assistive-technology and production acceptance open.
+
+EVID-144: portable two-project team rehearsal; no automatic server or production
+enrollment. Full curriculum, physical custody and human acceptance remain open.

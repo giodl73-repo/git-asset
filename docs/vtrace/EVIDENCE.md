@@ -1526,3 +1526,5 @@ EVID-141: [metadata capacity packet](../reviews/2026-11-20-metadata-capacity.md)
 EVID-142: [native candidate publication packet](../reviews/2026-11-20-annex-candidate-publication.md).
 
 EVID-143: [catalogue review readiness](../reviews/2026-11-20-catalogue-review-ux.md).
+
+EVID-144: [reproducible review workspace](../reviews/2026-11-21-review-sample.md).

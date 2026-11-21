@@ -972,3 +972,6 @@ process exits/recovery and strict Clippy; hosted current-head is a separate gate
 
 EVID-143:90 controller,13 native catalogue and fixed HTTP icon cases; actual
 synthetic browser keyboard/layout tasks and strict Clippy. Hosted is separate.
+
+EVID-144: actual sample/front-door creation, shared-object and fresh-root refusals;
+old teaching/native/browser and hosted qualification remain distinct gates.
