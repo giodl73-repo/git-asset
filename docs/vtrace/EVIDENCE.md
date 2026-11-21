@@ -1528,3 +1528,5 @@ EVID-142: [native candidate publication packet](../reviews/2026-11-20-annex-cand
 EVID-143: [catalogue review readiness](../reviews/2026-11-20-catalogue-review-ux.md).
 
 EVID-144: [reproducible review workspace](../reviews/2026-11-21-review-sample.md).
+
+EVID-145: [native retained copy](../../specs/ANNEX-RETAINED-COPY.md#evid-145-producer-checkpoint).

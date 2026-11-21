@@ -296,7 +296,7 @@ fn main(){
  let a:Vec<_>=std::env::args().skip(1).collect();
  let mut log=fs::OpenOptions::new().create(true).append(true).open("calls").unwrap();writeln!(log,"{}",a.join(" ")).unwrap();
  let mode=fs::read_to_string("mode").unwrap_or_default();
- if a==["config","--local","--no-includes","--get-all","annex.uuid"] {println!("00000000-0000-0000-0000-000000000001");return;}
+ if a==["config","--local","--no-includes","--get-all","annex.uuid"] {println!("{}",fs::read_to_string("uuid").unwrap_or("00000000-0000-0000-0000-000000000001".into()));return;}
  if a==["config","--local","--no-includes","--get-all","annex.version"] {println!("10");return;}
  if a==["config","--local","--no-includes","--get-all","tig.protectionbinding"] {println!("{}",fs::read_to_string("binding").unwrap());return;}
  let prefix=if std::env::var("GIT_DIR").unwrap()=="." {"annex/objects"}else{".git/annex/objects"};
@@ -317,3 +317,5 @@ fn main(){
         assert!(out.status.success(),"{}",String::from_utf8_lossy(&out.stderr));(root,exe)
     }).1
 }
+
+mod replication;

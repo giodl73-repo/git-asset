@@ -241,6 +241,8 @@ pub struct Plan {
     staging_marker: Object,
     staging_location: Digest,
     budget: Budget,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    context: Option<Digest>,
 }
 fn descriptor(request: &Request) -> Result<Vec<u8>> {
     if request.candidate.logical_id.is_empty()
@@ -360,7 +362,25 @@ impl Plan {
             staging_marker: profile.staging_marker.clone(),
             staging_location: digest(&profile.staging)?,
             budget: profile.budget,
+            context: None,
         })
+    }
+    pub(super) fn with_context(mut self, context: Option<Digest>) -> Self {
+        self.context = context;
+        self
+    }
+    pub(super) fn check_profile(&self, profile: &Profile) -> Result<()> {
+        let rebuilt = Self::new(
+            profile,
+            self.request.clone(),
+            self.selection.selection.clone(),
+            self.admission.clone(),
+        )?
+        .with_context(self.context.clone());
+        if &rebuilt != self {
+            return Err(Error::Stale);
+        }
+        Ok(())
     }
     pub fn id(&self) -> Result<Digest> {
         digest(self)
@@ -546,14 +566,8 @@ impl Publisher {
         })
     }
     fn check(&self, p: &Plan, r: &mut Resources<'_>) -> Result<()> {
-        let rebuilt = Plan::new(
-            &self.profile,
-            p.request.clone(),
-            p.selection.selection.clone(),
-            p.admission.clone(),
-        )?;
-        if &rebuilt != p
-            || self.reader.store() != p.pool
+        p.check_profile(&self.profile)?;
+        if self.reader.store() != p.pool
             || self.reader.binding() != &p.binding
             || r.namespace.identity() != &p.admission.namespace
             || r.ledger.identity() != &p.admission.capacity

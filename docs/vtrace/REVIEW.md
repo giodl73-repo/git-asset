@@ -54,3 +54,5 @@ fresh-root/privacy/adoption/custody lenses; no independent or human approval.
 
 Initial offering: [six-role plan review](../../PRODUCT_PLAN.md#six-role-review-of-this-plan);
 R1-R6 plan corrections only; runtime/adoption proof remains OPEN.
+
+EVID-145: [copy producer lenses](../../specs/ANNEX-RETAINED-COPY.md#evid-145-producer-checkpoint); P2/production open.

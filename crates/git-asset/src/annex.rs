@@ -1,4 +1,4 @@
-//! Explicit local annex reads. No fetching, initialization, publication or removal.
+//! Explicit annex reads and optional retained publication/copy. No initialization or removal.
 use git_asset_core::{Digest, Object};
 use git_asset_store::existing::{
     self, ByteSource, Limits, ProviderPath, ReadCache, RequiredProtection, VerifiedRead,
@@ -9,6 +9,8 @@ pub mod managed;
 mod process;
 #[cfg(feature = "annex-publish")]
 pub mod publication;
+#[cfg(feature = "annex-publish")]
+pub mod replication;
 #[cfg(test)]
 mod tests;
 

@@ -975,3 +975,5 @@ synthetic browser keyboard/layout tasks and strict Clippy. Hosted is separate.
 
 EVID-144: actual sample/front-door creation, shared-object and fresh-root refusals;
 old teaching/native/browser and hosted qualification remain distinct gates.
+
+EVID-145: copy focused/native/crash and strict Clippy pass; broad/hosted pending.

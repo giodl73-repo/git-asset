@@ -217,9 +217,13 @@ impl LocalStore {
     /// A caller with a settled allocation must separately require Some evidence.
     pub(crate) fn optional_completed_receipt(&self, request: &Request) -> Result<Option<Receipt>> {
         self.guard()?;
-        if !path_present(&self.op_path(&request.operation, "done"))? {
+        let done = self.op_path(&request.operation, "done");
+        if !path_present(&done)? {
             return Ok(None);
         }
+        // Reject conflicting original operations before looking for a different
+        // object's fence. completed_reader rechecks the record under its guard.
+        self.check_record(&done, request, "tig.publication-completion.design-1")?;
         self.completed_receipt(request)
     }
     /// One bounded hash pass with a guard spanning records, bytes and rechecks.
