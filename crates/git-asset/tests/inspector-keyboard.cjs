@@ -30,7 +30,9 @@ test('record inspector focuses close and returns to its actual invoking control'
 });
 
 test('compact navigation toggles explicitly and closes after choosing a view',async()=>{
- const f=catalogueFixture();await f.settle();await f.click(f.get('menu'));
+ const f=catalogueFixture({objectMode:true});await f.settle();await f.click(f.get('menu'));
  assert.equal(f.get('menu').getAttribute('aria-expanded'),'true');assert.equal(f.get('sidebar').classList.contains('navigation-open'),true);
  await f.context.load();assert.equal(f.get('menu').getAttribute('aria-expanded'),'false');assert.equal(f.get('sidebar').classList.contains('navigation-open'),false);
+ await f.click(f.get('menu'));await f.context.openObjectManager('atlas');
+ assert.equal(f.get('menu').getAttribute('aria-expanded'),'false');assert.equal(f.get('sidebar').classList.contains('navigation-open'),false);
 });

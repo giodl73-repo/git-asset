@@ -10,6 +10,7 @@ function selectedProjects(){return state.projects.filter(p=>state.project==='all
 function projectLabel(id){return state.projects.find(p=>p.id===id)?.label||id;}
 function navButton(label,count,active,click,mark){const b=node('button',active?'active':'');if(mark)b.append(node('span','project-mark',mark));b.append(node('span','',label),node('span','nav-count',fmt.format(count)));b.setAttribute('aria-current',active?'page':'false');b.onclick=click;return b;}
 function drawNavigation(){
+ collapseNavigation();
  if(state.mode==='lessons'){drawLessonsNavigation();return;}resetLessonChrome();
  if(state.mode==='shared'){drawSharedNavigation();return;}
  document.querySelector('.toolbar').hidden=false;$('work-controls').hidden=false;$('assets').className='asset-grid';$('storage').hidden=!state.projects.some(p=>p.storage_locations);if(state.mode==='coverage'){drawCoverageNavigation();return;}if(state.mode==='objects'){drawObjectNavigation();return;}if(state.mode==='storage'){drawStorageNavigation();return;}

@@ -93,3 +93,11 @@ eleven-checkpoint return/restoration fixture also succeeds, including synthetic
 final loss and explicit recovery. The walkthrough now lists advanced modes and
 the upload feature requirement; it never labels one sample as the whole course.
 Full ref/content/worktree audit data and runtime reports stay outside source.
+
+A two-project synthetic enrollment also exercises current-v2 versus returned-v1
+sharing and explicit observed-copy refresh. It finds one shared25-byte subject
+and166 observed copy bytes for83 unique content bytes in the introductory scope;
+these are actual fixture files, not invented TiB or independent physical disks.
+Direct storage navigation exposed a compact-menu collapse omission; the common
+navigation redraw now closes it, with the existing keyboard/menu case extended
+to cover the direct object-manager route.
