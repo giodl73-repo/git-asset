@@ -799,3 +799,6 @@ METADATA-CAPACITY.md -> metadata::capacity/tests/legacy fixture -> EVID-141.
 
 ANNEX-CANDIDATE-PUBLICATION.md -> annex::publication, managed guards, exact ledger
 observation and synthetic/native fixtures -> EVID-142; no creative-selection authority.
+
+CATALOGUE-REVIEW-UX.md -> web controllers/HTML/CSS/fixed icon, controller/native
+fixtures and actual browser walkthrough -> EVID-143; no storage authority.

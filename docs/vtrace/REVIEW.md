@@ -45,3 +45,6 @@ EVID-141: [capacity producer lenses](../reviews/2026-11-20-metadata-capacity.md)
 
 EVID-142: [native publication producer lenses](../reviews/2026-11-20-annex-candidate-publication.md);
 independent/human and production acceptance remain separate.
+
+EVID-143: [catalogue UX producer lenses](../reviews/2026-11-20-catalogue-review-ux.md);
+actual synthetic browser evidence does not replace team/independent acceptance.

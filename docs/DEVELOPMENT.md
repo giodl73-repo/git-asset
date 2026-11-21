@@ -53,7 +53,7 @@ Run `python -B tools/test_ci_scope.py` when changing this classification.
 For catalogue controller work, run the shipped-script synthetic workflows:
 
 ```text
-node --test crates/git-asset/tests/work-selection.cjs crates/git-asset/tests/impact.cjs crates/git-asset/tests/ux-flows.cjs crates/git-asset/tests/compare-flows.cjs crates/git-asset/tests/object-flows.cjs crates/git-asset/tests/lessons-flows.cjs
+node --test crates/git-asset/tests/work-selection.cjs crates/git-asset/tests/impact.cjs crates/git-asset/tests/ux-flows.cjs crates/git-asset/tests/compare-flows.cjs crates/git-asset/tests/object-flows.cjs crates/git-asset/tests/lessons-flows.cjs crates/git-asset/tests/inspector-keyboard.cjs
 ```
 
 Run appropriate locked native API tests when bundled scripts change. Rust changes

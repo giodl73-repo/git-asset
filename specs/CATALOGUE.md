@@ -3,6 +3,12 @@
 SPEC-014 / WP-015, IF-010/011/013, PKG-004/006/008. Native Rust application
 service and bundled frontend, gated by git-asset/schema. No daemon installation.
 
+The inspector contains keyboard focus while open, makes the background inert,
+and restores the invoking control on close (or the heading if it was removed).
+Compact navigation keeps admitted views reachable on narrow screens. These UI
+controls do not change snapshot, enrollment or storage authority; see the
+[review scope](CATALOGUE-REVIEW-UX.md).
+
 ` git-asset-catalogue check ABSOLUTE_ENROLLMENT ` validates metadata without media IO.
 ` git-asset-catalogue serve ABSOLUTE_ENROLLMENT [PORT] ` explicitly serves loopback
 (default 8799). Stop the process to stop the viewer.

@@ -15,3 +15,58 @@
 .stats>.summary-filter{background:white;border:1px solid var(--line);border-radius:10px;padding:12px;text-align:left;color:var(--ink)}.stats>.summary-filter[aria-pressed=true]{background:var(--pale);border:2px solid var(--green);padding:11px}.stats>.summary-filter:hover{border-color:var(--green)}.stats>.summary-help{grid-column:1/-1;margin:0;color:var(--muted);font-size:11px}
 
 .lesson-view{display:grid;gap:16px}.lesson-event{font-size:17px;line-height:1.65;max-width:78ch;margin:0}.lesson-role-set{min-height:28px}.lesson-object-table th:first-child{width:20%}.lesson-object-table td{min-width:150px}.lesson-evidence{background:white;border:1px solid var(--line);border-radius:9px;padding:14px;overflow-wrap:anywhere}.lesson-evidence summary{cursor:pointer;color:var(--green);font-weight:650}.lesson-evidence p,.lesson-evidence li{font-size:12px}.lesson-view .callout{margin:0}
+
+/* Keep review controls readable and reachable without changing their scope. */
+[hidden]{display:none!important}
+body:has(#inspector:not([hidden])){overflow:hidden}
+.brandmark{flex-shrink:0}
+#navigation{display:contents}
+.mobile-menu{display:none}
+h1{overflow-wrap:anywhere}
+.button,select,.search input{font-size:13px}
+.muted,.mono,.card-meta,.card-footer,footer,.stats small{font-size:12px}
+.toolbar{flex-wrap:wrap;align-items:center}
+.snapshot-label{flex-wrap:wrap;max-width:100%;font-size:10px}
+.snapshot-label select{max-width:100%;min-width:0}
+.section-label,.eyebrow{color:#617157}
+.stats small,.muted,.mono,.card-meta,.card-footer,footer{color:#617157}
+.tabs button{font-size:13px;min-height:44px}
+.icon-button{min-width:44px;min-height:44px}
+.work-controls{flex-wrap:wrap}
+@media(max-width:760px){
+ .sidebar{display:flex;flex-direction:row;flex-wrap:wrap;gap:8px;align-items:center;padding:16px}
+ .sidebar .section-label{display:block;width:100%;margin:12px 0 0}
+ .sidebar .brand{width:auto;margin-right:auto}
+ .mobile-menu{display:inline-flex;min-height:44px}
+ #navigation{display:none}
+ .sidebar.navigation-open #navigation{display:contents}
+ #projects,#categories{display:flex;width:100%;gap:6px;overflow:auto;margin:0;padding:3px}
+ #projects button{max-width:100%;white-space:normal;flex-shrink:0}
+ #projects button>span:nth-child(2){max-width:24ch;overflow-wrap:anywhere}
+ #categories button{flex-shrink:0}
+ .storage-nav{margin:0}
+ .sidebar-footer{display:block;width:100%;margin:0;padding:4px 0 0}
+ .sidebar-footer br,.sidebar-footer .live-dot,.sidebar-footer small{display:none}
+ .sidebar-footer{font-size:0}
+ .sidebar-footer .button{font-size:13px}
+ .stats{padding:16px 0;margin:12px 0 20px}
+ .stats>.summary-help{font-size:12px}
+ .stats:has(.summary-filter){display:flex;flex-wrap:wrap;gap:8px}
+ .stats>.summary-filter{flex:1;min-width:120px;padding:10px}
+ .stats>.summary-help{flex-basis:100%}
+ h1{font-size:26px;margin-top:0}
+ header .eyebrow{display:none}
+ .toolbar{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+ .toolbar>.search,.toolbar>.snapshot-label{grid-column:1/-1}
+ #refresh{grid-column:2;grid-row:2}
+ .snapshot-label{flex-wrap:nowrap}
+ .snapshot-label select{width:0;flex:1}
+ .results-heading{margin-top:18px}
+ .toolbar>*{min-width:0;max-width:100%}
+ .snapshot-label{flex-basis:100%}
+ .snapshot-label select{flex:1}
+ #inspector{width:100%;padding:20px}
+ .inspector-header{gap:8px;flex-wrap:wrap}
+ .tabs{gap:18px}
+}
+@media(max-width:480px){.asset-grid{grid-template-columns:minmax(0,1fr)}.card-top{height:55px}.results-heading{gap:12px;align-items:start}.card-body h3{min-height:0}}

@@ -10,6 +10,7 @@ use std::{
     time::Duration,
 };
 const HTML: &str = include_str!("web/index.html");
+const ICON: &str = include_str!("web/icon.svg");
 const CSS: &str = include_str!("web/app.css");
 const JS: &str = include_str!("web/app.js");
 const WORKS_JS: &str = include_str!("web/works.js");
@@ -454,6 +455,7 @@ impl Host {
                     .into_bytes(),
             ),
             "/app.css" => (200, "text/css; charset=utf-8", CSS.as_bytes().to_vec()),
+            "/icon.svg" | "/favicon.ico" => (200, "image/svg+xml", ICON.as_bytes().to_vec()),
             "/lessons.js" => (
                 200,
                 "text/javascript; charset=utf-8",
@@ -638,5 +640,14 @@ mod tests {
         ))
         .unwrap();
         assert_eq!(host.response(&r).0, 200);
+        for path in ["/icon.svg", "/favicon.ico"] {
+            let request = parse(&format!(
+                "GET {path} HTTP/1.1\r\nHost: 127.0.0.1:8799\r\n\r\n"
+            ))
+            .unwrap();
+            let response = host.response(&request);
+            assert_eq!((response.0, response.1), (200, "image/svg+xml"));
+            assert_eq!(response.2, ICON.as_bytes());
+        }
     }
 }

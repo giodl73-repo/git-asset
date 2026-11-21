@@ -591,3 +591,6 @@ EVID-141: synthetic metadata adoption; REEL production profile acceptance stays 
 
 EVID-142: synthetic unselected external-result retention and guarded downstream
 handoff; REEL production adoption, independent custody and native pruning stay open.
+
+EVID-143: synthetic team walkthrough; observations/held review remain distinct
+from custody/execution. Team, assistive-technology and production acceptance open.

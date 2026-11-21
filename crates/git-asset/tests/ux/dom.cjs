@@ -13,6 +13,8 @@ function documentFixture(html){
   setAttribute(k,v){this.attributes[k]=String(v);}getAttribute(k){return this.attributes[k]??null;}
   addEventListener(k,fn){(this.listeners??={})[k]=fn;}
   focus(){document.activeElement=this;}
+  get isConnected(){let root=this;while(root.parent)root=root.parent;return root===body;}
+  getClientRects(){for(let e=this;e;e=e.parent)if(e.hidden)return [];return this.isConnected?[{}]:[];}
   contains(target){return this===target||this.children.some(c=>c.contains(target));}
   querySelectorAll(selector){return walk(this).filter(e=>matches(e,selector));}
   set innerHTML(_){throw Error('Fixture refuses HTML insertion');}
@@ -32,7 +34,7 @@ function documentFixture(html){
  document.querySelector=selector=>selector==='meta[name="git-asset-session"]'?{content:'synthetic-session'}:selector==='main footer'?footer:walk(body).find(e=>matches(e,selector))||null;
  document.querySelectorAll=selector=>walk(body).filter(e=>matches(e,selector));
  document.addEventListener=(kind,fn)=>listeners.set(kind,fn);
- document.dispatchEvent=event=>listeners.get(event.type)?.(event);
+ document.dispatchEvent=event=>listeners.get(event.type)?.({preventDefault(){},...event});
  const visible=e=>!e.hidden&&(!e.parent||visible(e.parent));
  async function click(e,event={}){
   if(!visible(e)||e.disabled)throw Error('Fixture cannot click a hidden/disabled control');

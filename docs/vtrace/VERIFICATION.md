@@ -969,3 +969,6 @@ EVID-141: locked capacity/legacy-NTFS/crash fixtures and strict Clippy; see pack
 
 EVID-142: exact-plan native candidate tests, real ordinary/bare ingress/readback,
 process exits/recovery and strict Clippy; hosted current-head is a separate gate.
+
+EVID-143:90 controller,13 native catalogue and fixed HTTP icon cases; actual
+synthetic browser keyboard/layout tasks and strict Clippy. Hosted is separate.
