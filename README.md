@@ -109,9 +109,10 @@ custody. Final deletion is a separate explicit retirement decision; losing the
 selected label is insufficient.
 
 These diagrams describe the lifecycle contract and product direction. The current
-native-annex adapter is qualified for explicit guarded local reads on Windows.
-Native ingress, retained publication and participating-pruner execution remain
-integration work. Existing local-provider teaching fixtures demonstrate bounded
+native-annex adapter supplies explicit guarded local reads and an optional Rust
+candidate-publication slice on Windows. It retains unselected outputs with exact
+retry/readback; participating native pruner execution remains integration work.
+Existing local-provider teaching fixtures demonstrate bounded
 lifecycle slices; consuming workflows own build execution, rerender decisions and
 creative approval. The capability table below defines today's implemented scope.
 
@@ -128,8 +129,8 @@ is a separate final-retirement operation, never ordinary cache eviction.
 The current command surfaces are below. `PROFILE`, `REQUEST`, `PLAN` and
 `PLACEMENT_PROFILE` stand for explicitly admitted absolute file paths outside the
 repository; discovery does not create them. These are existing **experimental
-local-provider** interfaces. Native-annex publication/pruning still needs its
-separate qualification; these examples do not enable production annex eviction.
+local-provider** interfaces. Native publication is currently a separate optional
+Rust SDK; these examples do not enable production annex eviction.
 
 ```text
 git asset lifecycle describe
@@ -230,6 +231,7 @@ requesting help performs no cache initialization, hydration, transfer or deletio
 | Existing stores | Guarded verified reads from configured flat, CAS and Git LFS layouts |
 | Git annex | Optional Rust `annex-read` adapter for exact guarded local reads from explicitly enrolled format-10 ordinary/bare repositories on Windows; see [contract](specs/ANNEX-READ-ADAPTER.md) |
 | Managed annex reads | [Pool-pinned namespace roster](specs/ANNEX-MANAGED-READ.md) and shared use guards allow owner adoption while blocking participating exclusive pruners |
+| Native candidates | Optional Rust `annex-publish`: immutable unselected ingress, durable retention, exact-operation crash recovery and guarded output handoff; [consumer contract](specs/ANNEX-CANDIDATE-PUBLICATION.md) |
 | Git LFS | Explicit existing-cache download adapter; optional bounded standalone Basic upload with full readback |
 | Local storage | Bounded publication, capacity admission, source journals, retention and recovery primitives |
 | Optional typed assets | Schema admission, declared graphs, sparse variants, production contexts and revision/delivery history |

@@ -588,3 +588,6 @@ physical metadata admission, native publication or complete product acceptance
 follows from code inclusion. See the separate producer record and exact PR checks.
 
 EVID-141: synthetic metadata adoption; REEL production profile acceptance stays open.
+
+EVID-142: synthetic unselected external-result retention and guarded downstream
+handoff; REEL production adoption, independent custody and native pruning stay open.

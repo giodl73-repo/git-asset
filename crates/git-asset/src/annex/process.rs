@@ -1,4 +1,4 @@
-//! Reuses the prototype's bounded Windows job-object process boundary, read only.
+//! Bounded Windows job-object process boundary; callers fix command vocabulary.
 use super::*;
 use process_wrap::tokio::{CommandWrap, KillOnDrop};
 use std::{io, process::Stdio, time::Duration};

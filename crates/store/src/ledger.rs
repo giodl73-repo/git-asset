@@ -114,6 +114,12 @@ pub struct JournalRef {
     genesis: Digest,
     operation: Key,
 }
+/// Exact historical generic-allocation observation; never fresh admission.
+#[derive(Clone, Debug)]
+pub struct AllocationObservation {
+    pub reference: JournalRef,
+    pub charged_bytes: Option<u64>,
+}
 #[derive(Clone, Debug)]
 pub enum Response {
     TimeObserved(u64),
@@ -813,6 +819,27 @@ impl CapacityLedger {
                 limit,
             },
         )
+    }
+    /// No append/probe/allocation. Missing metadata is not absent protection.
+    pub fn allocation_observation(
+        &mut self,
+        operation: &Key,
+    ) -> Result<Option<AllocationObservation>> {
+        self.sync()?;
+        let Some(output) = self.lookup(operation)? else {
+            return Ok(None);
+        };
+        let Output::Allocation(ticket) = output else {
+            return Err(LedgerError::Conflict);
+        };
+        let charged_bytes = self.allocation_state(&ticket)?;
+        Ok(Some(AllocationObservation {
+            reference: JournalRef {
+                genesis: self.checkpoint.genesis.clone(),
+                operation: operation.clone(),
+            },
+            charged_bytes,
+        }))
     }
     pub fn complete_allocation(
         &mut self,

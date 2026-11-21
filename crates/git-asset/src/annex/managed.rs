@@ -56,6 +56,13 @@ pub struct Reader {
     profile: Profile,
     binding: Digest,
 }
+pub(super) struct HeldUse {
+    _configuration: VerifiedRead,
+    object: Object,
+    uses: Vec<SubjectUse>,
+    allow_empty: bool,
+    _namespace_directory: Option<std::fs::File>,
+}
 impl Reader {
     /// Pure admission only; actual pool binding and namespace ancestry checked on open.
     pub fn new(mut profile: Profile) -> Result<Self> {
@@ -96,8 +103,32 @@ impl Reader {
         self.reader.verification_bytes()
     }
     pub fn open(&mut self, object: &Object) -> Result<Read> {
+        let held = self.hold(object)?;
+        let read = self.lookup(object, &held)?;
+        Ok(Self::finish_read(held, read))
+    }
+    pub(super) fn hold(&mut self, object: &Object) -> Result<HeldUse> {
+        self.hold_mode(object, false)
+    }
+    #[cfg(feature = "annex-publish")]
+    pub(super) fn hold_for_publication(&mut self, object: &Object) -> Result<HeldUse> {
+        self.hold_mode(object, true)
+    }
+    fn hold_mode(&mut self, object: &Object, allow_empty: bool) -> Result<HeldUse> {
         self.reader.preflight(object)?;
-        let _configuration = self.reader.admit_repository()?;
+        let configuration = if allow_empty {
+            self.reader.admit_repository_mode(true)?
+        } else {
+            self.reader.admit_repository()?
+        };
+        #[cfg(feature = "annex-publish")]
+        let directory = if allow_empty {
+            Some(self.reader.hold_annex_directory()?)
+        } else {
+            None
+        };
+        #[cfg(not(feature = "annex-publish"))]
+        let directory = None;
         let output = process::run(
             &self.profile.pool,
             false,
@@ -136,8 +167,28 @@ impl Reader {
             }
             held.push(namespace.hold(object)?);
         }
-        let read = self.reader.open_local(object)?;
-        Ok(Read { read, uses: held })
+        Ok(HeldUse {
+            _configuration: configuration,
+            object: object.clone(),
+            uses: held,
+            allow_empty,
+            _namespace_directory: directory,
+        })
+    }
+    pub(super) fn lookup(&mut self, object: &Object, held: &HeldUse) -> Result<VerifiedRead> {
+        if &held.object != object {
+            return Err(Error::InvalidRoster);
+        }
+        if held.allow_empty && !self.reader.objects_present()? {
+            return Err(Error::Annex(super::Error::Missing));
+        }
+        Ok(self.reader.open_local(object)?)
+    }
+    pub(super) fn finish_read(held: HeldUse, read: VerifiedRead) -> Read {
+        Read {
+            read,
+            uses: held.uses,
+        }
     }
 }
 /// The exact byte guard and every enrolled namespace use live together.

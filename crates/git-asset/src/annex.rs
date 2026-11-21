@@ -7,6 +7,8 @@ use serde::Deserialize;
 use std::path::{Component, Path, PathBuf};
 pub mod managed;
 mod process;
+#[cfg(feature = "annex-publish")]
+pub mod publication;
 #[cfg(test)]
 mod tests;
 
@@ -129,6 +131,9 @@ impl Reader {
         Ok(())
     }
     fn admit_repository(&mut self) -> Result<VerifiedRead> {
+        self.admit_repository_mode(false)
+    }
+    fn admit_repository_mode(&mut self, allow_empty_objects: bool) -> Result<VerifiedRead> {
         if !process::supported() {
             return Err(Error::Unsupported);
         }
@@ -155,7 +160,16 @@ impl Reader {
         let mut namespace = self.profile.repository.clone();
         for part in prefix.trim_end_matches('/').split('/') {
             namespace.push(part);
-            let m = std::fs::symlink_metadata(&namespace).map_err(|_| Error::Observation)?;
+            let m = match std::fs::symlink_metadata(&namespace) {
+                Err(e)
+                    if allow_empty_objects
+                        && part == "objects"
+                        && e.kind() == std::io::ErrorKind::NotFound =>
+                {
+                    break;
+                }
+                other => other.map_err(|_| Error::Observation)?,
+            };
             if !m.is_dir() || reparse(&m) {
                 return Err(Error::Unsupported);
             }
@@ -193,6 +207,46 @@ impl Reader {
             return Err(Error::Unsupported);
         }
         Ok(config)
+    }
+    fn objects_present(&self) -> Result<bool> {
+        let root = self.profile.repository.join(if self.profile.bare {
+            "annex/objects"
+        } else {
+            ".git/annex/objects"
+        });
+        match std::fs::symlink_metadata(root) {
+            Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(false),
+            Err(_) => Err(Error::Observation),
+            Ok(m) if m.is_dir() && !reparse(&m) => Ok(true),
+            Ok(_) => Err(Error::Unsupported),
+        }
+    }
+    #[cfg(feature = "annex-publish")]
+    fn hold_annex_directory(&self) -> Result<std::fs::File> {
+        #[cfg(windows)]
+        {
+            use std::os::windows::fs::OpenOptionsExt;
+            let root = self.profile.repository.join(if self.profile.bare {
+                "annex"
+            } else {
+                ".git/annex"
+            });
+            let file = std::fs::OpenOptions::new()
+                .read(true)
+                .share_mode(3)
+                .custom_flags(0x02200000)
+                .open(root)
+                .map_err(|_| Error::Observation)?;
+            let m = file.metadata().map_err(|_| Error::Observation)?;
+            if !m.is_dir() || reparse(&m) {
+                return Err(Error::Unsupported);
+            }
+            Ok(file)
+        }
+        #[cfg(not(windows))]
+        {
+            Err(Error::Unsupported)
+        }
     }
     fn open_local(&mut self, object: &Object) -> Result<VerifiedRead> {
         let prefix = if self.profile.bare {

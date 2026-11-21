@@ -42,3 +42,6 @@ Earlier common records are already in the historical chapters above.
 Integration: [producer record](../reviews/2026-11-20-open-pr-integration.md), EVID-140.
 
 EVID-141: [capacity producer lenses](../reviews/2026-11-20-metadata-capacity.md).
+
+EVID-142: [native publication producer lenses](../reviews/2026-11-20-annex-candidate-publication.md);
+independent/human and production acceptance remain separate.

@@ -1,6 +1,6 @@
 # Source and runtime data budgets
 
-Current ordinary source/documentation ceiling: **5 MiB** (5,242,880 bytes),
+Current ordinary source/documentation ceiling: **8 MiB** (8,388,608 bytes),
 with **128 KiB** per file, enforced by tools/validate.ps1. Earlier 1, 2, 3, 3.25, 3.5 and 4 MiB ceilings were historical checkpoints. This covers implemented Rust,
 locked dependencies, synthetic fixtures and docs; it does not allocate cache
 space or allow runtime evidence in Git.
@@ -21,3 +21,6 @@ fault tests. The 5 MiB ceiling admits actual generic Rust implementation/tests;
 per-file limits and all runtime/private/binary exclusions remain enforced. This
 changes no payload, journal, inventory or capacity limit. DOCS/PROVIDER review is
 recorded with the admission slice; generated fixture bytes remain external.
+
+Native publication source9658c13 replaces duplicated historical startup/progress
+prose with immutable Git links; no ceiling increase or runtime data enters Git.

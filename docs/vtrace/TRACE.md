@@ -796,3 +796,6 @@ stack1030 audits, locked check and exact-source qualification -> EVID-140.
 No runtime format migration or operational activation is introduced.
 
 METADATA-CAPACITY.md -> metadata::capacity/tests/legacy fixture -> EVID-141.
+
+ANNEX-CANDIDATE-PUBLICATION.md -> annex::publication, managed guards, exact ledger
+observation and synthetic/native fixtures -> EVID-142; no creative-selection authority.
