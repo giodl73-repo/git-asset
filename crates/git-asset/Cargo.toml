@@ -13,7 +13,7 @@ path = "src/bin/git-asset.rs"
 [features]
 assets = ["dep:git-asset-model"]
 schema = ["assets", "git-asset-model/schema", "dep:regex", "dep:flate2"]
-annex-read = ["dep:process-wrap", "dep:tokio"]
+annex-read = ["dep:process-wrap", "dep:tokio", "dep:git-asset-windows-process"]
 annex-publish = ["annex-read", "git-asset-store/upload-witness"]
 upload = ["git-asset-store/upload-witness", "dep:ureq"]
 github = ["dep:base64", "dep:ring", "dep:ureq"]
@@ -35,6 +35,9 @@ tokio = { version = "=1.54.1", default-features = false, features = ["rt", "proc
 ureq = { version = "=3.5.1", default-features = false, features = ["rustls"], optional = true }
 base64 = { version = "=0.22.1", optional = true }
 ring = { version = "=0.17.14", optional = true }
+
+[target.'cfg(windows)'.dependencies]
+git-asset-windows-process = { path = "../windows-process", optional = true }
 
 
 [dev-dependencies]

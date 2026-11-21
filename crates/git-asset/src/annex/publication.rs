@@ -912,8 +912,9 @@ impl Publisher {
                 let path = staging::prepare(&self.profile, p, &mut work, source, hook)?;
                 hook(Stage::Staged)?;
                 work.check()?;
-                let output = process::run(
+                let output = process::run_for_object(
                     &self.profile.pool.pool,
+                    &p.candidate().object,
                     true,
                     &[
                         "reinject",

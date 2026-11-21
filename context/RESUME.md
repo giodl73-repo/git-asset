@@ -33,3 +33,12 @@ then rechecks custody. Unsettled callbacks may repeat; done replay skips them.
 This qualifies no native removal effect. Next: independent native custody,
 command quiescence/uncertain-outcome reconciliation and authority handoff before
 native eviction/CLI. Keep current caches untouched. P2 and P3-P6 remain open.
+
+Native process boundary input9e86635: isolated CR-005 Windows job-handle crate;
+Git/store/core keep unsafe forbidden. Scoped native ingress attaches before
+resume and polls actual active descendants under the existing timeout; the pinned
+process-wrap wait/notification result alone can return early. Lost-name fixture
+proves an old process may survive name loss and a recreated empty job. Neither
+absence nor a reopened empty job grants quiescence. No public quiescence/removal
+API was added. Cross-restart original-handle continuity or admitted durable
+completion proof still needs implementation before native pruning/reacquisition.

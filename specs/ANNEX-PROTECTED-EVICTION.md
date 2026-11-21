@@ -247,3 +247,34 @@ High-severity native custody/quiescence/handoff findings remain P2 blockers.
 Trace: same controls/input528fd27 above; full exact-source logs live outside Git.
 Local metadata bounds remain16 births,16384 commands and16MiB journal; this is
 not a continuation/scale qualification. No native removal API is exposed.
+
+Native command fence entry input9e86635: same WP/REQ/SPEC/IF/PKG controls above,
+RUST/PROVIDER, CR-005 exception isolated to crates/windows-process. Existing core,
+store and Git adapter retain forbid(unsafe_code). The platform crate owns only
+Windows named-job handles; no asset state, cache, custody or removal policy.
+Fixed Global namespace plus a64-hex scope binds native store/object, not a PID.
+Default owner security and no inherited handles require the admitted execution
+identity; access denial has no Local/anonymous fallback. New jobs enable only
+kill-on-last-handle-close, never breakaway; existing jobs must match those limits.
+OwnedHandle closes each successful native handle exactly once. Every FFI call
+has a fixed initialized repr(C) buffer/size, valid nul-terminated UTF16 name or
+borrowed live process handle. No raw handles escape; no unsafe Send/Sync impl.
+Assignment occurs before process-wrap's pinned JobObject resumes the suspended
+native child. Scoped admission/control guards span assignment and native IO.
+Recovery must hold existing pending metadata and native protection/authority
+fences. Neither a missing name nor a reopened empty job proves the original
+command stopped: after last-handle loss the name can disappear or be reused
+while old process references remain. Only continuously retained original handles
+or an admitted durable completion proof can establish that command's quiescence.
+Query failure/active descendants/unknown continuity hold recovery. Timeout or
+parent death alone is never empty evidence. Durable cross-restart continuity and
+old/legacy-epoch handoff remain separate blockers; no public quiescence grant is
+exposed by this adapter. Native ingress uses the scoped job while its original
+handle is live. It explicitly polls active descendants within the existing
+command timeout, independent of the dependency's child-wait/notification result.
+L0 pins/fmt/unsafe inventory; L1 name/limits/handle/error/refusal fixtures; L2
+actual child/grandchild attachment, parent exit, lost-name/recreated-job
+counterexample and bounded live-handle descendant completion checks.
+No native deletion is authorized by this platform primitive.
+References: [Windows jobs](https://learn.microsoft.com/en-us/windows/win32/procthread/job-objects),
+[job query](https://learn.microsoft.com/en-us/windows/win32/api/jobapi2/nf-jobapi2-queryinformationjobobject).
