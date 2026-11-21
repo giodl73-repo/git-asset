@@ -805,3 +805,5 @@ fixtures and actual browser walkthrough -> EVID-143; no storage authority.
 
 CATALOGUE-REVIEW-SAMPLE.md -> existing rehearsals plus derived enrollment/receipt
 and front-door discovery/help -> review_sample tests and EVID-144.
+
+ANNEX-RETAINED-COPY.md -> replication/publication/local witness -> copy fixtures; EVID-145.

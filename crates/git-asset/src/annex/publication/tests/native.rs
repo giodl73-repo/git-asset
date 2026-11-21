@@ -992,3 +992,5 @@ fn previous_candidate_version_reopens_without_retargeting_current_registration()
         current
     );
 }
+
+mod replication;

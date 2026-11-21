@@ -1,18 +1,15 @@
 # git-asset resume
 
-Owned feat/catalogue-review-sample; input3f71357164d6f82bb8cd36f9bd39f841bcb9fe97.
-Current user choice: continue UX, leave the unfinished test-only journal-controller
-prototype separate. PR69 is merged; derive live branch/PR/CI state before work.
+Owned feat/annex-retained-copy; input8ded690793b37b7132eec1c9e912e944f3b2e286.
+Active goal: implement the reviewed PR70/P1-P6 series in PRODUCT_PLAN.md.
+PR70 merged a95c9de. P1 draft/full checks remain in progress; inspect live state.
+P1 controls: specs/ANNEX-RETAINED-COPY.md. Compose managed source/retained
+publisher with exact copy-context pin; source and destination guards bridge
+copy/readback. No removal grant, new engine or production enrollment.
+Finish implementation, exact synthetic/native/recovery tests, producer review,
+source-budget/target pins and hosted checks before P1 integration.
+P2/P3 follow storage; P4 REEL is consumer-owned; P5 freezes RC before P6 cutover.
 
-Current slice: specs/CATALOGUE-REVIEW-SAMPLE.md names controls and L0/L1/L2.
-One explicit fresh-root command composes existing7/11-checkpoint rehearsals into
-independent intro/recovery projects with a combined catalogue and completion
-receipts. No automatic viewer, production enrollment or new lifecycle engine.
-CLI/HTTP/browser, fmt and strict Clippy pass; EVID-144 records producer evidence.
-PR70 includes README/demo and the six-role-reviewed P1-P6 plan in PRODUCT_PLAN.md.
-Finish exact hosted checks; next implementation is P1 native copy/custody.
-P4 belongs to REEL; P5 freezes RC before P6 private cutover. Runtime gates stay open.
-
-All builds/temp/reports/images stay outside source. Existing private/archive and
-other-lane worktrees, runtime bindings and live caches remain untouched. Reading
-this file starts no server, scan, hydration, transfer, render or deletion.
+Keep builds/temp/evidence outside source, existing dirty/private/other-lane
+worktrees and runtimes untouched. Resume starts no cache, scan, hydration,
+transfer, render or deletion. Owner acceptance remains distinct from checks.
