@@ -2,20 +2,8 @@ use super::*;
 use crate::annex::replication as copy;
 fn pair(bytes: &[u8]) -> (Fixture, Fixture, copy::Profile, copy::Plan) {
     let mut source = Fixture::new(bytes);
-    let mut target = Fixture::new(bytes);
-    target.profile.pool.pool.uuid = "00000000-0000-0000-0000-000000000002".into();
-    fs::write(
-        target.profile.pool.pool.repository.join("uuid"),
-        &target.profile.pool.pool.uuid,
-    )
-    .unwrap();
-    target.plan = Plan::new(
-        &target.profile,
-        target.plan.request.clone(),
-        target.plan.selection.selection.clone(),
-        target.plan.admission.clone(),
-    )
-    .unwrap();
+    let target = Fixture::new(bytes);
+    assert_ne!(source.profile.pool.pool.uuid, target.profile.pool.pool.uuid);
     source.refresh();
     let source_plan = source.plan.clone();
     let mut input = source.input();

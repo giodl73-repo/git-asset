@@ -130,6 +130,17 @@ impl Fixture {
             .unwrap();
             p.pool.pool.uuid = super::super::super::line(&uuid.stdout).unwrap().into();
         } else {
+            let identity = Digest::blob(root.to_string_lossy().as_bytes());
+            let id = identity.as_str();
+            p.pool.pool.uuid = format!(
+                "{}-{}-{}-{}-{}",
+                &id[..8],
+                &id[8..12],
+                &id[12..16],
+                &id[16..20],
+                &id[20..32]
+            );
+            fs::write(pool.join("uuid"), &p.pool.pool.uuid).unwrap();
             fs::create_dir_all(pool.join(if bare {
                 "annex/objects"
             } else {

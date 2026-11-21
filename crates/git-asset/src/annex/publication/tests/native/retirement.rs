@@ -65,26 +65,11 @@ fn snapshot(f: &mut Fixture) -> Snapshot {
         object: f.plan.candidate().object.clone(),
     }
 }
-fn distinct(f: &mut Fixture) {
-    f.profile.pool.pool.uuid = "00000000-0000-0000-0000-000000000002".into();
-    fs::write(
-        f.profile.pool.pool.repository.join("uuid"),
-        &f.profile.pool.pool.uuid,
-    )
-    .unwrap();
-    f.plan = Plan::new(
-        &f.profile,
-        f.plan.request.clone(),
-        f.plan.selection.selection.clone(),
-        f.plan.admission.clone(),
-    )
-    .unwrap();
-}
 #[test]
 fn keeper_requires_exact_pool_place_retention_and_bytes() {
     let source = Fixture::new(b"retained keeper");
-    let mut keeper = Fixture::new(b"retained keeper");
-    distinct(&mut keeper);
+    let keeper = Fixture::new(b"retained keeper");
+    assert_ne!(source.profile.pool.pool.uuid, keeper.profile.pool.pool.uuid);
     keeper_checks(source, keeper);
 }
 fn keeper_checks(mut source: Fixture, mut keeper: Fixture) {
@@ -240,7 +225,6 @@ fn keeper_checks(mut source: Fixture, mut keeper: Fixture) {
 fn shared_authority_keeper_borrows_source_fence_and_rejects_cloned_location() {
     let source = Fixture::new(b"shared authority keeper");
     let mut keeper = Fixture::new(b"shared authority keeper");
-    distinct(&mut keeper);
     publish(&mut keeper);
     let policy = Policy {
         prefer_active: true,

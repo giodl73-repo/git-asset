@@ -140,6 +140,14 @@ impl From<upload_witness::Error> for Error {
         }
     }
 }
+impl From<upload_witness::OnceError> for Error {
+    fn from(e: upload_witness::OnceError) -> Self {
+        match e {
+            upload_witness::OnceError::Witness(e) => e.into(),
+            upload_witness::OnceError::Uncertain => Self::Uncertain,
+        }
+    }
+}
 impl From<std::io::Error> for Error {
     fn from(_: std::io::Error) -> Self {
         Self::NeedsRecovery

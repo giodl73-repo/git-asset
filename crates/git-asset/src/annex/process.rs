@@ -6,6 +6,9 @@ use tokio::io::{AsyncRead, AsyncReadExt};
 
 pub(super) struct Output {
     pub stdout: Vec<u8>,
+    // Retain the actual original group through the caller's durable handoff.
+    #[cfg(windows)]
+    _group: Option<std::sync::Arc<git_asset_windows_process::Job>>,
 }
 pub(super) fn supported() -> bool {
     cfg!(windows) && tokio::runtime::Handle::try_current().is_err()
@@ -159,7 +162,11 @@ async fn execute(
     match observed {
         Ok(Ok((stdout, stderr, status))) => {
             if status.success() && (!strict_stderr || stderr.is_empty()) {
-                Ok(Output { stdout })
+                Ok(Output {
+                    stdout,
+                    #[cfg(windows)]
+                    _group: job,
+                })
             } else if annex && status.code() == Some(1) && stdout.is_empty() && stderr.is_empty() {
                 Err(Error::Missing)
             } else {

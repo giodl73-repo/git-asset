@@ -4,6 +4,8 @@ use std::{
     thread, time::Instant,
 };
 fn profile(root: &std::path::Path) -> Profile {
+    let identity = Digest::blob(root.to_string_lossy().as_bytes());
+    let id = identity.as_str();
     fs::write(root.join("empty"), b"").unwrap();
     fs::create_dir(root.join("hooks")).unwrap();
     Profile {
@@ -11,7 +13,14 @@ fn profile(root: &std::path::Path) -> Profile {
         annex: std::env::current_exe().unwrap(),
         repository: root.into(),
         bare: false,
-        uuid: "00000000-0000-0000-0000-000000000001".into(),
+        uuid: format!(
+            "{}-{}-{}-{}-{}",
+            &id[..8],
+            &id[8..12],
+            &id[12..16],
+            &id[16..20],
+            &id[20..32]
+        ),
         configuration: Object::from_bytes(b"owned process fixture"),
         tools: vec![root.into()],
         empty_config: root.join("empty"),
@@ -33,7 +42,7 @@ fn assignment_precedes_first_effect_and_wait_includes_pipe_detached_grandchild()
     let object = Object::from_bytes(b"owned source");
     let scope = object_scope(&profile, &object).unwrap();
     fs::write(root.path().join("job-scope"), scope.as_str()).unwrap();
-    run_for_object(
+    let output = run_for_object(
         &profile,
         &object,
         false,
@@ -42,11 +51,113 @@ fn assignment_precedes_first_effect_and_wait_includes_pipe_detached_grandchild()
     .unwrap();
     assert!(root.path().join("attached-before-effect").exists());
     assert!(root.path().join("grandchild-finished").exists());
+    assert_eq!(
+        git_asset_windows_process::Job::open(scope.as_str())
+            .unwrap()
+            .unwrap()
+            .active()
+            .unwrap(),
+        0
+    );
+    drop(output);
     assert!(
         git_asset_windows_process::Job::open(scope.as_str())
             .unwrap()
             .is_none()
     );
+}
+#[test]
+fn original_command_group_guard_composes_with_durable_one_shot_witness() {
+    use git_asset_store::{
+        Key,
+        ledger::CapacityLedger,
+        local::LocalStore,
+        upload_witness::{Document, Packet},
+    };
+    let root = tempfile::tempdir().unwrap();
+    let profile = profile(root.path());
+    let object = Object::from_bytes(b"owned source");
+    let scope = object_scope(&profile, &object).unwrap();
+    fs::write(root.path().join("job-scope"), scope.as_str()).unwrap();
+    let key = |s: &str| Key::parse(s).unwrap();
+    let witness = LocalStore::create(&root.path().join("witness"), key("witness")).unwrap();
+    let packet = Packet::new(
+        &witness,
+        &scope,
+        &key("owner"),
+        [
+            Document {
+                operation: key("intent"),
+                bytes: br#"{"phase":"intent"}"#.to_vec(),
+            },
+            Document {
+                operation: key("done"),
+                bytes: br#"{"phase":"done"}"#.to_vec(),
+            },
+        ],
+    )
+    .unwrap();
+    let mut ledger = CapacityLedger::create(
+        &root.path().join("ledger"),
+        key("capacity"),
+        key("epoch"),
+        0,
+    )
+    .unwrap();
+    let probe = ledger
+        .begin_probe(key("probe"))
+        .unwrap()
+        .reference()
+        .clone();
+    ledger
+        .observe(key("sample"), &probe, 64 * 1024 * 1024)
+        .unwrap();
+    let job = ledger
+        .reserve(key("job"), key("owner"), packet.required_peak().unwrap())
+        .unwrap()
+        .reference()
+        .clone();
+    let completed = packet
+        .apply_once(&witness, &mut ledger, &job, || {
+            let output = run_for_object(
+                &profile,
+                &object,
+                false,
+                &["--exact", "annex::process::tests::worker", "--nocapture"],
+            )
+            .map_err(|_| git_asset_store::upload_witness::Error::NeedsRecovery)?;
+            assert_eq!(
+                git_asset_windows_process::Job::open(scope.as_str())
+                    .unwrap()
+                    .unwrap()
+                    .active()
+                    .unwrap(),
+                0
+            );
+            Ok(output)
+        })
+        .unwrap();
+    assert_eq!(
+        completed.completion().request().object,
+        Object::from_bytes(br#"{"phase":"done"}"#)
+    );
+    assert!(
+        git_asset_windows_process::Job::open(scope.as_str())
+            .unwrap()
+            .is_none()
+    );
+    let before = ledger.checkpoint();
+    packet
+        .apply_once(
+            &witness,
+            &mut ledger,
+            &job,
+            || -> git_asset_store::upload_witness::Result<()> {
+                panic!("recovered completion cannot rerun the native command")
+            },
+        )
+        .unwrap();
+    assert_eq!(ledger.checkpoint(), before);
 }
 #[test]
 fn live_old_command_blocks_retry_and_object_scoped_observations_stay_distinct() {

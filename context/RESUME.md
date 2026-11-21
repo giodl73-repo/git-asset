@@ -42,3 +42,15 @@ proves an old process may survive name loss and a recreated empty job. Neither
 absence nor a reopened empty job grants quiescence. No public quiescence/removal
 API was added. Cross-restart original-handle continuity or admitted durable
 completion proof still needs implementation before native pruning/reacquisition.
+
+PR72 draft: https://github.com/giodl73-repo/git-asset/pull/72. Hosted run44951475190
+at acd7338 passed Linux workspace and both OS store/journal/continuation/rotation/
+operator/compat suites; Windows workspace failed because independent fake pools
+reused one UUID and collided under four threads. Give fixture pools unique UUIDs;
+do not weaken the per-key runtime fence or serialize CI to hide the fixture bug.
+One-shot witness path uses the existing two accounted documents: apply_once
+never repeats an incomplete intent, and reopen requires exact settled original
+context/job/bytes. A callback's returned guard stays live through settled reopen;
+native Output retains the original empty command group. Generic witnesses do not
+prove native custody/authority. New native effect integration, uncertain-outcome
+holds, independent custody/handoff, executor/CLI and full P2 remain open.

@@ -278,3 +278,22 @@ counterexample and bounded live-handle descendant completion checks.
 No native deletion is authorized by this platform primitive.
 References: [Windows jobs](https://learn.microsoft.com/en-us/windows/win32/procthread/job-objects),
 [job query](https://learn.microsoft.com/en-us/windows/win32/api/jobapi2/nf-jobapi2-queryinformationjobobject).
+
+One-shot effect witness entry inputacd7338: same P2 controls, RUST/PROVIDER.
+Reuse upload_witness::Packet's two existing accounted documents. Add guarded
+exact reopen and a one-shot callback path: reserve both records, persist intent,
+then invoke a fresh effect at most once. A prior intent without completion is
+uncertain and never invokes another callback. Completed replay reopens exact
+settled bytes; completion settlement may resume without repeating the effect.
+Callback failure, timeout or process exit retains intent and all external
+pending protection; absence/name reuse cannot clear it. Completion publication
+is the admitted caller's assertion, not native custody or quiescence by itself.
+The native adapter must hold its actual original empty command group through
+completion publication and bind source/config/object, metadata retirement plan
+(including incarnation), owner/authority and command into these documents.
+No unrecorded-effect repair or native deletion entry is added by this seam.
+Allowed scope: existing witness API/error mapping and synthetic callback/crash
+fixtures. L0 pins/fmt/links/branding/diff; L1 original context/job binding,
+guarded corrupt/missing refusal, pending no-repeat and completed read-only
+reopen; L2 actual exit from inside a callback, then original-operation reopen
+and refusal without a second effect. Full P2 custody/handoff/CLI stays OPEN.

@@ -510,12 +510,7 @@ fn controlled_copy_retains_both_metadata_guards_and_cannot_bypass_destination_pe
     use crate::annex::replication as copy;
     let mut source = Fixture::new(b"controlled copy");
     let mut target = Fixture::new(b"controlled copy");
-    target.profile.pool.pool.uuid = "00000000-0000-0000-0000-000000000002".into();
-    fs::write(
-        target.profile.pool.pool.repository.join("uuid"),
-        &target.profile.pool.pool.uuid,
-    )
-    .unwrap();
+    assert_ne!(source.profile.pool.pool.uuid, target.profile.pool.pool.uuid);
     let mut source_control = Control::new(&mut source);
     let mut target_control = Control::new(&mut target);
     let source_plan = source.plan.clone();
