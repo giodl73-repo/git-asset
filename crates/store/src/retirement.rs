@@ -780,7 +780,9 @@ pub struct ReacquisitionPlan {
     capacity: Digest,
 }
 impl ReacquisitionPlan {
-    pub(crate) fn payload_plan(&self) -> &PublicationPlan {
+    /// Exact incarnation-bound publication for adapters reopening this reacquisition.
+    /// This accessor grants no permission to restore external provider bytes.
+    pub fn payload_plan(&self) -> &PublicationPlan {
         &self.payload
     }
     pub fn publication(&self) -> &Publication {

@@ -19,6 +19,9 @@ impl Control {
         Self::build(f, false)
     }
     fn build(f: &mut Fixture, native_tools: bool) -> Self {
+        Self::build_reacquirable(f, native_tools, false)
+    }
+    fn build_reacquirable(f: &mut Fixture, native_tools: bool, allow_reacquire: bool) -> Self {
         let native = crate::annex::Reader::new(f.profile.pool.pool.clone())
             .unwrap()
             .store();
@@ -74,7 +77,7 @@ impl Control {
             ledger: f.root.join("control-ledger"),
             minimum: ledger.checkpoint(),
             owner: k("controller"),
-            allow_reacquire: false,
+            allow_reacquire,
         };
         let id = profile.binding(&native).unwrap();
         let config = f
@@ -578,3 +581,5 @@ fn controlled_copy_retains_both_metadata_guards_and_cannot_bypass_destination_pe
         plan.destination().candidate().object
     );
 }
+
+mod eviction;

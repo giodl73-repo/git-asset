@@ -1,6 +1,6 @@
 use super::*;
 use crate::annex::{retirement::Assessor, snapshot::Snapshot};
-fn publish(f: &mut Fixture) {
+pub(super) fn publish(f: &mut Fixture) {
     let plan = f.plan.clone();
     let mut input = f.input();
     f.refresh();
@@ -8,7 +8,7 @@ fn publish(f: &mut Fixture) {
         .apply(&plan, &mut f.resources(), &mut input)
         .unwrap();
 }
-fn settle(f: &mut Fixture) {
+pub(super) fn settle(f: &mut Fixture) {
     let source = f.namespaces[0].source(&k("asset")).unwrap().unwrap();
     let version = source
         .current
@@ -49,7 +49,7 @@ fn settle(f: &mut Fixture) {
         .unwrap();
 }
 
-fn snapshot(f: &mut Fixture) -> Snapshot {
+pub(super) fn snapshot(f: &mut Fixture) -> Snapshot {
     Snapshot {
         namespace: f.namespaces[0].identity().clone(),
         source: k("asset"),

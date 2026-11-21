@@ -326,3 +326,23 @@ The explicit F:/M: device-view fixture and native keeper fixture use only newly
 owned temporary directories. No existing cache or asset is opened by those tests.
 References: [selected volume extents](https://learn.microsoft.com/en-us/windows/win32/api/winioctl/ni-winioctl-ioctl_volume_get_volume_disk_extents),
 [device descriptors](https://learn.microsoft.com/en-us/windows/win32/api/winioctl/ns-winioctl-storage_device_descriptor).
+
+Connected-fixture entry inputa588ddd: same P2 WP/REQ/SPEC/IF/PKG controls and
+RUST/PROVIDER/INTEGRATION profiles. Allowed scope: synthetic composition of the
+existing metadata retirement callback, exact native keeper/device guards,
+one-shot effect witness and native same-hash reacquisition; additive readonly
+reacquisition payload-plan accessor. No public native removal entry or production
+admission. Explicitly selected fresh F:/M: pools model namespace-owned actors;
+this does not qualify private owner policy or mixed legacy handoff. L0 pins,
+fmt/links/budget/branding; L1 existing witness/retirement regressions; L2 exact
+native key removal, retained byte reopen, metadata pending writer refusal,
+completed retry without repeated effect, same-hash restoration and old-plan
+replay preserving restored bytes in ordinary/bare arrangements, including callback failure after actual removal
+without a completion record: backup access survives and repeated effect is
+Uncertain. Interruption here is injected error, not process exit. Process-exit
+and historical-new-demand recovery qualification remain open for the controller.
+The pinned native tool refuses dropkey without --force. This fixture alone uses
+fixed dropkey --force --json --json-error-messages plus one exact SHA256 key,
+under the retained native guards, and validates its bounded response and absence.
+The native plumbing supplies no other-copy guarantee; no production command or
+owner admission is inferred. See [upstream semantics](https://git-annex.branchable.com/git-annex-dropkey/).
