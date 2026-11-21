@@ -427,6 +427,11 @@ impl Repository {
     }
     fn run(&self, args: &[&str], input: Vec<u8>, cap: usize) -> Result<Vec<u8>> {
         let mut c = Command::new(&self.executable);
+        #[cfg(windows)]
+        {
+            use std::os::windows::process::CommandExt;
+            c.creation_flags(0x08000000); // CREATE_NO_WINDOW
+        }
         c.arg("--no-optional-locks")
             .arg("--no-replace-objects")
             .args([

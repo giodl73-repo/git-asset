@@ -27,7 +27,7 @@ async function previewObjectSelection(action){
  const selection=[...managedObjects.selection.values()].map(o=>o.sha+':'+o.basis).join(',');if(!selection)return;
  notice('Checking every selected object against the same current snapshot and policy…');
  try{const d=await api('/api/storage/batch-preview',{project,selection,cache,action});if(generation!==state.generation||state.mode!=='objects')return;
-  notice('');state.selected={batchReview:d};$('inspector').hidden=false;$('scrim').hidden=false;$('back-work').hidden=true;$('ancestry').replaceChildren();$('tabs').replaceChildren();$('asset-title').textContent=(action==='align'?'Alignment':'Older-copy')+' review · '+d.count+' objects';$('asset-id').textContent=d.basis;$('asset-badges').replaceChildren(node('span','badge','Combined dry run · held'));$('close').focus();
+  notice('');state.selected={batchReview:d};openInspector();$('back-work').hidden=true;$('ancestry').replaceChildren();$('tabs').replaceChildren();$('asset-title').textContent=(action==='align'?'Alignment':'Older-copy')+' review · '+d.count+' objects';$('asset-id').textContent=d.basis;$('asset-badges').replaceChildren(node('span','badge','Combined dry run · held'));$('close').focus();
   const area=$('detail');area.replaceChildren();const summary=section('Selected block');field(summary,'Unique content',bytes(d.unique_content_bytes));field(summary,'Proposed new copy bytes',bytes(d.proposed_copy_file_bytes));field(summary,'Older-copy file bytes to review',bytes(d.older_copy_review_file_bytes));field(summary,'Verified reclaimable space','Unknown');if(cache)field(summary,'Observed-cache scope',objectCache(cache)?.root||cache);area.append(summary);
   const holds=section('Before any execution');d.holds.forEach(h=>holds.append(node('p','callout',h)));area.append(holds);
   const cacheName=id=>d.caches.find(c=>c.id===id)?.root||id;
@@ -61,7 +61,7 @@ function drawManagedObjects(d){
 }
 async function openManagedObject(row,tab='Placement',project=managedObjects.project){
  const selected={managedObject:row,objectProject:project};state.selected=selected;state.tab=tab;
- $('inspector').hidden=false;$('scrim').hidden=false;$('back-work').hidden=true;$('ancestry').replaceChildren();$('tabs').replaceChildren();
+ openInspector();$('back-work').hidden=true;$('ancestry').replaceChildren();$('tabs').replaceChildren();
  $('detail').replaceChildren(node('p','muted','Loading registered object metadata…'));
  $('asset-title').textContent=row.title;$('asset-id').textContent=row.sha256;$('asset-badges').replaceChildren(node('span','badge','Byte object'),node('span','badge','Observed copies · not custody'));$('close').focus();
  try{

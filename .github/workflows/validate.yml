@@ -87,7 +87,7 @@ jobs:
         run: python -B tools/test_restore_project.py
       - name: Check catalogue collection interactions
         if: matrix.suite == 'workspace'
-        run: node --test crates/git-asset/tests/work-selection.cjs crates/git-asset/tests/impact.cjs crates/git-asset/tests/ux-flows.cjs crates/git-asset/tests/compare-flows.cjs crates/git-asset/tests/object-flows.cjs crates/git-asset/tests/lessons-flows.cjs
+        run: node --test crates/git-asset/tests/work-selection.cjs crates/git-asset/tests/impact.cjs crates/git-asset/tests/ux-flows.cjs crates/git-asset/tests/compare-flows.cjs crates/git-asset/tests/object-flows.cjs crates/git-asset/tests/lessons-flows.cjs crates/git-asset/tests/inspector-keyboard.cjs
       - name: Check opt-in GitHub request client
         if: matrix.suite == 'workspace'
         run: node --test examples/github/request.test.mjs
@@ -253,7 +253,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python -B tools/test_ci_scope.py
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          node --test crates/git-asset/tests/work-selection.cjs crates/git-asset/tests/impact.cjs crates/git-asset/tests/ux-flows.cjs crates/git-asset/tests/compare-flows.cjs crates/git-asset/tests/object-flows.cjs crates/git-asset/tests/lessons-flows.cjs examples/github/request.test.mjs
+          node --test crates/git-asset/tests/work-selection.cjs crates/git-asset/tests/impact.cjs crates/git-asset/tests/ux-flows.cjs crates/git-asset/tests/compare-flows.cjs crates/git-asset/tests/object-flows.cjs crates/git-asset/tests/lessons-flows.cjs crates/git-asset/tests/inspector-keyboard.cjs examples/github/request.test.mjs
           exit $LASTEXITCODE
         env:
           TEMP: ${{ runner.temp }}

@@ -1524,3 +1524,5 @@ identities remain; operational activation and full product acceptance stay open.
 EVID-141: [metadata capacity packet](../reviews/2026-11-20-metadata-capacity.md).
 
 EVID-142: [native candidate publication packet](../reviews/2026-11-20-annex-candidate-publication.md).
+
+EVID-143: [catalogue review readiness](../reviews/2026-11-20-catalogue-review-ux.md).

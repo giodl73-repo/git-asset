@@ -83,6 +83,12 @@ paging. Explicit private acceptance may inspect metadata; no private assets,
 prompts, voices, enrollment or screenshots enter source or public examples.
 A grouped catalog count is not proof of delivery, freshness, custody or eviction.
 
+For a repeatable team review, use the [synthetic walkthrough](guides/CATALOGUE-REVIEW.md).
+The [review-readiness scope](../specs/CATALOGUE-REVIEW-UX.md) covers inspector
+keyboard containment/return, inert background, compact navigation, readable
+responsive controls and current branding. Browser evidence remains separate
+from controller fixtures and independent/human acceptance.
+
 Collection totals now toggle filters; Ctrl/Meta-click combines their configured
 statuses. Shared assets compares two pinned projects through the same Rust
 selected-object query used by the CLI. Direct object-reference lookup includes

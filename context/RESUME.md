@@ -1,22 +1,29 @@
 # git-asset resume state
 
-Owned branch/worktree: feat/annex-candidate-publication in the public repository.
-Input9658c13; contract specs/ANNEX-CANDIDATE-PUBLICATION.md names controls/scope,
-entry/exit and L0/L1/L2. Derive exact HEAD, status, processes and PR checks before
-continuing. No delegates, cache startup, production enrollment, renders or deletes.
+Owned branch: fixes/catalogue-review-ux; input96da4503aea1b290fd1cefcdad621d607ec0f52a.
+Read specs/CATALOGUE-REVIEW-UX.md for controls, scope, entry/exit and UI/INTEGRATION
+L0/L1/L2. Derive current HEAD, dirty state, PR and hosted checks before continuing.
+Do not duplicate another active lane or change shared runtimes/cache enrollments.
 
-#64/#67 is merged; its synthetic Windows/NTFS capacity qualification does not
-migrate REEL profiles. Native managed reads/job protection already exist. Reuse
-existing witnesses and namespace admission for candidate ingress and handoff.
-Implemented: freeze/verify persisted descriptor and flat body binding, durable
-candidate protection, private staging, native ingress, exact readback and original
-operation recovery. EVID-142 records synthetic/concurrency/native qualification.
-Next: inspect this branch's exact PR/check outcomes before merging. Keep hosted,
-intended-use and independent/human acceptance separate. Subsequent REEL adoption
-must pin the qualified commit and explicitly adopt claims before scratch retirement.
+PR68 native candidate publication is merged; EVID-142 qualifies its default-off
+SDK slice. The consumer owner handles REEL adoption against exact source pins;
+private actor/WorkRef protocols are not a drop-in public Namespace migration.
 
-Build/test/temp roots must be explicit outside source on F:. Do not change
-shared runtime bindings or deploy binaries. Source-budget relief links obsolete
-startup/progress duplication to immutable history; no contract/budget waiver.
+Current UX slice fixes inspector keyboard containment/return and inert background,
+compact view navigation, responsive typography/layout and branding/static icon.
+EVID-143 separates90 controller tests,13 native catalogue cases, fixed HTTP icon,
+strict Clippy and actual public synthetic browser review from hosted/team gates.
+The branch audit finds all committed UX/storage/teaching source included; metadata
+copy and role clarifications were already ported. The separate journal-controller
+prototype remains unmerged. An uncommitted public Windows no-console fix is now
+adopted in the owned branch; other worktrees remain untouched. The advanced
+return/restoration sample supplies11 checkpoints; the introductory sample has7.
+Use docs/guides/CATALOGUE-REVIEW.md for a repeatable seven-checkpoint walkthrough.
+No production assets, media renders, eviction or runtime deployment occurred.
 
-[Historical development and qualification notes](https://github.com/giodl73-repo/git-asset/blob/9658c13f9c4a169e468a99feb30b4e4fe8d11351/context/RESUME.md) are retained in Git.
+Next: inspect this branch's exact PR/check outcomes for source integration; team,
+assistive-technology and production acceptance stay separate. Keep all build/temp,
+sample, screenshot and log artifacts outside source. A catalogue preview must be
+explicitly launched against a named synthetic enrollment; resume starts nothing.
+
+[Historical development notes](https://github.com/giodl73-repo/git-asset/blob/9658c13f9c4a169e468a99feb30b4e4fe8d11351/context/RESUME.md) remain intact in Git.

@@ -204,6 +204,8 @@ checks; a sizing worksheet grants no deletion authority.
 
 ## Try the public sample
 
+For a team UX review, follow the [catalogue walkthrough](docs/guides/CATALOGUE-REVIEW.md).
+
 Start with the [sample catalogue course](examples/catalogue/README.md). It uses
 portable synthetic assets and real Git/provider checkpoints, compares expected
 and observed copies, and exports a catalogue with before/desired/observed lessons.
