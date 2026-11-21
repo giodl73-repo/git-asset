@@ -25,74 +25,67 @@ This is source availability, not a stable product or full storage acceptance.
 - Optional native records, schema admission, graphs, sparse variants, production
   contexts, revision/delivery history and sparse Git proposals.
 - Explicit Rust project restore, handoff/progress evidence and history inspection.
-- Local catalogue: work counts, nested navigation, search, versions, guarded
-  metadata expansion, coverage, copy observations, placement preferences and
-  work/version/object comparisons. Movement/removal remains a held review.
-  Record impact exposes admitted consumer paths, coverage gaps and exact selected
-  navigation through explicit relationship selection and source-fenced paging.
-  Record comparison uses an exact in-memory baseline across projects, exposing
-  independent identity/field/slot differences without opening payloads.
-- Agent queries: versioned JSON discovery, inspection, admission diagnostics,
-  search, byte/record comparison and explained impact through admitted graphs.
-  Explicit work-scoped manifest references reuse nested adapters and verified
-  readers, with source/content fences and document/field provenance.
-  Manifest impact joins all matching owners to one admitted graph, separating
-  association evidence from conditional native consumers and coverage gaps.
+- Catalogue: works/navigation, search, exact versions, metadata coverage, copy
+  observations, preferences, comparisons and source-fenced impact paging.
+  Movement/removal stays held. Cross-project comparisons preserve exact bases.
+- Agent queries: bounded JSON inspection/admission, search, comparison and impact
+  through admitted graphs/manifests with source/content fences and provenance.
   Missing semantic profiles and excluded inventories remain explicit gaps.
 
 Current contracts and [architecture](docs/ARCHITECTURE.md) limit each claim.
 [Evidence](docs/vtrace/EVIDENCE.md) records historical checkpoints rather than
 certifying full requirements or every consumer.
 
-## Next delivery sequence
+## Initial offering: PR finish plan
 
-Continue native integration using existing mechanisms: qualify downstream
-adoption of retained candidates and participating-pruner enforcement.
-Keep registration, creative selection,
-approval and delivery separate. Do not replace git-annex's content engine.
-Team-facing commands and teaching fixtures must describe only qualified behavior.
+Input e171da7ebbe181d10b39b8e2a1a4cc78038b971f. PR70 is open; P1-P6 are
+proposed labels, not GitHub numbers. Each implementation freezes its own input,
+controls, scope and L0/L1/L2 profile before code. Planning proves no runtime gate.
 
-Current owned slice: [native candidate publication](specs/ANNEX-CANDIDATE-PUBLICATION.md).
-Metadata capacity transitions (#64/#67) are merged; consumer adoption stays explicit.
-The candidate SDK has synthetic and actual ordinary/bare native qualification;
-consumer profile adoption and production acceptance remain separate gates.
+Finish line: an explicitly enrolled Windows team can install a pinned build,
+inspect exact history, run protected work, retain candidates, select via Git,
+and reconcile working/history/backup placement after a trusted merge, including
+eligible working-copy eviction and restoration. Every adopted project records
+its supported scope and rollback. Git-annex remains the content engine.
 
-## Delivery priorities
-
-
-| Priority | Milestone | Exit condition |
+| PR / repository | Scope and dependencies | Required exit evidence |
 | --- | --- | --- |
-| 1 | Finish current catalogue changes and user UX test | Protected checks pass; user can find a work, compare versions, trace an owner and return without losing context; task failures become regression fixtures |
-| 2 | Unified storage plan and agent contract | Immutable plan/operation identities, enrolled place generations, object set, source/policy/claim basis, capabilities, budgets, authority and holds; explicit complete protection scope before removal; same plan powers CLI and UI |
-| 3 | Recoverable local copy orchestration | Plan/apply/status/resume in temporary stores; bounded streaming, destination staging, hash/length readback, retained destination and restart-safe acknowledgement; source preserved |
-| 4 | Guarded local eviction | Require complete scoped source/job/draft claims from priority 2; hold overlapping protection through revalidation/removal, retain required independent domains, and prove exact-copy recovery; report file/allocation results separately |
-| 5 | Explicit cloud and Git LFS upload adapters | One selected remote provider first, then LFS upload; retry, failed/lost acknowledgement, corrupt/missing readback, credentials and unsupported retention capabilities exercised; no remote retirement from mere upload success |
-| 6 | Git-driven lifecycle reconciliation | Commit/branch/merge/revert produce idempotent desired-placement deltas; protect drafts/jobs and retained revisions; event replay and missed events converge without global locks |
-| 7 | Bulk asset retirement and final deletion | Block/age/category selection of exact superseded versions; preview shared/protected content and affected stores; separately authorize eligible last-copy deletion; resume batches and measure reclaim |
-| 8 | Metadata retirement and operational lifetime | Bounded deletion receipts and retention windows; authority/replay fences permit eventual record retirement; journal continuation preserves witnesses, generations and original retry outcomes |
-| 9 | Scale, onboarding and release | Derived incremental indexes keyed to exact sources/rules, measured warm lookup and sparse updates, generic sample enrollment and operator/agent examples; rebuild survives deleted derived state |
+| **PR70: reproducible UX review** / git-asset | Existing two-project sample, README and walkthrough. | Exact-head protected CI; team finds work, compares versions/shared bytes, follows recovery lessons and reopens history. User acceptance is separate from producer checks. |
+| **P1: native copy and retained custody** / git-asset | After PR70. Adapt existing bounded placement/capacity/recovery to admitted local annex locations; preserve source. | Copy/hash-length readback and independently retained destination before handoff; interrupted retry, full disk, corrupt/offline destination and lost acknowledgement. Bound work to named objects, not a cache census. |
+| **P2: participating native eviction** / git-asset | After P1. Connect existing retirement plans and scoped fences to admitted native removal; expose bounded plan/status/apply/resume through the existing storage entry. | Jobs, drafts, shared use and retained outputs block removal across restart; unknown scope and unavailable required backup hold. Race/stale-plan/process-exit tests, surviving-byte reopen, measured reclaim and exact restore. Raw annex drop is not a participating pruner. |
+| **P3: trusted merge-to-placement** / git-asset | After P2. Connect existing committed-source reconciliation to the admitted executor/Action; explicit storage permissions and immutable commit/policy basis. | New golden moves to working; superseded bytes move to retained history before eligible working eviction. Duplicate/missed events, concurrent worktrees, revert, executor crash and offline backup recover without losing job protection. Reviewed dry run precedes activation; no automatic runner installation. |
+| **P4: REEL SDK adoption** / reel-workflow | May start after PR70 using the qualified publication SDK; P2 required before shared production pruning. Add an isolated provider route, preserving the existing route. | Exact input preparation; durable protection for days-long manual handoffs; immutable unselected candidates; retained reopen before task completion; conflict, uncertain-publication and restart recovery. No silent latest fallback, scratch-before-retention deletion or duplicate registration. REEL owns semantic/task decisions. |
+| **P5: project enrollment and cutover** / private project repositories | After P3/P4. One reusable procedure, with project-owned enrollment changes for every current project; private paths/evidence stay private. | Per-project source/package pins, current AND historical coverage, actual configured storage roles, large-binary copy/read/restore, protected jobs, backup evidence and reversible binding switch. Unknown entries remain unadopted. Preserve legacy names/data and record owner acceptance; never infer all projects migrated from one pilot. |
+| **P6: pinned operational release** / git-asset | After P5 acceptance. Versioned Windows bundle, checksums/licenses, clean-machine setup, CLI/SDK support matrix and upgrade/rollback runbook. | Exercise published setup/sample and one accepted real workflow on the pinned build; retain restart/offline/full-disk recovery handles. Exact-head CI, release evidence and owner acceptance precede tag/artifact publication. Linux CI does not qualify Windows-only native APIs on Linux. |
 
-UX testing can run in parallel with priorities 2-3. Storage selection should show
-unique content, copy bytes, scratch peak, retained obligations, estimated eligible
-bytes and measured results separately. Add grouping/filter changes only when they
-help answer a concrete task such as why one work grew or what blocks reclamation.
-Never count prospective eviction as free space for an admitted job.
+Dependency chain: PR70 -> P1 -> P2 -> P3 -> P5 -> P6; PR70 -> P4 -> P5.
+P5 is a project-owned change set, not a giant cross-repository public PR.
+Close implementation, verification, validation, trace and review separately.
+CLI queries/review plus SDK protected publication suffice; no new CLI publisher.
+
+Control anchors: P1/P2 WP-003/004/007, P3 WP-005/006/009, P4 WP-011/016,
+P5 WP-016, P6 WP-000/015; REQ-001..010 and existing SPEC/IF/PKG assignments in
+[work packages](docs/vtrace/WORK_PACKAGES.md). Reuse
+[candidate publication](specs/ANNEX-CANDIDATE-PUBLICATION.md),
+[managed reads](specs/ANNEX-MANAGED-READ.md),
+[placement](specs/PLACEMENT-RECONCILIATION.md) and
+[adoption gates](docs/CONSUMER-ADOPTION.md); native gaps require their own contract
+review, not assumptions that local-provider fixtures qualify native custody.
+
+Later releases: bulk/age-based final deletion, eventual metadata forgetting,
+private journal-controller activation, additional cloud providers, full teaching
+curriculum and scale expansion. Initial eviction removes eligible working copies;
+it never authorizes last-retained-copy deletion. No deadline is implied before
+the native execution gaps are qualified.
 
 ## Placement, history and lifetime
 
-A trusted merge request pins an exact commit and operator policy. Working,
-history and backup roles are configurable. Resolve precedence before unioning all
-branch/draft/job/retention requirements; unknown coverage holds removal. Old
-versions still needed by any job remain protected. Copy/readback and independently
-retained custody precede eligible cache eviction. Final deletion and eventual
-metadata forgetting require separate consent, stale-replay/authority fences and
-recoverable original outcomes. Physical reclaim and estimated headroom differ.
-
-The local teaching fixtures cover rename, final loss, reacquisition, Git return,
-restored working copies and remote publication. They do not qualify native
-production writes or removal. Private journal/history/checkpoint/continuation
-prototypes retain default-off controller, admission and lifetime gates. Their
-original proofs remain historical, not current activation authority.
+Union branch/draft/job/retention obligations after resolving policy precedence.
+Unknown coverage holds removal. Fresh copy/readback, independent retained custody
+and current authority precede eviction. Final deletion and metadata forgetting
+need separate consent and stale-replay/recovery fences. Physical reclaim differs
+from estimated headroom. Synthetic lessons and private controller prototypes do
+not qualify native production removal or activate their default-off gates.
 
 Contracts: [placement](specs/PLACEMENT-RECONCILIATION.md),
 [roster precedence](specs/ROSTER-PRECEDENCE.md),
@@ -102,25 +95,15 @@ Contracts: [placement](specs/PLACEMENT-RECONCILIATION.md),
 [metadata capacity](specs/METADATA-CAPACITY.md),
 [teaching](specs/TEACHING-CATALOGUE.md).
 
-## Full outstanding obligations
-
-| Milestone | Exit condition |
-| --- | --- |
-| Consumer completeness | Explainable declared versus consumed inputs, opaque gaps, active jobs and exact profile/source coverage |
-| Lifecycle reconciliation | Durable scoped demands and idempotent plans across Git changes, interruption and concurrent work |
-| Guarded execution | Independent retained custody, provider revalidation and authority before retirement; physical reclaim measured in isolated fixtures |
-| Final deletion and metadata lifetime | Exact bulk scope, protected shared content, explicit last-copy authority, resumable outcomes and eventual metadata retirement with stale-replay fencing |
-| Catalogue usability | Comparable coverage, shared bytes, versions and primary subtypes; explicit enrollment and tool handoff |
-| Providers/transfers | Capability/operational/license review and separate recovery/custody proof for remote or optional torrent adapters |
-
-No deadline or completed consumer migration is implied. Catalogue work can advance
-independently of deletion. Do not create a second cache engine or global cache
-lock to complete a milestone. Estimates, observations, protection and authority
-remain distinct.
+## Continuing obligations
 
 The [17 work packages](docs/vtrace/WORK_PACKAGES.md),
 [catalogue roadmap](docs/CATALOGUE-UI-PLAN.md) and
-[adoption gates](docs/CONSUMER-ADOPTION.md) provide finer allocation.
-
+[adoption gates](docs/CONSUMER-ADOPTION.md) retain the broader backlog:
+consumer completeness, guarded lifecycle/custody, final deletion and metadata
+lifetime, catalogue usability, and provider capability/license/transport review.
+Unknown consumed inputs and inventories stay explicit. Qualify optional remote
+adapters separately; no second cache engine or global lock. Estimates, observed
+copies, protection and removal authority remain distinct.
 
 Full prior progress/proof history and designed fixture matrix: [immutable roadmap](https://github.com/giodl73-repo/git-asset/blob/9658c13f9c4a169e468a99feb30b4e4fe8d11351/PRODUCT_PLAN.md).
