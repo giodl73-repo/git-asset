@@ -82,11 +82,32 @@ fn distinct(f: &mut Fixture) {
 }
 #[test]
 fn keeper_requires_exact_pool_place_retention_and_bytes() {
-    let mut source = Fixture::new(b"retained keeper");
+    let source = Fixture::new(b"retained keeper");
     let mut keeper = Fixture::new(b"retained keeper");
     distinct(&mut keeper);
+    keeper_checks(source, keeper);
+}
+fn keeper_checks(mut source: Fixture, mut keeper: Fixture) {
     publish(&mut source);
     publish(&mut keeper);
+    let keeper_path = crate::annex::Reader::new(keeper.profile.pool.pool.clone())
+        .unwrap()
+        .open(&keeper.plan.candidate().object)
+        .unwrap()
+        .with_path(|p| p.to_path_buf())
+        .unwrap();
+    // Owned native fixture: clear its readonly attribute so write refusal proves guards.
+    let mut permissions = fs::metadata(&keeper_path).unwrap().permissions();
+    #[allow(
+        clippy::permissions_set_readonly_false,
+        reason = "Windows-only fixture: clear the readonly attribute to prove handle exclusion"
+    )]
+    permissions.set_readonly(false);
+    fs::set_permissions(&keeper_path, permissions).unwrap();
+    fs::OpenOptions::new()
+        .write(true)
+        .open(&keeper_path)
+        .unwrap();
     let mut pin = snapshot(&mut keeper);
     settle(&mut source);
     let held = Assessor::new(source.profile.pool.clone())
@@ -134,7 +155,7 @@ fn keeper_requires_exact_pool_place_retention_and_bytes() {
     assert!(
         fs::OpenOptions::new()
             .write(true)
-            .open(keeper.output_path())
+            .open(&keeper_path)
             .is_err()
     );
     assert!(
@@ -175,7 +196,7 @@ fn keeper_requires_exact_pool_place_retention_and_bytes() {
     read.read_to_end(&mut bytes).unwrap();
     assert_eq!(Object::from_bytes(&bytes), pin.object);
     drop(read);
-    fs::write(keeper.output_path(), b"corrupt").unwrap();
+    fs::write(&keeper_path, b"corrupt").unwrap();
     assert_eq!(
         held.open_keeper(
             keeper.profile.pool.clone(),
@@ -188,7 +209,7 @@ fn keeper_requires_exact_pool_place_retention_and_bytes() {
         .code(),
         "corrupt"
     );
-    fs::remove_file(keeper.output_path()).unwrap();
+    fs::remove_file(&keeper_path).unwrap();
     assert_eq!(
         held.open_keeper(
             keeper.profile.pool.clone(),
@@ -436,4 +457,27 @@ fn same_hash_reingest_changes_replay_basis_even_after_new_claim_is_retired() {
         Object::from_bytes(&fs::read(f.output_path()).unwrap()),
         original.candidate().object
     );
+}
+
+#[test]
+#[ignore = "explicit native Git/annex tools; owned ordinary and bare keeper pools"]
+fn actual_native_keeper_fences_verified_bytes_and_retention_in_ordinary_and_bare_pools() {
+    let git: PathBuf = std::env::var_os("GIT_ASSET_TEST_GIT_EXE").unwrap().into();
+    let annex: PathBuf = std::env::var_os("GIT_ASSET_TEST_ANNEX_EXE").unwrap().into();
+    let path = std::env::split_paths(&std::env::var_os("GIT_ASSET_TEST_ANNEX_PATH").unwrap())
+        .collect::<Vec<_>>();
+    for bare in [false, true] {
+        let source = Fixture::build(
+            &vec![42; 256 * 1024],
+            Some((git.clone(), annex.clone(), path.clone())),
+            !bare,
+        );
+        let keeper = Fixture::build(
+            &vec![42; 256 * 1024],
+            Some((git.clone(), annex.clone(), path.clone())),
+            bare,
+        );
+        assert_ne!(source.profile.pool.pool.uuid, keeper.profile.pool.pool.uuid);
+        keeper_checks(source, keeper);
+    }
 }

@@ -141,3 +141,11 @@ Replay fixture passes: same-hash reingest remains after stale check; old publish
 refuses missing acknowledged bytes; live fences block writes but allow unrelated
 admission. Initial log equality wrongly counted readonly commands; only imports
 and capacity are effect measures. Physical birth/old-actor/native-crash proof OPEN.
+
+Native keeper qualification: one explicit ignored entry runs ordinary/bare keeper
+pools (256KiB each), actual publication/readback, protected predecessor-retirement
+refusal, config/byte guard lifetimes and corrupt/missing-byte holds. Both shapes
+pass. Fixture paths come from the verified provider, never assumed annex layout.
+A Windows-only scoped lint exception clears the owned fixture readonly attribute
+so write refusal proves handle exclusion, with a successful write-open beforehand.
+Fake keeper/replay3 pass; full P2 execution/independence/handoff remains OPEN.
