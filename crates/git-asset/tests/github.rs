@@ -243,7 +243,8 @@ fn receiver_cli_discovery_and_default_disabled_startup_never_open_machine_roots(
                 "eviction_preview",
                 "eviction_apply",
                 "restore_preview",
-                "restore_apply"
+                "restore_apply",
+                "restore_replan"
             ])
         } else {
             json!([])

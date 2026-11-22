@@ -11,6 +11,17 @@ pub struct Baseline {
     pub version: Version,
     pub record: Object,
 }
+/// Prepared against a fenced later head; cannot be fabricated from parsed JSON.
+#[derive(Clone)]
+pub struct Replan {
+    pub(crate) original: Digest,
+    pub(crate) replacement: Plan,
+}
+impl Replan {
+    pub fn plan(&self) -> &Plan {
+        &self.replacement
+    }
+}
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Plan {
@@ -103,6 +114,40 @@ pub fn prepare(
     };
     plan.to_json()?;
     Ok(plan)
+}
+/// No selection or import. Completed originals must be reconciled, never replaced.
+pub fn prepare_replan(
+    target: &mut Target<'_>,
+    baseline: &Baseline,
+    context: &native::Context<'_>,
+    original: native::Original<'_>,
+    previous: &Plan,
+    resources: &mut Resources<'_>,
+) -> Result<Replan> {
+    previous.valid()?;
+    let nodes = target
+        .nodes
+        .finished_reader()
+        .map_err(|_| Error::NeedsRecovery)?;
+    let head = target.profile.hold_current(target.namespace, &nodes)?;
+    if status(target, previous)?.is_some() {
+        return Err(Error::Conflict);
+    }
+    if head.revision() <= previous.update.revision || head.version() != &baseline.version {
+        return Err(Error::Stale);
+    }
+    let replacement = prepare(
+        target,
+        baseline,
+        context,
+        original,
+        &previous.restored,
+        resources,
+    )?;
+    Ok(Replan {
+        original: Digest::blob(&previous.to_json()?),
+        replacement,
+    })
 }
 /// Historical receipt first; never reselect an older root or inspect media on replay.
 pub fn status(target: &mut Target<'_>, plan: &Plan) -> Result<Option<Report>> {

@@ -54,7 +54,8 @@ fn matrix_mode(exits: bool, races: bool, copies: bool, trusted: bool) {
     matrix_profile(exits, races, copies, trusted, 0);
 }
 fn matrix_profile(exits: bool, races: bool, copies: bool, trusted: bool, batch: u8) {
-    let scheduled_restore = batch == 4;
+    let scheduled_restore = matches!(batch, 4 | 5);
+    let scheduled_replan = batch == 5;
     let batch = if scheduled_restore { 0 } else { batch };
     let git: PathBuf = std::env::var_os("GIT_ASSET_TEST_GIT_EXE").unwrap().into();
     let annex: PathBuf = std::env::var_os("GIT_ASSET_TEST_ANNEX_EXE").unwrap().into();
@@ -756,7 +757,14 @@ fn matrix_profile(exits: bool, races: bool, copies: bool, trusted: bool, batch: 
                     "restore-pass-main",
                     object.clone(),
                 )
-                .restore_pass(&mut f, &mut backup, &policy, &planned, &old_native);
+                .restore_pass(
+                    &mut f,
+                    &mut backup,
+                    &policy,
+                    &planned,
+                    &old_native,
+                    scheduled_replan,
+                );
             }
             #[cfg(not(feature = "github"))]
             panic!("scheduled restoration needs github");
@@ -915,4 +923,11 @@ fn actual_registered_eviction_uncertain_saved_intent_never_repeats_removal() {
 #[ignore = "explicit native tools and distinct synthetic volumes only"]
 fn actual_named_producer_heads_eviction_protection_expiry_and_saved_replay() {
     matrix_profile(false, false, false, true, 3);
+}
+
+#[cfg(feature = "github")]
+#[test]
+#[ignore = "explicit native tools and distinct owned volumes; retained stale index successor"]
+fn actual_restore_replan_preserves_original_and_never_reimports() {
+    matrix_profile(false, false, true, false, 5);
 }

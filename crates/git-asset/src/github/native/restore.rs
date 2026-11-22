@@ -8,6 +8,10 @@ use crate::annex::{
 use git_asset_core::{Object, identity};
 pub mod pass;
 
+pub struct IndexReplan<'a> {
+    pub saved: &'a Saved,
+    pub baseline: &'a index::Baseline,
+}
 pub struct Restored {
     pub report: Mutation<publication::Receipt>,
     pub ready: publication::Ready,
@@ -153,6 +157,78 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
         let ready = result.map_err(|e| hold.unwrap_or(Error::Native(e)))?;
         let report = self.mutation(state, ready.receipt().clone(), &mut now);
         Ok(Restored { report, ready })
+    }
+    /// Save an explicit stale successor; completed originals return their original handle.
+    pub fn replan_restore_index_saved(
+        &mut self,
+        request: IndexReplan<'_>,
+        records: &mut Namespace,
+        context: &native::Context<'_>,
+        target: &mut index::Target<'_>,
+        destination: &mut publication::Resources<'_>,
+        mut now: impl FnMut() -> Result<u64, AdmissionError>,
+    ) -> Result<Mutation<Saved>, Error> {
+        let IndexReplan { saved, baseline } = request;
+        let ids = self.admission(self.restore_allowed(), &mut now)?;
+        self.restore_binding(context, destination)?;
+        let head = &self
+            .policy
+            .producer_heads
+            .as_ref()
+            .ok_or(publication::Error::Unsupported)?
+            .destination;
+        same(target.profile, &head.profile)?;
+        if target.namespace.identity() != head.minimum.identity()
+            || target.nodes.checkpoint().identity() != &head.profile.scope.metadata
+        {
+            return Err(Error::Admission(AdmissionError::Trust));
+        }
+        let scope = self.pending_scope()?;
+        let loaded = pending::reopen(&scope, saved, records, self.metadata, self.limits)?;
+        let Operation::RestoreIndex(body) = &loaded.action.operation else {
+            return Err(publication::Error::Integrity.into());
+        };
+        replication::Plan::new(
+            &self.policy.copy,
+            loaded.action.retained.clone(),
+            loaded.action.working.clone(),
+        )?;
+        let mut state = self.select(ids)?;
+        if index::status(target, &body.index)?.is_some() {
+            return Ok(self.mutation(state, saved.clone(), &mut now));
+        }
+        self.restore_demand(&mut state, loaded.action.object())?;
+        self.revalidate(&state, &mut now)?;
+        *destination.metadata = context
+            .metadata
+            .finished_reader()
+            .map_err(|_| publication::Error::NeedsRecovery)?;
+        let proposal = index::prepare_replan(
+            target,
+            baseline,
+            context,
+            native::Original {
+                eviction: &body.original.eviction,
+                publication: &loaded.action.working,
+            },
+            &body.index,
+            destination,
+        )?;
+        drop(loaded);
+        self.revalidate(&state, &mut now)?;
+        let saved = pending::save_restore_index_successor(
+            &scope,
+            state.policy.clone(),
+            self.request.commit().as_str(),
+            pending::RestoreIndexSuccessor {
+                expected: saved,
+                proposal,
+            },
+            records,
+            self.metadata,
+            self.limits,
+        )?;
+        Ok(self.mutation(state, saved, &mut now))
     }
     /// Completed original index receipt precedes fresh media access or write permission.
     pub fn register_restore_saved(

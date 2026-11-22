@@ -212,8 +212,8 @@ in its Git commit. Expired requests require fresh token and public-key snapshot
 verification at later time; a Verified clock cannot move backwards. Post-selection
 expiry keeps the index receipt. Identity/privacy bind caller contexts and index
 Target to the exact signed profiles; no supplied plan/path becomes authority.
-Placement preserves existing admission budgets. Adoption keeps receiver phases,
-explicit stale-index replan and all private owner gates open. These are producer
+Placement preserves existing admission budgets. Receiver composition and explicit
+successors are refined below; all private owner gates remain open. These are producer
 checks, not independent or human approval.
 
 ## Bounded receiver restoration
@@ -257,5 +257,42 @@ the index SDK holds its own verified guard across actual adoption. Identity
 rejects inconsistent lengths for the same current digest and deduplicates declared
 recipes. Custody/placement intersect declared objects with working demand and
 preserve receipts/handles on holds. Privacy keeps all locators/config private and
-never opens a request-supplied path. Adoption keeps HTTP, scale, explicit stale
-replan and owner gates open. Producer review is not independent acceptance.
+never opens a request-supplied path. Adoption keeps HTTP, scale and owner gates
+open; explicit successors are refined below. Producer review is not independent acceptance.
+
+## Explicit stale-index successor
+
+Input3d024fab8c54a223863acff5f6f9163bd8c1f6b1; existing P3 controls and
+RUST/PROVIDER/INTEGRATION profiles above. Allowed: exact stale-index replan,
+retained pending-source successor CAS, authenticated SDK/private receiver phase
+and synthetic fixtures. No new native restore, journal, forgetting or enrollment.
+Entry: original saved index action, current enrolled producer head, unchanged
+original native restore and explicit metadata-write permissions. Exit: original
+receipt, held refusal, or durably saved successor before expected-baseline apply.
+L0 pins/links/budget; L1 locked regressions/Clippy; L2 ordinary/bare native races,
+completed-receipt refusal, stale replan, retained originals and retry/restart.
+
+Replan holds the current producer generation, inspects the original receipt first,
+and requires a strictly later source revision without pending selection. It never
+replans completed or uncertain work. Current row must still name the original
+producer; exact verified restored bytes are reopened, never reimported. A sealed
+in-process proposal binds original and successor index plans. Saving its successor
+CAS requires the exact prior Saved version; existing source predecessors preserve
+all original bytes/handles. A competing successor refuses; identical retry may
+return the already saved successor with writes disabled. Ordinary save/apply never
+implicitly replans. The explicit receiver phase must preserve saved handles and
+post-save/effect holds. Historical receipts stay historical.
+
+SDK: `producer_index::update::restore::prepare_replan` returns an opaque Replan;
+its `plan()` is inspectable, while `pending::save_restore_index_successor` consumes
+the sealed binding and exact Saved parent in RestoreIndexSuccessor. Authenticate/fence through
+`github::native::Execution::replan_restore_index_saved` with IndexReplan
+(saved handle and expected index baseline); ordinary saved registration
+executes the newly returned Saved. No new persistent schema or dependency.
+Producer review: identity binds the original canonical plan and native recipe;
+recovery checks receipts under a held newer generation before deriving a proposal,
+and releases pending readers before its own CAS; placement/custody retains all
+predecessors without media-removal authority; privacy uses fixed enrolled roots;
+adoption requires explicit phase and separate current-source evidence. Read/write
+budgets and retained-version capacity can refuse; no waiver or timeout forgetting.
+This is producer review, not independent approval.

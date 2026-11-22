@@ -18,6 +18,8 @@ pub struct Pass<'a, 'b> {
     pub context: &'a mut native::Context<'b>,
     pub target: &'a mut index::Target<'b>,
     pub apply: bool,
+    /// Explicitly admitted successor preparation; ordinary apply never replaces a plan.
+    pub replan: bool,
 }
 #[derive(Serialize)]
 pub struct Outcome {
@@ -53,6 +55,9 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
         mut now: impl FnMut() -> Result<u64, AdmissionError>,
     ) -> Result<Report, Error> {
         pass.budget.validate().map_err(Error::Admission)?;
+        if pass.replan && !pass.apply {
+            return Err(Error::Admission(AdmissionError::Invalid));
+        }
         let started = Instant::now();
         let ids = self.admission(self.restore_allowed(), &mut now)?;
         self.restore_binding(pass.context, destination)?;
@@ -301,9 +306,36 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
                 out.native_saved = saved.as_ref().map(|s| s.saved.clone());
                 if let Some(indexed) = indexed {
                     out.index_saved = Some(indexed.saved.clone());
+                    let original_handle = indexed.saved.clone();
+                    drop(indexed);
+                    let handle = if pass.replan {
+                        let replanned = self.replan_restore_index_saved(
+                            IndexReplan {
+                                saved: &original_handle,
+                                baseline: &index::Baseline {
+                                    version: report.producer.version.clone(),
+                                    record: row.metadata_object()?,
+                                },
+                            },
+                            pass.pending,
+                            pass.context,
+                            pass.target,
+                            destination,
+                            &mut now,
+                        )?;
+                        report.post_effect_hold = replanned.post_effect_hold;
+                        out.index_saved = Some(replanned.result.clone());
+                        if report.post_effect_hold.is_some() {
+                            out.state = "replanned_held";
+                            return Ok(());
+                        }
+                        replanned.result
+                    } else {
+                        original_handle
+                    };
                     drop(guard.take());
                     let receipt = self.register_restore_saved(
-                        &indexed.saved,
+                        &handle,
                         pass.pending,
                         pass.context,
                         pass.target,
@@ -394,6 +426,10 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
                 break;
             }
         }
+        report.post_effect_hold = report
+            .post_effect_hold
+            .or_else(|| self.post(&mut selected, &mut now));
+        report.fresh_pass_required |= report.post_effect_hold.is_some();
         if !report.fresh_pass_required
             && after
                 .as_ref()
@@ -401,9 +437,6 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
         {
             report.next = after.map(|after| Cursor { basis, after });
         }
-        report.post_effect_hold = report
-            .post_effect_hold
-            .or_else(|| self.post(&mut selected, &mut now));
         report.selection = selected.status;
         Ok(report)
     }

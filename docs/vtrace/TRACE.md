@@ -91,107 +91,24 @@ protected successor overlap, immutable release history and typed accounting.
 EVID-021 scopes actual legacy consumer compatibility/scale and the source-only budget.
 Full requirements and validations remain OPEN; no payload eviction or cutover.
 
-## Product rename trace
+## Current native placement
 
-GIT-ASSET-RENAME.md controls -> current crate/service/docs naming, bounded
-front door, .asset/.tig compatibility and immutable-input identity audit ->
-front_door.rs/native_source.rs/check_branding.py -> EVID-123 and separate
-verification, intended-use validation and six producer lenses. Full native
-retained-publication and provider acceptance remain open.
+Full component trace through bounded restoration is preserved at [source3d024fa](https://github.com/giodl73-repo/git-asset/blob/3d024fab8c54a223863acff5f6f9163bd8c1f6b1/docs/vtrace/TRACE.md).
+LF SHA-256: `d9a3427970ce5e3c40fb75ad7abf5d844e72bf57b2d7124bc5587ed37c44d209`. Current normative controls remain in the linked contracts.
 
-## README-only CI trace
+Native exact copy/history/eviction/restoration use signed fixed profiles, current
+source and byte guards, immutable saved actions and expected-baseline index CAS.
+[Restore controls](../../specs/NATIVE-RESTORE.md) distinguish component qualification
+from HTTP, scale, mixed-authority and project-owner gates, which remain OPEN.
 
-PKG-009 / SPEC-015 -> README-CI.md -> exact immutable Git comparison and
-ordinary README edit classification -> gated Rust steps with required matrix
-checks retained -> eight real Git histories and EVID-124. No runtime semantics.
-
-## Open-PR integration trace
-
-OPEN-PR-INTEGRATION.md -> original PR51..60 contracts and aliases EVID-130..139
-plus current main interfaces -> reconciled source/partitioned CI -> main891 and
-stack1030 audits, locked check and exact-source qualification -> EVID-140.
-No runtime format migration or operational activation is introduced.
-
-METADATA-CAPACITY.md -> metadata::capacity/tests/legacy fixture -> EVID-141.
-
-ANNEX-CANDIDATE-PUBLICATION.md -> annex::publication, managed guards, exact ledger
-observation and synthetic/native fixtures -> EVID-142; no creative-selection authority.
-
-CATALOGUE-REVIEW-UX.md -> web controllers/HTML/CSS/fixed icon, controller/native
-fixtures and actual browser walkthrough -> EVID-143; no storage authority.
-
-CATALOGUE-REVIEW-SAMPLE.md -> existing rehearsals plus derived enrollment/receipt
-and front-door discovery/help -> review_sample tests and EVID-144.
-
-ANNEX-RETAINED-COPY.md -> replication/publication/local witness -> copy fixtures; EVID-145.
-
-ANNEX-PROTECTED-EVICTION.md -> snapshot -> four fixture families; EVID-146.
-
-NATIVE-EVICTION-PASS.md -> native::eviction, saved original status/resume and
-producer control-retention declarations -> registered eviction native fixtures.
-WP-004/005/006/007/009 and contract REQ/SPEC/IF/PKG anchors apply. Component
-verification is external receiver-eviction-* evidence; full HTTP, replacement,
-root lifecycle, independent review and project acceptance remain OPEN.
-
-HISTORICAL-ROOT-ARCHIVE.md -> annex::history and existing MetadataStore/source
-claims -> bounded, restart, Main-race/refresh and native exact-member fixtures.
-Controls are in the contract; external history-* evidence pins verification.
-Metadata obligation handoff grants no media custody or native removal authority.
-Receiver history scheduling -> github::native::history and private receiver phases
--> synthetic immutable-Git preview, paged release/receipt continuation, expiry,
-stale-policy/cursor and historical-reopen fixtures. Same archive controls apply;
-external history-receiver-* evidence records terminal checks. Producer-root
-lifecycle, full HTTP/account/TLS and project acceptance remain OPEN.
-
-NATIVE-PRODUCER-ROOTS.md -> producer_index::update, Record::metadata_object and
-history::Loaded::producer_record -> metadata conflict/race/recovery and native
-indexed historical reopen fixtures. Same P3 controls as the contract. External
-producer-update-* evidence records source/log identities and terminal checks;
-root policy adoption, full HTTP and project acceptance remain separate.
-
-Explicit producer-head consumers -> update::Profile::hold_current, shared metadata
-Scope checks, native::producers resolution, copy/eviction basis/pins and receiver
-admission -> synthetic signed head update/stale cursor/racing writer/no fallback
-and actual native copy/eviction fixtures. Same producer-root P3 controls; external
-producer-heads-* logs pin qualification. Full HTTP/scale/owner acceptance stays open.
-
-Completed producer recipes -> Record.publication/with_completed_publication,
-write-once root update and bounded native recipe lookup -> origin/canonicality/
-uncertainty refusal, copy reuse after rebind, backup-index/archive after both
-ingests retire and independent working-repository loss. Controls in
-NATIVE-PRODUCER-ROOTS; producer-recipe-* external evidence. Full owner orchestration,
-backup repair/reacquisition and production acceptance remain separate.
-
-Controlled native restore -> publication::restore and read-only metadata
-ReacquisitionPlan::validate_retirement -> exact predecessor/permission/canonical
-plan checks, post-control interruption/retry, ordinary/bare retained-source reopen
-and historical eviction replay. Controls and producer review: [contract](../../specs/NATIVE-RESTORE.md).
-Full owner orchestration, unexplained-loss repair and production acceptance OPEN.
-
-Restore-specific producer registration -> update::restore plus read-only
-publication::restore::reopen -> exact old row and retirement chain, fresh held
-restored bytes, metered one-row edit/CAS, saved-plan retry and offline historical
-receipt. Ordinary updates still reject swaps; original roots remain retained.
-Controls/review: [restoration contract](../../specs/NATIVE-RESTORE.md#restore-specific-index-transaction).
-Receiver scheduling, missing-backup repair and production acceptance remain OPEN.
-
-Saved restore/index actions -> pending Restore/RestoreIndex phases, pure original
-chain binding and index recipe equality -> wrong-chain/cross-link refusal,
-fresh-process reopen, denied-store retry preserving original and native lifecycle
-fixtures. [Controls](../../specs/NATIVE-RESTORE.md#saved-restore-actions). Existing
-four-blob source mechanism only; no native authority or receiver activation.
-
-Authenticated saved execution -> github::native::restore -> signed fixed-context
-binding, fenced exact-source generation/working demand, native original-status
-reopen, index original receipt before media access and current admission gates.
-Native lifecycle exercises disabled/foreign contexts, expiry, renewed proof/keys,
-post-selection retained receipt and offline read-only recovery. [Controls/review](../../specs/NATIVE-RESTORE.md#authenticated-saved-execution).
-Receiver scheduling and stale-index replan remain OPEN.
-
-Bounded restore scheduling -> native::restore::pass and fixed restore_preview/
-restore_apply dispatch -> current-demand/registered-original lookup, read-only
-preview, save-before-effect, one eligible apply, released head/read guards and
-expected-baseline registration. Native revert fixture checks bytes, fresh basis,
-stale cursor, duplicate no-op and index-only historical receipt recovery without
-retargeting. [Controls/review](../../specs/NATIVE-RESTORE.md#bounded-receiver-restoration).
-Full HTTP, scale, stale-index replan and private owner acceptance remain OPEN.
+Explicit stale-index successor -> fenced restore::prepare_replan -> sealed original
+binding -> pending-source expected-version CAS retaining all predecessors ->
+authenticated saved apply. Fixture obligations: unchanged-head refusal, stale
+ordinary apply, denied save, exact retry, parent conflict, no native reimport,
+fresh-process old/new reopen and completed/historical original preservation.
+[Controls/review](../../specs/NATIVE-RESTORE.md#explicit-stale-index-successor).
+Native ordinary/bare and four fresh-process reopens pass, including stale,
+competing and denied successor cases. Two pending/eight index tests pass before
+field-shorthand-only cleanup; strict final-source Clippy/standalone/fmt pass.
+Interface/worker regressions precede argument-bundle-only cleanup. Source/log pins
+remain external restore-replan-source.json. Full intended-use/owner gates stay OPEN.

@@ -18,6 +18,7 @@ enum Phase {
     HistoryApply,
     RestorePreview,
     RestoreApply,
+    RestoreReplan,
 }
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -116,6 +117,7 @@ pub(super) fn dispatch(
                     | Phase::EvictionApply
                     | Phase::RestorePreview
                     | Phase::RestoreApply
+                    | Phase::RestoreReplan
             ))
             && scope.is_none()
     {
@@ -136,7 +138,10 @@ pub(super) fn dispatch(
     {
         return Err(github::Error::Trust);
     }
-    if matches!(storage.phase, Phase::RestorePreview | Phase::RestoreApply) {
+    if matches!(
+        storage.phase,
+        Phase::RestorePreview | Phase::RestoreApply | Phase::RestoreReplan
+    ) {
         return restore_dispatch(profile, client, proof, cursor, &storage);
     }
     if history_phase {
@@ -252,7 +257,9 @@ pub(super) fn dispatch(
             )
             .and_then(|r| serde_json::to_value(r).map_err(|_| publication::Error::Invalid.into())),
         Phase::HistoryPreview | Phase::HistoryApply => unreachable!("history dispatched above"),
-        Phase::RestorePreview | Phase::RestoreApply => unreachable!("restore dispatched above"),
+        Phase::RestorePreview | Phase::RestoreApply | Phase::RestoreReplan => {
+            unreachable!("restore dispatched above")
+        }
     };
     match result {
         Ok(report) => Ok(report),
@@ -349,7 +356,8 @@ fn restore_dispatch(
                 namespace: &mut index_ns,
                 nodes: &mut index_nodes,
             },
-            apply: matches!(storage.phase, Phase::RestoreApply),
+            apply: matches!(storage.phase, Phase::RestoreApply | Phase::RestoreReplan),
+            replan: matches!(storage.phase, Phase::RestoreReplan),
         },
         &mut destination.resources(&storage.limits),
         now,

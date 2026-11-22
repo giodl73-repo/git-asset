@@ -431,6 +431,94 @@ pub fn save(
     if !scope.allow_store {
         return Err(Error::Denied);
     }
+    store(
+        scope,
+        policy,
+        commit,
+        StoreAction {
+            action,
+            expected: None,
+        },
+        ns,
+        nodes,
+        limits,
+    )
+}
+pub struct RestoreIndexSuccessor<'a> {
+    pub expected: &'a Saved,
+    pub proposal: super::producer_index::update::restore::Replan,
+}
+/// Explicit metadata successor; the prior Saved version remains a retained predecessor.
+pub fn save_restore_index_successor(
+    scope: &Scope,
+    policy: Digest,
+    commit: &str,
+    successor: RestoreIndexSuccessor<'_>,
+    ns: &mut Namespace,
+    nodes: &mut MetadataStore,
+    limits: &Limits,
+) -> Result<Saved> {
+    let RestoreIndexSuccessor { expected, proposal } = successor;
+    let old = reopen(scope, expected, ns, nodes, limits)?;
+    let mut action = old.action.clone();
+    let Operation::RestoreIndex(body) = &mut action.operation else {
+        return Err(Error::Invalid);
+    };
+    if Digest::blob(&body.index.to_json()?) != proposal.original {
+        return Err(Error::Integrity);
+    }
+    body.index = proposal.replacement;
+    let raw = action.body()?;
+    drop(old);
+    let current = find(
+        scope,
+        Phase::RestoreIndex,
+        action.object(),
+        &action.working.id()?,
+        ns,
+        nodes,
+        limits,
+    )?
+    .ok_or(Error::ProtectionLost)?;
+    if &current.saved != expected {
+        return if current.action.body()? == raw {
+            Ok(current.saved)
+        } else {
+            Err(Error::Conflict)
+        };
+    }
+    drop(current);
+    if !scope.allow_store {
+        return Err(Error::Denied);
+    }
+    store(
+        scope,
+        policy,
+        commit,
+        StoreAction {
+            action: &action,
+            expected: Some(expected),
+        },
+        ns,
+        nodes,
+        limits,
+    )
+}
+struct StoreAction<'a> {
+    action: &'a Action,
+    expected: Option<&'a Saved>,
+}
+fn store(
+    scope: &Scope,
+    policy: Digest,
+    commit: &str,
+    input: StoreAction<'_>,
+    ns: &mut Namespace,
+    nodes: &mut MetadataStore,
+    limits: &Limits,
+) -> Result<Saved> {
+    let StoreAction { action, expected } = input;
+    let producer = action.working.id()?;
     if crate::source::GitId::parse(commit).is_err() {
         return Err(Error::Invalid);
     }
@@ -480,7 +568,7 @@ pub fn save(
         limits,
     )?;
     let source = ns.source(&key)?.ok_or(Error::NeedsRecovery)?;
-    if source.current.is_some() {
+    if source.pending.is_some() || source.current.as_ref() != expected.map(|s| &s.version) {
         return Err(Error::Conflict);
     }
     let selection = git_asset_store::source_claims::Selection {

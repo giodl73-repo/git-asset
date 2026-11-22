@@ -1,6 +1,6 @@
 # Source and runtime data budgets
 
-Current ordinary source/documentation ceiling: **8.5 MiB** (8,912,896 bytes),
+Current ordinary source/documentation ceiling: **8.625 MiB** (9,043,968 bytes),
 with **128 KiB** per file, enforced by tools/validate.ps1. Earlier 1, 2, 3, 3.25, 3.5 and 4 MiB ceilings were historical checkpoints. This covers implemented Rust,
 locked dependencies, synthetic fixtures and docs; it does not allocate cache
 space or allow runtime evidence in Git.
@@ -54,3 +54,14 @@ is not byte custody; revision fencing and original recovery remain; scoped locks
 permit unrelated progress; only authored code/tests/docs enter Git; acceptance
 remains separate. L0 budget/pins/branding/diff, L1 locked/Clippy/features and L2
 synthetic restart/native readback qualify component scope, not P2-P6 completion.
+
+Explicit index successors, input3d024fab8c54a223863acff5f6f9163bd8c1f6b1:
+the implementation checkpoint measured8,921,847 bytes after preserving the complete prior trace in an immutable
+hash-pinned Git link, already8,951 bytes above8.5MiB. Admit128KiB of authored
+Rust, synthetic failure/restart fixtures and contracts. No runtime/generated or
+private data enters source; per-file128KiB and all runtime, metadata, journal,
+response, provider and cache limits remain unchanged. Existing P3 controls apply.
+Producer roles: identity preserves canonical old records; recovery retains exact
+predecessors/receipts; placement/custody adds no authority; privacy adds no paths
+or credentials; adoption keeps native/HTTP/owner acceptance separate. L0 pins and
+budget plus L1/L2 source-qualified fixtures are mandatory, not waived by allowance.

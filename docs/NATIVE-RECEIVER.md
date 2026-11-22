@@ -209,3 +209,17 @@ Native support
 is Windows-qualified; unsupported hosts refuse before opening native resources.
 Full HTTP/account/TLS, multi-object scale and project-owner acceptance remain
 separate from the synthetic scheduler/native fixtures.
+
+### Explicit stale-index replan
+
+Set private phase `restore_replan` to attempt a successor for an unfinished stale
+index action. It uses the same current-demand, destination-head and write gates.
+The original index receipt is checked first: completed/historical work is
+reconciled, never replanned. A later fenced head must make the original CAS
+unexecutable; pending/uncertain state holds. The current row must still admit the
+same original producer and the restored bytes must freshly reopen. No native
+restore/import is repeated. The exact saved successor precedes index execution;
+prior Saved handles remain retained and reopenable through source predecessors.
+A failed/expired save or apply returns its handles and requires a fresh pass.
+Ordinary restore_apply still executes the saved action without implicit replan.
+This does not repair missing producers, infer byte presence or activate production.

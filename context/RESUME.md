@@ -7,7 +7,7 @@ renders or deployment on resume. Foundation qualification uses synthetic fixture
 
 Owned lane: feat/trusted-native-placement, draft PR74, based on
 feat/source-generation-use/PR73. Current refinement input is
-4a153bf487b5f37553d70ebbb941b2aa5666b452. Derive later committed source and its
+3d024fab8c54a223863acff5f6f9163bd8c1f6b1. Derive later committed source and its
 hosted run; a prior pending run is not qualification of the next head.
 
 ## Series state
@@ -42,7 +42,8 @@ historical receipts without retargeting newer heads or requiring native IO.
 Pending Restore/RestoreIndex phases reuse the original four-blob Scope/Saved
 mechanism. Native bodies retain original eviction/publications; index bodies must
 embed the identical restore Plan. Existing slots win on retry; never replace an
-uncertain original or overwrite a stale index plan. Pure metadata binding grants
+uncertain original. Explicit restore-index successors retain the prior version;
+ordinary apply never overwrites a stale index plan. Pure metadata binding grants
 no media custody or effect authority. Ordinary/bare lifecycle, wrong chains,
 competing writers, denied-store retry, four fresh-process body reopens and offline
 receipt cases retain their exact external qualification in restore-actions-*,
@@ -68,11 +69,27 @@ passes; eight interface, twelve worker, two pending and eight index tests pass.
 Native fixture precedes only documentation/module-comment cleanup. Strict
 workspace/all-feature/all-target Clippy, standalone annex-publish, fmt, L0,
 branding and diff pass. External restore-pass-source.json pins source/logs;
-new-head hosted CI remains separate from successful parent45075410903.
+Checkpoint3d024fa passed hosted45079293252; later source needs its own run.
 Index-only saved-body recovery preserves historical receipts with a stale hold;
 it neither prepares another native operation nor retargets a newer selection.
 
-Next: explicit stale-index replan and complete placement orchestration. Remaining full gates:
+Explicit stale-index composition now uses restore::prepare_replan, a sealed
+proposal, pending::save_restore_index_successor and authenticated
+replan_restore_index_saved. restore_replan is a separate fixed private phase;
+normal apply never replans. Original receipt first; strictly later fenced head,
+unchanged native recipe and verified reopen are mandatory. Prior four-blob Saved
+versions remain retained through source predecessors. Qualification is recorded
+in restore-replan-*. Final native ordinary/bare passes with stale/unchanged-head,
+denied save, identical retry, parent mismatch and competing successor refusal,
+no native namespace change during replan and four fresh-process old/new reopens.
+Eight interface/twelve worker tests passed before argument-bundle-only cleanup.
+Native and final two pending/eight index tests pass, preceding only field-shorthand
+lint cleanup. Strict workspace/all-feature/all-target Clippy, standalone
+annex-publish and fmt pass. Final L0/pins/branding/diff and exact source/log hashes
+are external restore-replan-source.json. No lint or runtime-limit waiver.
+Parent3d024fa passed hosted45079293252; derive the new head's own run.
+
+Next: complete owner publication/archival and merge placement orchestration. Remaining full gates:
 owner publication/archival orchestration, unexplained-loss/deprecated backup
 repair, full HTTP/account/TLS, measured workload/journal lifetime, P2 mixed-authority
 handoff, P4 consumer acceptance, P5 RC and P6 private owner cutover. No final

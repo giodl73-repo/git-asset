@@ -34,6 +34,7 @@ impl State {
         owner: &OwnerProfile,
         evicted: &NativePlan,
         old: &Plan,
+        replan: bool,
     ) -> Plan {
         let working = head(f, old.clone(), "scheduled-working", true);
         let retained = head(keeper, keeper.plan.clone(), "scheduled-retained", false);
@@ -125,6 +126,7 @@ impl State {
                     context: &mut context,
                     target: &mut target,
                     apply: $apply,
+                    replan: false,
                 }
             };
         }
@@ -136,9 +138,326 @@ impl State {
         assert_eq!(checkpoint, f.namespaces[0].checkpoint());
         assert_eq!(records, self.pending.checkpoint());
         assert_eq!(index, target.namespace.checkpoint());
-        let applied = worker
-            .reconcile_restores(pass!(true, None), &mut f.resources(), || Ok(1000))
+        use crate::annex::producer_index::update::restore as index_restore;
+        let prior = if replan {
+            let restore = native::prepare(
+                &mut context,
+                native::Original {
+                    eviction: evicted,
+                    publication: old,
+                },
+                native::Operations {
+                    native: k("prepared-native"),
+                    control: k("prepared-control"),
+                    source: old.retention_source().clone(),
+                },
+            )
             .unwrap();
+            let original_body = pending::RestoreAction {
+                eviction: evicted.clone(),
+                restore: restore.clone(),
+            };
+            let action = pending::Action {
+                operation: pending::Operation::Restore(Box::new(original_body.clone())),
+                working: old.clone(),
+                retained: keeper.plan.clone(),
+            };
+            let saved = pending::save(
+                &scope,
+                worker.policy.id().unwrap(),
+                worker.request.commit().as_str(),
+                &action,
+                &mut self.pending,
+                worker.metadata,
+                &limits,
+            )
+            .unwrap();
+            let restored = worker
+                .restore_saved(
+                    &saved,
+                    &mut self.pending,
+                    &mut context,
+                    &mut f.resources(),
+                    || Ok(1000),
+                )
+                .unwrap();
+            drop(restored);
+            let baseline = index_restore::Baseline {
+                version: preview.producer.version.clone(),
+                record: Record::new(old.clone(), None)
+                    .unwrap()
+                    .metadata_object()
+                    .unwrap(),
+            };
+            let frozen = index_restore::prepare(
+                &mut target,
+                &baseline,
+                &context,
+                native::Original {
+                    eviction: evicted,
+                    publication: old,
+                },
+                &restore,
+                &mut f.resources(),
+            )
+            .unwrap();
+            assert!(matches!(
+                index_restore::prepare_replan(
+                    &mut target,
+                    &baseline,
+                    &context,
+                    native::Original {
+                        eviction: evicted,
+                        publication: old
+                    },
+                    &frozen,
+                    &mut f.resources()
+                ),
+                Err(Error::Stale)
+            ));
+            let action = pending::Action {
+                operation: pending::Operation::RestoreIndex(Box::new(
+                    pending::RestoreIndexAction {
+                        original: original_body,
+                        index: frozen.clone(),
+                    },
+                )),
+                ..action
+            };
+            let saved = pending::save(
+                &scope,
+                worker.policy.id().unwrap(),
+                worker.request.commit().as_str(),
+                &action,
+                &mut self.pending,
+                worker.metadata,
+                &limits,
+            )
+            .unwrap();
+            // Same bytes, newer index incarnation: the old CAS must still refuse.
+            let state = target
+                .namespace
+                .source(&working.profile.scope.prefix)
+                .unwrap()
+                .unwrap();
+            target
+                .namespace
+                .select(
+                    &git_asset_store::source_claims::admission::Select {
+                        prepare: k("competing-prepare"),
+                        adopt: k("competing-adopt"),
+                        source: working.profile.scope.prefix.clone(),
+                        owner: working.profile.scope.owner.clone(),
+                        expected_revision: state.revision,
+                        selection: state.current.unwrap().selection,
+                    },
+                    target.nodes,
+                    &limits,
+                )
+                .unwrap();
+            let held = worker
+                .reconcile_restores(pass!(true, None), &mut f.resources(), || Ok(1000))
+                .unwrap();
+            assert_eq!(
+                held.outcomes[0].hold.as_ref().map(|h| h.code.as_str()),
+                Some("stale")
+            );
+            assert_eq!(held.outcomes[0].index_saved.as_ref(), Some(&saved));
+            let state = target
+                .namespace
+                .source(&working.profile.scope.prefix)
+                .unwrap()
+                .unwrap();
+            let baseline = index_restore::Baseline {
+                version: state.current.unwrap(),
+                record: baseline.record,
+            };
+            let proposal = index_restore::prepare_replan(
+                &mut target,
+                &baseline,
+                &context,
+                native::Original {
+                    eviction: evicted,
+                    publication: old,
+                },
+                &frozen,
+                &mut f.resources(),
+            )
+            .unwrap();
+            let mut readonly = scope.clone();
+            readonly.allow_store = false;
+            let checkpoint = self.pending.checkpoint();
+            assert_eq!(
+                pending::save_restore_index_successor(
+                    &readonly,
+                    worker.policy.id().unwrap(),
+                    worker.request.commit().as_str(),
+                    pending::RestoreIndexSuccessor {
+                        expected: &saved,
+                        proposal: proposal.clone()
+                    },
+                    &mut self.pending,
+                    worker.metadata,
+                    &limits
+                )
+                .err(),
+                Some(Error::Denied)
+            );
+            assert_eq!(checkpoint, self.pending.checkpoint());
+            let competing = proposal;
+            let state = target
+                .namespace
+                .source(&working.profile.scope.prefix)
+                .unwrap()
+                .unwrap();
+            target
+                .namespace
+                .select(
+                    &git_asset_store::source_claims::admission::Select {
+                        prepare: k("second-writer-prepare"),
+                        adopt: k("second-writer-adopt"),
+                        source: working.profile.scope.prefix.clone(),
+                        owner: working.profile.scope.owner.clone(),
+                        expected_revision: state.revision,
+                        selection: state.current.unwrap().selection,
+                    },
+                    target.nodes,
+                    &limits,
+                )
+                .unwrap();
+            let state = target
+                .namespace
+                .source(&working.profile.scope.prefix)
+                .unwrap()
+                .unwrap();
+            let baseline = index_restore::Baseline {
+                version: state.current.unwrap(),
+                record: baseline.record,
+            };
+            let proposal = index_restore::prepare_replan(
+                &mut target,
+                &baseline,
+                &context,
+                native::Original {
+                    eviction: evicted,
+                    publication: old,
+                },
+                &frozen,
+                &mut f.resources(),
+            )
+            .unwrap();
+            Some((
+                saved,
+                frozen,
+                proposal,
+                competing,
+                f.namespaces[0].checkpoint(),
+            ))
+        } else {
+            None
+        };
+        let mut next = pass!(true, None);
+        next.replan = replan;
+        let applied = worker
+            .reconcile_restores(next, &mut f.resources(), || Ok(1000))
+            .unwrap();
+        if let Some((previous, frozen, proposal, competing, native_checkpoint)) = prior {
+            assert_eq!(native_checkpoint, f.namespaces[0].checkpoint());
+            let successor = applied.outcomes[0].index_saved.as_ref().unwrap();
+            assert_ne!(&previous, successor);
+            assert_eq!(previous.source, successor.source);
+            let loaded = pending::reopen(
+                &scope,
+                &previous,
+                &mut self.pending,
+                worker.metadata,
+                &limits,
+            )
+            .unwrap();
+            let pending::Operation::RestoreIndex(body) = &loaded.action.operation else {
+                panic!("wrong body")
+            };
+            assert_eq!(body.index.to_json().unwrap(), frozen.to_json().unwrap());
+            drop(loaded);
+            let mut readonly = scope.clone();
+            readonly.allow_store = false;
+            assert_eq!(
+                &pending::save_restore_index_successor(
+                    &readonly,
+                    worker.policy.id().unwrap(),
+                    worker.request.commit().as_str(),
+                    pending::RestoreIndexSuccessor {
+                        expected: &previous,
+                        proposal: proposal.clone()
+                    },
+                    &mut self.pending,
+                    worker.metadata,
+                    &limits
+                )
+                .unwrap(),
+                successor
+            );
+            assert_eq!(
+                pending::save_restore_index_successor(
+                    &scope,
+                    worker.policy.id().unwrap(),
+                    worker.request.commit().as_str(),
+                    pending::RestoreIndexSuccessor {
+                        expected: successor,
+                        proposal
+                    },
+                    &mut self.pending,
+                    worker.metadata,
+                    &limits
+                )
+                .err(),
+                Some(Error::Integrity)
+            );
+            let checkpoint = self.pending.checkpoint();
+            assert_eq!(
+                pending::save_restore_index_successor(
+                    &scope,
+                    worker.policy.id().unwrap(),
+                    worker.request.commit().as_str(),
+                    pending::RestoreIndexSuccessor {
+                        expected: &previous,
+                        proposal: competing
+                    },
+                    &mut self.pending,
+                    worker.metadata,
+                    &limits
+                )
+                .err(),
+                Some(Error::Conflict)
+            );
+            assert_eq!(checkpoint, self.pending.checkpoint());
+            for handle in [&previous, successor] {
+                let loaded =
+                    pending::reopen(&scope, handle, &mut self.pending, worker.metadata, &limits)
+                        .unwrap();
+                let pending::Operation::RestoreIndex(body) = &loaded.action.operation else {
+                    panic!("wrong body")
+                };
+                let config = f.root.join("successor-reopen.json");
+                fs::write(&config, serde_json::to_vec(&serde_json::json!({
+                    "scope":scope,"saved":handle,"namespace":f.root.join("restore-pass-main-pending"),"minimum":self.pending.checkpoint(),
+                    "metadata":f.root.join("metadata"),"metadata_minimum":worker.metadata.checkpoint(),"plan":Digest::blob(&body.index.to_json().unwrap()),
+                })).unwrap()).unwrap();
+                drop(loaded);
+                assert!(
+                    std::process::Command::new(std::env::current_exe().unwrap())
+                        .args([
+                            "--exact",
+                            "annex::publication::tests::native::pending::reopen_worker"
+                        ])
+                        .env("GIT_ASSET_PENDING_REOPEN_FIXTURE", config)
+                        .status()
+                        .unwrap()
+                        .success()
+                );
+            }
+        }
+
         assert!(
             applied.outcomes[0].hold.is_none(),
             "{:?}; native_done={}, index_saved={}",
@@ -286,6 +605,7 @@ impl State {
                     context: &mut context,
                     target: &mut target,
                     apply: true,
+                    replan,
                 },
                 &mut f.resources(),
                 || Ok(1000),

@@ -44,9 +44,10 @@ custody and actual configured profiles. Captured policy/commit are provenance,
 never authority to replay an old event. Post-save/effect errors preserve the saved
 handle and explicit failure. Native uncertain intent never authorizes another plan.
 
-This first storage surface does not retire or replace saved slots. Status/resume/
+Ordinary save does not retire or replace saved slots. The explicit restore-index
+successor below is separate from ordinary retry. Status/resume/
 cancel use the original backend APIs and saved bodies; metadata/byte forgetting
-needs a separate explicit contract. Registry-wide paging, stale-plan replacement,
+needs a separate explicit contract. Registry-wide paging and other stale-plan replacement,
 large-catalogue continuation and production remain
 OPEN. Growing records stay asset-side, not in Git or mutable per-object files.
 
@@ -55,3 +56,14 @@ Registered receiver eviction is refined in
 native status before apply: completion resumes accounting only, uncertain native
 intent refuses another effect. Saved originals and current admission remain
 mandatory; stale-plan replacement is not inferred from this recovery surface.
+
+## Explicit restore-index successor
+
+The restore contract's [successor rules](NATIVE-RESTORE.md#explicit-stale-index-successor)
+add only `save_restore_index_successor`. It accepts a sealed replan proposal and
+exact Saved baseline. The same source CAS retains the prior version as a
+predecessor; its original four blobs/schema/key stay readable. The successor body
+changes only the index plan, preserving the original native restore/publications.
+An identical saved successor is recoverable without store permission; a different
+current proposal or parent mismatch refuses. Ordinary save never supersedes.
+Original handles/receipts must remain recorded; there is no timeout or cleanup.
