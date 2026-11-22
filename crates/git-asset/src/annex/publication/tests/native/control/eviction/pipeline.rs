@@ -63,7 +63,7 @@ pub(super) fn restore(
     assert_eq!(plan.publication().candidate(), old.candidate());
     let raw = plan.to_json().unwrap();
     let mut actions = pending::Harness::new(f, "restore-actions");
-    actions.save(crate::annex::pending::Action {
+    let native_saved = actions.save(crate::annex::pending::Action {
         operation: crate::annex::pending::Operation::Restore(Box::new(
             crate::annex::pending::RestoreAction {
                 eviction: evicted.clone(),
@@ -118,6 +118,30 @@ pub(super) fn restore(
     );
     assert_eq!(result.err(), Some(Error::Denied));
     let reopened = restore::Plan::from_json(&fs::read(path).unwrap()).unwrap();
+    #[cfg(feature = "github")]
+    let mut restored = super::trusted::State::named(
+        f,
+        keeper,
+        owner,
+        "worker-native-project",
+        "worker-native-main",
+        old.candidate().object.clone(),
+    )
+    .saved_native(
+        f,
+        &actions.scope,
+        &native_saved,
+        &mut actions.namespace,
+        &mut restore::Context {
+            profile: &profile,
+            control: &control,
+            retirement: owner,
+            namespace: &mut namespace,
+            metadata: &mut metadata,
+            limits: &limits,
+        },
+    );
+    #[cfg(not(feature = "github"))]
     let mut restored = restore::apply(
         &mut restore::Context {
             profile: &profile,

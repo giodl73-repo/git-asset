@@ -2,6 +2,9 @@ pub(super) mod backup;
 use super::*;
 use crate::annex::{producer_index::Record, replication, snapshot::Snapshot};
 pub(in super::super) fn pending_namespace(f: &Fixture) -> Namespace {
+    pending_namespace_at(&f.root.join("pending-actions"))
+}
+pub(in super::super) fn pending_namespace_at(root: &Path) -> Namespace {
     let places = Places {
         current: vec![k("metadata")],
         pending: vec![k("metadata")],
@@ -14,13 +17,7 @@ pub(in super::super) fn pending_namespace(f: &Fixture) -> Namespace {
             .map(|k| (k, places.clone()))
             .collect(),
     };
-    Namespace::create_fenced(
-        &f.root.join("pending-actions"),
-        k("pending"),
-        k("epoch"),
-        policy,
-    )
-    .unwrap()
+    Namespace::create_fenced(root, k("pending"), k("epoch"), policy).unwrap()
 }
 pub(in super::super) fn pending_scope(
     f: &Fixture,

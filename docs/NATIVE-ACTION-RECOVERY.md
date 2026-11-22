@@ -85,3 +85,14 @@ storage is disabled. A stale index Plan is not overwritten; use its original
 status and explicit SDK replan. These metadata records alone prove no media
 custody and do not add a receiver restore phase. The [saved-action contract](../specs/NATIVE-RESTORE.md#saved-restore-actions)
 defines bounds and the remaining authenticated orchestration gate.
+
+Rust package `git-asset` with `github` and `annex-publish` also exposes
+`github::native::Execution::{restore_saved,register_restore_saved}`. Pass an
+existing Saved handle and fixed enrolled resources. The worker loads its original
+body, checks the signed policy, exact current committed-source guard and working
+demand before new effects. Restore returns owned Ready bytes plus its receipt;
+index execution requires the signed destination head and preserves completed
+receipts with index writes disabled and native storage offline. Renew expired
+credentials/key snapshots and retry the same handle. Post-effect holds do not
+erase success. These SDK operations do not create a receiver restore phase or
+replace a stale plan; see the [execution contract](../specs/NATIVE-RESTORE.md#authenticated-saved-execution).

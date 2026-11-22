@@ -4,8 +4,8 @@ use crate::annex::pending::{self, Action, Operation, Scope};
 pub(super) struct Harness {
     root: PathBuf,
     metadata_root: PathBuf,
-    scope: Scope,
-    namespace: Namespace,
+    pub(super) scope: Scope,
+    pub(super) namespace: Namespace,
     nodes: MetadataStore,
 }
 impl Harness {
@@ -46,7 +46,7 @@ impl Harness {
             nodes,
         }
     }
-    pub(super) fn save(&mut self, action: Action) {
+    pub(super) fn save(&mut self, action: Action) -> pending::Saved {
         let limits = Fixture::limits();
         let policy = Digest::blob(b"synthetic fixed policy");
         let commit = "a".repeat(40);
@@ -195,5 +195,7 @@ impl Harness {
         .unwrap()
         .unwrap();
         assert_eq!(found.saved, saved);
+        drop(found);
+        saved
     }
 }

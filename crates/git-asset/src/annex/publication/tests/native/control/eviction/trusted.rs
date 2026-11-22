@@ -4,6 +4,7 @@ use super::*;
 use crate::github::native::{Actions, Execution, Policy};
 use crate::{github, lifecycle, source};
 mod batch;
+mod restore;
 pub(super) struct State {
     repository: source::Repository,
     enrollment: lifecycle::Enrollment,
@@ -14,7 +15,24 @@ pub(super) struct State {
 }
 impl State {
     pub(super) fn new(f: &mut Fixture, keeper: &Fixture, owner: &OwnerProfile) -> Self {
-        let project = f.root.join("trusted-project");
+        Self::named(
+            f,
+            keeper,
+            owner,
+            "trusted-project",
+            "main",
+            Object::from_bytes(b"a newly selected asset, no claim of whole-project convergence"),
+        )
+    }
+    pub(super) fn named(
+        f: &mut Fixture,
+        keeper: &Fixture,
+        owner: &OwnerProfile,
+        project: &str,
+        source: &str,
+        next: Object,
+    ) -> Self {
+        let project = f.root.join(project);
         fs::create_dir_all(project.join("assets")).unwrap();
         git(&project, &["init", "-b", "main"]);
         git(&project, &["config", "user.name", "Synthetic"]);
@@ -22,8 +40,6 @@ impl State {
             &project,
             &["config", "user.email", "fixture@example.invalid"],
         );
-        let next =
-            Object::from_bytes(b"a newly selected asset, no claim of whole-project convergence");
         fs::write(
             project.join("assets/next"),
             format!(
@@ -49,9 +65,9 @@ impl State {
         .unwrap();
         f.namespaces[1]
             .apply(
-                k("enroll-trusted-main"),
+                k(&format!("enroll-{source}")),
                 Command::Enroll {
-                    source: k("main"),
+                    source: k(source),
                     owner: k("owner"),
                     class: Kind::Branch,
                 },
@@ -67,7 +83,7 @@ impl State {
                 &identity::canonical_json(&serde_json::to_value(f.namespaces[1].policy()).unwrap())
                     .unwrap(),
             ),
-            source: k("main"),
+            source: k(source),
             owner: k("owner"),
             class: Kind::Branch,
             ref_name: "refs/heads/main".into(),
@@ -93,7 +109,13 @@ impl State {
         };
         let plan = selected.plan(Some(&commit)).unwrap();
         selected.apply(&plan).unwrap();
-        let pending = super::super::super::github_worker::batch::pending_namespace(f);
+        let pending = if source == "main" {
+            super::super::super::github_worker::batch::pending_namespace(f)
+        } else {
+            super::super::super::github_worker::batch::pending_namespace_at(
+                &f.root.join(format!("{source}-pending")),
+            )
+        };
         let pending_scope = super::super::super::github_worker::batch::pending_scope(f, &pending);
         let policy = Policy {
             copy: crate::annex::replication::Profile {

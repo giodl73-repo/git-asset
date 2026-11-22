@@ -174,3 +174,43 @@ the same embedded restore recipe, plus fresh-process reopen and immutable retry.
 Custody (high) forbids treating saved metadata as completed media work. Placement
 retains existing bounds/refusal. Privacy adds no execution or event paths. Git/
 adoption keeps expanding evidence asset-side and receiver/owner gates open.
+
+## Authenticated saved execution
+
+Inputaf878de168aea7c980d7bde1cf6e59b657a4a3e3; same P3 controls/profiles above.
+Allowed: trusted Execution methods consuming existing saved bodies, current-source
+guards, original Publisher and qualified index SDK. No event-supplied plans/paths,
+new queue/cache, automatic enrollment or receiver phase. Entry: exact saved handle,
+fixed signed policy, existing namespaces/providers and explicit copy/reacquire
+permissions. Exit: retained readback or index receipt with post-effect hold, or
+explicit refusal preserving originals. L0 pins/source/fmt; L1 signed admission,
+profile/demand/refusal regressions and strict Clippy; L2 ordinary/bare saved-action
+restore after interruption, index adoption and historical receipt recovery.
+
+`Execution::restore_saved` loads the retained original, verifies its publications
+against the fixed pair and private Context against signed profiles, holds exact
+current committed-source generation and requires working-place demand. Both
+allow_copy and destination-control allow_reacquire are required. Admission/ref
+checks run before metadata birth and native import. Input comes only from the
+fixed retained managed pool. The result owns Ready bytes and the original receipt;
+post-effect expiry/ref drift is reported without discarding that receipt.
+
+`Execution::register_restore_saved` loads the saved index body, binds Target to the
+explicit signed destination producer head and checks original status before fresh
+native IO. Completed receipts recover with metadata writes disabled. A new index
+selection requires admitted head write permission, current working-place demand,
+fresh restore readback and current admission under the SDK's expected-baseline CAS.
+No producer-head read guard is held across its own update. Stale/uncertain originals
+remain held; these methods neither prepare replacement plans nor forget old ones.
+They do not imply receiver scheduling or whole-project convergence.
+
+Producer review: recovery/custody (high) require a fenced committed-source
+namespace; unsupported legacy sources are not upgraded or bypassed. The native
+fixture explicitly creates that fenced boundary and selects the restored object
+in its Git commit. Expired requests require fresh token and public-key snapshot
+verification at later time; a Verified clock cannot move backwards. Post-selection
+expiry keeps the index receipt. Identity/privacy bind caller contexts and index
+Target to the exact signed profiles; no supplied plan/path becomes authority.
+Placement preserves existing admission budgets. Adoption keeps receiver phases,
+explicit stale-index replan and all private owner gates open. These are producer
+checks, not independent or human approval.

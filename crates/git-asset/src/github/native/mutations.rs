@@ -72,7 +72,7 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
             .map_err(Error::Eviction)?;
         Ok(self.mutation(state, report, &mut now))
     }
-    fn mutation<T>(
+    pub(super) fn mutation<T>(
         &self,
         mut state: Selected,
         result: T,

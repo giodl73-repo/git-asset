@@ -98,7 +98,7 @@ fn matrix_profile(exits: bool, races: bool, copies: bool, trusted: bool, batch: 
             Some((git.clone(), annex.clone(), path.clone())),
             bare,
             Some(&source_root),
-            trusted,
+            trusted || copies,
         );
         let mut backup = Fixture::build_in(
             &bytes,

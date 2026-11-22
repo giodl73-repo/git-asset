@@ -9,7 +9,7 @@ use roots::restore as register;
 
 pub(super) fn exercise(
     f: &mut Fixture,
-    keeper: &Fixture,
+    keeper: &mut Fixture,
     owner: &OwnerProfile,
     evicted: &NativePlan,
     old: &Plan,
@@ -226,7 +226,50 @@ pub(super) fn exercise(
     );
     assert_eq!(checkpoint, ns.checkpoint());
     let plan = register::Plan::from_json(&fs::read(saved).unwrap()).unwrap();
+    #[cfg(feature = "github")]
+    let mut worker_state = super::super::trusted::State::named(
+        f,
+        keeper,
+        owner,
+        "worker-index-project",
+        "worker-index-main",
+        old.candidate().object.clone(),
+    );
+    #[cfg(feature = "github")]
+    let mut worker_actions = super::pending::Harness::new(f, "worker-index-actions");
+    #[cfg(feature = "github")]
+    let worker_saved = worker_actions.save(crate::annex::pending::Action {
+        operation: crate::annex::pending::Operation::RestoreIndex(Box::new(
+            crate::annex::pending::RestoreIndexAction {
+                original: crate::annex::pending::RestoreAction {
+                    eviction: evicted.clone(),
+                    restore: restored.clone(),
+                },
+                index: plan.clone(),
+            },
+        )),
+        working: old.clone(),
+        retained: keeper.plan.clone(),
+    });
+    #[cfg(feature = "github")]
+    let receipt = worker_state.saved_index(
+        f,
+        keeper,
+        (
+            &worker_actions.scope,
+            &worker_saved,
+            &mut worker_actions.namespace,
+        ),
+        &context,
+        &mut register::Target {
+            profile: &profile,
+            namespace: &mut ns,
+            nodes: &mut nodes,
+        },
+    );
+    #[cfg(not(feature = "github"))]
     let mut calls = 0;
+    #[cfg(not(feature = "github"))]
     let receipt = register::apply(
         &mut register::Target {
             profile: &profile,
@@ -281,6 +324,23 @@ pub(super) fn exercise(
     fs::rename(&config, &offline).unwrap();
     let mut readonly = profile.clone();
     readonly.scope.allow_store = false;
+    #[cfg(feature = "github")]
+    let recovered = worker_state.saved_index(
+        f,
+        keeper,
+        (
+            &worker_actions.scope,
+            &worker_saved,
+            &mut worker_actions.namespace,
+        ),
+        &context,
+        &mut register::Target {
+            profile: &readonly,
+            namespace: &mut ns,
+            nodes: &mut nodes,
+        },
+    );
+    #[cfg(not(feature = "github"))]
     let recovered = register::apply(
         &mut register::Target {
             profile: &readonly,

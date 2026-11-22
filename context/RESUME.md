@@ -7,7 +7,7 @@ renders or deployment on resume. Foundation qualification uses synthetic fixture
 
 Owned lane: feat/trusted-native-placement, draft PR74, based on
 feat/source-generation-use/PR73. Current refinement input is
-ec8bf476a629f61015599615f74ddf5f03eee59d. Derive later committed source and its
+af878de168aea7c980d7bde1cf6e59b657a4a3e3. Derive later committed source and its
 hosted run; a prior pending run is not qualification of the next head.
 
 ## Series state
@@ -24,134 +24,51 @@ Issue75/U4 is separate main-based docs/issue75-tool-preview/PR76 at9fcabb7,
 with a four-PR registry/preview/candidate/browser sequence. It adds no U4 runtime
 API and does not turn storage adoption into a REEL visual-board gate.
 
-## Implemented P3 components
+## Current P3 mechanisms and next work
 
-Exact local/HTTP annex commit source and current-source guards; authenticated
-fixed-profile copy, backup, handoff and eviction; immutable producer lookup;
-bounded receiver copy/backup/durable handoff and registered eviction preview/apply.
-Saved actions retain the full original plan/recipes and inspect original status:
-completed work resumes accounting; uncertain intent never repeats removal.
-Current Main plus fresh full-roster native keeper/protection checks remain
-mandatory. Producer control-retention metadata never proves independent bytes.
+Exact committed annex resolution/current-source guards; authenticated fixed-policy
+copy/backup/handoff/registered eviction; retained historical roots; metered index
+updates and named producer-head pins exist as qualified components. Desired,
+planned and observed state remain separate. Missing coverage holds removal.
 
-Historical-root metadata archival preserves exact predecessor trees/origin plans,
-adopts retained media/record obligations and revision-fences old working release.
-It grants no media custody or physical eviction authority. Exact saved/member
-access survives working-checkout loss. Explicit refresh preserves older plans and
-the same archived root after Main advances. Receiver history preview/apply pages
-bind current Version; a removed cursor key needs the saved original release receipt.
-Successful release receipts/continuation survive expiry and renewed authentication.
+Native restore prepare/apply/resume reuses completed authorized retirement and
+existing Publisher/reacquisition machinery. Save canonical16KiB Plan before any
+birth/import; retry that original after uncertainty. Restore-specific index
+transactions bind the exact old Version/row and held fresh restored bytes; old
+roots remain retained. Distinct restore-root receipt identity keeps ordinary
+updates strict. Save canonical64KiB wrapper before selection; status first recovers
+historical receipts without retargeting newer heads or requiring native IO.
 
-Producer-root SDK preparation/status/apply reuses immutable tree edits, metadata
-finish/readback and atomic metadata-only Job source selection. Expected Version/
-record identity, original recipe preservation, declared-edit reconstruction and
-old-root retention are mandatory. Caller persists canonical Plan asset-side before
-apply; completed historical recovery never rolls back a newer head. Explicit empty
-initial indexes and unchanged no-ops are supported. Loaded::producer_record maps
-exact archived membership onto the original producer/control grant. Actual indexed
-historical bytes reopen after old ingress release with the working repo offline.
+Pending Restore/RestoreIndex phases reuse the original four-blob Scope/Saved
+mechanism. Native bodies retain original eviction/publications; index bodies must
+embed the identical restore Plan. Existing slots win on retry; never replace an
+uncertain original or overwrite a stale index plan. Pure metadata binding grants
+no media custody or effect authority. Ordinary/bare lifecycle, wrong chains,
+competing writers, denied-store retry, four fresh-process body reopens and offline
+receipt cases retain their exact external qualification in restore-actions-*,
+restore-index-*, native-restore-* and earlier producer/history evidence records.
 
-## Current enrolled-head refinement
+Authenticated saved restore/index execution now consumes original bodies under
+fixed signed contexts and fenced current-source/working-demand guards. Native
+Ready bytes and index receipts survive post-effect expiry; renew credentials and
+key snapshots at later time and retry the same Saved handle. Source generation
+fencing is required; no legacy upgrade is implicit. Final qualification is external
+saved-worker-*; derive current source/CI from its source record after commit.
 
-Optional signed Policy.producer_heads enrolls existing source/destination index
-namespaces/profiles, exclusive of static policy.producers roots. Pure validation
-opens nothing. Actual reads bind provider/owner/Job class/metadata-only placement.
-Profile::hold_current and copy/eviction retain both generation guards through each
-pass, report exact pins and bind continuation to them. Index edits do not change
-trusted enrollment but invalidate old cursors. No fallback to static/latest asset,
-producer writer, new native-effect authority or global cache lock is introduced.
-Old absent fields/static bases remain; receiver describe advertises compiled support.
+Next: fixed-worker/receiver bounded
+preview/apply scheduling, and explicit stale-index replan. Remaining full gates:
+owner publication/archival orchestration, unexplained-loss/deprecated backup
+repair, full HTTP/account/TLS, measured workload/journal lifetime, P2 mixed-authority
+handoff, P4 consumer acceptance, P5 RC and P6 private owner cutover. No final
+archival deletion, timeout forgetting or automatic production enrollment.
 
-Contracts/runbooks: NATIVE-RECEIVER, NATIVE-ACTION-RECOVERY, HISTORICAL-ROOTS,
-NATIVE-PRODUCER-ROOTS and their specs. Six .roles are producer checklists, not
-independent people or human approval. Implementation, verification, validation,
-trace and review close separately. Current source-only ceiling8.5MiB does not
-raise runtime/metadata/journal limits. Keep evidence and machine bindings external.
+Contracts: specs/NATIVE-RESTORE.md, specs/NATIVE-PRODUCER-ROOTS.md,
+specs/NATIVE-PENDING-ACTIONS.md, docs/NATIVE-RECEIVER.md and
+PRODUCT_PLAN.md. Current .roles are producer checklists, not independent people
+or human approval. Implementation/verification/validation/trace/review close
+separately. Preserve existing data formats, shared tool bindings and SDK pin.
 
-## Evidence and next work
-
-External evidence root retains history-*, history-receiver-*, producer-update-* and
-producer-heads-* logs/source records, alongside earlier receiver-eviction/handoff/
-native-pending/backup/index evidence. Check terminal outcomes and source hashes.
-Do not count ignored native cases as successes. Source generation, alias/device
-separation, old-byte restore and original uncertainty retain their own scopes.
-Full native HTTP/account/TLS and production acceptance are not implied by SDK tests.
-
-Next: connect owner publication/archival orchestration to index updates; repair
-missing deprecated backups; connect controlled restoration to owner orchestration
-and qualify safe native stale-plan replacement. Then full transport/recovery, declared workload/lifetime
-bounds, P2 mixed-authority handoff, P4 acceptance, P5 RC and concrete P6 owner review.
-No final archival deletion, timeout forgetting or automatic production enrollment.
-
-Before commits: L0 reviewed pins/links/budget, branding/diff, fmt, relevant locked
-failure/integration tests, strict workspace/all-feature/all-target Clippy and
-standalone feature checks. Build/temp/log roots must be explicit and outside source.
-
-Head-consumer local qualification:11 default worker,7 index,2 pending-action and8
-GitHub/CLI cases pass;7 native cases ignored in the default worker run are not
-counted as successes. Separate actual head-copy and distinct-volume head-eviction
-cases pass. Workspace Clippy, standalone annex-publish and fmt pass. Exact current
-source/logs are external producer-heads-source.json. Parentffccf8c hosted45059199408
-passed; current-head hosted qualification must be derived after this commit.
-
-Completed-recipe refinement fromcb798cb adds optional Record.publication (absent
-wire unchanged) and historical completion/settlement inspection. Original producer
-stays immutable; only copy context may differ. Root prepare/apply cannot clear or
-replace an installed recipe. Worker considers original/recorded/prospective plans
-under bounded unique-completion checks and fresh byte verification; uncertainty
-never becomes presence. Owner fixture persists the exact root-update Plan before
-apply, reuses copied bytes after a history rebind, and records a reverse backup
-that remains readable through an exact retained root after both ingests retire
-and F's repository goes offline. Qualification: producer-recipe-* externally.
-This is publication registration composition, not a new RPC editor/cache engine
-or complete production orchestration. Backup repair/reacquisition, full transport,
-remaining P2/P4 acceptance, P5 RC and P6 owner cutover remain OPEN.
-
-Completed-recipe local qualification:12 default worker,8 index and8 archive cases
-pass;8 explicit native worker cases are ignored in the default run. Separate actual
-copy/rebind, reverse-backup archive and distinct-volume recorded-recipe eviction
-cases pass. Workspace Clippy, standalone annex-publish and fmt pass. External
-producer-recipe-source.json pins the committed source/logs. Parentcb798cb hosted
-45061875678 passed; current-head hosted status remains separate.
-
-Controlled restore refinement from2eae14c adds publication::restore SDK
-prepare/apply/resume over the existing metadata reacquisition and native Publisher.
-Requires exact completed authorized eviction, owned empty Retention registration,
-explicit publish/reacquire permission and a durably saved canonical16KiB Plan.
-Candidate/provenance stay fixed; creative Main is unchanged. ControlReady may
-follow durable metadata birth: preserve/retry the same Plan, never invent another
-operation after a lost reply. Metadata validation binds the complete predecessor,
-actual retirement terminal and original ledger; restored same-hash bytes survive
-historical eviction replay. New publication handles do not overwrite old index rows.
-Contract/producer review: specs/NATIVE-RESTORE.md. External native-restore-* logs
-separate development regressions from final core/native qualification. Actual
-ordinary/bare copy/evict/restore passes with post-control interruption, reload and
-completed replay. Strict workspace Clippy, standalone annex-publish and fmt pass.
-Parent2eae14c hosted45065425208 passed; current source/CI derives after commit.
-Receiver restore/index orchestration, unexplained-loss backup
-repair, remaining P2/P4 gates, P5 RC and P6 owner acceptance remain OPEN.
-
-Restore registration fromc10b468 adds producer_index::update::restore and read-only
-publication::restore::reopen. Exact expected index Version/record and completed
-restore chain admit one successor row; fresh native guards span metered root
-adoption. Ordinary edits remain immutable. A distinct restore-root selection
-identity prevents ordinary receipts from being reused as qualified transitions.
-Persist the64KiB wrapper Plan before apply. Status-first replay retains its
-receipt without native access, even after storage goes offline. Old root/recipe
-blobs stay in existing bounded predecessor history. Contract/producer dispositions
-are in NATIVE-RESTORE. External restore-index-* records distinguish development
-passes from final qualification; derive current source/CI after commit. Next is
-fixed-worker restore preview/apply and index orchestration, then remaining series
-gates. No receiver restore phase or production activation is claimed here.
-
-Saved restoration refinement fromec8bf47 adds pending Restore/RestoreIndex phases
-to the existing four-blob Scope/Saved mechanism. Native bodies bind exact original
-eviction/publications and restore Plan; index bodies require that same restore
-recipe. Pure check_original and index restoration accessors grant no custody or
-IO authority. Save/readback precedes execution; an existing original wins even
-against invalid later previews with store disabled. Fresh-process new-body reopen
-is exercised through the existing pending child fixture in the native lifecycle.
-External restore-actions-* logs/source pins retain exact qualification. Completed
-producer-root/pending-action reviews link their hash-pinned immutableec8bf47 copies;
-current contracts/gates remain local. Trusted worker/receiver restore execution,
-bounded index-replan orchestration and the remaining series gates are still OPEN.
+Full prior checkpoint history: [immutable resume](https://github.com/giodl73-repo/git-asset/blob/af878de168aea7c980d7bde1cf6e59b657a4a3e3/context/RESUME.md).
+Read exact external source/log hashes, not old status prose. Before commit run L0,
+reviewed pins, branding/diff, fmt, relevant locked tests, strict workspace Clippy
+and standalone feature checks with explicit external build/temp/log roots.

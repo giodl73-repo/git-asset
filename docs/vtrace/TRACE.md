@@ -863,3 +863,10 @@ chain binding and index recipe equality -> wrong-chain/cross-link refusal,
 fresh-process reopen, denied-store retry preserving original and native lifecycle
 fixtures. [Controls](../../specs/NATIVE-RESTORE.md#saved-restore-actions). Existing
 four-blob source mechanism only; no native authority or receiver activation.
+
+Authenticated saved execution -> github::native::restore -> signed fixed-context
+binding, fenced exact-source generation/working demand, native original-status
+reopen, index original receipt before media access and current admission gates.
+Native lifecycle exercises disabled/foreign contexts, expiry, renewed proof/keys,
+post-selection retained receipt and offline read-only recovery. [Controls/review](../../specs/NATIVE-RESTORE.md#authenticated-saved-execution).
+Receiver scheduling and stale-index replan remain OPEN.

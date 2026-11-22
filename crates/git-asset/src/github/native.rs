@@ -474,3 +474,4 @@ pub mod eviction;
 pub mod history;
 
 pub mod producers;
+pub mod restore;
