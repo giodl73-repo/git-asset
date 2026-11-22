@@ -181,3 +181,37 @@ namespace admission and preserve the returned receipt. Archive/ingest release
 remains separately admitted. A metadata failure after native success keeps the
 native original/receipt; it never authorizes another transfer. No new queue,
 operation journal, RPC producer editor or automatic cache adoption is introduced.
+
+## Authenticated completed-publication registration
+
+Input7bd82ba90b1d9ba7c66a2ace5da8027ebfb6eb8e; P3 WP-004/005/006/007/009;
+REQ-001/002/004/006/007/008/010; SPEC-002/003/004/005/007/008/010/011;
+IF-002/004/005/008/010/012; PKG-001/003/004/006. RUST/PROVIDER/INTEGRATION.
+Allowed: existing completed native copy/backup recipes into their current declared
+index records, immutable pending root plans and fixed receiver registration phase.
+No media import/removal, census, new engine or production enrollment. Entry:
+signed current source, explicitly enabled registration, enrolled index heads,
+existing owned pending namespace and actual completion witness/ledger. Exit:
+read-only named eligibility, held original, or saved exact index plan before CAS.
+L0 reviewed pins/links/budget; L1 locked failures/strict checks; L2 synthetic native
+backup -> registration -> archive/read, retry, stale/denied and historical receipt.
+
+Only the completion field may be added to an existing original record; native
+producer, retained member and control grant remain unchanged. Witness completion
+and settled accounting are required, never inferred from presence or a new plan.
+This metadata registration proves no current byte availability or custody.
+Ordinary root apply still reconstructs exactly the declared upsert. Original saved
+plans precede any index write and remain authoritative after uncertain delivery.
+At most one eligible object changes per pass; an index advancement needs a fresh
+basis. Current root/head, exact source, explicit permission and quotas are checked.
+Preview saves nothing. Historical receipts never reselect old roots. Full stage
+orchestration, missing registrations/repair, HTTP/scale/owner acceptance remain OPEN.
+
+Producer review: identity binds the sole index upsert to the exact stored Record
+and original working/retained producers; decoded phase must match its envelope.
+Recovery retains Saved/receipt across post-effect refusal and never reconstructs
+another native effect. Placement/custody keeps recorded completion separate from
+availability and fresh survivor proof. Privacy uses only fixed enrolled locations.
+Adoption requires default-denied registration and explicit index write admission;
+source/profile/hash domains stay readable, with no new dependency or state engine.
+Six producer checklists do not constitute independent or human acceptance.

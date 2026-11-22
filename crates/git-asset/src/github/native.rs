@@ -45,6 +45,8 @@ pub struct Actions {
     pub eviction: Option<retirement::planning::Profile>,
     #[serde(skip_serializing_if = "disabled")]
     pub backup: bool,
+    #[serde(skip_serializing_if = "disabled")]
+    pub registration: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub pending: Option<crate::annex::pending::Scope>,
     #[serde(skip_serializing_if = "Option::is_none")]

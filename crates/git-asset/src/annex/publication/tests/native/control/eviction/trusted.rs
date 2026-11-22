@@ -137,6 +137,7 @@ impl State {
                 handoff: false,
                 eviction: Some(owner.clone()),
                 backup: false,
+                registration: false,
                 history: None,
                 pending: Some(pending_scope),
             }),

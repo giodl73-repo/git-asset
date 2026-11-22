@@ -152,6 +152,16 @@ impl Profile {
     }
 }
 impl Plan {
+    /// Pure one-record binding; apply still verifies the exact tree edit and scope.
+    pub fn check_record(&self, record: &Record) -> Result<()> {
+        self.valid()?;
+        if self.schema != "git-asset.producer-root-update.experimental-1"
+            || self.records != [(record.object.clone(), record.metadata_object()?)]
+        {
+            return Err(Error::Integrity);
+        }
+        Ok(())
+    }
     pub fn root(&self) -> &Object {
         &self.root
     }

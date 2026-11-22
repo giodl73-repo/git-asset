@@ -8,6 +8,7 @@ use git_asset_core::{
 use git_asset_store::placement::Cursor;
 use sha2::{Digest as _, Sha256};
 use std::time::{Duration, Instant};
+pub mod registration;
 
 #[derive(Clone, Debug, Serialize)]
 pub struct Failure {

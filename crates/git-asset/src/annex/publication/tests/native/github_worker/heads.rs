@@ -106,7 +106,11 @@ pub(super) fn exercise(
     let old = worker.policy.producers.as_ref().unwrap();
     let mut source = register(m, old.source.clone(), "retained-producers");
     let mut destination = register(f, old.destination.clone(), "working-producers");
+    destination.head.profile.scope.allow_store = true;
+    let mut pending = batch::pending_namespace_at(&f.root.join("working-publication-actions"));
     let mut policy = worker.policy.clone();
+    policy.actions.as_mut().unwrap().registration = true;
+    policy.actions.as_mut().unwrap().pending = Some(batch::pending_scope(f, &pending));
     policy.producers = None;
     policy.producer_heads = Some(Heads {
         source: source.head.clone(),
@@ -356,30 +360,53 @@ pub(super) fn exercise(
             .unwrap_err(),
         Error::Conflict
     );
-    let registration = roots::prepare(
-        &destination.profile,
-        Some(&destination.version),
-        &[roots::Change {
-            expected_record: Some(destination.row.metadata_object().unwrap()),
-            record: published.clone(),
-        }],
-        &mut destination.namespace,
-        &mut destination.nodes,
-    )
-    .unwrap()
-    .unwrap();
-    let mut saved = fs::File::create_new(f.root.join("publication-registration-plan")).unwrap();
-    std::io::Write::write_all(&mut saved, &registration.to_json().unwrap()).unwrap();
-    saved.sync_all().unwrap();
-    let registered = roots::apply(
-        &destination.profile,
-        &registration,
-        &mut destination.namespace,
-        &mut destination.nodes,
-        || Ok(()),
-    )
-    .unwrap();
-    destination.version = registered.version;
+    use crate::annex::pending::RegistrationSide;
+    use crate::github::native::batch::registration;
+    let registered = batch::configured(worker, &policy, &trust, &request)
+        .reconcile_registrations(
+            registration::Pass {
+                cursor: None,
+                budget: &budget,
+                pending: &mut pending,
+                target: registration::Target {
+                    side: RegistrationSide::Working,
+                    namespace: &mut destination.namespace,
+                    nodes: &mut destination.nodes,
+                },
+                apply: true,
+            },
+            &mut m.resources(),
+            &mut f.resources(),
+            || Ok(1000),
+        )
+        .unwrap();
+    assert!(
+        registered.outcomes[0].hold.is_none(),
+        "{}",
+        serde_json::to_string(&registered).unwrap()
+    );
+    assert_eq!(registered.outcomes[0].state, "recorded");
+    assert!(registered.outcomes[0].saved.is_some());
+    let result = registered
+        .outcomes
+        .into_iter()
+        .next()
+        .unwrap()
+        .registration
+        .unwrap();
+    assert_eq!(
+        Index::from_root(result.root)
+            .get(
+                &published.object,
+                &mut destination.nodes,
+                TreeLimits::default()
+            )
+            .unwrap()
+            .0
+            .as_ref(),
+        Some(&published)
+    );
+    destination.version = result.version;
     f.metadata =
         MetadataReader::open(&f.root.join("metadata"), &destination.nodes.checkpoint()).unwrap();
     *worker.metadata =

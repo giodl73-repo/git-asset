@@ -89,6 +89,7 @@ fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool, 
         actions: if batch_mode >= 4 {
             Some(github::native::Actions {
                 backup: true,
+                registration: false,
                 history: None,
                 pending: pending.as_ref().map(|ns| batch::pending_scope(&target, ns)),
                 handoff: true,
@@ -99,6 +100,7 @@ fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool, 
                 handoff: true,
                 eviction: None,
                 backup: false,
+                registration: false,
                 history: None,
                 pending: None,
             })

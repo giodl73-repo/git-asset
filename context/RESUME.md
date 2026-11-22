@@ -7,7 +7,7 @@ renders or deployment on resume. Foundation qualification uses synthetic fixture
 
 Owned lane: feat/trusted-native-placement, draft PR74, based on
 feat/source-generation-use/PR73. Current refinement input is
-3d024fab8c54a223863acff5f6f9163bd8c1f6b1. Derive later committed source and its
+7bd82ba90b1d9ba7c66a2ace5da8027ebfb6eb8e. Derive later committed source and its
 hosted run; a prior pending run is not qualification of the next head.
 
 ## Series state
@@ -89,7 +89,25 @@ annex-publish and fmt pass. Final L0/pins/branding/diff and exact source/log has
 are external restore-replan-source.json. No lint or runtime-limit waiver.
 Parent3d024fa passed hosted45079293252; derive the new head's own run.
 
-Next: complete owner publication/archival and merge placement orchestration. Remaining full gates:
+Current refinement: authenticated completed-publication registration. New
+registration_preview/apply with fixed registration_side and default-denied signed
+actions.registration store original RegisterWorking/Retained index actions before
+CAS. Only completion changes, no media IO/custody grant. Original receipts remain
+historical; matching current producer/completion survives later membership edits.
+Qualification: publication-registration-*. Joined inert and actual native
+retained backup -> registration -> archive/ingest retirement -> historical read
+with working repository offline pass. Working copy -> registration -> history
+rebind/reuse passes in inert and actual native cases. Preview, denied writer,
+stale cursor, duplicate and cold retained-action reopen are covered. Eight
+interface, twelve worker, two pending and eight index regressions pass; the
+working-fixture-only replacement has focused/native qualification. Final strict
+workspace/all-feature/all-target Clippy, standalone annex-publish, fmt, L0,
+branding and diff pass; exact source/log/binary pins stay external. Frontdoor
+is compiled/discovery-qualified; full HTTP is OPEN. Parent7bd82ba passed
+hosted45081602257; derive the new head's own run.
+
+Next: complete merge placement orchestration, initial owner producer admission
+and stale ordinary-index recovery; do not mistake recorded completion for custody. Remaining full gates:
 owner publication/archival orchestration, unexplained-loss/deprecated backup
 repair, full HTTP/account/TLS, measured workload/journal lifetime, P2 mixed-authority
 handoff, P4 consumer acceptance, P5 RC and P6 private owner cutover. No final

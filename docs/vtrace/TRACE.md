@@ -112,3 +112,19 @@ competing and denied successor cases. Two pending/eight index tests pass before
 field-shorthand-only cleanup; strict final-source Clippy/standalone/fmt pass.
 Interface/worker regressions precede argument-bundle-only cleanup. Source/log pins
 remain external restore-replan-source.json. Full intended-use/owner gates stay OPEN.
+
+
+Completed-publication recording -> native::batch::registration plus existing
+ordinary root updater and RegisterWorking/Retained pending bodies -> fixed signed
+permission and side, current head/closure, real completion evidence, saved sole
+upsert before CAS. Joined synthetic/native backup -> registration -> archive/read
+fixtures include preview, denied writer, stale cursor, duplicate and cold Saved
+reopen. [Controls/review](../../specs/NATIVE-PRODUCER-ROOTS.md#authenticated-completed-publication-registration).
+Joined inert/actual-native cases pass for retained backup/archive/read and
+working copy/history-rebind reuse. Eight interface, twelve worker, two pending
+and eight index regressions pass; final working-fixture replacement has its own
+focused/native and strict-source checks. Clippy/standalone/fmt, L0/pins/branding/
+diff pass. Exact source/log/test-binary evidence remains external in
+publication-registration-source.json. Full merge-stage orchestration, stale
+ordinary-index replan, initial producer admission, HTTP/scale and owner acceptance
+remain OPEN.

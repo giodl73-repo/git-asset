@@ -10,8 +10,12 @@ pub(super) fn exercise(
 ) {
     let old = worker.policy.producers.as_ref().unwrap();
     let mut source = register(m, old.source.clone(), "retained-producers");
+    source.head.profile.scope.allow_store = true;
     let destination = register(f, old.destination.clone(), "working-producers");
+    let mut pending = batch::pending_namespace_at(&f.root.join("publication-actions"));
     let mut policy = worker.policy.clone();
+    policy.actions.as_mut().unwrap().registration = true;
+    policy.actions.as_mut().unwrap().pending = Some(batch::pending_scope(f, &pending));
     policy.producers = None;
     policy.producer_heads = Some(Heads {
         source: source.head.clone(),
@@ -60,6 +64,167 @@ pub(super) fn exercise(
         result.outcomes[0].retained_publication,
         Some(backup.destination().id().unwrap())
     );
+
+    use crate::annex::pending;
+    use crate::github::native::batch::registration;
+    macro_rules! registration_pass {
+        ($apply:expr,$cursor:expr) => {
+            registration::Pass {
+                cursor: $cursor,
+                budget: &budget,
+                pending: &mut pending,
+                target: registration::Target {
+                    side: pending::RegistrationSide::Retained,
+                    namespace: &mut source.namespace,
+                    nodes: &mut source.nodes,
+                },
+                apply: $apply,
+            }
+        };
+    }
+    let target_checkpoint = source.namespace.checkpoint();
+    let pending_checkpoint = pending.checkpoint();
+    let native_checkpoint = m.namespaces[0].checkpoint();
+    let preview = batch::configured(worker, &policy, &trust, &request)
+        .reconcile_registrations(
+            registration_pass!(false, None),
+            &mut m.resources(),
+            &mut f.resources(),
+            || Ok(1000),
+        )
+        .unwrap();
+    assert_eq!(preview.outcomes[0].state, "eligible");
+    assert!(preview.outcomes[0].saved.is_none());
+    assert_eq!(target_checkpoint, source.namespace.checkpoint());
+    assert_eq!(pending_checkpoint, pending.checkpoint());
+    let mut denied_policy = policy.clone();
+    denied_policy
+        .producer_heads
+        .as_mut()
+        .unwrap()
+        .source
+        .profile
+        .scope
+        .allow_store = false;
+    let mut denied_trust = trust.clone();
+    denied_trust.placement_enrollment = denied_policy.id().unwrap();
+    let denied_request = github::verify(
+        &denied_trust,
+        &signer.keys,
+        &signer.token(&signer.claims),
+        worker.request.commit(),
+        1000,
+    )
+    .unwrap();
+    let denied = batch::configured(worker, &denied_policy, &denied_trust, &denied_request)
+        .reconcile_registrations(
+            registration_pass!(true, None),
+            &mut m.resources(),
+            &mut f.resources(),
+            || Ok(1000),
+        )
+        .unwrap();
+    assert_eq!(
+        denied.outcomes[0].hold.as_ref().map(|h| h.code.as_str()),
+        Some("denied")
+    );
+    assert!(denied.outcomes[0].saved.is_none());
+    assert_eq!(target_checkpoint, source.namespace.checkpoint());
+    assert_eq!(pending_checkpoint, pending.checkpoint());
+    let registered = batch::configured(worker, &policy, &trust, &request)
+        .reconcile_registrations(
+            registration_pass!(true, None),
+            &mut m.resources(),
+            &mut f.resources(),
+            || Ok(1000),
+        )
+        .unwrap();
+    assert!(
+        registered.outcomes[0].hold.is_none(),
+        "{}",
+        serde_json::to_string(&registered).unwrap()
+    );
+    assert_eq!(registered.outcomes[0].state, "recorded");
+    assert!(registered.fresh_pass_required && registered.next.is_none());
+    assert_eq!(native_checkpoint, m.namespaces[0].checkpoint());
+    let cursor = git_asset_store::placement::Cursor {
+        basis: preview.basis,
+        after: m.plan.candidate().object.sha256.clone(),
+    };
+    assert!(matches!(
+        batch::configured(worker, &policy, &trust, &request).reconcile_registrations(
+            registration_pass!(true, Some(&cursor)),
+            &mut m.resources(),
+            &mut f.resources(),
+            || Ok(1000)
+        ),
+        Err(github::native::Error::Admission(github::Error::Stale))
+    ));
+    let checkpoint = source.namespace.checkpoint();
+    let repeated = batch::configured(worker, &policy, &trust, &request)
+        .reconcile_registrations(
+            registration_pass!(true, None),
+            &mut m.resources(),
+            &mut f.resources(),
+            || Ok(1000),
+        )
+        .unwrap();
+    assert_eq!(repeated.outcomes[0].state, "recorded");
+    assert!(repeated.outcomes[0].hold.is_none());
+    assert_eq!(checkpoint, source.namespace.checkpoint());
+    let saved = registered.outcomes[0].saved.as_ref().unwrap();
+    let scope = policy.actions.as_ref().unwrap().pending.as_ref().unwrap();
+    let loaded = pending::reopen(
+        scope,
+        saved,
+        &mut pending,
+        worker.metadata,
+        &Fixture::limits(),
+    )
+    .unwrap();
+    let pending::Operation::Registration(body) = &loaded.action.operation else {
+        panic!("wrong registration body")
+    };
+    let config = f.root.join("registration-reopen.json");
+    fs::write(
+        &config,
+        serde_json::to_vec(&serde_json::json!({"scope":scope,"saved":saved,
+        "namespace":f.root.join("publication-actions"),"minimum":pending.checkpoint(),
+        "metadata":f.root.join("metadata"),"metadata_minimum":worker.metadata.checkpoint(),
+        "plan":Digest::blob(&body.index.to_json().unwrap())}))
+        .unwrap(),
+    )
+    .unwrap();
+    drop(loaded);
+    assert!(
+        std::process::Command::new(std::env::current_exe().unwrap())
+            .args([
+                "--exact",
+                "annex::publication::tests::native::pending::reopen_worker"
+            ])
+            .env("GIT_ASSET_PENDING_REOPEN_FIXTURE", config)
+            .status()
+            .unwrap()
+            .success()
+    );
+    let result = registered
+        .outcomes
+        .into_iter()
+        .next()
+        .unwrap()
+        .registration
+        .unwrap();
+    source.version = result.version;
+    source.row = Index::from_root(result.root)
+        .get(
+            &m.plan.candidate().object,
+            &mut source.nodes,
+            TreeLimits::default(),
+        )
+        .unwrap()
+        .0
+        .unwrap();
+    assert_eq!(source.row.publication.as_ref(), Some(backup.destination()));
 
     // A real retained root replaces both temporary ingest obligations.
     let path = LogicalPath::parse("assets/archived").unwrap();

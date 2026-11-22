@@ -19,6 +19,8 @@ enum Phase {
     RestorePreview,
     RestoreApply,
     RestoreReplan,
+    RegistrationPreview,
+    RegistrationApply,
 }
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -44,6 +46,8 @@ struct Storage {
     #[serde(default)]
     history_records: Option<profiles::NamespaceRoot>,
     limits: Limits,
+    #[serde(default)]
+    registration_side: git_asset::annex::pending::RegistrationSide,
 }
 struct Opened {
     namespace: Namespace,
@@ -118,6 +122,8 @@ pub(super) fn dispatch(
                     | Phase::RestorePreview
                     | Phase::RestoreApply
                     | Phase::RestoreReplan
+                    | Phase::RegistrationPreview
+                    | Phase::RegistrationApply
             ))
             && scope.is_none()
     {
@@ -137,6 +143,12 @@ pub(super) fn dispatch(
         .is_some_and(|r| history.is_none_or(|h| r.minimum.identity() != &h.records.namespace))
     {
         return Err(github::Error::Trust);
+    }
+    if matches!(
+        storage.phase,
+        Phase::RegistrationPreview | Phase::RegistrationApply
+    ) {
+        return registration_dispatch(profile, client, proof, cursor, &storage);
     }
     if matches!(
         storage.phase,
@@ -257,6 +269,9 @@ pub(super) fn dispatch(
             )
             .and_then(|r| serde_json::to_value(r).map_err(|_| publication::Error::Invalid.into())),
         Phase::HistoryPreview | Phase::HistoryApply => unreachable!("history dispatched above"),
+        Phase::RegistrationPreview | Phase::RegistrationApply => {
+            unreachable!("registration dispatched above")
+        }
         Phase::RestorePreview | Phase::RestoreApply | Phase::RestoreReplan => {
             unreachable!("restore dispatched above")
         }
@@ -367,6 +382,88 @@ fn restore_dispatch(
         Err(error) => Ok(
             json!({"schema":"git-asset.native-restore-pass-refusal.experimental-1",
             "ok":false,"failure":Failure::from(&error),"storage_converged":null}),
+        ),
+    }
+}
+
+fn registration_dispatch(
+    profile: &Profile,
+    client: &Client,
+    proof: github::Verified,
+    cursor: Option<Cursor>,
+    storage: &Storage,
+) -> github::Result<Value> {
+    use git_asset::annex::pending::RegistrationSide;
+    use native::batch::registration;
+    if !storage
+        .policy
+        .actions
+        .as_ref()
+        .is_some_and(|a| a.registration)
+    {
+        return Err(github::Error::Disabled);
+    }
+    if !cfg!(windows) {
+        return Ok(
+            json!({"schema":"git-asset.native-registration-refusal.experimental-1","ok":false,"failure":{"layer":"native","code":"unsupported"},"storage_converged":null}),
+        );
+    }
+    let heads = storage
+        .policy
+        .producer_heads
+        .as_ref()
+        .ok_or(github::Error::Trust)?;
+    let (head, location) = match storage.registration_side {
+        RegistrationSide::Working => (&heads.destination, &storage.destination),
+        RegistrationSide::Retained => (&heads.source, &storage.source),
+    };
+    let pending = storage.pending.as_ref().ok_or(github::Error::Trust)?;
+    let mut records =
+        Namespace::open(&pending.root, &pending.minimum).map_err(|_| github::Error::Unavailable)?;
+    let mut target =
+        Namespace::open(&head.root, &head.minimum).map_err(|_| github::Error::Unavailable)?;
+    let mut target_nodes = MetadataStore::open(&location.metadata_root, &location.metadata_minimum)
+        .map_err(|_| github::Error::Unavailable)?;
+    let mut source = storage.source.open()?;
+    let mut destination = storage.destination.open()?;
+    let mut namespace = Namespace::open(&profile.namespace.root, &profile.namespace.minimum)
+        .map_err(|_| github::Error::Unavailable)?;
+    let mut metadata = MetadataStore::open(&profile.metadata_root, &profile.metadata_minimum)
+        .map_err(|_| github::Error::Unavailable)?;
+    let repository = github::source::AnnexSource {
+        client,
+        trust: &profile.trust,
+    };
+    let result = native::Execution {
+        trust: &profile.trust,
+        request: &proof,
+        policy: &storage.policy,
+        enrollment: &profile.enrollment,
+        repository: &repository,
+        namespace: &mut namespace,
+        metadata: &mut metadata,
+        limits: &storage.limits,
+    }
+    .reconcile_registrations(
+        registration::Pass {
+            cursor: cursor.as_ref(),
+            budget: &profile.budget,
+            pending: &mut records,
+            target: registration::Target {
+                side: storage.registration_side,
+                namespace: &mut target,
+                nodes: &mut target_nodes,
+            },
+            apply: matches!(storage.phase, Phase::RegistrationApply),
+        },
+        &mut source.resources(&storage.limits),
+        &mut destination.resources(&storage.limits),
+        now,
+    );
+    match result {
+        Ok(report) => serde_json::to_value(report).map_err(|_| github::Error::Invalid),
+        Err(e) => Ok(
+            json!({"schema":"git-asset.native-registration-refusal.experimental-1","ok":false,"failure":Failure::from(&e),"storage_converged":null}),
         ),
     }
 }

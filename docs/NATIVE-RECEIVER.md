@@ -223,3 +223,26 @@ prior Saved handles remain retained and reopenable through source predecessors.
 A failed/expired save or apply returns its handles and requires a fresh pass.
 Ordinary restore_apply still executes the saved action without implicit replan.
 This does not repair missing producers, infer byte presence or activate production.
+
+## Record completed copy/backup recipes
+
+Enable actions.registration in the signed private policy and explicitly select
+registration_preview or registration_apply. Private registration_side chooses
+retained (default) or working. Dynamic producer heads and the original pending
+namespace are required; the target head must admit writes for a new update.
+Events still supply only commit IDs and cursors, never records or launch paths.
+
+Run copy/backup, then register its completed context-specific recipe before
+archival changes retained membership. Registration preserves producer, snapshot
+and control grant; it only adds the actual completed publication. Native intent
+without settled completion holds. Preview writes no pending/index state. Apply
+saves the exact one-record index plan before CAS, changes at most one object and
+requires a fresh pass after a write. Preserve returned Saved handles/receipts on
+all later holds. Original receipt recovery neither reselects a historical root
+nor repeats a native effect. A newer index containing the same producer and
+completion remains recorded even when retained membership has advanced.
+
+This phase reads bounded metadata/witness/accounting, streams zero media bytes
+and grants no custody, availability or eviction authority. Missing original
+registrations remain unknown. Full HTTP, stage orchestration, scale and owner
+adoption stay separate from synthetic component qualification.

@@ -85,6 +85,22 @@ pub enum Phase {
     Eviction,
     Restore,
     RestoreIndex,
+    RegisterWorking,
+    RegisterRetained,
+}
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum RegistrationSide {
+    Working,
+    #[default]
+    Retained,
+}
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct Registration {
+    pub side: RegistrationSide,
+    pub index: super::producer_index::update::Plan,
+    pub record: super::producer_index::Record,
 }
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -104,6 +120,7 @@ pub enum Operation {
     Eviction(Box<planning::Plan>),
     Restore(Box<RestoreAction>),
     RestoreIndex(Box<RestoreIndexAction>),
+    Registration(Box<Registration>),
 }
 #[derive(Clone, Debug)]
 pub struct Action {
@@ -118,6 +135,10 @@ impl Action {
             Operation::Eviction(_) => Phase::Eviction,
             Operation::Restore(_) => Phase::Restore,
             Operation::RestoreIndex(_) => Phase::RestoreIndex,
+            Operation::Registration(ref p) => match p.side {
+                RegistrationSide::Working => Phase::RegisterWorking,
+                RegistrationSide::Retained => Phase::RegisterRetained,
+            },
         }
     }
     pub fn object(&self) -> &Object {
@@ -126,6 +147,7 @@ impl Action {
             Operation::Eviction(p) => p.object(),
             Operation::Restore(p) => &p.restore.publication().candidate().object,
             Operation::RestoreIndex(p) => &p.original.restore.publication().candidate().object,
+            Operation::Registration(p) => &p.record.object,
         }
     }
     fn body(&self) -> Result<Vec<u8>> {
@@ -162,6 +184,17 @@ impl Action {
                     return Err(Error::Integrity);
                 }
                 p.index.to_json()?;
+                encode(p)
+            }
+            Operation::Registration(p) => {
+                p.index.check_record(&p.record)?;
+                let expected = match p.side {
+                    RegistrationSide::Working => &self.working,
+                    RegistrationSide::Retained => &self.retained,
+                };
+                if &p.record.producer != expected || p.record.publication.is_none() {
+                    return Err(Error::Integrity);
+                }
                 encode(p)
             }
         }
@@ -325,13 +358,17 @@ pub fn reopen(
         Phase::RestoreIndex => Operation::RestoreIndex(Box::new(
             serde_json::from_slice(&body).map_err(|_| Error::Integrity)?,
         )),
+        Phase::RegisterWorking | Phase::RegisterRetained => Operation::Registration(Box::new(
+            serde_json::from_slice(&body).map_err(|_| Error::Integrity)?,
+        )),
     };
     let action = Action {
         operation,
         working,
         retained,
     };
-    if action.body()? != body
+    if action.phase() != env.phase
+        || action.body()? != body
         || action.object() != &env.object
         || action.working.id() != Ok(env.producer)
     {

@@ -67,3 +67,15 @@ changes only the index plan, preserving the original native restore/publications
 An identical saved successor is recoverable without store permission; a different
 current proposal or parent mismatch refuses. Ordinary save never supersedes.
 Original handles/receipts must remain recorded; there is no timeout or cleanup.
+
+## Completed-publication index actions
+
+RegisterWorking/RegisterRetained phases retain Registration bodies containing
+side, one-record ordinary index Plan and exact completed Record, alongside the
+original working/retained publisher Plans. Pure validation binds side/producer,
+Object, canonical record and the sole upsert; it grants no native authority.
+Existing phase encodings and four-blob records remain readable. Load verifies
+that the decoded action phase equals its envelope. Ordinary save-original and
+source-history rules apply. The authenticated worker separately checks actual
+completion and permits only the completion-field change before index apply;
+original receipts are inspected before fresh completion checks. There is no cleanup.
