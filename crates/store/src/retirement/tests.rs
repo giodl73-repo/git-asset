@@ -312,6 +312,13 @@ impl Fixture {
             .join(self.publication.object.sha256.as_str())
     }
     fn cancel(&mut self, plan: &Plan) -> Result<Receipt> {
+        self.cancel_guard(plan, |_| Ok(()))
+    }
+    fn cancel_guard(
+        &mut self,
+        plan: &Plan,
+        guard: impl FnMut(&Plan) -> Result<()>,
+    ) -> Result<Receipt> {
         let mut backups = self
             .keepers
             .iter_mut()
@@ -332,7 +339,7 @@ impl Fixture {
             admitted_context: &self.context,
             source_enrollment: &self.enrollment,
         }
-        .cancel(plan, &plan.authorize()?)
+        .cancel_with_guard(plan, &plan.authorize()?, guard)
     }
     fn restored_plan(&self, retired: &Plan, operation: &str) -> ReacquisitionPlan {
         let mut request = self.publication.clone();
@@ -1627,4 +1634,57 @@ fn adapter_effect_failure_stays_pending_and_historical_replay_never_repeats_effe
         assert_eq!(receipt.historical_replay, expected == 3);
     }
     assert!(!f.object_path().exists());
+}
+
+#[test]
+fn cancellation_adapter_guard_is_inside_original_operation_fence_and_failure_keeps_pending() {
+    let mut f = Fixture::new();
+    let plan = f.plan();
+    assert!(matches!(
+        f.apply_hook(&plan, |stage| if stage == Stage::Intent {
+            Err(Error::Injected)
+        } else {
+            Ok(())
+        }),
+        Err(Error::Injected)
+    ));
+    let peer = LocalStore::open(&f.root.path().join("working")).unwrap();
+    let (operation, _) = keys(&peer, &plan.request.operation, "evict").unwrap();
+    let scope = Publication {
+        operation,
+        owner: plan.request.owner.clone(),
+        object: plan.publication.object.clone(),
+        required: AckLevel::ProcessRestart,
+    };
+    let mut checks = 0;
+    assert!(matches!(
+        f.cancel_guard(&plan, |_| {
+            checks += 1;
+            assert!(matches!(peer.attempt(&scope), Err(crate::Error::Busy)));
+            let mut other = scope.clone();
+            other.operation = key("unrelated-guard-peer");
+            let _other = peer.attempt(&other).unwrap();
+            Err(Error::Injected)
+        }),
+        Err(Error::Injected)
+    ));
+    assert_eq!(checks, 1);
+    assert!(f.object_path().exists());
+    assert!(matches!(
+        f.store.read_published(&f.publication),
+        Err(crate::Error::NeedsRecovery)
+    ));
+    let receipt = f
+        .cancel_guard(&plan, |_| {
+            checks += 1;
+            Ok(())
+        })
+        .unwrap();
+    assert!(receipt.cancelled);
+    assert_eq!(checks, 2);
+    let (_, mut bytes) = f.store.read_published(&f.publication).unwrap();
+    let mut actual = Vec::new();
+    bytes.read_to_end(&mut actual).unwrap();
+    assert_eq!(actual, b"target");
+    assert!(f.apply(&plan).unwrap().cancelled);
 }

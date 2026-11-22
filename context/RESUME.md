@@ -63,8 +63,11 @@ through completion and reports source file allocation separately from metadata.
 Resume uses full source namespace/config fences without today's no-demand check;
 new raw job demand does not repeat removal. Unknown effect never runs again;
 historical old completion preserves restored same-hash media. Bounded status is
-readonly. Controller is internal, not a public removal SDK/CLI yet. Cancellation,
-remaining authority/epoch handoff and native crash qualification remain open.
+readonly. Controller is internal, not a public removal SDK/CLI yet. Guarded cancellation (inputc3a3ab7) now rechecks native effect state inside
+the original metadata operation fence before abort/continuation. It retains
+surviving bytes, tolerates new raw demand and refuses unknown/completed effects.
+Cancelled historical resume cannot run removal. Native crash qualification and
+remaining authority/epoch handoff stay open; see cancel-* evidence.
 
 Next: implement the admitted native controller using this connected proof:
 private direct-backing/failure-domain and actor-boundary admission, historical

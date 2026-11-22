@@ -7,6 +7,35 @@ use crate::annex::retirement::planning::{
     execution::{self, Cut, Live},
 };
 
+fn demand(f: &mut Fixture, old_native: &Plan) {
+    f.namespaces[0]
+        .apply(
+            k("enroll-recovery-job"),
+            Command::Enroll {
+                source: k("recovery-job"),
+                owner: k("owner"),
+                class: Kind::Job,
+            },
+            &f.metadata,
+            &Fixture::limits(),
+        )
+        .unwrap();
+    f.namespaces[0]
+        .select(
+            &Select {
+                prepare: k("prepare-recovery-job"),
+                adopt: k("adopt-recovery-job"),
+                source: k("recovery-job"),
+                owner: k("owner"),
+                expected_revision: 1,
+                selection: old_native.selection.selection.clone(),
+            },
+            &f.metadata,
+            &Fixture::limits(),
+        )
+        .unwrap();
+}
+
 #[test]
 #[ignore = "explicit native tools and distinct volume roots; fresh synthetic pools only"]
 fn actual_native_eviction_retained_restore_and_stale_replay() {
@@ -21,6 +50,8 @@ fn actual_native_eviction_retained_restore_and_stale_replay() {
         .unwrap()
         .into();
     for (bare, cut) in [
+        (false, Cut::BeforeEffect),
+        (true, Cut::BeforeEffect),
         (false, Cut::None),
         (true, Cut::None),
         (false, Cut::AfterCompletion),
@@ -357,17 +388,18 @@ fn actual_native_eviction_retained_restore_and_stale_replay() {
         let status = execution::status(&policy, &planned, &f.profile, &old_native).unwrap();
         assert_eq!(
             status.effect,
-            if cut == Cut::AfterRemoval {
-                "uncertain"
-            } else {
-                "completed"
+            match cut {
+                Cut::BeforeEffect => "not_started",
+                Cut::AfterRemoval => "uncertain",
+                _ => "completed",
             }
         );
         assert!(!status.removal_authority);
-        assert!(matches!(
-            status.observed,
-            execution::Observation::ObservedAbsent
-        ));
+        assert!(if cut == Cut::BeforeEffect {
+            matches!(status.observed, execution::Observation::VerifiedPresent)
+        } else {
+            matches!(status.observed, execution::Observation::ObservedAbsent)
+        });
         assert_eq!(
             before_status,
             (
@@ -381,6 +413,71 @@ fn actual_native_eviction_retained_restore_and_stale_replay() {
                 .unwrap()
                 .checkpoint()
             )
+        );
+        if cut == Cut::BeforeEffect {
+            demand(&mut f, &old_native);
+            let result = execution::cancel(
+                &policy,
+                &planned,
+                &f.profile,
+                &old_native,
+                &nodes,
+                &Fixture::limits(),
+            )
+            .unwrap();
+            assert!(result.metadata.cancelled);
+            let again = execution::cancel(
+                &policy,
+                &planned,
+                &f.profile,
+                &old_native,
+                &nodes,
+                &Fixture::limits(),
+            )
+            .unwrap();
+            assert!(again.metadata.cancelled);
+            let history = execution::resume(
+                &policy,
+                &planned,
+                &f.profile,
+                &old_native,
+                &nodes,
+                &Fixture::limits(),
+            )
+            .unwrap();
+            assert!(history.historical && history.metadata.cancelled);
+            assert!(
+                control::Profile::open(
+                    f.control_profile.as_ref().unwrap(),
+                    &source_native,
+                    &object,
+                    &original_control
+                )
+                .is_ok()
+            );
+            let mut kept = Vec::new();
+            crate::annex::managed::Reader::new(f.profile.pool.clone())
+                .unwrap()
+                .open(&object)
+                .unwrap()
+                .read_to_end(&mut kept)
+                .unwrap();
+            assert_eq!(kept, bytes);
+            continue;
+        }
+        assert_eq!(
+            execution::cancel(
+                &policy,
+                &planned,
+                &f.profile,
+                &old_native,
+                &nodes,
+                &Fixture::limits()
+            )
+            .err()
+            .unwrap()
+            .code(),
+            "uncertain"
         );
         if cut == Cut::AfterRemoval {
             for _ in 0..2 {
@@ -411,32 +508,7 @@ fn actual_native_eviction_retained_restore_and_stale_replay() {
         }
         // A new raw job demand after process-boundary guard release must not block
         // historical finalization or cause a repeated removal.
-        f.namespaces[0]
-            .apply(
-                k("enroll-recovery-job"),
-                Command::Enroll {
-                    source: k("recovery-job"),
-                    owner: k("owner"),
-                    class: Kind::Job,
-                },
-                &f.metadata,
-                &Fixture::limits(),
-            )
-            .unwrap();
-        f.namespaces[0]
-            .select(
-                &Select {
-                    prepare: k("prepare-recovery-job"),
-                    adopt: k("adopt-recovery-job"),
-                    source: k("recovery-job"),
-                    owner: k("owner"),
-                    expected_revision: 1,
-                    selection: old_native.selection.selection.clone(),
-                },
-                &f.metadata,
-                &Fixture::limits(),
-            )
-            .unwrap();
+        demand(&mut f, &old_native);
         assert_eq!(
             Assessor::new(f.profile.pool.clone())
                 .unwrap()

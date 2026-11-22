@@ -333,6 +333,23 @@ impl<S: NodeStore> Execution<'_, '_, S> {
     pub fn cancel(&mut self, plan: &Plan, authorization: &Authorization) -> Result<Receipt> {
         self.cancel_hook(plan, authorization, |_| Ok(()))
     }
+    /// Adapter check under the original operation fence, before any abort or
+    /// continuation birth. Must not perform an external effect; retries may recheck.
+    /// Caller separately holds external scope/authority and denies unknown effects.
+    pub fn cancel_with_guard(
+        &mut self,
+        plan: &Plan,
+        authorization: &Authorization,
+        mut guard: impl FnMut(&Plan) -> Result<()>,
+    ) -> Result<Receipt> {
+        self.cancel_hook(plan, authorization, |stage| {
+            if stage == Stage::Bound {
+                guard(plan)
+            } else {
+                Ok(())
+            }
+        })
+    }
     fn cancel_hook(
         &mut self,
         plan: &Plan,
@@ -385,6 +402,7 @@ impl<S: NodeStore> Execution<'_, '_, S> {
         {
             return Err(Error::InvalidPlan);
         }
+        hook(Stage::Bound)?;
         let already_settled = self
             .ledger
             .retention_status(&allocation, &binding)?

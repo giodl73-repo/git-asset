@@ -413,3 +413,17 @@ L0 pins/fmt/links/budget/audits; L1 runtime/authority/profile mismatch and repla
 holds; L2 actual F:/M: fresh application, completed/unknown interruption, new demand
 before historical completion and same-hash restore/stale replay. Public CLI,
 cancellation and authority/legacy handoff qualification remain P2 gates.
+
+Cancellation entry inputc3a3ab7: same P2 controls and RUST/PROVIDER/INTEGRATION
+profiles. Add existing retirement cancellation guard under the exact operation
+attempt fence after original intent/plan/job validation and before abort/birth
+continuation. Existing unguarded core API behavior/wire stays unchanged. Native
+cancel pins current full source scope/config/authority and verified surviving
+bytes, then inspects the frozen effect packet inside that guard. Any intent or
+completion refuses cancellation; absence/name reuse/timeouts cannot clear it.
+Only a pending metadata operation with no native effect may continue cancelled.
+L0 pins/fmt/budget/links/audits; L1 guard failure preserves pending/body and the
+same operation excludes peers; L2 F:/M: pre-effect cancellation preserves bytes/
+control origin, unknown/completed effects refuse and new demand remains intact.
+Source/root/owner handoff, native executor actual exits and public CLI remain
+separate P2 gates. No production operation is enabled by these synthetic tests.

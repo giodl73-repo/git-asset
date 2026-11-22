@@ -160,6 +160,7 @@ fn finish<N: NodeStore>(
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub(crate) enum Cut {
     None,
+    BeforeEffect,
     AfterRemoval,
     AfterCompletion,
 }
@@ -223,6 +224,9 @@ pub(crate) fn apply_hook<N: NodeStore>(
     );
     let mut effect_error = None;
     let result = finish(profile, plan, runtime, nodes, limits, |_| {
+        if cut == Cut::BeforeEffect {
+            return Err(git_asset_store::Error::NeedsRecovery.into());
+        }
         effect
             .packet
             .apply_once(&effect.store, &mut effect.ledger, &effect.job, || {
@@ -283,6 +287,86 @@ pub(crate) fn apply_hook<N: NodeStore>(
         source_allocation_before: Some(allocation),
         observed: Observation::ObservedAbsent,
         historical: false,
+    })
+}
+
+pub(crate) fn cancel<N: NodeStore>(
+    profile: &Profile,
+    plan: &Plan,
+    source_profile: &publication::Profile,
+    source_producer: &publication::Plan,
+    nodes: &N,
+    limits: &Limits,
+) -> Result<Report> {
+    plan.id()?;
+    let runtime = profile
+        .runtime
+        .as_ref()
+        .ok_or(publication::Error::Unsupported)?;
+    if profile.admit(&plan.intent.source, &plan.intent.keeper)? != plan.intent.policy
+        || source_producer.id()? != plan.intent.source_producer
+    {
+        return Err(publication::Error::Stale.into());
+    }
+    source_producer.check_profile(source_profile)?;
+    let mut scope = Scope::pin(source_profile.pool.clone(), plan.object())?;
+    authority(&source_profile.pool.pool, &plan.intent.policy)?;
+    control::configuration(
+        &source_profile.pool.pool,
+        &source_profile.pool.binding.id().map_err(protection_error)?,
+        Some(&profile.source.binding(&plan.intent.source)?),
+    )?;
+    let mut effect = Effect::open(runtime, plan)?;
+    let early = effect.state()?;
+    if early.intent || early.completion {
+        return Err(publication::Error::Uncertain.into());
+    }
+    // Keep surviving bytes pinned through cancellation; the effect state is
+    // checked again inside the exact core operation fence below.
+    let _bytes = scope.assessor.reader.open_local(plan.object())?;
+    let store = profile.source.open_store(&plan.intent.source)?;
+    let mut ledger = open_ledger(&profile.source.ledger, &profile.source.minimum)?;
+    let mut namespaces = namespaces(runtime)?;
+    let mut execution = metadata::Execution {
+        store: &store,
+        ledger: &mut ledger,
+        job: &runtime.job,
+        namespaces: &mut namespaces,
+        nodes,
+        limits,
+        backups: &mut [],
+        admitted_context: &plan.metadata.request().context,
+        source_enrollment: &plan.metadata.request().source,
+    };
+    let mut denied = false;
+    let result = execution.cancel_with_guard(
+        &plan.metadata,
+        &plan.metadata.authorize().map_err(metadata_error)?,
+        |_| {
+            let state = effect
+                .state()
+                .map_err(|_| git_asset_store::Error::NeedsRecovery)?;
+            if state.intent || state.completion {
+                denied = true;
+                return Err(git_asset_store::Error::NeedsRecovery.into());
+            }
+            Ok(())
+        },
+    );
+    let receipt = result.map_err(|e| {
+        if denied {
+            publication::Error::Uncertain.into()
+        } else {
+            metadata_error(e)
+        }
+    })?;
+    Ok(Report {
+        plan: plan.id()?,
+        metadata: receipt,
+        logical_subject_bytes: plan.object().bytes,
+        source_allocation_before: None,
+        observed: Observation::VerifiedPresent,
+        historical: true,
     })
 }
 
@@ -349,13 +433,28 @@ pub(crate) fn resume<N: NodeStore>(
     )?;
     let mut effect = Effect::open(runtime, plan)?;
     let state = effect.state()?;
-    if !state.completion {
-        return Err(publication::Error::Uncertain.into());
-    }
     let store = profile.source.open_store(&plan.intent.source)?;
     let mut ledger = open_ledger(&profile.source.ledger, &profile.source.minimum)?;
     let status = metadata::status::inspect(&store, &mut ledger, &runtime.job, &plan.metadata)
         .map_err(metadata_error)?;
+    let cancelled = matches!(status.phase, metadata::status::Phase::Cancelled);
+    if cancelled && !state.intent && !state.completion {
+        let observed = scope.observe(plan.object())?;
+        let receipt = finish(profile, plan, runtime, nodes, limits, |_| {
+            Err(git_asset_store::Error::NeedsRecovery.into())
+        })?;
+        return Ok(Report {
+            plan: plan.id()?,
+            metadata: receipt,
+            logical_subject_bytes: plan.object().bytes,
+            source_allocation_before: None,
+            observed,
+            historical: true,
+        });
+    }
+    if !state.completion {
+        return Err(publication::Error::Uncertain.into());
+    }
     let observed = scope.observe(plan.object())?;
     if !matches!(status.phase, metadata::status::Phase::Retired)
         && !matches!(observed, Observation::ObservedAbsent)
