@@ -10,6 +10,8 @@ pub mod control;
 pub mod managed;
 mod process;
 #[cfg(feature = "annex-publish")]
+pub mod producer_index;
+#[cfg(feature = "annex-publish")]
 pub mod publication;
 #[cfg(feature = "annex-publish")]
 pub mod replication;

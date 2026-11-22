@@ -261,6 +261,15 @@ use the Rust project API. Python checker scripts are development tooling.
 The [roadmap](../PRODUCT_PLAN.md), [adoption gates](CONSUMER-ADOPTION.md) and
 [evidence register](vtrace/EVIDENCE.md) describe outstanding system obligations.
 
+Native producer declarations use an immutable, asset-side Tree through
+`annex::producer_index::Index` (annex-publish). Exact object lookup and root-bound
+pages share traversal/record read budgets, preserving original publication plans
+and optional exact retained snapshots. This performs no cache scan or payload
+read. A declaration is not current custody or eviction authority; the existing
+native publisher/controller verifies those separately. See
+[contract and fixtures](../specs/NATIVE-PRODUCER-INDEX.md). Receiver connection,
+durable batch reconciliation and full merge-driven acceptance remain open.
+
 ## Storage orchestration entry
 
 The experimental git-asset-store::orchestration module binds a bounded exact plan to

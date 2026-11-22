@@ -6,7 +6,7 @@ acceptance; keep the full goal active.
 
 Active owned lane: F:/src/git-asset-worktrees/trusted-native-placement,
 feat/trusted-native-placement, draft PR74 based on feat/source-generation-use.
-Input6082aac75ce96550a538b8282fb59bded5bf6ad2; derive newer source/CI from Git.
+Input0b73387e26e3b747611c824d387bb58c482a0430; derive newer source/CI from Git.
 PR70 and P1/PR71 merged. P2 PR72 and source-generation prerequisite PR73 remain
 stack dependencies; P2 mixed legacy/owner/roster/epoch handoff is OPEN, never
 inferred from NamespaceOwned policy. See docs/reviews/p2-closure-audit.md.
@@ -26,6 +26,16 @@ Contracts: TRUSTED-NATIVE-MUTATIONS and source allowance in SOURCE-BUDGET. Next:
 receiver, exact per-object producer lookup and batch reconciliation,
 revert/reacquisition and duplicate/missed/outage/crash qualification. No global
 convergence from one copy or stale event. No new publisher/cache/journal.
+
+Producer lookup now uses immutable asset-side Tree records: exact object/length,
+original publication Plan and optional retained Snapshot. Root-bound metadata
+pages have shared tree/record read budgets and never hydrate payloads. Contract:
+NATIVE-PRODUCER-INDEX. Ten-thousand-entry synthetic paging and record failure
+fixtures qualify lookup only; receiver/root publication/batch integration remain
+OPEN. Missing registration is unknown, never absent bytes or removal authority.
+Lookup validation:120 core tests plus two index cases, strict workspace
+all-feature/all-target Clippy, standalone annex-publish, fmt and L0 pass.
+External producer-index-* logs retain exact outcomes; derive hosted state live.
 
 P4: REEL main-based PR401, qualified89a875c6c34ed84b1e890520db996d55cffe2bd7,
 ready for review. SDK pin0ccb137cf5a78416e780f8a3372017f642a5cb71 unchanged;

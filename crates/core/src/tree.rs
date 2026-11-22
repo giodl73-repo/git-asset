@@ -81,6 +81,13 @@ impl Default for TreeLimits {
     }
 }
 
+#[derive(Debug)]
+pub struct FlatPage {
+    pub entries: BTreeMap<LogicalPath, Object>,
+    pub next: Option<LogicalPath>,
+    pub metrics: TreeMetrics,
+}
+
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct TreeMetrics {
     pub reads: usize,
@@ -283,6 +290,54 @@ impl<S: NodeStore> Context<'_, S> {
         self.map_entries(node.right, depth + 1, out)
     }
 
+    fn flat_after(
+        &mut self,
+        root: Option<Link>,
+        route: MapRoute,
+        depth: usize,
+        after: Option<&str>,
+        limit: usize,
+        out: &mut BTreeMap<LogicalPath, Object>,
+    ) -> TreeResult<()> {
+        if out.len() >= limit {
+            return Ok(());
+        }
+        let Some(link) = root else {
+            return Ok(());
+        };
+        if depth >= self.limits.max_map_depth {
+            return Err(TreeError::Budget);
+        }
+        let node = self.node(&link)?;
+        route.check(&node)?;
+        if after.is_none_or(|a| node.name.as_str() > a) {
+            self.flat_after(
+                node.left.clone(),
+                route.child(&node, true),
+                depth + 1,
+                after,
+                limit,
+                out,
+            )?;
+            if out.len() < limit {
+                let Entry::File { object } = node.value.clone() else {
+                    return Err(TreeError::PathConflict);
+                };
+                out.insert(
+                    LogicalPath::parse(&node.name).map_err(|_| TreeError::InvalidNode)?,
+                    object,
+                );
+            }
+        }
+        self.flat_after(
+            node.right.clone(),
+            route.child(&node, false),
+            depth + 1,
+            after,
+            limit,
+            out,
+        )
+    }
     fn all_entries(
         &mut self,
         directory: &Object,
@@ -648,6 +703,51 @@ impl Tree {
             return Err(TreeError::Integrity);
         }
         Ok((entries, ctx.metrics))
+    }
+
+    /// Bounded direct-file range. Root/after pins belong to the caller; no head lookup.
+    pub fn flat_page(
+        &self,
+        after: Option<&LogicalPath>,
+        limit: usize,
+        store: &mut impl NodeStore,
+        limits: TreeLimits,
+    ) -> TreeResult<FlatPage> {
+        if limit == 0 || limit > 4096 || after.is_some_and(|p| p.as_str().contains('/')) {
+            return Err(TreeError::Budget);
+        }
+        let mut ctx = Context {
+            store,
+            limits,
+            metrics: TreeMetrics::default(),
+        };
+        let root = ctx.directory(&self.root)?.root;
+        if let Some(after) = after
+            && ctx.find(root.clone(), after.as_str())?.is_none()
+        {
+            return Err(TreeError::StaleRoot);
+        }
+        let mut entries = BTreeMap::new();
+        ctx.flat_after(
+            root,
+            MapRoute::default(),
+            0,
+            after.map(LogicalPath::as_str),
+            limit + 1,
+            &mut entries,
+        )?;
+        let next = if entries.len() > limit {
+            entries.pop_last();
+            entries.last_key_value().map(|(p, _)| p.clone())
+        } else {
+            None
+        };
+        crate::check_sizes(entries.values()).map_err(|_| TreeError::Integrity)?;
+        Ok(FlatPage {
+            entries,
+            next,
+            metrics: ctx.metrics,
+        })
     }
 
     pub fn empty(store: &mut impl NodeStore) -> TreeResult<Self> {
