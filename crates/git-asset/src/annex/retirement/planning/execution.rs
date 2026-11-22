@@ -201,6 +201,17 @@ pub(crate) fn apply_hook<N: NodeStore>(
     limits: &Limits,
     cut: Cut,
 ) -> Result<Report> {
+    apply_admitted(profile, plan, live, nodes, limits, cut, || Ok(()))
+}
+pub(crate) fn apply_admitted<N: NodeStore>(
+    profile: &Profile,
+    plan: &Plan,
+    live: Live<'_, '_, '_>,
+    nodes: &N,
+    limits: &Limits,
+    cut: Cut,
+    mut admit: impl FnMut() -> Result<()>,
+) -> Result<Report> {
     plan.id()?;
     if profile.admit(&plan.intent.source, &plan.intent.keeper)? != plan.intent.policy {
         return Err(publication::Error::Stale.into());
@@ -242,10 +253,18 @@ pub(crate) fn apply_hook<N: NodeStore>(
         plan.object().sha256.as_str()
     );
     let mut effect_error = None;
+    admit()?;
     let result = finish(profile, plan, runtime, nodes, limits, |_| {
         #[cfg(all(test, windows))]
         exit_at(cut, Cut::BeforeEffect);
         if cut == Cut::BeforeEffect {
+            return Err(git_asset_store::Error::NeedsRecovery.into());
+        }
+        if let Err(error) = admit() {
+            effect_error = Some(match error {
+                Error::Protected => publication::Error::Denied,
+                Error::Operation(e) => e,
+            });
             return Err(git_asset_store::Error::NeedsRecovery.into());
         }
         effect

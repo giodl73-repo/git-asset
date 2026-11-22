@@ -2,7 +2,7 @@
 use super::*;
 use crate::github::native::{Execution, Policy as WorkerPolicy};
 use crate::{github, lifecycle, source};
-fn git(root: &Path, args: &[&str]) -> Vec<u8> {
+pub(super) fn git(root: &Path, args: &[&str]) -> Vec<u8> {
     let executable = std::env::var_os("GIT_ASSET_TEST_GIT_EXE").unwrap_or_else(|| "git".into());
     let output = Process::new(executable)
         .current_dir(root)
@@ -17,7 +17,7 @@ fn git(root: &Path, args: &[&str]) -> Vec<u8> {
     );
     output.stdout
 }
-fn matrix(native: bool, demanded: bool, snapshot_mode: bool) {
+fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool) {
     let bytes = vec![45; 256 * 1024];
     let tools = native.then(|| {
         (
@@ -27,7 +27,13 @@ fn matrix(native: bool, demanded: bool, snapshot_mode: bool) {
                 .collect(),
         )
     });
-    let mut source = Fixture::build_setup(&bytes, tools.clone(), false, None, snapshot_mode);
+    let mut source = Fixture::build_setup(
+        &bytes,
+        tools.clone(),
+        false,
+        None,
+        snapshot_mode || action_mode,
+    );
     let mut target = Fixture::build_setup(&bytes, tools, true, None, true);
     retirement::publish(&mut source);
     let profile = crate::annex::replication::Profile {
@@ -57,6 +63,10 @@ fn matrix(native: bool, demanded: bool, snapshot_mode: bool) {
         required_place: k("pool"),
         allow_selection: true,
         allow_copy: true,
+        actions: action_mode.then_some(github::native::Actions {
+            handoff: true,
+            eviction: None,
+        }),
     };
     let policy: WorkerPolicy =
         serde_json::from_slice(&serde_json::to_vec(&policy).unwrap()).unwrap();
@@ -279,6 +289,135 @@ fn matrix(native: bool, demanded: bool, snapshot_mode: bool) {
         ))
     ));
     drop(copied);
+    if action_mode {
+        let snapshot = retirement::snapshot(&mut source);
+        let handoff = crate::annex::publication::handoff::Plan::new(
+            plan.destination(),
+            plan.source(),
+            snapshot,
+            &mut target.namespaces[0],
+        )
+        .unwrap();
+        let checkpoint = target.namespaces[0].checkpoint();
+        let mut copy_only = policy.clone();
+        copy_only.actions = None;
+        let mut copy_trust = signer.trust.clone();
+        copy_trust.placement_enrollment = copy_only.id().unwrap();
+        let copy_request = github::verify(
+            &copy_trust,
+            &signer.keys,
+            &signer.token(&signer.claims),
+            &commit,
+            1000,
+        )
+        .unwrap();
+        worker.policy = &copy_only;
+        worker.trust = &copy_trust;
+        worker.request = &copy_request;
+        assert!(matches!(
+            worker.handoff(
+                &handoff,
+                plan.destination(),
+                plan.source(),
+                &mut target.resources(),
+                &mut source.resources(),
+                || Ok(1000)
+            ),
+            Err(github::native::Error::Admission(github::Error::Disabled))
+        ));
+        assert_eq!(target.namespaces[0].checkpoint(), checkpoint);
+        worker.policy = &policy;
+        worker.trust = &signer.trust;
+        worker.request = &request;
+        let mut calls = 0;
+        assert!(matches!(
+            worker.handoff(
+                &handoff,
+                plan.destination(),
+                plan.source(),
+                &mut target.resources(),
+                &mut source.resources(),
+                || {
+                    calls += 1;
+                    Ok(if calls == 3 { 1300 } else { 1000 })
+                }
+            ),
+            Err(github::native::Error::Admission(github::Error::Expired))
+        ));
+        assert_eq!(calls, 3);
+        assert_eq!(target.namespaces[0].checkpoint(), checkpoint);
+        let retry_request = signer.verify(&signer.claims, 1000).unwrap();
+        worker.request = &retry_request;
+        let mut calls = 0;
+        assert!(matches!(
+            worker.handoff(
+                &handoff,
+                plan.destination(),
+                plan.source(),
+                &mut target.resources(),
+                &mut source.resources(),
+                || {
+                    calls += 1;
+                    if calls == 4 {
+                        git(
+                            &project,
+                            &[
+                                "commit",
+                                "--allow-empty",
+                                "-m",
+                                "head advances between handoff commands",
+                            ],
+                        );
+                    }
+                    Ok(1000)
+                }
+            ),
+            Err(github::native::Error::Admission(github::Error::Stale))
+        ));
+        assert_eq!(calls, 4);
+        let partial = handoff.status(&mut target.namespaces[0]).unwrap();
+        assert!(partial.withdraw.is_some() && partial.retire.is_none());
+        let next = source::GitId::parse(
+            String::from_utf8(git(&project, &["rev-parse", "HEAD"]))
+                .unwrap()
+                .trim(),
+        )
+        .unwrap();
+        let mut claims = signer.claims.clone();
+        claims["sha"] = serde_json::json!(next.as_str());
+        let next_request = github::verify(
+            &signer.trust,
+            &signer.keys,
+            &signer.token(&claims),
+            &next,
+            1000,
+        )
+        .unwrap();
+        worker.request = &next_request;
+        let done = worker
+            .handoff(
+                &handoff,
+                plan.destination(),
+                plan.source(),
+                &mut target.resources(),
+                &mut source.resources(),
+                || Ok(1000),
+            )
+            .unwrap();
+        assert!(done.result.status.retire.is_some());
+        assert!(done.post_effect_hold.is_none());
+        assert!(done.selection.desired_current);
+        assert_eq!(
+            crate::annex::retirement::Assessor::new(target.profile.pool.clone())
+                .unwrap()
+                .assess(&object, &target.metadata, &limits)
+                .err()
+                .unwrap()
+                .code(),
+            "protected"
+        );
+        return;
+    }
     let checkpoint = worker.namespace.checkpoint();
     let mut calls = 0;
     let duplicate = worker
@@ -288,7 +427,7 @@ fn matrix(native: bool, demanded: bool, snapshot_mode: bool) {
             &mut target.resources(),
             || {
                 calls += 1;
-                if calls == 2 {
+                if calls == 3 {
                     git(
                         &project,
                         &["commit", "--allow-empty", "-m", "head advances during copy"],
@@ -328,25 +467,35 @@ fn matrix(native: bool, demanded: bool, snapshot_mode: bool) {
 }
 #[test]
 fn authenticated_native_copy_uses_exact_selected_demand_and_original_retry() {
-    matrix(false, true, false);
+    matrix(false, true, false, false);
 }
 #[test]
 #[ignore = "explicit native tools; synthetic pools only"]
 fn actual_authenticated_native_copy_reopens_original_after_head_advance() {
-    matrix(true, true, false);
+    matrix(true, true, false, false);
 }
 
 #[test]
 fn authenticated_native_copy_refuses_undemanded_candidate_before_publication() {
-    matrix(false, false, false);
+    matrix(false, false, false, false);
 }
 
 #[test]
 fn authenticated_native_snapshot_copy_keeps_exact_git_admission() {
-    matrix(false, true, true);
+    matrix(false, true, true, false);
 }
 #[test]
 #[ignore = "explicit native tools; fresh synthetic pools only"]
 fn actual_authenticated_native_snapshot_copy_keeps_exact_git_admission() {
-    matrix(true, true, true);
+    matrix(true, true, true, false);
+}
+
+#[test]
+fn authenticated_handoff_revalidates_after_custody_and_between_commands() {
+    matrix(false, true, true, true);
+}
+#[test]
+#[ignore = "explicit native tools; fresh synthetic pools only"]
+fn actual_authenticated_handoff_revalidates_after_custody_and_between_commands() {
+    matrix(true, true, true, true);
 }

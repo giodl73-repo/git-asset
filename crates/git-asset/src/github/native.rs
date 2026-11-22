@@ -1,7 +1,7 @@
 //! One authenticated demanded native copy; no new publisher, journal or pruner.
 use super::{Error as AdmissionError, Trust, Verified};
 use crate::{
-    annex::{control, managed, publication, replication},
+    annex::{control, managed, publication, replication, retirement},
     lifecycle::{self, CommittedSource},
 };
 use git_asset_core::Digest;
@@ -25,6 +25,14 @@ pub struct Policy {
     pub allow_selection: bool,
     #[serde(default)]
     pub allow_copy: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub actions: Option<Actions>,
+}
+#[derive(Clone, Default, Serialize, Deserialize)]
+#[serde(default, deny_unknown_fields)]
+pub struct Actions {
+    pub handoff: bool,
+    pub eviction: Option<retirement::planning::Profile>,
 }
 impl Policy {
     /// Pure enrollment identity; never opens a pool or discovers locations.
@@ -49,6 +57,34 @@ impl Policy {
             self.source_control.clone(),
             self.destination_control.clone(),
         )?;
+        if let Some(eviction) = self.actions.as_ref().and_then(|a| a.eviction.as_ref()) {
+            let working = crate::annex::Reader::new(self.copy.destination.pool.pool.clone())
+                .map_err(publication::Error::from)?
+                .store();
+            let retained = crate::annex::Reader::new(self.copy.source.pool.pool.clone())
+                .map_err(publication::Error::from)?
+                .store();
+            if eviction.source_domain != self.copy.destination_domain
+                || eviction.keeper_domain != self.copy.source_domain
+                || eviction.source.binding(&working)?
+                    != self
+                        .destination_control
+                        .as_ref()
+                        .ok_or(Error::Admission(AdmissionError::Trust))?
+                        .binding(&working)?
+                || eviction.keeper.binding(&retained)?
+                    != self
+                        .source_control
+                        .as_ref()
+                        .ok_or(Error::Admission(AdmissionError::Trust))?
+                        .binding(&retained)?
+            {
+                return Err(Error::Admission(AdmissionError::Trust));
+            }
+            eviction
+                .admit(&working, &retained)
+                .map_err(Error::Eviction)?;
+        }
         let raw = git_asset_core::identity::canonical_json(&serde_json::json!({
             "schema":"git-asset.trusted-native-copy-policy.experimental-1", "policy":self
         }))
@@ -66,6 +102,7 @@ pub enum Error {
     Generation(lifecycle::CurrentUseError),
     Requirements(admission::Error),
     Native(publication::Error),
+    Eviction(retirement::Error),
 }
 impl From<publication::Error> for Error {
     fn from(e: publication::Error) -> Self {
@@ -123,30 +160,7 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
         destination: &mut publication::Resources<'_>,
         mut now: impl FnMut() -> Result<u64, AdmissionError>,
     ) -> Result<Copied, Error> {
-        let policy = self.policy.id()?;
-        let selection = self.enrollment.id().map_err(Error::Selection)?;
-        let admit = |time| {
-            self.request
-                .admit(time, &selection, &policy)
-                .map_err(Error::Admission)
-        };
-        if self.request.provenance().trust != self.trust.id().map_err(Error::Admission)?
-            || self.policy.namespace != self.enrollment.namespace
-        {
-            return Err(Error::Admission(AdmissionError::Trust));
-        }
-        admit(now().map_err(Error::Admission)?)?;
-        if !self.policy.allow_selection || !self.policy.allow_copy {
-            return Err(Error::Admission(AdmissionError::Disabled));
-        }
-        if !self.namespace.supports_source_use() {
-            return Err(Error::Generation(lifecycle::CurrentUseError::Protection(
-                source_use::UseError::Unsupported,
-            )));
-        }
-        self.limits
-            .validate()
-            .map_err(|_| Error::Admission(AdmissionError::Budget))?;
+        let ids = self.admission(self.policy.allow_copy, &mut now)?;
         let mut copier = replication::Copier::controlled(
             self.policy.copy.clone(),
             self.policy.source_control.clone(),
@@ -170,25 +184,12 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
         if expected != *plan {
             return Err(Error::Native(publication::Error::Conflict));
         }
-        let mut lifecycle = lifecycle::Execution {
-            enrollment: self.enrollment,
-            repository: self.repository,
-            namespace: self.namespace,
-            metadata: self.metadata,
-            allow_selection: true,
-        };
-        let selected = lifecycle
-            .plan(Some(self.request.commit()))
-            .map_err(Error::Selection)?;
-        let mut status = lifecycle.apply(&selected).map_err(Error::Selection)?;
-        let generation = lifecycle
-            .hold_current(&selected)
-            .map_err(Error::Generation)?;
+        let mut state = self.select(ids)?;
         let nodes = self
             .metadata
             .finished_reader()
             .map_err(|_| Error::Selection(lifecycle::Error::Metadata))?;
-        let required = self
+        let required = state
             .namespace
             .requirements(&nodes, self.limits)
             .map_err(Error::Requirements)?;
@@ -200,6 +201,106 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
         {
             return Err(Error::Admission(AdmissionError::Denied));
         }
+        self.revalidate(&state, &mut now)?;
+        let ready = copier.apply(plan, source, destination)?;
+        let hold = self.post(&mut state, &mut now);
+        Ok(Copied {
+            report: Report {
+                schema: "git-asset.trusted-native-copy-report.experimental-1",
+                policy: state.policy,
+                provenance: self.request.provenance().clone(),
+                selection: state.status,
+                copy: ready.receipt().clone(),
+                post_copy_hold: hold,
+                storage_converged: None,
+            },
+            ready,
+            _generation: state.generation,
+        })
+    }
+}
+
+struct Selected {
+    policy: Digest,
+    selection: Digest,
+    status: lifecycle::Status,
+    generation: source_use::Use,
+    namespace: Namespace,
+}
+impl<R: CommittedSource + ?Sized> Execution<'_, R> {
+    fn admission(
+        &self,
+        allowed: bool,
+        now: &mut impl FnMut() -> Result<u64, AdmissionError>,
+    ) -> Result<(Digest, Digest), Error> {
+        let policy = self.policy.id()?;
+        let selection = self.enrollment.id().map_err(Error::Selection)?;
+        let admit = |time| {
+            self.request
+                .admit(time, &selection, &policy)
+                .map_err(Error::Admission)
+        };
+        if self.request.provenance().trust != self.trust.id().map_err(Error::Admission)?
+            || self.policy.namespace != self.enrollment.namespace
+            || self.namespace.identity() != &self.enrollment.namespace
+        {
+            return Err(Error::Admission(AdmissionError::Trust));
+        }
+        admit(now().map_err(Error::Admission)?)?;
+        if !self.policy.allow_selection || !allowed {
+            return Err(Error::Admission(AdmissionError::Disabled));
+        }
+        self.limits
+            .validate()
+            .map_err(|_| Error::Admission(AdmissionError::Budget))?;
+        Ok((policy, selection))
+    }
+    fn select(&mut self, ids: (Digest, Digest)) -> Result<Selected, Error> {
+        let member = self
+            .policy
+            .copy
+            .destination
+            .pool
+            .members
+            .iter()
+            .find(|m| m.minimum.identity() == &self.enrollment.namespace)
+            .ok_or(Error::Admission(AdmissionError::Trust))?;
+        let mut namespace =
+            Namespace::open(&member.root, &member.minimum).map_err(Error::Requirements)?;
+        if !namespace.supports_source_use() {
+            return Err(Error::Generation(lifecycle::CurrentUseError::Protection(
+                source_use::UseError::Unsupported,
+            )));
+        }
+        let mut lifecycle = lifecycle::Execution {
+            enrollment: self.enrollment,
+            repository: self.repository,
+            namespace: &mut namespace,
+            metadata: self.metadata,
+            allow_selection: true,
+        };
+        let plan = lifecycle
+            .plan(Some(self.request.commit()))
+            .map_err(Error::Selection)?;
+        let status = lifecycle.apply(&plan).map_err(Error::Selection)?;
+        let generation = lifecycle.hold_current(&plan).map_err(Error::Generation)?;
+        Ok(Selected {
+            policy: ids.0,
+            selection: ids.1,
+            status,
+            generation,
+            namespace,
+        })
+    }
+    fn revalidate(
+        &self,
+        state: &Selected,
+        now: &mut impl FnMut() -> Result<u64, AdmissionError>,
+    ) -> Result<(), Error> {
+        let time = now().map_err(Error::Admission)?;
+        self.request
+            .admit(time, &state.selection, &state.policy)
+            .map_err(Error::Admission)?;
         if self
             .repository
             .named_commit(&self.enrollment.ref_name)
@@ -208,39 +309,37 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
         {
             return Err(Error::Admission(AdmissionError::Stale));
         }
-        admit(now().map_err(Error::Admission)?)?;
-        let ready = copier.apply(plan, source, destination)?;
-        let mut hold = None;
-        status.observed_ref_current = match self.repository.named_commit(&self.enrollment.ref_name)
-        {
-            Ok(c) => {
-                let current = &c == self.request.commit();
-                if !current {
-                    hold = Some(AdmissionError::Stale);
+        // The monotonic token lifetime is checked again after repository IO.
+        self.request
+            .admit(time, &state.selection, &state.policy)
+            .map_err(Error::Admission)
+    }
+    fn post(
+        &self,
+        state: &mut Selected,
+        now: &mut impl FnMut() -> Result<u64, AdmissionError>,
+    ) -> Option<AdmissionError> {
+        let mut hold = now()
+            .and_then(|time| self.request.admit(time, &state.selection, &state.policy))
+            .err();
+        state.status.observed_ref_current =
+            match self.repository.named_commit(&self.enrollment.ref_name) {
+                Ok(c) => {
+                    let current = &c == self.request.commit();
+                    if !current && hold.is_none() {
+                        hold = Some(AdmissionError::Stale);
+                    }
+                    Some(current)
                 }
-                Some(current)
-            }
-            Err(_) => {
-                hold = Some(AdmissionError::Unavailable);
-                None
-            }
-        };
-        match now().and_then(|time| self.request.admit(time, &selection, &policy)) {
-            Ok(()) => (),
-            Err(e) => hold = Some(e),
-        }
-        Ok(Copied {
-            report: Report {
-                schema: "git-asset.trusted-native-copy-report.experimental-1",
-                policy,
-                provenance: self.request.provenance().clone(),
-                selection: status,
-                copy: ready.receipt().clone(),
-                post_copy_hold: hold,
-                storage_converged: None,
-            },
-            ready,
-            _generation: generation,
-        })
+                Err(_) => {
+                    if hold.is_none() {
+                        hold = Some(AdmissionError::Unavailable);
+                    }
+                    None
+                }
+            };
+        hold
     }
 }
+mod mutations;
+pub use mutations::Mutation;

@@ -205,8 +205,35 @@ impl Execution<'_> {
         source: &mut Resources<'_>,
         keeper: &mut Resources<'_>,
     ) -> Result<Report> {
-        self.apply_hook(plan, source_plan, keeper_plan, source, keeper, || Ok(()))
+        self.apply_scoped(
+            plan,
+            source_plan,
+            keeper_plan,
+            source,
+            keeper,
+            (|| Ok(()), || Ok(())),
+        )
     }
+    /// Revalidate external admission after custody IO and before new commands.
+    pub fn apply_with_admission(
+        &mut self,
+        plan: &Plan,
+        source_plan: &super::Plan,
+        keeper_plan: &super::Plan,
+        source: &mut Resources<'_>,
+        keeper: &mut Resources<'_>,
+        admit: impl FnMut() -> Result<()>,
+    ) -> Result<Report> {
+        self.apply_scoped(
+            plan,
+            source_plan,
+            keeper_plan,
+            source,
+            keeper,
+            (admit, || Ok(())),
+        )
+    }
+    #[cfg(all(test, windows))]
     pub(super) fn apply_hook(
         &mut self,
         plan: &Plan,
@@ -214,7 +241,25 @@ impl Execution<'_> {
         keeper_plan: &super::Plan,
         source: &mut Resources<'_>,
         keeper: &mut Resources<'_>,
-        mut after_withdraw: impl FnMut() -> Result<()>,
+        after_withdraw: impl FnMut() -> Result<()>,
+    ) -> Result<Report> {
+        self.apply_scoped(
+            plan,
+            source_plan,
+            keeper_plan,
+            source,
+            keeper,
+            (|| Ok(()), after_withdraw),
+        )
+    }
+    fn apply_scoped(
+        &mut self,
+        plan: &Plan,
+        source_plan: &super::Plan,
+        keeper_plan: &super::Plan,
+        source: &mut Resources<'_>,
+        keeper: &mut Resources<'_>,
+        mut hooks: (impl FnMut() -> Result<()>, impl FnMut() -> Result<()>),
     ) -> Result<Report> {
         if !self.allow_release {
             return Err(Error::Denied);
@@ -247,14 +292,16 @@ impl Execution<'_> {
         }
         let id = plan.id()?;
         if plan.withdraw {
+            (hooks.0)()?;
             source.namespace.apply(
                 key(&id, "handoff-withdraw")?,
                 plan.withdraw_command(),
                 source.metadata,
                 &source.limits,
             )?;
-            after_withdraw()?;
+            (hooks.1)()?;
         }
+        (hooks.0)()?;
         source.namespace.apply(
             key(&id, "handoff-retire")?,
             plan.retire_command(),

@@ -3,6 +3,8 @@ mod cli;
 mod pipeline;
 mod process;
 mod race;
+#[cfg(feature = "github")]
+mod trusted;
 use super::*;
 use crate::annex::retirement::Assessor;
 use crate::annex::retirement::planning::{
@@ -46,6 +48,9 @@ fn actual_native_eviction_retained_restore_and_stale_replay() {
     matrix(false, false, false);
 }
 fn matrix(exits: bool, races: bool, copies: bool) {
+    matrix_mode(exits, races, copies, false);
+}
+fn matrix_mode(exits: bool, races: bool, copies: bool, trusted: bool) {
     let git: PathBuf = std::env::var_os("GIT_ASSET_TEST_GIT_EXE").unwrap().into();
     let annex: PathBuf = std::env::var_os("GIT_ASSET_TEST_ANNEX_EXE").unwrap().into();
     let path = std::env::split_paths(&std::env::var_os("GIT_ASSET_TEST_ANNEX_PATH").unwrap())
@@ -66,6 +71,9 @@ fn matrix(exits: bool, races: bool, copies: bool) {
         (false, Cut::AfterRemoval),
         (true, Cut::AfterRemoval),
     ] {
+        if trusted && (bare || cut != Cut::None) {
+            continue;
+        }
         if (exits && cut == Cut::None)
             || (races && cut != Cut::BeforeEffect)
             || (copies && cut != Cut::None)
@@ -82,11 +90,12 @@ fn matrix(exits: bool, races: bool, copies: bool) {
             }
         );
         let bytes = vec![91; 256 * 1024];
-        let mut f = Fixture::build_in(
+        let mut f = Fixture::build_setup(
             &bytes,
             Some((git.clone(), annex.clone(), path.clone())),
             bare,
             Some(&source_root),
+            trusted,
         );
         let mut backup = Fixture::build_in(
             &bytes,
@@ -166,6 +175,8 @@ fn matrix(exits: bool, races: bool, copies: bool) {
         )
         .unwrap()
         .grant;
+        #[cfg(feature = "github")]
+        let mut trusted_state = trusted.then(|| trusted::State::new(&mut f, &backup, &policy));
         super::super::retirement::settle(&mut f);
         f.refresh();
         let mut prior_assessment = Assessor::new(f.profile.pool.clone())
@@ -426,7 +437,11 @@ fn matrix(exits: bool, races: bool, copies: bool) {
             )
             .unwrap();
         assert_eq!(public_preview.id().unwrap(), planned.id().unwrap());
-        let cli = cli::Client::new(&f, &backup, &policy, &planned, &pin);
+        let cli = if trusted {
+            None
+        } else {
+            cli::Client::new(&f, &backup, &policy, &planned, &pin)
+        };
         let result = if exits {
             if races {
                 cli.as_ref()
@@ -439,6 +454,22 @@ fn matrix(exits: bool, races: bool, copies: bool) {
         } else {
             Some(if let (Cut::None, Some(cli)) = (cut, &cli) {
                 Ok(cli.call("apply", true)["report"].clone())
+            } else if cut == Cut::None && trusted {
+                #[cfg(feature = "github")]
+                {
+                    Ok(
+                        serde_json::to_value(trusted_state.as_mut().unwrap().execute(
+                            &mut f,
+                            &mut backup,
+                            &planned,
+                        ))
+                        .unwrap(),
+                    )
+                }
+                #[cfg(not(feature = "github"))]
+                {
+                    unreachable!("trusted fixture requires github")
+                }
             } else if cut == Cut::None {
                 controller
                     .apply(
@@ -811,4 +842,11 @@ fn actual_native_executor_fences_conflicts_and_allows_unrelated_metadata() {
 fn actual_native_controlled_copy_retained_eviction_and_restore_pipeline() {
     assert!(std::env::var_os("GIT_ASSET_TEST_FRONT_DOOR_EXE").is_some());
     matrix(false, false, true);
+}
+
+#[cfg(feature = "github")]
+#[test]
+#[ignore = "explicit native tools and distinct synthetic volumes only"]
+fn actual_trusted_git_eviction_rechecks_expiry_after_custody() {
+    matrix_mode(false, false, false, true);
 }

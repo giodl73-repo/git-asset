@@ -114,6 +114,29 @@ impl<'a> Controller<'a> {
     ) -> Result<Report> {
         self.execute(plan, sources, nodes, execution::Cut::None)
     }
+    /// Fresh apply with external admission rechecked before either effect intent.
+    pub fn apply_with_admission<N: NodeStore, K: NodeStore>(
+        &self,
+        plan: &Plan,
+        sources: Sources<'_>,
+        nodes: Nodes<'_, N, K>,
+        admit: impl FnMut() -> Result<()>,
+    ) -> Result<Report> {
+        plan.id()?;
+        let source = nodes.source;
+        let limits = nodes.limits;
+        self.with_live(&plan.intent.snapshot, sources, nodes, |live| {
+            execution::apply_admitted(
+                self.profile,
+                plan,
+                live,
+                source,
+                limits,
+                execution::Cut::None,
+                admit,
+            )
+        })
+    }
     fn execute<N: NodeStore, K: NodeStore>(
         &self,
         plan: &Plan,
