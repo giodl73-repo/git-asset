@@ -11,8 +11,8 @@ an existing fenced metadata namespace, metadata-provider identity, owner,
 source-key prefix and metadata-only place. `allow_store` defaults false. The
 namespace must be separate from all media-pool members; its job policy must retain
 current/pending/predecessor metadata on that one place. The native receiver can bind that namespace in its private profile and run
-durable ingest handoff after verified copy/backup/presence. Eviction scheduling
-remains separate work.
+durable ingest handoff after verified copy/backup/presence. The eviction receiver uses the same saved-action API;
+complete repair/replacement/root acceptance remains separate.
 
 `Execution::handoff_durable(HandoffRequest, namespace, working, retained, clock)`
 looks for the original saved slot before constructing a new handoff plan. After
@@ -56,3 +56,11 @@ and durable native handoff/eviction paths. These are producer tests, not indepen
 review, complete receiver eviction scheduling or production adoption. See the
 [contract](../specs/NATIVE-PENDING-ACTIONS.md) and
 [native receiver](NATIVE-RECEIVER.md).
+
+The eviction receiver now pages registered working candidates and calls the
+durable API. Before fresh removal, `evict_durable` inspects the original native
+controller status: completed work reconciles through `resume`; uncertain intent
+holds. This permits completed accounting recovery after physical absence without
+substituting a new plan. The keeper's backend metadata may still be required.
+See [registered eviction](../specs/NATIVE-EVICTION-PASS.md) for fixed profile phases,
+bounds, grant admission and remaining repair/replacement obligations.

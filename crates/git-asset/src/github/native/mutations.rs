@@ -22,6 +22,56 @@ pub(super) fn publisher(
     })
 }
 impl<R: CommittedSource + ?Sized> Execution<'_, R> {
+    /// Inspect the saved original before any new removal; completed work resumes
+    /// accounting only, while uncertain native intent never repeats its effect.
+    pub(super) fn evict_original<N: NodeStore, K: NodeStore>(
+        &mut self,
+        plan: &planning::Plan,
+        sources: Sources<'_>,
+        nodes: Nodes<'_, N, K>,
+        mut now: impl FnMut() -> Result<u64, AdmissionError>,
+    ) -> Result<Mutation<planning::Report>, Error> {
+        let profile = self
+            .policy
+            .actions
+            .as_ref()
+            .and_then(|a| a.eviction.as_ref());
+        let ids = self.admission(profile.is_some_and(|p| p.allow_evict), &mut now)?;
+        let profile = profile.ok_or(Error::Admission(AdmissionError::Disabled))?;
+        replication::Plan::new(
+            &self.policy.copy,
+            sources.keeper.plan.clone(),
+            sources.source.plan.clone(),
+        )?;
+        let state = self.select(ids)?;
+        self.revalidate(&state, &mut now)?;
+        let controller = Controller::new(profile);
+        let status = controller
+            .status(plan, &self.policy.copy.destination, sources.source.plan)
+            .map_err(Error::Eviction)?;
+        if status.effect == "not_started"
+            && !matches!(
+                status.metadata_phase,
+                git_asset_store::retirement::status::Phase::Cancelled
+            )
+        {
+            return self.evict(plan, sources, nodes, now);
+        }
+        if status.effect == "uncertain" {
+            return Err(publication::Error::Uncertain.into());
+        }
+        self.revalidate(&state, &mut now)?;
+        let report = controller
+            .resume(
+                plan,
+                &self.policy.copy.destination,
+                sources.source.plan,
+                nodes.source,
+                nodes.limits,
+            )
+            .map_err(Error::Eviction)?;
+        Ok(self.mutation(state, report, &mut now))
+    }
     fn mutation<T>(
         &self,
         mut state: Selected,

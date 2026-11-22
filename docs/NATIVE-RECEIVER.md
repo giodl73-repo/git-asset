@@ -67,7 +67,7 @@ ingress to the enrolled retained location when that backup has not started.
 Both producer plans must already exist in the pinned indexes. The reverse
 profile, controls and domains come from the same fixed pair; there is no
 event-supplied destination or automatic incarnation creation.
-`storage_converged` remains unknown because retention/eviction phases are separate.
+`storage_converged` remains unknown; complete root/repair/reacquisition coverage is unqualified.
 
 The outcome's `plan` is the deterministic copy-plan handle; `publication` names
 the actual completed working publication that was verified. Direct ingress on F
@@ -121,4 +121,29 @@ failure. Copy status stays separate from release status. Preserve `handoff.saved
 on failure; a fresh signed retry recovers that same slot. Completed handoffs replay
 historically without reconstructing a plan from released ingest claims. Changing
 store permission to false still allows original-slot recovery. No timeout deletes
-bytes or saved plans. Eviction scheduling and complete convergence remain open.
+bytes or saved plans. Complete repair, root lifecycle and project convergence remain open.
+
+The private native storage profile also supports `phase: "eviction_preview"` and
+`phase: "eviction_apply"`; omitted phase defaults to `"copy"`. Run the copy and
+eviction passes against the same authenticated immutable commit, following each
+pass's own continuation cursor. Configure separate fixed profiles/endpoints as
+needed; the event cannot select paths, plans, profiles or authority. `describe`
+lists the compiled native phases. Native execution remains Windows-only.
+
+Eviction pages the enrolled working index rather than walking disk contents.
+Its current-Main check uses that exact source tree; other jobs and retained
+obligations are checked freshly by the native controller. The retained producer
+record must include an existing `control_retention` grant for the native control
+document. That grant does not prove keeper media custody: exact retained bytes,
+actual devices/domains and the full roster are still verified before removal.
+Missing grants/backups remain explicit holds; the receiver does not manufacture
+retention or copy missing deprecated bytes as part of eviction.
+
+Preview reports `planned` or `protected` without saving/releasing/removing. Apply
+saves the full original before removal. Preserve `outcomes[].eviction.saved` and
+its mutation/failure. After completed removal, a fresh request reconciles that
+same original using backend resume, even with working bytes absent. Uncertain
+native intent holds instead of repeating its effect. A historical report never
+authorizes removal of a restored same-hash incarnation. Storage convergence,
+stale-plan replacement and root publication remain separate. See the
+[eviction-pass contract](../specs/NATIVE-EVICTION-PASS.md).

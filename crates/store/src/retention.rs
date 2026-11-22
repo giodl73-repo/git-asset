@@ -43,7 +43,7 @@ impl std::fmt::Display for RetentionError {
 }
 impl std::error::Error for RetentionError {}
 pub type Result<T> = std::result::Result<T, RetentionError>;
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct RetentionRequest {
     pub operation: Key,
@@ -60,7 +60,7 @@ impl RetentionRequest {
         ))
     }
 }
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct RetentionPlan {
     pub(crate) store: Digest,
@@ -74,7 +74,7 @@ impl RetentionPlan {
         self.limit
     }
 }
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct RetentionRecord {
     pub schema: String,
@@ -82,7 +82,7 @@ pub(crate) struct RetentionRecord {
     pub job: JournalRef,
     pub allocation: JournalRef,
 }
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct RetentionGrant {
     pub(crate) record: RetentionRecord,

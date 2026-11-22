@@ -3,6 +3,7 @@ use super::super::super::github_worker::git;
 use super::*;
 use crate::github::native::{Actions, Execution, Policy};
 use crate::{github, lifecycle, source};
+mod batch;
 pub(super) struct State {
     repository: source::Repository,
     enrollment: lifecycle::Enrollment,

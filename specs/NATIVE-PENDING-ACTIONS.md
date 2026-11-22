@@ -47,5 +47,11 @@ handle and explicit failure. Native uncertain intent never authorizes another pl
 This first storage surface does not retire or replace saved slots. Status/resume/
 cancel use the original backend APIs and saved bodies; metadata/byte forgetting
 needs a separate explicit contract. Registry-wide paging, stale-plan replacement,
-receiver eviction scheduling, large-catalogue continuation and production remain
+large-catalogue continuation and production remain
 OPEN. Growing records stay asset-side, not in Git or mutable per-object files.
+
+Registered receiver eviction is refined in
+[NATIVE-EVICTION-PASS](NATIVE-EVICTION-PASS.md). Its durable worker inspects original
+native status before apply: completion resumes accounting only, uncertain native
+intent refuses another effect. Saved originals and current admission remain
+mandatory; stale-plan replacement is not inferred from this recovery surface.

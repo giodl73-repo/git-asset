@@ -51,6 +51,9 @@ fn matrix(exits: bool, races: bool, copies: bool) {
     matrix_mode(exits, races, copies, false);
 }
 fn matrix_mode(exits: bool, races: bool, copies: bool, trusted: bool) {
+    matrix_profile(exits, races, copies, trusted, 0);
+}
+fn matrix_profile(exits: bool, races: bool, copies: bool, trusted: bool, batch: u8) {
     let git: PathBuf = std::env::var_os("GIT_ASSET_TEST_GIT_EXE").unwrap().into();
     let annex: PathBuf = std::env::var_os("GIT_ASSET_TEST_ANNEX_EXE").unwrap().into();
     let path = std::env::split_paths(&std::env::var_os("GIT_ASSET_TEST_ANNEX_PATH").unwrap())
@@ -437,6 +440,18 @@ fn matrix_mode(exits: bool, races: bool, copies: bool, trusted: bool) {
             )
             .unwrap();
         assert_eq!(public_preview.id().unwrap(), planned.id().unwrap());
+        #[cfg(feature = "github")]
+        if batch != 0 {
+            trusted_state.as_mut().unwrap().execute_batch(
+                &mut f,
+                &mut backup,
+                &planned,
+                batch == 2,
+            );
+            continue;
+        }
+        #[cfg(not(feature = "github"))]
+        let _ = batch;
         let cli = if trusted {
             None
         } else {
@@ -849,4 +864,18 @@ fn actual_native_controlled_copy_retained_eviction_and_restore_pipeline() {
 #[ignore = "explicit native tools and distinct synthetic volumes only"]
 fn actual_trusted_git_eviction_rechecks_expiry_after_custody() {
     matrix_mode(false, false, false, true);
+}
+
+#[cfg(feature = "github")]
+#[test]
+#[ignore = "explicit native tools and distinct synthetic volumes only"]
+fn actual_registered_eviction_preview_protection_expiry_and_saved_replay() {
+    matrix_profile(false, false, false, true, 1);
+}
+
+#[cfg(feature = "github")]
+#[test]
+#[ignore = "explicit native tools and distinct synthetic volumes only"]
+fn actual_registered_eviction_uncertain_saved_intent_never_repeats_removal() {
+    matrix_profile(false, false, false, true, 2);
 }

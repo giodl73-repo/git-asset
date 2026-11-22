@@ -21,8 +21,8 @@ One request reconciles at most128 required objects at the working alias, under
 the actual selected Main generation. Desired requirements are bounded metadata,
 never a payload census. Continuation binds policy, commit, admitted source revision
 and exact ordered desired objects. A stale/missing after-key refuses. A suffix
-does not prove prefix completion. Durable ingest handoff is optional; eviction
-and full batch convergence remain separate; storage_converged is always unknown here.
+does not prove prefix completion. Durable ingest handoff is optional; the separate registered eviction pass is
+specified in NATIVE-EVICTION-PASS. Full batch convergence remains separate; storage_converged is always unknown here.
 
 Dry run resolves original plans without native payload observation or effects.
 Apply verifies actual managed working bytes and exact retained source custody;
@@ -63,7 +63,7 @@ asset-side; this adds no queue, mutable cache registry or operation journal.
 
 Optional reverse backup and its separate permission/receipt lifecycle are defined
 in [TRUSTED-NATIVE-BACKUP](TRUSTED-NATIVE-BACKUP.md). It uses the same fixed pair
-and frozen index records; root publication and eviction scheduling remain separate.
+and frozen index records; root publication and full repair/reacquisition remain separate.
 
 With a private pending namespace binding, reconcile_with_actions runs admitted
 handoff after a successful copy, backup or verified-present observation. The

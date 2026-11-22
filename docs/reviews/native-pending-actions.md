@@ -45,3 +45,35 @@ interrupted/retried/historical batch case and the CLI private-file case pass.
 Strict workspace all-feature/all-target Clippy, standalone annex-publish and fmt
 pass. L0/pins/branding/diff qualification is recorded externally; no native HTTP
 account/TLS, full-system convergence or owner acceptance is inferred.
+
+## Registered eviction refinement
+
+Input 0bc08b666268df815dad1e04530d42e1ad45b232; controls in
+[contract](../../specs/NATIVE-EVICTION-PASS.md); same six producer checklists/owner.
+H identity: Main's exact source tree is separate from temporary ingest retention;
+all other authority still comes from controller fences. H custody: embedded keeper
+metadata grant is validated, never substituted for independent native custody.
+H recovery: inspect saved original before apply; completed work resumes accounting,
+uncertain intent stops. H placement: page only the signed index with bounded
+lookup/bytes/deadline and phase-specific cursor. M provider: phase/roots are private,
+old profiles retain default dispatch, no event paths or grant creation. M adoption:
+optional record field preserves absent wire; full HTTP and production remain OPEN.
+Producer disposition: implement and qualify synthetic preview/job-race/removal/
+post-expiry/historical replay; retain replacement/root/repair gates separately.
+
+The explicit native uncertain case removes owned fixture bytes at the injected
+post-removal/pre-completion boundary. Repeated receiver calls must return the
+same Saved handle and uncertain failure with unchanged effect-ledger checkpoint;
+keeper readback remains intact. This does not infer success from physical absence.
+
+Implementation: registered preview/apply and original status/resume are connected.
+Verification:28 GitHub cases, two index cases,51 retention cases, one CLI case,
+two registered distinct-device native cases and the native SDK eviction/restore
+case pass. Workspace all-feature/all-target Clippy, standalone annex-publish,
+fmt and shipped describe phase discovery pass; L0/pins/branding/diff are external.
+Validation:synthetic preview/late-job protection, post-expiry success preservation,
+completed offline-payload replay and uncertain no-repeat scenarios pass. Full
+HTTP/account/TLS, consumer validation and production acceptance remain OPEN.
+Trace:contract controls map to native::eviction, original worker recovery,
+producer-index declarations and named native fixtures; reviewed targets are pinned.
+Review:six producer checklists applied; independent/human approval remains OPEN.

@@ -809,3 +809,9 @@ and front-door discovery/help -> review_sample tests and EVID-144.
 ANNEX-RETAINED-COPY.md -> replication/publication/local witness -> copy fixtures; EVID-145.
 
 ANNEX-PROTECTED-EVICTION.md -> snapshot -> four fixture families; EVID-146.
+
+NATIVE-EVICTION-PASS.md -> native::eviction, saved original status/resume and
+producer control-retention declarations -> registered eviction native fixtures.
+WP-004/005/006/007/009 and contract REQ/SPEC/IF/PKG anchors apply. Component
+verification is external receiver-eviction-* evidence; full HTTP, replacement,
+root lifecycle, independent review and project acceptance remain OPEN.

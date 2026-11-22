@@ -1,113 +1,69 @@
-# git-asset resume
+# Resume the initial-offering PR series
 
-Goal: PRODUCT_PLAN.md PR70/P1-P6. Synthetic fixtures only; no production IO on
-resume. Preserve other worktrees. Component checks are not release/project
-acceptance; keep the full goal active.
+Goal remains PRODUCT_PLAN.md P1-P6, not a single component checkpoint. Use actual
+Git/GitHub state for branch, head, dirty files, PR and CI; do not treat this file
+as a substitute. Preserve other sessions/worktrees and shared runtime bindings.
+No production caches, scans, hydration, transfers, pruning, renders or deployment
+on resume. Native work uses explicitly owned synthetic fixtures only.
 
-Active owned lane: F:/src/git-asset-worktrees/trusted-native-placement,
-feat/trusted-native-placement, draft PR74 based on feat/source-generation-use.
-Input1c0f870f8efa8a538fc0948139f62f31ea3e625b; derive newer source/CI from Git.
-PR70 and P1/PR71 merged. P2 PR72 and source-generation prerequisite PR73 remain
-stack dependencies; P2 mixed legacy/owner/roster/epoch handoff is OPEN, never
-inferred from NamespaceOwned policy. See docs/reviews/p2-closure-audit.md.
-Native controller qualification is component-only; no legacy migration authority.
+Current lane: feat/trusted-native-placement, draft PR74, based on
+feat/source-generation-use/PR73. Latest refinement input is
+0bc08b666268df815dad1e04530d42e1ad45b232. That input's hosted45033636660 passed.
+Derive the current head and its separate hosted run after any later commit.
 
-P3 implemented: exact Git/HTTP annex metadata source, hold_current generation,
-authenticated demanded native copy, temporary ingest handoff to exact retained
-snapshots/cohorts. Strict original reopen, actual roster-root generation,
-newer-version/job protection and original recovery remain mandatory. Controls:
-specs/NATIVE-SNAPSHOT-COPY.md and its prerequisite contracts.
+P1/PR71 is merged. P2/PR72 has qualified native eviction SDK/CLI components;
+mixed legacy actors, roster/epoch handoff and owner acceptance remain OPEN.
+P4's main-based REEL PR401 has a component route; its source-use SDK pin remains
+0ccb137cf5a78416e780f8a3372017f642a5cb71. Consumer/owner acceptance is separate.
+P5 pinned Windows RC/bounds/setup/upgrade/rollback and P6 private project cutover
+remain after P3/P4. Do not promote an unaccepted candidate to production.
 
-Retained-snapshot copy/restore now shares Publisher::open_retained with handoff,
-uses cumulative metadata budgets and preserves original copy wire hashes. Explicit
-Plan::from_snapshot works through the authenticated copy worker. New default-denied
-actions connect handoff and eviction with late admission and actual-root selection.
-Contracts: TRUSTED-NATIVE-MUTATIONS and source allowance in SOURCE-BUDGET. Next:
-durable retention/eviction scheduling and full batch reconciliation,
-revert/reacquisition and duplicate/missed/outage/crash qualification. No global
-convergence from one copy or stale event. No new publisher/cache/journal.
+P3 implemented: exact local/HTTP annex source resolution and current source-use
+protection; authenticated fixed-profile copy, backup, handoff and eviction APIs;
+exact retained snapshots; bounded immutable producer lookup; native receiver
+copy/backup and durable handoff; full original-action persistence/restart recovery.
+Existing publication, metadata, capacity, control and retirement engines remain
+authoritative. Old local/LFS dispatch and absent optional wire fields remain.
+SDK original reconcile is copy-only; reconcile_with_actions adds durable handoff.
 
-Producer lookup now uses immutable asset-side Tree records: exact object/length,
-original publication Plan and optional retained Snapshot. Root-bound metadata
-pages have shared tree/record read budgets and never hydrate payloads. Contract:
-NATIVE-PRODUCER-INDEX. Ten-thousand-entry synthetic paging and record failure
-fixtures qualify lookup only. Missing registration is unknown, never absent bytes
-or removal authority. Explicit root publication/retention remains caller-owned.
-Lookup validation:120 core tests plus two index cases, strict workspace
-all-feature/all-target Clippy, standalone annex-publish, fmt and L0 pass.
-External producer-index-* logs retain exact outcomes; derive hosted state live.
+Current registered eviction refinement: native::eviction::Pass and
+reconcile_evictions page the signed working index. Exact current Main plus fresh
+complete-roster controller checks protect required bytes. Producer records may
+embed canonical control_retention grants for native control metadata; this never
+substitutes for independent retained native bytes. Private receiver phase defaults
+to copy, with eviction_preview/eviction_apply opt-ins. Preview never saves/releases/
+removes; apply persists the full original first. Durable eviction inspects original
+status: completed work resumes accounting; uncertain intent never repeats removal.
+Saved direct-ingress actions can be found before keeper index/payload opens.
 
-Native copy receiver now uses fixed policy-bound producer roots, exact annex Git
-metadata, guarded original publication observations and existing Copier. One
-bounded page has dry-run/copied/present/held outcomes; duplicate observation works
-after working ingest release. Unknown publication never becomes present; original
-plan status/resume remains mandatory. Native payload apply is Windows-only; old
-local/LFS dispatch remains. Contract/runbook: NATIVE-RECEIVER. Original F ingress
-and deterministic copy-context recipes remain distinct; report publication ID
-never invents copy completion.26 focused cases, two explicit actual-annex cases,
-CLI/document tests, strict Clippy and standalone feature builds pass. Exact source
-evidence is external native-receiver-*; derive hosted terminal state live.
-Receiver now includes separately authorized reverse backup over the same profiles,
-controls and domains. Frozen pre-copy records still reconstruct actual completed
-backup recipes; incomplete intent returns the original backup-plan ID without
-another import. Fresh backup guards prove both copies through post-effect checks;
-post-expiry preserves completion. Contract: TRUSTED-NATIVE-BACKUP; external
-native-backup-* logs record qualification separately.28 focused cases and three
-explicit native cases pass, including controlled backup/handoff/readback;
-strict workspace Clippy and standalone feature builds pass. Root publication,
-handoff/eviction receiver scheduling, complete revert and
-project acceptance remain OPEN. Global storage convergence stays unknown.
+Contracts/runbooks: specs/{NATIVE-RECEIVER,NATIVE-PENDING-ACTIONS,
+NATIVE-EVICTION-PASS,TRUSTED-NATIVE-BACKUP}.md and docs/{NATIVE-RECEIVER,
+NATIVE-ACTION-RECOVERY}.md. Six .roles are producer checklists, not independent
+reviewers or human approval. Implementation, verification, validation, trace and
+review stay separate; no global convergence or production acceptance is claimed.
 
-Original-action persistence now uses annex::pending over the existing metadata
-store and separate fenced metadata-only job namespace. Full bodies/producer
-recipes are hash/length verified and source-adopted before effects; existing
-slots return original plans. handoff_durable/evict_durable preserve saved handles
-on effect failure, with current native worker revalidation. Scope is optional
-and absent-field policy wire unchanged. NATIVE-PENDING-ACTIONS and
-NATIVE-ACTION-RECOVERY document bounds/API; native-pending-* evidence records
-separate-process reopen, scoped guards and native paths. No slot forgetting or
-replacement; receiver phase scheduling and stale-plan replacement remain OPEN.
-Qualification:separate-process saved-plan reopen plus28 focused cases, explicit
-native saved handoff and distinct-device saved eviction/restore pass. Strict
-workspace Clippy/standalone annex-publish pass; exact source/logs external.
+External evidence uses receiver-eviction-* under the owned development evidence
+root. Earlier receiver-handoff-*, native-pending-*, native-backup-* and producer
+index logs retain their exact source/component scope. New native cases exercise
+preview, late job protection, admitted removal/post-expiry, completed saved replay
+with keeper payload offline, and uncertain original intent with unchanged effect
+ledger. Derive terminal outcomes from actual logs before claiming qualification.
 
-P4: REEL main-based PR401, qualified89a875c6c34ed84b1e890520db996d55cffe2bd7,
-ready for review. SDK pin0ccb137cf5a78416e780f8a3372017f642a5cb71 unchanged;
-Isolated public route/lifecycle/retention and nine child exits qualified;
-existing route/vendor untouched. Consumer snapshot access must qualify before releasing a
-claim that its old Ready recovery still needs. No production adoption implied.
-P5 pinned Windows RC/limits/recovery/upgrade/rollback and P6 private per-project
-current/history coverage, backup/restore and owner acceptance remain OPEN.
+Next obligations: safe stale-plan replacement after original status/cancel;
+producer-root publication/retention and incremental advancement, including
+explicit historical Main snapshot custody/handoff before releasing predecessors; missing deprecated
+backup repair and complete controlled reacquisition; full native HTTP/account/TLS
+qualification; larger-catalogue lifetime and measured bounds. Then close P3/P4
+acceptance, qualify P5 and seek concrete P6 owner acceptance. No timeout forgetting,
+final archival deletion or automatic production enrollment is introduced.
 
-External evidence: F:/src/tig-dev-temp/git-asset-protected-eviction-20261121.
-Use *-source.json and logs, not narrative as terminal proof. Copy head8124cd4
-passed hosted45012037613; handoff352f17c passed hosted45014039566;
-snapshot-copy6082aac passed hosted45017220581.
-Latest actions:38 focused tests (includes inert workers), seven explicit native
-copy/handoff/snapshot cases and one distinct-device native eviction/restore case
-pass. Admission expiry after custody refuses removal; default permission denial
-and original partial handoff recovery covered. Final Clippy/feature/L0 external.
-Independent review and full P3 acceptance separate. Development Cargo/TEMP roots remain external;
-see docs/DEVELOPMENT.md. Source-only allowance8.25MiB; no runtime limit change or
-fixture removal. New worker rejects expired post-custody and stale mid-handoff
-admission; fresh signed event resumes original commands. Synthetic E:/F: native
-eviction expiry/refusal, removal/retained restore/stale replay pass; no live caches.
-Derive final qualification from external native-actions-* logs and source record.
+Run L0/pins/branding/diff, fmt, relevant locked tests, strict workspace/all-feature/
+all-target Clippy and standalone feature checks before commits. Build/temp roots
+must be explicit and outside source. Source-only ceiling is8.25MiB; runtime limits
+are unchanged. Current relevant files plus tests/contracts must stay reviewed.
 
-Prior detailed component/source progress remains in [immutable resume](https://github.com/giodl73-repo/git-asset/blob/352f17cd3ce1c8339475d4a392d1bf22672720e9/context/RESUME.md).
-LF SHA-256: `354164d5498b0fa90251245b91f6c871c1190eecfb11aadcdce86cb1a58862c5`.
-
-Receiver handoff refinement (input e082c31): reconcile_with_actions optionally
-runs saved ingest handoff after copy/backup/verified presence; original reconcile
-stays copy-only. Private pending root matches signed scope before use; receiver
-opens no new stores. Original retained Select receipt supplies exact snapshot
-when no explicit cohort was declared. Outcome.handoff preserves saved recovery
-handle and mutation/failure separately from successful copy progress. Eviction
-scheduling, stale-plan replacement, root lifecycle and full native HTTP acceptance
-remain OPEN. Qualification logs use receiver-handoff-* externally.
-
-Receiver handoff qualification:28 focused cases, one explicit real-annex
-interrupted/retried/historical batch case and the CLI private-file case pass.
-Strict workspace all-feature/all-target Clippy, standalone annex-publish and fmt
-pass. L0/pins/branding/diff qualification is recorded externally; no native HTTP
-account/TLS, full-system convergence or owner acceptance is inferred.
+Terminal local qualification:28 GitHub,2 index,51 retention and1 CLI cases pass;
+2 registered native cases plus the SDK native eviction/restore case pass. Strict
+workspace Clippy, standalone annex-publish, fmt and actual describe discovery pass.
+Exact source/log hashes live in receiver-eviction-source.json externally. Hosted
+qualification for the committed refinement must be checked separately.

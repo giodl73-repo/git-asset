@@ -26,6 +26,12 @@ fn exact_index_lookup_pages_budget_and_stale_roots_without_native_io() {
             object: producer.candidate().object.clone(),
         });
         let row = Record::new(producer, retained).unwrap();
+        assert!(
+            serde_json::to_value(&row)
+                .unwrap()
+                .get("control_retention")
+                .is_none()
+        );
         let (path, object) = row.store(&mut nodes).unwrap();
         bindings.insert(path, object);
         records.push(row);

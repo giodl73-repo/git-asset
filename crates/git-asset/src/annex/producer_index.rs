@@ -19,6 +19,8 @@ pub struct Record {
     pub object: Object,
     pub producer: Plan,
     pub retained: Option<Snapshot>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub control_retention: Option<git_asset_store::retention::RetentionGrant>,
 }
 impl Record {
     pub fn new(producer: Plan, retained: Option<Snapshot>) -> Result<Self> {
@@ -27,11 +29,22 @@ impl Record {
             object: producer.candidate().object.clone(),
             producer,
             retained,
+            control_retention: None,
         };
         row.bytes()?;
         Ok(row)
     }
     fn bytes(&self) -> Result<Vec<u8>> {
+        if let Some(grant) = &self.control_retention {
+            let raw = grant.to_json().map_err(|_| Error::Integrity)?;
+            git_asset_store::retention::RetentionGrant::from_json(&raw)
+                .map_err(|_| Error::Integrity)?;
+            if grant.request().publication.object
+                != Object::from_bytes(&super::control::document(&self.object)?)
+            {
+                return Err(Error::Integrity);
+            }
+        }
         if self.schema != SCHEMA
             || self.object != self.producer.candidate().object
             || self

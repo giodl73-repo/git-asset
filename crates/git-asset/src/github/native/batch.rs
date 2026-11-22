@@ -134,7 +134,7 @@ pub struct Metrics {
     pub read_bytes: usize,
 }
 impl Metrics {
-    fn remaining(&self, limits: &Limits) -> Result<TreeLimits, Error> {
+    pub(super) fn remaining(&self, limits: &Limits) -> Result<TreeLimits, Error> {
         Ok(TreeLimits {
             max_entries: limits.bindings,
             max_reads: limits
@@ -150,7 +150,7 @@ impl Metrics {
             ..TreeLimits::default()
         })
     }
-    fn add(&mut self, m: TreeMetrics) {
+    pub(super) fn add(&mut self, m: TreeMetrics) {
         self.reads += m.reads;
         self.read_bytes += m.read_bytes;
     }
@@ -175,7 +175,7 @@ fn basis(policy: &Digest, commit: &str, revision: u64, objects: &[Object]) -> Di
     )
     .unwrap()
 }
-fn completed(
+pub(super) fn completed(
     plans: &[&publication::Plan],
     resources: &mut publication::Resources<'_>,
 ) -> Result<Option<publication::Plan>, Error> {

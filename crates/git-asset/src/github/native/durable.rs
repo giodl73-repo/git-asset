@@ -137,7 +137,7 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
         )?;
         let loaded = pending::reopen(&scope, &saved, namespace, self.metadata, self.limits)?;
         let result = match &loaded.action.operation {
-            Operation::Eviction(plan) => self.evict(
+            Operation::Eviction(plan) => self.evict_original(
                 plan,
                 Sources {
                     source: Producer {

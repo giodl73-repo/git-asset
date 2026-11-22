@@ -7,6 +7,14 @@ use git_asset::{
 use git_asset_store::{ledger, metadata::MetadataReader, protection::Limits};
 
 pub(super) const SCHEMA: &str = "git-asset.native-receiver-placement.experimental-1";
+#[derive(Clone, Copy, Default, Deserialize)]
+#[serde(rename_all = "snake_case")]
+enum Phase {
+    #[default]
+    Copy,
+    EvictionPreview,
+    EvictionApply,
+}
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 struct Location {
@@ -26,6 +34,8 @@ struct Storage {
     destination: Location,
     #[serde(default)]
     pending: Option<profiles::NamespaceRoot>,
+    #[serde(default)]
+    phase: Phase,
     limits: Limits,
 }
 struct Opened {
@@ -87,14 +97,16 @@ pub(super) fn dispatch(
         .as_ref()
         .and_then(|a| a.pending.as_ref());
     if storage.pending.as_ref().map(|p| p.minimum.identity()) != scope.map(|p| &p.namespace)
-        || storage.policy.actions.as_ref().is_some_and(|a| a.handoff) && scope.is_none()
+        || (storage.policy.actions.as_ref().is_some_and(|a| a.handoff)
+            || !matches!(storage.phase, Phase::Copy))
+            && scope.is_none()
     {
         return Err(github::Error::Trust);
     }
     if !profile.allow_selection {
         return Err(github::Error::Disabled);
     }
-    if storage.policy.allow_copy && !cfg!(windows) {
+    if (storage.policy.allow_copy || !matches!(storage.phase, Phase::Copy)) && !cfg!(windows) {
         return Ok(
             json!({"schema":"git-asset.native-copy-pass-refusal.experimental-1",
             "ok":false,"failure":{"layer":"native","code":"unsupported"},"storage_converged":null}),
@@ -116,7 +128,7 @@ pub(super) fn dispatch(
         client,
         trust: &profile.trust,
     };
-    let result = native::Execution {
+    let mut worker = native::Execution {
         trust: &profile.trust,
         request: &proof,
         policy: &storage.policy,
@@ -125,20 +137,39 @@ pub(super) fn dispatch(
         namespace: &mut namespace,
         metadata: &mut metadata,
         limits: &storage.limits,
-    }
-    .reconcile_with_actions(
-        cursor.as_ref(),
-        &profile.budget,
-        pending.as_mut(),
-        &mut source.resources(&storage.limits),
-        &mut destination.resources(&storage.limits),
-        now,
-    );
+    };
+    let mut source = source.resources(&storage.limits);
+    let mut destination = destination.resources(&storage.limits);
+    let result = match storage.phase {
+        Phase::Copy => worker
+            .reconcile_with_actions(
+                cursor.as_ref(),
+                &profile.budget,
+                pending.as_mut(),
+                &mut source,
+                &mut destination,
+                now,
+            )
+            .and_then(|r| serde_json::to_value(r).map_err(|_| publication::Error::Invalid.into())),
+        Phase::EvictionPreview | Phase::EvictionApply => worker
+            .reconcile_evictions(
+                native::eviction::Pass {
+                    cursor: cursor.as_ref(),
+                    budget: &profile.budget,
+                    pending: pending.as_mut().ok_or(github::Error::Trust)?,
+                    apply: matches!(storage.phase, Phase::EvictionApply),
+                },
+                &mut source,
+                &mut destination,
+                now,
+            )
+            .and_then(|r| serde_json::to_value(r).map_err(|_| publication::Error::Invalid.into())),
+    };
     match result {
-        Ok(report) => serde_json::to_value(report).map_err(|_| github::Error::Invalid),
-        Err(e) => Ok(
-            json!({"schema":"git-asset.native-copy-pass-refusal.experimental-1",
-            "ok":false,"failure":Failure::from(&e),"storage_converged":null}),
-        ),
+        Ok(report) => Ok(report),
+        Err(e) => Ok(json!({"schema": if matches!(storage.phase, Phase::Copy) {
+                "git-asset.native-copy-pass-refusal.experimental-1"
+            } else { "git-asset.native-eviction-pass-refusal.experimental-1" },
+            "ok":false,"failure":Failure::from(&e),"storage_converged":null})),
     }
 }

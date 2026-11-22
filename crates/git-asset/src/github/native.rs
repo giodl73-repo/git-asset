@@ -425,3 +425,4 @@ pub use mutations::Mutation;
 pub mod batch;
 mod durable;
 pub use durable::{Durable, HandoffRequest};
+pub mod eviction;
