@@ -10,19 +10,19 @@ use git_asset_store::{
     },
     store_protection::Binding,
 };
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::{io, path::PathBuf};
 
 #[cfg(feature = "annex-publish")]
 pub(super) const PROTECTION_CONFIG: &str = "tig.protectionbinding";
 
-#[derive(Clone, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Member {
     pub root: PathBuf,
     pub minimum: Checkpoint,
 }
-#[derive(Clone, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Profile {
     pub pool: AnnexProfile,

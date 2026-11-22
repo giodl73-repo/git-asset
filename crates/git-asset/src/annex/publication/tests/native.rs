@@ -88,6 +88,15 @@ impl Fixture {
         bare: bool,
         base: Option<&Path>,
     ) -> Self {
+        Self::build_setup(bytes, tools, bare, base, false)
+    }
+    fn build_setup(
+        bytes: &[u8],
+        tools: Option<(PathBuf, PathBuf, Vec<PathBuf>)>,
+        bare: bool,
+        base: Option<&Path>,
+        fenced: bool,
+    ) -> Self {
         let temp = match base {
             Some(base) => tempfile::Builder::new()
                 .prefix("git-asset-native-fixture-")
@@ -181,7 +190,12 @@ impl Fixture {
         };
         let mut namespaces: Vec<_> = (0..2)
             .map(|i| {
-                Namespace::create(
+                let create = if fenced {
+                    Namespace::create_fenced
+                } else {
+                    Namespace::create
+                };
+                create(
                     &root.join(format!("namespace-{i}")),
                     k("project"),
                     k("epoch"),
@@ -1166,3 +1180,6 @@ fn legacy_plan_encoding_and_retained_bytes_remain_readable_without_closure_quali
     reopened.read_to_end(&mut bytes).unwrap();
     assert_eq!(bytes, b"legacy readable candidate");
 }
+
+#[cfg(feature = "github")]
+mod github_worker;

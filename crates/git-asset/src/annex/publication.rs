@@ -217,7 +217,7 @@ impl Budget {
         Ok(())
     }
 }
-#[derive(Clone, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Profile {
     pub pool: managed::Profile,

@@ -163,3 +163,15 @@ Current-use qualification:20 focused tests pass (16 lifecycle,4 native-source;
 ignored tool entry not counted), strict workspace/all-feature/all-target Clippy,
 fmt and L0 pass. Initial fixture expected the outer Busy variant; the actual
 journal Busy is now asserted exactly. Full P3 integration remains OPEN.
+
+
+P3 native copy worker extension (inputde79da3): github::native::Execution::copy
+connects verified provenance, exact native source selection, actual generation
+use, required alias projection and original Copier. Fixed Policy pins profiles,
+tools/roots/config/minima/permissions; default-denied. One object/call, no global
+convergence. Completed copy retains receipt/live guards when Git advances.
+Contract specs/TRUSTED-NATIVE-WORKER.md; producer review trusted-native-worker.md.
+Default provider and explicitly invoked real-annex/bare fixtures pass; final
+qualification logs native-worker-* in external evidence root. Full receiver,
+retention handoff, eviction/reacquisition and P3 acceptance remain OPEN. No live
+operations. Nine historical records remain immutable atde79da3 with LF hashes.

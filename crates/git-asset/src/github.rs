@@ -5,6 +5,8 @@
 pub(crate) mod fixture;
 pub mod http;
 pub mod intake;
+#[cfg(feature = "annex-publish")]
+pub mod native;
 pub mod placement;
 pub mod source;
 use crate::{lifecycle::Enrollment, source::GitId};

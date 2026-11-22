@@ -6,7 +6,8 @@ pub use publication::{Error, Result, Stage};
 use serde::{Deserialize, Serialize};
 use std::io::{Read, Seek};
 
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct Profile {
     pub source: publication::Profile,
     pub destination: publication::Profile,
