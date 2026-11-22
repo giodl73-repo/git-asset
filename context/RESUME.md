@@ -7,7 +7,7 @@ renders or deployment on resume. Foundation qualification uses synthetic fixture
 
 Owned lane: feat/trusted-native-placement, draft PR74, based on
 feat/source-generation-use/PR73. Current refinement input is
-2eae14c95886767b36a62cffd48bf49017021f01. Derive later committed source and its
+c10b4682ce0042494a8f490044be4eeada7d1a26. Derive later committed source and its
 hosted run; a prior pending run is not qualification of the next head.
 
 ## Series state
@@ -128,5 +128,18 @@ separate development regressions from final core/native qualification. Actual
 ordinary/bare copy/evict/restore passes with post-control interruption, reload and
 completed replay. Strict workspace Clippy, standalone annex-publish and fmt pass.
 Parent2eae14c hosted45065425208 passed; current source/CI derives after commit.
-Receiver restore scheduling, stale recipe replacement, unexplained-loss backup
+Receiver restore/index orchestration, unexplained-loss backup
 repair, remaining P2/P4 gates, P5 RC and P6 owner acceptance remain OPEN.
+
+Restore registration fromc10b468 adds producer_index::update::restore and read-only
+publication::restore::reopen. Exact expected index Version/record and completed
+restore chain admit one successor row; fresh native guards span metered root
+adoption. Ordinary edits remain immutable. A distinct restore-root selection
+identity prevents ordinary receipts from being reused as qualified transitions.
+Persist the64KiB wrapper Plan before apply. Status-first replay retains its
+receipt without native access, even after storage goes offline. Old root/recipe
+blobs stay in existing bounded predecessor history. Contract/producer dispositions
+are in NATIVE-RESTORE. External restore-index-* records distinguish development
+passes from final qualification; derive current source/CI after commit. Next is
+fixed-worker restore preview/apply and index orchestration, then remaining series
+gates. No receiver restore phase or production activation is claimed here.

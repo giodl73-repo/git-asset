@@ -1,5 +1,13 @@
 # Update a retained producer index
 
+After authorized eviction and completed restore, use the separate Rust
+`producer_index::update::restore` transaction described in
+[controlled restoration](../specs/NATIVE-RESTORE.md#restore-specific-index-transaction).
+Supply the exact old index Version/record and saved restore Plan. It holds fresh
+restored bytes through one expected-baseline row replacement; old roots retain
+old recipes. Ordinary edits still refuse producer replacement. Persist the wrapper
+Plan before apply; recover its receipt before attempting any new native action.
+
 Use Rust package `git-asset`, feature `annex-publish`, through
 `annex::producer_index::update`. This experimental SDK composes existing metadata
 and source transactions; it does not transfer or remove media.

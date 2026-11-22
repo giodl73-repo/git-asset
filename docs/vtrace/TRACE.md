@@ -850,3 +850,10 @@ ReacquisitionPlan::validate_retirement -> exact predecessor/permission/canonical
 plan checks, post-control interruption/retry, ordinary/bare retained-source reopen
 and historical eviction replay. Controls and producer review: [contract](../../specs/NATIVE-RESTORE.md).
 Full owner orchestration, unexplained-loss repair and production acceptance OPEN.
+
+Restore-specific producer registration -> update::restore plus read-only
+publication::restore::reopen -> exact old row and retirement chain, fresh held
+restored bytes, metered one-row edit/CAS, saved-plan retry and offline historical
+receipt. Ordinary updates still reject swaps; original roots remain retained.
+Controls/review: [restoration contract](../../specs/NATIVE-RESTORE.md#restore-specific-index-transaction).
+Receiver scheduling, missing-backup repair and production acceptance remain OPEN.

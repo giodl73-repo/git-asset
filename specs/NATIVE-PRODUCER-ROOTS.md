@@ -1,5 +1,9 @@
 # Retained producer-root updates
 
+Ordinary updates below preserve producer recipes. Completed authorized
+restoration has a separate [typed successor transaction](NATIVE-RESTORE.md#restore-specific-index-transaction)
+with fresh native readback and exact old-row validation; it does not relax them.
+
 Input5c4228a0e96aab41cbc225599efebdada5ad1a21; P3 WP-004/005/006/007/009;
 REQ-001/002/004/006/007/008/010; SPEC-002/003/004/005/007/008/010/011;
 IF-002/004/005/008/010/012; PKG-001/003/004/006. RUST/PROVIDER/INTEGRATION.

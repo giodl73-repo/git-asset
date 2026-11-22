@@ -12,6 +12,7 @@ pub struct Context<'a> {
     pub metadata: &'a mut MetadataStore,
     pub limits: &'a Limits,
 }
+#[derive(Clone, Copy)]
 pub struct Original<'a> {
     pub eviction: &'a planning::Plan,
     pub publication: &'a super::Plan,
@@ -296,4 +297,16 @@ pub fn resume(
 ) -> Result<Ready> {
     admit_control(ctx, &input, plan, &mut admit)?;
     Publisher::controlled(ctx.profile.clone(), ctx.control.clone())?.resume(&plan.native, resources)
+}
+
+/// Read-only completed restore validation and held byte reopen; no birth or import.
+pub fn reopen(
+    ctx: &Context<'_>,
+    input: Original<'_>,
+    plan: &Plan,
+    resources: &mut Resources<'_>,
+) -> Result<Ready> {
+    original(ctx, &input)?;
+    plan.bound(ctx, &input)?;
+    Publisher::controlled(ctx.profile.clone(), ctx.control.clone())?.reopen(&plan.native, resources)
 }

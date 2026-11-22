@@ -18,6 +18,9 @@ use std::{
     time::{Duration, Instant},
 };
 
+pub mod restore;
+const RESTORE_SCHEMA: &str = "git-asset.producer-restore-root.experimental-1";
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Profile {
@@ -170,8 +173,10 @@ impl Plan {
         Ok(plan)
     }
     fn valid(&self) -> Result<()> {
-        if self.schema != "git-asset.producer-root-update.experimental-1"
-            || self.revision == 0
+        if !matches!(
+            self.schema.as_str(),
+            "git-asset.producer-root-update.experimental-1" | RESTORE_SCHEMA
+        ) || self.revision == 0
             || self.root.bytes == 0
             || self.records.len() > 32
             || self
@@ -222,6 +227,25 @@ pub fn prepare(
     ns: &mut Namespace,
     nodes: &mut MetadataStore,
 ) -> Result<Option<Plan>> {
+    prepare_checked(p, expected, changes, ns, nodes, unchanged)
+}
+fn unchanged(old: Option<&Record>, new: &Record) -> Result<()> {
+    if old.is_some_and(|old| {
+        old.producer != new.producer
+            || (old.publication.is_some() && old.publication != new.publication)
+    }) {
+        return Err(Error::Conflict);
+    }
+    Ok(())
+}
+fn prepare_checked(
+    p: &Profile,
+    expected: Option<&Version>,
+    changes: &[Change],
+    ns: &mut Namespace,
+    nodes: &mut MetadataStore,
+    transition: impl Fn(Option<&Record>, &Record) -> Result<()>,
+) -> Result<Option<Plan>> {
     p.check(ns, nodes)?;
     if !p.scope.allow_store {
         return Err(Error::Denied);
@@ -255,14 +279,10 @@ pub fn prepare(
         if previous != change.expected_record {
             return Err(Error::Conflict);
         }
-        if let Some(old) = previous {
-            let old = read(&path, &old, &meter, limits(p), &mut TreeMetrics::default())?;
-            if old.producer != change.record.producer
-                || (old.publication.is_some() && old.publication != change.record.publication)
-            {
-                return Err(Error::Conflict);
-            }
-        }
+        let old = previous
+            .map(|old| read(&path, &old, &meter, limits(p), &mut TreeMetrics::default()))
+            .transpose()?;
+        transition(old.as_ref(), &change.record)?;
         let (path, record) = change.record.store(&mut meter)?;
         records.insert(
             change.record.object.sha256.clone(),
@@ -344,7 +364,20 @@ pub fn apply(
     plan: &Plan,
     ns: &mut Namespace,
     nodes: &mut MetadataStore,
+    admit: impl FnMut() -> Result<()>,
+) -> Result<Report> {
+    if plan.schema != "git-asset.producer-root-update.experimental-1" {
+        return Err(Error::Unsupported);
+    }
+    apply_checked(p, plan, ns, nodes, admit, unchanged)
+}
+fn apply_checked(
+    p: &Profile,
+    plan: &Plan,
+    ns: &mut Namespace,
+    nodes: &mut MetadataStore,
     mut admit: impl FnMut() -> Result<()>,
+    transition: impl Fn(Option<&Record>, &Record) -> Result<()>,
 ) -> Result<Report> {
     if let Some(old) = status(p, plan, ns, nodes)? {
         return Ok(old);
@@ -375,12 +408,7 @@ pub fn apply(
         if let Some(base) = &plan.expected {
             let (previous, _) =
                 Index::from_root(base.selection.root.clone()).get(object, &mut meter, limits(p))?;
-            if previous.is_some_and(|old| {
-                old.producer != record.producer
-                    || (old.publication.is_some() && old.publication != record.publication)
-            }) {
-                return Err(Error::Conflict);
-            }
+            transition(previous.as_ref(), &record)?;
         }
         edits.insert(key(object)?, Some(raw.clone()));
     }

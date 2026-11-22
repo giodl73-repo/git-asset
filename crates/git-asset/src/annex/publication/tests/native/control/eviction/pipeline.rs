@@ -1,6 +1,7 @@
 //! Copy must consume the acknowledged source, not another fixture input.
 use super::*;
 use crate::annex::replication;
+mod index;
 pub(super) fn restore(
     f: &mut Fixture,
     keeper: &mut Fixture,
@@ -149,6 +150,7 @@ pub(super) fn restore(
     .unwrap();
     drop(again);
     assert_eq!(checkpoint, f.namespaces[0].checkpoint());
+    index::exercise(f, owner, evicted, old, &reopened);
     reopened.publication().clone()
 }
 pub(super) fn copy(source: &mut Fixture, keeper: &mut Fixture, owner: &OwnerProfile, bytes: &[u8]) {

@@ -59,8 +59,8 @@ retirement is a different, still-open repair operation.
 
 Keep `Plan::publication()` as the exact reopened producer handle. Its new
 operation/incarnation is not a copy-context annotation of the old producer row.
-Replacing a worker's stale recipe requires separate admitted orchestration;
-ordinary write-once producer records must not be overwritten to hide that change.
+Use the restore-specific index transaction below to register that successor;
+ordinary write-once edits cannot hide the change. Receiver scheduling is separate.
 
 ## Producer review and qualification
 
@@ -88,3 +88,52 @@ It also resumes the old eviction and checks that restored bytes survive.
 External native-restore-* logs record terminal results and exact source; default
 ignored native cases are not successes. Full P2/P3, P4/P5/P6 and human validation
 remain separate from this component's implementation and verification.
+
+## Restore-specific index transaction
+
+Inputc10b4682ce0042494a8f490044be4eeada7d1a26; same controls/profiles above.
+Allowed: extend the existing producer-root updater with one typed restore
+transition. Entry: existing index Job source, exact committed Version/record,
+saved restore Plan and original publication/eviction. No generic recipe editor,
+new cache/journal, automatic enrollment, payload transfer or creative selection.
+Exit: retained expected-baseline index receipt for the new publication, or hold.
+L0: pins/links/fmt; L1: strict Clippy, immutable ordinary updates and parsed-plan
+validation; L2: native restore/readback, saved index update, interruption/retry,
+stale baseline and old/new root lookup. These are producer component checks.
+
+`publication::restore::reopen` is read-only: verify the exact original completed
+retirement and saved restore chain, then reopen the restored publication through
+the controlled Publisher. It creates no metadata birth/import or selection.
+
+`producer_index::update::restore::{prepare,apply,status}` composes this readback
+with the existing metered root editor/atomic selection. Baseline names the exact
+index Version and previous record Object. Only one row may change. The old row
+must declare the exact retired publication, and the new row is exactly the restored
+candidate's publication, without inherited old retained-reference/control grant
+or a copy-context annotation. Candidate/provenance remain identical. Old roots
+and their recipes remain in the existing source predecessor history; all namespace
+closure/history/lifetime bounds remain. Ordinary prepare/apply still refuse swaps.
+
+Persist the canonical wrapper Plan before apply. It embeds the restore Plan and
+root-update Plan, is capped at64KiB, and authorizes no native transfer/removal.
+The inner root Plan has a distinct restore-root schema/selection identity;
+ordinary apply returns Unsupported for it. An ordinary insertion receipt cannot
+be reused as evidence that a restore-specific transition completed.
+New selection reopens and holds restored native bytes through root adoption and
+revalidates the exact old/new records while rebuilding declared edits. Concurrent
+index writers cause stale/CAS refusal. Post-selection refusal keeps the receipt.
+Completed original status/replay returns that historical receipt before native
+access, without reselecting an old root or requiring the media to remain online.
+An incomplete index update preserves the original restore and root Plans; retry
+the same operation after admission/recovery. Do not restore again merely because
+the index reply is lost. Receiver scheduling and unexplained-loss repair stay open.
+
+Producer role review: recovery (high) requires an existing old row even for parsed
+plans, keeps ordinary apply strict and checks original receipt before native IO;
+the separate restore-root identity also prevents cross-operation receipt reuse;
+implemented in the private transition verifier and native fixture. Custody (high)
+requires held fresh native readback through selection, not metadata alone. Identity
+keeps candidate/provenance fixed and old root blobs unchanged. Placement retains
+all existing budgets and separate permission. Privacy adds no event paths or new
+execution. Adoption leaves automation/owner acceptance open. These dispositions
+are producer checks, not independent review or authorization to enroll caches.
