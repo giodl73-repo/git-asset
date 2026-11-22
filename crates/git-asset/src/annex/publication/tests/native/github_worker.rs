@@ -17,7 +17,8 @@ pub(super) fn git(root: &Path, args: &[&str]) -> Vec<u8> {
     );
     output.stdout
 }
-fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool) {
+mod batch;
+fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool, batch_mode: u8) {
     let bytes = vec![45; 256 * 1024];
     let tools = native.then(|| {
         (
@@ -36,6 +37,9 @@ fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool) 
     );
     let mut target = Fixture::build_setup(&bytes, tools, true, None, true);
     retirement::publish(&mut source);
+    if batch_mode == 3 {
+        retirement::publish(&mut target);
+    }
     let profile = crate::annex::replication::Profile {
         source: source.profile.clone(),
         destination: target.profile.clone(),
@@ -55,6 +59,7 @@ fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool) 
         crate::annex::replication::Plan::new(&profile, source.plan.clone(), target.plan.clone())
             .unwrap()
     };
+    let target_plan = target.plan.clone();
     let policy = WorkerPolicy {
         copy: profile,
         source_control: None,
@@ -63,6 +68,14 @@ fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool) 
         required_place: k("pool"),
         allow_selection: true,
         allow_copy: true,
+        producers: (batch_mode != 0).then(|| github::native::ProducerRoots {
+            source: batch::index(
+                &mut source,
+                plan.source().clone(),
+                plan.source_snapshot().cloned(),
+            ),
+            destination: batch::index(&mut target, target_plan.clone(), None),
+        }),
         actions: action_mode.then_some(github::native::Actions {
             handoff: true,
             eviction: None,
@@ -70,6 +83,22 @@ fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool) 
     };
     let policy: WorkerPolicy =
         serde_json::from_slice(&serde_json::to_vec(&policy).unwrap()).unwrap();
+    if policy.producers.is_none() {
+        // Freeze the pre-index policy wire/domain independently of Policy's serializer.
+        let mut old = serde_json::json!({"copy":policy.copy,"source_control":policy.source_control,
+            "destination_control":policy.destination_control,"namespace":policy.namespace,
+            "required_place":policy.required_place,"allow_selection":policy.allow_selection,
+            "allow_copy":policy.allow_copy});
+        if let Some(actions) = &policy.actions {
+            old["actions"] = serde_json::to_value(actions).unwrap();
+        }
+        let expected = Digest::blob(
+            &identity::canonical_json(&serde_json::json!({
+            "schema":"git-asset.trusted-native-copy-policy.experimental-1","policy":old}))
+            .unwrap(),
+        );
+        assert_eq!(policy.id().unwrap(), expected);
+    }
     let project = target.root.join("selected-project");
     fs::create_dir_all(project.join("assets")).unwrap();
     git(&project, &["init", "-b", "main"]);
@@ -160,6 +189,32 @@ fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool) 
         metadata: &mut metadata,
         limits: &limits,
     };
+    if batch_mode != 0 {
+        fs::remove_file(
+            target
+                .root
+                .join("input/objects")
+                .join(object.sha256.as_str()),
+        )
+        .unwrap();
+        if batch_mode == 3 {
+            batch::existing(&mut worker, &mut source, &mut target, &plan);
+            return;
+        }
+        if batch_mode == 2 {
+            batch::uncertain(&mut worker, &mut source, &mut target, &plan);
+            return;
+        }
+        batch::exercise(
+            &mut worker,
+            &mut source,
+            &mut target,
+            &plan,
+            &project,
+            &signer,
+        );
+        return;
+    }
     let before = worker.namespace.checkpoint();
     // Policy drift cannot use an otherwise valid signed event.
     let mut wrong = policy.clone();
@@ -467,35 +522,35 @@ fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool) 
 }
 #[test]
 fn authenticated_native_copy_uses_exact_selected_demand_and_original_retry() {
-    matrix(false, true, false, false);
+    matrix(false, true, false, false, 0);
 }
 #[test]
 #[ignore = "explicit native tools; synthetic pools only"]
 fn actual_authenticated_native_copy_reopens_original_after_head_advance() {
-    matrix(true, true, false, false);
+    matrix(true, true, false, false, 0);
 }
 
 #[test]
 fn authenticated_native_copy_refuses_undemanded_candidate_before_publication() {
-    matrix(false, false, false, false);
+    matrix(false, false, false, false, 0);
 }
 
 #[test]
 fn authenticated_native_snapshot_copy_keeps_exact_git_admission() {
-    matrix(false, true, true, false);
+    matrix(false, true, true, false, 0);
 }
 #[test]
 #[ignore = "explicit native tools; fresh synthetic pools only"]
 fn actual_authenticated_native_snapshot_copy_keeps_exact_git_admission() {
-    matrix(true, true, true, false);
+    matrix(true, true, true, false, 0);
 }
 
 #[test]
 fn authenticated_handoff_revalidates_after_custody_and_between_commands() {
-    matrix(false, true, true, true);
+    matrix(false, true, true, true, 0);
 }
 #[test]
 #[ignore = "explicit native tools; fresh synthetic pools only"]
 fn actual_authenticated_handoff_revalidates_after_custody_and_between_commands() {
-    matrix(true, true, true, true);
+    matrix(true, true, true, true, 0);
 }

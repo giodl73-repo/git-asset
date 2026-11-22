@@ -187,7 +187,7 @@ mod tests {
         let valid =
             serde_json::json!({"schema":"tig.github-request.design-1","commit":f.commit.as_str()})
                 .to_string();
-        for variant in 0..6 {
+        for variant in 0..9 {
             let listener = TcpListener::bind("127.0.0.1:0").unwrap();
             let mut client = TcpStream::connect(listener.local_addr().unwrap()).unwrap();
             let (incoming, _) = listener.accept().unwrap();
@@ -205,6 +205,18 @@ mod tests {
                     length = body.len();
                 }
                 4 => bearer = "not-a-signed-token".into(),
+                6..=8 => {
+                    let mut document: serde_json::Value = serde_json::from_str(&valid).unwrap();
+                    match variant {
+                        6 => document["root"] = "C:/untrusted/cache".into(),
+                        7 => document["plan"] = serde_json::json!({"delete":true}),
+                        _ => {
+                            document["cursor"] = serde_json::json!({"basis":Digest::blob(b"basis"),"after":Digest::blob(b"after"),"root":"untrusted"})
+                        }
+                    }
+                    body = document.to_string();
+                    length = body.len();
+                }
                 _ => {
                     length = 2049;
                     body.clear();

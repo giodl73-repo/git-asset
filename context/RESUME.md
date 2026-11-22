@@ -6,7 +6,7 @@ acceptance; keep the full goal active.
 
 Active owned lane: F:/src/git-asset-worktrees/trusted-native-placement,
 feat/trusted-native-placement, draft PR74 based on feat/source-generation-use.
-Input0b73387e26e3b747611c824d387bb58c482a0430; derive newer source/CI from Git.
+Inputd43c71e382579383e0549758e1d589f807a64b42; derive newer source/CI from Git.
 PR70 and P1/PR71 merged. P2 PR72 and source-generation prerequisite PR73 remain
 stack dependencies; P2 mixed legacy/owner/roster/epoch handoff is OPEN, never
 inferred from NamespaceOwned policy. See docs/reviews/p2-closure-audit.md.
@@ -23,7 +23,7 @@ uses cumulative metadata budgets and preserves original copy wire hashes. Explic
 Plan::from_snapshot works through the authenticated copy worker. New default-denied
 actions connect handoff and eviction with late admission and actual-root selection.
 Contracts: TRUSTED-NATIVE-MUTATIONS and source allowance in SOURCE-BUDGET. Next:
-receiver, exact per-object producer lookup and batch reconciliation,
+durable retention/eviction scheduling and full batch reconciliation,
 revert/reacquisition and duplicate/missed/outage/crash qualification. No global
 convergence from one copy or stale event. No new publisher/cache/journal.
 
@@ -31,11 +31,25 @@ Producer lookup now uses immutable asset-side Tree records: exact object/length,
 original publication Plan and optional retained Snapshot. Root-bound metadata
 pages have shared tree/record read budgets and never hydrate payloads. Contract:
 NATIVE-PRODUCER-INDEX. Ten-thousand-entry synthetic paging and record failure
-fixtures qualify lookup only; receiver/root publication/batch integration remain
-OPEN. Missing registration is unknown, never absent bytes or removal authority.
+fixtures qualify lookup only. Missing registration is unknown, never absent bytes
+or removal authority. Explicit root publication/retention remains caller-owned.
 Lookup validation:120 core tests plus two index cases, strict workspace
 all-feature/all-target Clippy, standalone annex-publish, fmt and L0 pass.
 External producer-index-* logs retain exact outcomes; derive hosted state live.
+
+Native copy receiver now uses fixed policy-bound producer roots, exact annex Git
+metadata, guarded original publication observations and existing Copier. One
+bounded page has dry-run/copied/present/held outcomes; duplicate observation works
+after working ingest release. Unknown publication never becomes present; original
+plan status/resume remains mandatory. Native payload apply is Windows-only; old
+local/LFS dispatch remains. Contract/runbook: NATIVE-RECEIVER. Original F ingress
+and deterministic copy-context recipes remain distinct; report publication ID
+never invents copy completion.26 focused cases, two explicit actual-annex cases,
+CLI/document tests, strict Clippy and standalone feature builds pass. Exact source
+evidence is external native-receiver-*; derive hosted terminal state live.
+Receiver connection is copy-only: creating missing backup custody, root
+publication, handoff/eviction plan persistence/scheduling, complete revert and
+project acceptance remain OPEN. Global storage convergence stays unknown.
 
 P4: REEL main-based PR401, qualified89a875c6c34ed84b1e890520db996d55cffe2bd7,
 ready for review. SDK pin0ccb137cf5a78416e780f8a3372017f642a5cb71 unchanged;

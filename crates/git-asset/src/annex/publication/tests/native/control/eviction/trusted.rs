@@ -104,6 +104,7 @@ impl State {
             required_place: k("pool"),
             allow_selection: true,
             allow_copy: false,
+            producers: None,
             actions: Some(Actions {
                 handoff: false,
                 eviction: Some(owner.clone()),

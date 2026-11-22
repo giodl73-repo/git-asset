@@ -42,4 +42,6 @@ reads. Drop or process exit releases live handles, never durable claims or bytes
 This copy path does not settle ingest retention, evict, reacquire, cancel, approve
 creative selection or claim independent physical failure domains. Those require
 their existing explicit proofs/permissions. Frozen policy is not mixed-authority
-handoff, custody evidence or an eviction grant. HTTP intake connection remains open.
+handoff, custody evidence or an eviction grant. Native copy HTTP intake is now
+described in [NATIVE-RECEIVER](NATIVE-RECEIVER.md). Full retention/eviction
+scheduling and whole-placement acceptance remain open.

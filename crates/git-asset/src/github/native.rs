@@ -27,6 +27,14 @@ pub struct Policy {
     pub allow_copy: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub actions: Option<Actions>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub producers: Option<ProducerRoots>,
+}
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ProducerRoots {
+    pub source: git_asset_core::Object,
+    pub destination: git_asset_core::Object,
 }
 #[derive(Clone, Default, Serialize, Deserialize)]
 #[serde(default, deny_unknown_fields)]
@@ -37,6 +45,13 @@ pub struct Actions {
 impl Policy {
     /// Pure enrollment identity; never opens a pool or discovers locations.
     pub fn id(&self) -> Result<Digest, Error> {
+        if self.producers.as_ref().is_some_and(|r| {
+            [&r.source, &r.destination]
+                .iter()
+                .any(|o| o.bytes == 0 || o.bytes > 65536)
+        }) {
+            return Err(Error::Native(publication::Error::Budget));
+        }
         for profile in [&self.copy.source, &self.copy.destination] {
             managed::Reader::new(profile.pool.clone()).map_err(publication::Error::from)?;
         }
@@ -343,3 +358,4 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
 }
 mod mutations;
 pub use mutations::Mutation;
+pub mod batch;

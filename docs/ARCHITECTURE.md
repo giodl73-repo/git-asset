@@ -267,8 +267,11 @@ pages share traversal/record read budgets, preserving original publication plans
 and optional exact retained snapshots. This performs no cache scan or payload
 read. A declaration is not current custody or eviction authority; the existing
 native publisher/controller verifies those separately. See
-[contract and fixtures](../specs/NATIVE-PRODUCER-INDEX.md). Receiver connection,
-durable batch reconciliation and full merge-driven acceptance remain open.
+[contract and fixtures](../specs/NATIVE-PRODUCER-INDEX.md). The
+[native receiver](NATIVE-RECEIVER.md) now routes authenticated commits to bounded
+copy reconciliation over fixed index roots, including dry run and held original
+publication recovery. Durable retention/eviction scheduling and full merge-driven
+acceptance remain open.
 
 ## Storage orchestration entry
 

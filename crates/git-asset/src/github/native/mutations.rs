@@ -12,7 +12,7 @@ pub struct Mutation<T> {
     pub post_effect_hold: Option<AdmissionError>,
     pub storage_converged: Option<bool>,
 }
-fn publisher(
+pub(super) fn publisher(
     profile: &publication::Profile,
     control: &Option<control::Profile>,
 ) -> Result<publication::Publisher, Error> {
