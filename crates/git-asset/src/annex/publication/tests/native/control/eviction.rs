@@ -1,5 +1,6 @@
 //! Connected native controller/facade over fresh synthetic pools only.
 mod cli;
+mod process;
 use super::*;
 use crate::annex::retirement::Assessor;
 use crate::annex::retirement::planning::{
@@ -40,6 +41,9 @@ fn demand(f: &mut Fixture, old_native: &Plan) {
 #[test]
 #[ignore = "explicit native tools and distinct volume roots; fresh synthetic pools only"]
 fn actual_native_eviction_retained_restore_and_stale_replay() {
+    matrix(false);
+}
+fn matrix(exits: bool) {
     let git: PathBuf = std::env::var_os("GIT_ASSET_TEST_GIT_EXE").unwrap().into();
     let annex: PathBuf = std::env::var_os("GIT_ASSET_TEST_ANNEX_EXE").unwrap().into();
     let path = std::env::split_paths(&std::env::var_os("GIT_ASSET_TEST_ANNEX_PATH").unwrap())
@@ -60,6 +64,18 @@ fn actual_native_eviction_retained_restore_and_stale_replay() {
         (false, Cut::AfterRemoval),
         (true, Cut::AfterRemoval),
     ] {
+        if exits && cut == Cut::None {
+            continue;
+        }
+        eprintln!(
+            "native eviction case: bare={bare}, abrupt_exit={exits}, boundary={}",
+            match cut {
+                Cut::BeforeEffect => "before_effect",
+                Cut::AfterRemoval => "after_removal",
+                Cut::AfterCompletion => "after_completion",
+                _ => "fresh",
+            }
+        );
         let bytes = vec![91; 256 * 1024];
         let mut f = Fixture::build_in(
             &bytes,
@@ -402,51 +418,58 @@ fn actual_native_eviction_retained_restore_and_stale_replay() {
             .unwrap();
         assert_eq!(public_preview.id().unwrap(), planned.id().unwrap());
         let cli = cli::Client::new(&f, &backup, &policy, &planned, &pin);
-        let result = if let (Cut::None, Some(cli)) = (cut, &cli) {
-            Ok(cli.call("apply", true)["report"].clone())
-        } else if cut == Cut::None {
-            controller
-                .apply(
-                    &planned,
-                    sources!(),
-                    Nodes {
-                        source: &f.metadata,
-                        keeper: &mut backup.metadata,
-                        limits: &Fixture::limits(),
-                        tree_limits: TreeLimits::default(),
-                    },
-                )
-                .map(|r| serde_json::to_value(r).unwrap())
+        let result = if exits {
+            cli.as_ref().unwrap().exit(cut);
+            None
         } else {
-            controller
-                .apply_hook(
-                    &planned,
-                    sources!(),
-                    Nodes {
-                        source: &f.metadata,
-                        keeper: &mut backup.metadata,
-                        limits: &Fixture::limits(),
-                        tree_limits: TreeLimits::default(),
-                    },
-                    cut,
-                )
-                .map(|r| serde_json::to_value(r).unwrap())
+            Some(if let (Cut::None, Some(cli)) = (cut, &cli) {
+                Ok(cli.call("apply", true)["report"].clone())
+            } else if cut == Cut::None {
+                controller
+                    .apply(
+                        &planned,
+                        sources!(),
+                        Nodes {
+                            source: &f.metadata,
+                            keeper: &mut backup.metadata,
+                            limits: &Fixture::limits(),
+                            tree_limits: TreeLimits::default(),
+                        },
+                    )
+                    .map(|r| serde_json::to_value(r).unwrap())
+            } else {
+                controller
+                    .apply_hook(
+                        &planned,
+                        sources!(),
+                        Nodes {
+                            source: &f.metadata,
+                            keeper: &mut backup.metadata,
+                            limits: &Fixture::limits(),
+                            tree_limits: TreeLimits::default(),
+                        },
+                        cut,
+                    )
+                    .map(|r| serde_json::to_value(r).unwrap())
+            })
         };
         if cut == Cut::None {
-            let report = result.unwrap();
+            let report = result.unwrap().unwrap();
             assert_eq!(report["historical"], false);
             assert_eq!(report["metadata"]["cancelled"], false);
             assert_eq!(report["logical_subject_bytes"], object.bytes);
             assert!(report["source_allocation_before"].is_u64());
         } else {
-            assert_eq!(
-                result.err().unwrap().code(),
-                if cut == Cut::AfterRemoval {
-                    "uncertain"
-                } else {
-                    "needs_recovery"
-                }
-            );
+            if let Some(result) = result {
+                assert_eq!(
+                    result.err().unwrap().code(),
+                    if cut == Cut::AfterRemoval {
+                        "uncertain"
+                    } else {
+                        "needs_recovery"
+                    }
+                );
+            }
             assert!(matches!(
                 control::Profile::open(
                     f.control_profile.as_ref().unwrap(),
@@ -752,4 +775,11 @@ fn actual_native_eviction_retained_restore_and_stale_replay() {
 fn actual_native_storage_facade_ordinary_bare_lifecycle() {
     assert!(std::env::var_os("GIT_ASSET_TEST_FRONT_DOOR_EXE").is_some());
     actual_native_eviction_retained_restore_and_stale_replay();
+}
+
+#[test]
+#[ignore = "fresh facade executable, native tools and distinct volumes; actual child exits"]
+fn actual_native_executor_process_exits_preserve_original_operation() {
+    assert!(std::env::var_os("GIT_ASSET_TEST_FRONT_DOOR_EXE").is_some());
+    matrix(true);
 }

@@ -47,8 +47,11 @@ incarnation; old completion reports history and current presence separately.
 Reports distinguish logical subject bytes, source file allocation (fresh apply
 only), metadata receipts and presence. They do not claim net free disk space.
 
-The explicit facade CLI below uses this same controller. Actual executor
-process-exit/epoch qualification and production acceptance remain open.
+The explicit facade CLI below uses this same controller. An abrupt-exit fixture
+covers metadata intent, unacknowledged native removal and durable completion in
+ordinary/bare pools, followed by original-operation recovery and retained restore.
+This proves process-exit behavior, not power loss. Concurrent actor races, owner/
+epoch handoff and production acceptance remain open.
 The ordinary/bare synthetic native fixture exercises the SDK preview, fresh
 apply, readonly status, historical resume, cancellation and retained restore.
 No cache operations run on startup, help or construction.

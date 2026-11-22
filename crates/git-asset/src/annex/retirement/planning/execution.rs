@@ -159,6 +159,23 @@ pub(crate) enum Cut {
     BeforeEffect,
     AfterRemoval,
     AfterCompletion,
+    #[cfg(all(test, windows))]
+    ExitBeforeEffect,
+    #[cfg(all(test, windows))]
+    ExitAfterRemoval,
+    #[cfg(all(test, windows))]
+    ExitAfterCompletion,
+}
+#[cfg(all(test, windows))]
+fn exit_at(cut: Cut, stage: Cut) {
+    if matches!(
+        (cut, stage),
+        (Cut::ExitBeforeEffect, Cut::BeforeEffect)
+            | (Cut::ExitAfterRemoval, Cut::AfterRemoval)
+            | (Cut::ExitAfterCompletion, Cut::AfterCompletion)
+    ) {
+        std::process::exit(73);
+    }
 }
 /// Internal execution with fixture cuts at metadata intent, removal and completion.
 pub(crate) fn apply_hook<N: NodeStore>(
@@ -211,6 +228,8 @@ pub(crate) fn apply_hook<N: NodeStore>(
     );
     let mut effect_error = None;
     let result = finish(profile, plan, runtime, nodes, limits, |_| {
+        #[cfg(all(test, windows))]
+        exit_at(cut, Cut::BeforeEffect);
         if cut == Cut::BeforeEffect {
             return Err(git_asset_store::Error::NeedsRecovery.into());
         }
@@ -250,6 +269,8 @@ pub(crate) fn apply_hook<N: NodeStore>(
                         return Err(publication::Error::Uncertain.into());
                     }
                     separation.revalidate()?;
+                    #[cfg(all(test, windows))]
+                    exit_at(cut, Cut::AfterRemoval);
                     if cut == Cut::AfterRemoval {
                         return Err(publication::Error::Uncertain.into());
                     }
@@ -261,6 +282,8 @@ pub(crate) fn apply_hook<N: NodeStore>(
                 effect_error = Some(publication::Error::from(e));
                 git_asset_store::Error::NeedsRecovery
             })?;
+        #[cfg(all(test, windows))]
+        exit_at(cut, Cut::AfterCompletion);
         if cut == Cut::AfterCompletion {
             return Err(git_asset_store::Error::NeedsRecovery.into());
         }

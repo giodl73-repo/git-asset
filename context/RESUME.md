@@ -79,8 +79,12 @@ CLI entry (input61816a0): git asset storage native describe/plan/status/apply/
 resume/cancel delegates Controller via a bounded trusted profile. Mutation flags
 default false; saved preview ID and original-operation recovery are explicit.
 Ordinary storage sibling dispatch remains. See native-cli-* external evidence.
-Next: actual native executor process exits/races and remaining authority/epoch
-handoff; production activation/acceptance remains unavailable.
+Abrupt exits (inputc05a69d): test-only child stops without Rust cleanup at
+metadata intent/no native effect, post-removal unknown, and durable completion.
+Parent exercises original CLI/SDK recovery, new demand, retained reopen and
+same-hash restore/history. See exit-* source/terminal evidence; no production
+fault hook. Next: concurrent native actor races and authority/epoch handoff;
+production activation/acceptance remains unavailable.
 Core limits remain16 births,16384 commands,16MiB journal; P5 scale gates stay open.
 
 Evidence: F:/src/tig-dev-temp/git-asset-protected-eviction-20261121.

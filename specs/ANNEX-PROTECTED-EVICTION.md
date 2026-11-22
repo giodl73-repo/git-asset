@@ -453,3 +453,15 @@ L1 discovery/default-disabled/invalid/oversize/duplicate/mismatched preview and
 ordinary dispatch; L2 new ordinary/bare F:/M: pools via real freshly built facade
 for preview/apply/status/resume/cancel. Actual executor exit/race, epoch handoff
 and P2 acceptance remain separate. No live cache operation is authorized.
+
+Executor exit entry inputc05a69d: same P2 WP/REQ/SPEC/IF/PKG controls and
+RUST/PROVIDER/INTEGRATION profiles. Test-only abrupt child exits at metadata
+intent before native intent, native removal before completion, and durable effect
+completion before metadata unlink. No production environment-controlled fault
+hook. Parent owns fresh ordinary/bare F:/M: fixtures and exact saved profile/plan;
+child reopens existing resources and executes the same Controller. L0 pins/fmt/
+links/size/audits; L1 scoped platform compilation and unchanged defaults; L2 six
+actual exits: no-effect cancellation preserves bytes, unknown effects stay held,
+completed effects resume with new demand, retained bytes reopen and old history
+spares restored same-hash content. This is process-exit evidence, not power-loss
+or legacy/epoch handoff qualification. No production operation is enabled.

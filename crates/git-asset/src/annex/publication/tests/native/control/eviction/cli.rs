@@ -106,6 +106,20 @@ impl Client {
         assert_eq!(value["ok"], success, "{value}");
         value
     }
+    pub fn exit(&self, cut: Cut) {
+        let stage = match cut {
+            Cut::BeforeEffect => "before",
+            Cut::AfterRemoval => "removed",
+            Cut::AfterCompletion => "completed",
+            _ => panic!("unsupported child exit boundary"),
+        };
+        let status=std::process::Command::new(std::env::current_exe().unwrap())
+            .args(["--exact","annex::publication::tests::native::control::eviction::process::eviction_exit_worker","--nocapture"])
+            .env("GIT_ASSET_TEST_EVICTION_PROFILE",&self.profile)
+            .env("GIT_ASSET_TEST_EVICTION_PLAN",&self.saved)
+            .env("GIT_ASSET_TEST_EVICTION_CUT",stage).status().unwrap();
+        assert_eq!(status.code(), Some(73));
+    }
     pub fn call(&self, op: &str, success: bool) -> Value {
         self.invoke(op, &self.profile, &self.saved, success)
     }
