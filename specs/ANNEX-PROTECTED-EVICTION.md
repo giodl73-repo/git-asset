@@ -486,3 +486,13 @@ creative selection unmodified. No production code/protocol change. L0 current
 source pins/docs/size/links; L1 strict compilation/annex regression; L2 two real
 F:/M: joined cases. Closure audit keeps actual owner/legacy/epoch migration and
 remaining whole-PR profiles open; separate component proofs do not close them.
+
+Unrelated payload entry input3ddeab5: same P2 controls, RUST/PROVIDER/INTEGRATION.
+Extend paused ordinary/bare actor fixture to publish/reopen a different object
+through controlled Publisher in the SAME native pool, metadata namespace, witness
+and ledger while original retirement scopes remain held. Create its separate
+control-origin document using existing accounted publication; keep old plan and
+creative selection unchanged. L0 pins/docs/limits; L1 strict compilation/annex;
+L2 actual bounded publication/readback followed by original exit/cancel recovery.
+This does not prove legacy actor or epoch migration. No production behavior,
+new journal/cache engine or live enrollment is permitted.

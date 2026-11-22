@@ -86,6 +86,9 @@ same-hash restore/history. See exit-* source/terminal evidence; no production
 fault hook. Paused native races (input4c35c15) now exercise actual same-object
 job admission/config replacement refusal while unrelated source enrollment
 progresses, then new-demand cancellation after exit; race-* evidence is external.
+Unrelated payload (input3ddeab5) also publishes/reopens through controlled
+Publisher in that same pool/namespace/witness/ledger during the pause; parallel-*
+evidence. Legacy actor-control boundary was asked asynchronously, not inferred.
 P2 closure audit: docs/reviews/p2-closure-audit.md. Joined controlled copier
 (input9042dff) removes keeper input, uses source bytes, retains exact destination
 producer, then native eviction/restore. See pipeline-* terminal evidence.

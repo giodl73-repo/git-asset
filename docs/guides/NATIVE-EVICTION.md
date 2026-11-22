@@ -52,8 +52,9 @@ covers metadata intent, unacknowledged native removal and durable completion in
 ordinary/bare pools, followed by original-operation recovery and retained restore.
 This proves process-exit behavior, not power loss. Paused ordinary/bare fixtures
 check participating same-object admission/config conflicts while unrelated source
-enrollment progresses. This does not qualify full unrelated payload publication,
-arbitrary legacy exclusion or owner/epoch handoff; production acceptance is open.
+enrollment and controlled payload publication/readback progress in the same pool.
+This does not qualify arbitrary legacy exclusion or owner/epoch handoff;
+production acceptance is open.
 The ordinary/bare synthetic native fixture exercises the SDK preview, fresh
 apply, readonly status, historical resume, cancellation and retained restore.
 No cache operations run on startup, help or construction.

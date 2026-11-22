@@ -431,7 +431,7 @@ fn matrix(exits: bool, races: bool, copies: bool) {
             if races {
                 cli.as_ref()
                     .unwrap()
-                    .race(|| race::check(&mut f, &old_native));
+                    .race(|| race::check(&mut f, &old_native, &mut source_control));
             } else {
                 cli.as_ref().unwrap().exit(cut);
             }

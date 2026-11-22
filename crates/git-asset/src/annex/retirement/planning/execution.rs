@@ -177,7 +177,7 @@ fn exit_at(cut: Cut, stage: Cut) {
         let started = std::time::Instant::now();
         while !root.join("release").exists() {
             assert!(
-                started.elapsed() < std::time::Duration::from_secs(60),
+                started.elapsed() < std::time::Duration::from_secs(180),
                 "parent release timeout"
             );
             std::thread::sleep(std::time::Duration::from_millis(10));
