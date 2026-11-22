@@ -575,6 +575,7 @@ pub fn plan_sequence(
     let mut state = super::State {
         guarded: true,
         sources: initial.clone(),
+        source_slots: BTreeMap::new(),
         outcomes: BTreeMap::new(),
         head: namespace.checkpoint(),
         bytes: 0,

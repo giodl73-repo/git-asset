@@ -104,3 +104,16 @@ Resume starts no cache, census, hydration, transfer, render or deletion.
 Synthetic fixtures only; no production changes, independent or human approval.
 
 [Prior complete startup history](https://github.com/giodl73-repo/git-asset/blob/9427fdf982d65a0383580ce42d603464afae7f4f/context/RESUME.md).
+
+
+P4 prerequisite lane: feat/source-generation-use, based on94865c07928275bb130cf3e002dc48ac82d9cfce;
+contract specs/SOURCE-GENERATION-USE.md, producer review
+ docs/reviews/source-generation-use.md. Explicit fresh Namespace::create_fenced
+adds per-source shared current-generation use and exclusive mutation gates;
+old create/config/hash encodings remain readable. Source stability is separate
+from byte custody, owner authentication and full roster admission. Tests/checks
+are pending until exact-source evidence below; no production migration.
+REEL isolated public-workflow head4a883eaed9b0bb852e6f6f0e40ac8e9e353a91ea
+passed hosted44988638980 (Windows/Linux). Full Lifecycle remains open; preserve
+other workflow-handoff lane and private vendor. Pending legacy actor-boundary
+question still controls P2 migration; MixedLegacy remains Unsupported.
