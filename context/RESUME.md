@@ -7,7 +7,7 @@ renders or deployment on resume. Foundation qualification uses synthetic fixture
 
 Owned lane: feat/trusted-native-placement, draft PR74, based on
 feat/source-generation-use/PR73. Current refinement input is
-ffccf8cb206077908a3d667863acb5737189af65. Derive later committed source and its
+2eae14c95886767b36a62cffd48bf49017021f01. Derive later committed source and its
 hosted run; a prior pending run is not qualification of the next head.
 
 ## Series state
@@ -78,8 +78,8 @@ separation, old-byte restore and original uncertainty retain their own scopes.
 Full native HTTP/account/TLS and production acceptance are not implied by SDK tests.
 
 Next: connect owner publication/archival orchestration to index updates; repair
-missing deprecated backups; qualify controlled reacquisition and safe native
-stale-plan replacement. Then full transport/recovery, declared workload/lifetime
+missing deprecated backups; connect controlled restoration to owner orchestration
+and qualify safe native stale-plan replacement. Then full transport/recovery, declared workload/lifetime
 bounds, P2 mixed-authority handoff, P4 acceptance, P5 RC and concrete P6 owner review.
 No final archival deletion, timeout forgetting or automatic production enrollment.
 
@@ -113,3 +113,20 @@ copy/rebind, reverse-backup archive and distinct-volume recorded-recipe eviction
 cases pass. Workspace Clippy, standalone annex-publish and fmt pass. External
 producer-recipe-source.json pins the committed source/logs. Parentcb798cb hosted
 45061875678 passed; current-head hosted status remains separate.
+
+Controlled restore refinement from2eae14c adds publication::restore SDK
+prepare/apply/resume over the existing metadata reacquisition and native Publisher.
+Requires exact completed authorized eviction, owned empty Retention registration,
+explicit publish/reacquire permission and a durably saved canonical16KiB Plan.
+Candidate/provenance stay fixed; creative Main is unchanged. ControlReady may
+follow durable metadata birth: preserve/retry the same Plan, never invent another
+operation after a lost reply. Metadata validation binds the complete predecessor,
+actual retirement terminal and original ledger; restored same-hash bytes survive
+historical eviction replay. New publication handles do not overwrite old index rows.
+Contract/producer review: specs/NATIVE-RESTORE.md. External native-restore-* logs
+separate development regressions from final core/native qualification. Actual
+ordinary/bare copy/evict/restore passes with post-control interruption, reload and
+completed replay. Strict workspace Clippy, standalone annex-publish and fmt pass.
+Parent2eae14c hosted45065425208 passed; current source/CI derives after commit.
+Receiver restore scheduling, stale recipe replacement, unexplained-loss backup
+repair, remaining P2/P4 gates, P5 RC and P6 owner acceptance remain OPEN.

@@ -407,7 +407,18 @@ fn explicit_restore_new_incarnation_survives_old_deletion_and_publication_retrie
     let retired = f.plan();
     f.apply(&retired).unwrap();
     let restore = f.restored_plan(&retired, "restore-new");
+    restore.validate_retirement(&f.store, &retired).unwrap();
+    let mut wrong = retired.clone();
+    wrong.request.operation = key("other-eviction");
+    assert!(restore.validate_retirement(&f.store, &wrong).is_err());
+    let mut wrong = restore.clone();
+    wrong.capacity = digest("other-capacity");
+    assert!(wrong.validate_retirement(&f.store, &retired).is_err());
+    let mut wrong = restore.clone();
+    wrong.birth.previous = Some(digest("other-terminal"));
+    assert!(wrong.validate_retirement(&f.store, &retired).is_err());
     f.restore(&restore).unwrap();
+    restore.validate_retirement(&f.store, &retired).unwrap();
     let mut restored = Vec::new();
     f.store
         .read_object(&f.publication.object)

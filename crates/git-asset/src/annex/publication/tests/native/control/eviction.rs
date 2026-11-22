@@ -743,70 +743,75 @@ fn matrix_profile(exits: bool, races: bool, copies: bool, trusted: bool, batch: 
         assert_eq!(retained_bytes, bytes);
 
         // Restore uses a new native request and an explicit new control incarnation.
-        let mut request = old_native.request.clone();
-        request.operation = k("restore-native-version");
-        request.expected_revision = f.namespaces[0]
-            .source(&k("asset"))
-            .unwrap()
-            .unwrap()
-            .revision;
-        let mut metadata =
-            MetadataStore::open(&f.root.join("metadata"), f.metadata.checkpoint()).unwrap();
-        let frozen = freeze(&request, &mut metadata, TreeLimits::default()).unwrap();
-        let checkpoint = metadata.finish().unwrap();
-        drop(metadata);
-        f.metadata = MetadataReader::open(&f.root.join("metadata"), &checkpoint).unwrap();
-        let mut control_request = source_control.plan.publication.request().clone();
-        control_request.operation = k("restore-control-version");
-        let reacquire = retirement::plan_reacquisition(
-            &source_control.store,
-            &retired,
-            control_request,
-            control::writer_context(&f.profile, &request).unwrap(),
-        )
-        .unwrap();
-        retirement::Reacquisition {
-            store: &source_control.store,
-            ledger: &mut source_control.ledger,
-            job: &source_control.job,
-        }
-        .apply(
-            &reacquire,
-            &reacquire.authorize().unwrap(),
-            &mut Cursor::new(control::document(&object).unwrap()),
-        )
-        .unwrap();
-        let restored_control = control::Plan {
-            publication: reacquire.payload_plan().clone(),
-            job: source_control.job.clone(),
-        };
-        f.plan = Plan::controlled(
-            &f.profile,
-            request,
-            frozen,
-            old_native.admission.clone(),
-            f.control_profile.as_ref().unwrap(),
-            restored_control,
-        )
-        .unwrap();
-        // Make original input unavailable: restore consumes the retained native bytes.
-        fs::remove_file(f.root.join("input/objects").join(object.sha256.as_str())).unwrap();
-        let plan = f.plan.clone();
-        f.refresh();
-        f.ledger = CapacityLedger::open(
-            &f.root.join("ledger"),
-            &policy.runtime.as_ref().unwrap().effect.minimum,
-        )
-        .unwrap();
-        let mut publisher = f.publisher();
-        let mut input = crate::annex::managed::Reader::new(backup.profile.pool.clone()).unwrap();
-        let mut restored = publisher
-            .apply(&plan, &mut f.resources(), &mut input)
+        if copies {
+            f.plan = pipeline::restore(&mut f, &mut backup, &policy, &planned, &old_native);
+        } else {
+            let mut request = old_native.request.clone();
+            request.operation = k("restore-native-version");
+            request.expected_revision = f.namespaces[0]
+                .source(&k("asset"))
+                .unwrap()
+                .unwrap()
+                .revision;
+            let mut metadata =
+                MetadataStore::open(&f.root.join("metadata"), f.metadata.checkpoint()).unwrap();
+            let frozen = freeze(&request, &mut metadata, TreeLimits::default()).unwrap();
+            let checkpoint = metadata.finish().unwrap();
+            drop(metadata);
+            f.metadata = MetadataReader::open(&f.root.join("metadata"), &checkpoint).unwrap();
+            let mut control_request = source_control.plan.publication.request().clone();
+            control_request.operation = k("restore-control-version");
+            let reacquire = retirement::plan_reacquisition(
+                &source_control.store,
+                &retired,
+                control_request,
+                control::writer_context(&f.profile, &request).unwrap(),
+            )
             .unwrap();
-        let mut actual = Vec::new();
-        restored.read_to_end(&mut actual).unwrap();
-        assert_eq!(actual, bytes);
-        drop(restored);
+            retirement::Reacquisition {
+                store: &source_control.store,
+                ledger: &mut source_control.ledger,
+                job: &source_control.job,
+            }
+            .apply(
+                &reacquire,
+                &reacquire.authorize().unwrap(),
+                &mut Cursor::new(control::document(&object).unwrap()),
+            )
+            .unwrap();
+            let restored_control = control::Plan {
+                publication: reacquire.payload_plan().clone(),
+                job: source_control.job.clone(),
+            };
+            f.plan = Plan::controlled(
+                &f.profile,
+                request,
+                frozen,
+                old_native.admission.clone(),
+                f.control_profile.as_ref().unwrap(),
+                restored_control,
+            )
+            .unwrap();
+            // Make original input unavailable: restore consumes the retained native bytes.
+            fs::remove_file(f.root.join("input/objects").join(object.sha256.as_str())).unwrap();
+            let plan = f.plan.clone();
+            f.refresh();
+            f.ledger = CapacityLedger::open(
+                &f.root.join("ledger"),
+                &policy.runtime.as_ref().unwrap().effect.minimum,
+            )
+            .unwrap();
+            let mut publisher = f.publisher();
+            let mut input =
+                crate::annex::managed::Reader::new(backup.profile.pool.clone()).unwrap();
+            let mut restored = publisher
+                .apply(&plan, &mut f.resources(), &mut input)
+                .unwrap();
+            let mut actual = Vec::new();
+            restored.read_to_end(&mut actual).unwrap();
+            assert_eq!(actual, bytes);
+            drop(restored);
+        }
         // Old completion is explicitly historical, and cannot remove this same-hash birth.
         let historical = controller
             .resume(

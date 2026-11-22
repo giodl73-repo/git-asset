@@ -64,3 +64,13 @@ holds. This permits completed accounting recovery after physical absence without
 substituting a new plan. The keeper's backend metadata may still be required.
 See [registered eviction](../specs/NATIVE-EVICTION-PASS.md) for fixed profile phases,
 bounds, grant admission and remaining repair/replacement obligations.
+
+After completed authorized eviction, the additive Rust
+`annex::publication::restore` SDK prepares an exact saved restore Plan, reuses
+metadata reacquisition, and delegates native import/reopen to the controlled
+Publisher. Save before apply; retry the same Plan after an interrupted metadata
+birth or uncertain reply. A managed retained reader supplies the old bytes.
+Completed replay returns retained readback without another registration. This
+does not retarget creative selection, repair unexplained loss, or add a receiver
+restore phase. See [controlled restoration](../specs/NATIVE-RESTORE.md) for
+permissions, crash boundaries, limits and remaining qualification gates.

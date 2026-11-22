@@ -844,3 +844,9 @@ uncertainty refusal, copy reuse after rebind, backup-index/archive after both
 ingests retire and independent working-repository loss. Controls in
 NATIVE-PRODUCER-ROOTS; producer-recipe-* external evidence. Full owner orchestration,
 backup repair/reacquisition and production acceptance remain separate.
+
+Controlled native restore -> publication::restore and read-only metadata
+ReacquisitionPlan::validate_retirement -> exact predecessor/permission/canonical
+plan checks, post-control interruption/retry, ordinary/bare retained-source reopen
+and historical eviction replay. Controls and producer review: [contract](../../specs/NATIVE-RESTORE.md).
+Full owner orchestration, unexplained-loss repair and production acceptance OPEN.

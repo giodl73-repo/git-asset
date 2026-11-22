@@ -25,6 +25,7 @@ use std::{
     time::{Duration, Instant},
 };
 pub mod handoff;
+pub mod restore;
 mod retained;
 pub use retained::Retained;
 mod staging;
