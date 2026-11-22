@@ -1,5 +1,6 @@
 //! Connected native controller/facade over fresh synthetic pools only.
 mod cli;
+mod pipeline;
 mod process;
 mod race;
 use super::*;
@@ -42,9 +43,9 @@ fn demand(f: &mut Fixture, old_native: &Plan) {
 #[test]
 #[ignore = "explicit native tools and distinct volume roots; fresh synthetic pools only"]
 fn actual_native_eviction_retained_restore_and_stale_replay() {
-    matrix(false, false);
+    matrix(false, false, false);
 }
-fn matrix(exits: bool, races: bool) {
+fn matrix(exits: bool, races: bool, copies: bool) {
     let git: PathBuf = std::env::var_os("GIT_ASSET_TEST_GIT_EXE").unwrap().into();
     let annex: PathBuf = std::env::var_os("GIT_ASSET_TEST_ANNEX_EXE").unwrap().into();
     let path = std::env::split_paths(&std::env::var_os("GIT_ASSET_TEST_ANNEX_PATH").unwrap())
@@ -65,7 +66,10 @@ fn matrix(exits: bool, races: bool) {
         (false, Cut::AfterRemoval),
         (true, Cut::AfterRemoval),
     ] {
-        if (exits && cut == Cut::None) || (races && cut != Cut::BeforeEffect) {
+        if (exits && cut == Cut::None)
+            || (races && cut != Cut::BeforeEffect)
+            || (copies && cut != Cut::None)
+        {
             continue;
         }
         eprintln!(
@@ -134,7 +138,11 @@ fn matrix(exits: bool, races: bool) {
         let policy = enrolled.unwrap();
         let mut keeper_control = keeper_control;
         super::super::retirement::publish(&mut f);
-        super::super::retirement::publish(&mut backup);
+        if copies {
+            pipeline::copy(&mut f, &mut backup, &policy, &bytes);
+        } else {
+            super::super::retirement::publish(&mut backup);
+        }
         let old_native = f.plan.clone();
         let object = old_native.candidate().object.clone();
         let pin = super::super::retirement::snapshot(&mut backup);
@@ -788,12 +796,19 @@ fn actual_native_storage_facade_ordinary_bare_lifecycle() {
 #[ignore = "fresh facade executable, native tools and distinct volumes; actual child exits"]
 fn actual_native_executor_process_exits_preserve_original_operation() {
     assert!(std::env::var_os("GIT_ASSET_TEST_FRONT_DOOR_EXE").is_some());
-    matrix(true, false);
+    matrix(true, false, false);
 }
 
 #[test]
 #[ignore = "fresh facade/native tools and separate volumes; actual paused actor races"]
 fn actual_native_executor_fences_conflicts_and_allows_unrelated_metadata() {
     assert!(std::env::var_os("GIT_ASSET_TEST_FRONT_DOOR_EXE").is_some());
-    matrix(true, true);
+    matrix(true, true, false);
+}
+
+#[test]
+#[ignore = "fresh native facade/tools and distinct volumes; controlled copy through restore"]
+fn actual_native_controlled_copy_retained_eviction_and_restore_pipeline() {
+    assert!(std::env::var_os("GIT_ASSET_TEST_FRONT_DOOR_EXE").is_some());
+    matrix(false, false, true);
 }

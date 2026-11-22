@@ -475,3 +475,14 @@ L0 pins/fmt/size/links/audits; L1 platform guards/no production hooks; L2 actual
 ordinary/bare F:/M: races. This checks participating actor fencing and metadata
 progress, not arbitrary legacy exclusion or completed epoch handoff. Owner/
 roster/epoch qualification and full P2 closeout remain required.
+
+Closure audit/pipeline entry input9042dff: same P2 controls and RUST/PROVIDER/
+INTEGRATION profiles. The existing connected fixture published its keeper from
+independent fixture input; copy and eviction were qualified separately. Add a
+joined controlled Copier -> native retained snapshot -> source claim settlement
+-> Controller/CLI eviction -> managed restoration case in ordinary/bare pools.
+Remove keeper input before copying, verify destination/original bytes and keep
+creative selection unmodified. No production code/protocol change. L0 current
+source pins/docs/size/links; L1 strict compilation/annex regression; L2 two real
+F:/M: joined cases. Closure audit keeps actual owner/legacy/epoch migration and
+remaining whole-PR profiles open; separate component proofs do not close them.

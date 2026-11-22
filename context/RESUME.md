@@ -86,6 +86,9 @@ same-hash restore/history. See exit-* source/terminal evidence; no production
 fault hook. Paused native races (input4c35c15) now exercise actual same-object
 job admission/config replacement refusal while unrelated source enrollment
 progresses, then new-demand cancellation after exit; race-* evidence is external.
+P2 closure audit: docs/reviews/p2-closure-audit.md. Joined controlled copier
+(input9042dff) removes keeper input, uses source bytes, retains exact destination
+producer, then native eviction/restore. See pipeline-* terminal evidence.
 Next: authority/roster/epoch handoff and remaining P2 coverage/closeout;
 production activation/acceptance remains unavailable.
 Core limits remain16 births,16384 commands,16MiB journal; P5 scale gates stay open.
