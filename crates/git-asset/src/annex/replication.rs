@@ -23,6 +23,8 @@ pub struct Plan {
     source_domain: Key,
     destination_domain: Key,
     locations: Digest,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    source_snapshot: Option<super::snapshot::Snapshot>,
 }
 fn digest(value: &impl Serialize) -> Result<Digest> {
     Ok(Digest::blob(
@@ -87,7 +89,40 @@ impl Plan {
             source_domain: profile.source_domain.clone(),
             destination_domain: profile.destination_domain.clone(),
             locations,
+            source_snapshot: None,
         })
+    }
+    /// Explicit immutable retained source after temporary ingest was released.
+    pub fn from_snapshot(
+        profile: &Profile,
+        source: publication::Plan,
+        destination: publication::Plan,
+        snapshot: super::snapshot::Snapshot,
+    ) -> Result<Self> {
+        if snapshot.object != source.candidate().object
+            || snapshot.version.revision == 0
+            || !profile
+                .source
+                .pool
+                .binding
+                .members()
+                .iter()
+                .any(|m| m.namespace == snapshot.namespace && m.places.contains(&snapshot.place))
+        {
+            return Err(Error::Denied);
+        }
+        let mut plan = Self::new(profile, source, destination)?;
+        let context = digest(&(
+            "git-asset.annex-snapshot-copy.experimental-1",
+            plan.id()?,
+            snapshot.id()?,
+        ))?;
+        plan.destination = plan.destination.with_context(Some(context));
+        plan.source_snapshot = Some(snapshot);
+        Ok(plan)
+    }
+    pub fn source_snapshot(&self) -> Option<&super::snapshot::Snapshot> {
+        self.source_snapshot.as_ref()
     }
     pub fn id(&self) -> Result<Digest> {
         digest(self)
@@ -114,7 +149,53 @@ pub struct Receipt {
 pub struct Ready {
     receipt: Receipt,
     destination: publication::Ready,
-    _source: Option<publication::Ready>,
+    _source: Option<SourceRead>,
+}
+enum SourceRead {
+    Publication(Box<publication::Ready>),
+    Snapshot(Box<publication::Retained>),
+}
+impl SourceRead {
+    fn recovery(&self) -> &publication::Recovery {
+        match self {
+            Self::Publication(read) => read.recovery(),
+            Self::Snapshot(read) => read.recovery(),
+        }
+    }
+}
+impl Read for SourceRead {
+    fn read(&mut self, bytes: &mut [u8]) -> std::io::Result<usize> {
+        match self {
+            Self::Publication(read) => read.read(bytes),
+            Self::Snapshot(read) => read.read(bytes),
+        }
+    }
+}
+impl Seek for SourceRead {
+    fn seek(&mut self, position: std::io::SeekFrom) -> std::io::Result<u64> {
+        match self {
+            Self::Publication(read) => read.seek(position),
+            Self::Snapshot(read) => read.seek(position),
+        }
+    }
+}
+struct Input<'a> {
+    object: &'a git_asset_core::Object,
+    read: Option<&'a mut SourceRead>,
+}
+impl<'a> git_asset_store::existing::ByteSource for Input<'a> {
+    type Reader = &'a mut SourceRead;
+    fn open_verified(
+        &mut self,
+        object: &git_asset_core::Object,
+    ) -> git_asset_store::existing::Result<Self::Reader> {
+        if object != self.object {
+            return Err(git_asset_store::existing::Error::Invalid);
+        }
+        self.read
+            .take()
+            .ok_or(git_asset_store::existing::Error::Budget)
+    }
 }
 impl Ready {
     pub fn receipt(&self) -> &Receipt {
@@ -124,7 +205,13 @@ impl Ready {
         self.destination.recovery()
     }
     pub fn source_recovery(&self) -> Option<&publication::Recovery> {
-        self._source.as_ref().map(publication::Ready::recovery)
+        self._source.as_ref().map(SourceRead::recovery)
+    }
+    pub fn source_snapshot_minimum(&self) -> Option<&git_asset_store::source_claims::Checkpoint> {
+        match &self._source {
+            Some(SourceRead::Snapshot(read)) => Some(read.snapshot_minimum()),
+            _ => None,
+        }
     }
     pub fn destination(&self) -> &publication::Ready {
         &self.destination
@@ -143,7 +230,6 @@ impl Seek for Ready {
 pub struct Copier {
     profile: Profile,
     source: publication::Publisher,
-    input: managed::Reader,
     destination: publication::Publisher,
 }
 impl Copier {
@@ -166,13 +252,21 @@ impl Copier {
         };
         Ok(Self {
             source: source_publisher,
-            input: managed::Reader::new(profile.source.pool.clone())?,
             destination: destination_publisher,
             profile,
         })
     }
     fn check(&self, plan: &Plan) -> Result<()> {
-        if &Plan::new(&self.profile, plan.source.clone(), plan.destination.clone())? != plan {
+        let expected = match &plan.source_snapshot {
+            Some(snapshot) => Plan::from_snapshot(
+                &self.profile,
+                plan.source.clone(),
+                plan.destination.clone(),
+                snapshot.clone(),
+            )?,
+            None => Plan::new(&self.profile, plan.source.clone(), plan.destination.clone())?,
+        };
+        if &expected != plan {
             return Err(Error::Stale);
         }
         Ok(())
@@ -188,7 +282,7 @@ impl Copier {
     fn ready(
         plan: &Plan,
         destination: publication::Ready,
-        source: Option<publication::Ready>,
+        source: Option<SourceRead>,
     ) -> Result<Ready> {
         Ok(Ready {
             receipt: Receipt {
@@ -227,10 +321,23 @@ impl Copier {
         if !self.profile.destination.allow_publish {
             return Err(Error::Denied);
         }
-        let held = self.source.reopen(&plan.source, source)?;
-        let copied =
+        let mut held = match &plan.source_snapshot {
+            Some(snapshot) => SourceRead::Snapshot(Box::new(self.source.open_retained(
+                &plan.source,
+                snapshot,
+                source,
+            )?)),
+            None => SourceRead::Publication(Box::new(self.source.reopen(&plan.source, source)?)),
+        };
+        let copied = {
+            // Reuse the verified open stream; do not look up/hash source again.
+            let mut input = Input {
+                object: &plan.source.candidate().object,
+                read: Some(&mut held),
+            };
             self.destination
-                .apply_hook(&plan.destination, destination, &mut self.input, hook)?;
+                .apply_hook(&plan.destination, destination, &mut input, hook)?
+        };
         Self::ready(plan, copied, Some(held))
     }
     /// Recover the original destination; incomplete stages require apply with source.

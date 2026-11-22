@@ -154,11 +154,19 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
         )?;
         // Validate the frozen per-object plan against the enrolled pair before
         // any selection mutation; do not substitute a new publication attempt.
-        let expected = replication::Plan::new(
-            &self.policy.copy,
-            plan.source().clone(),
-            plan.destination().clone(),
-        )?;
+        let expected = match plan.source_snapshot() {
+            Some(snapshot) => replication::Plan::from_snapshot(
+                &self.policy.copy,
+                plan.source().clone(),
+                plan.destination().clone(),
+                snapshot.clone(),
+            )?,
+            None => replication::Plan::new(
+                &self.policy.copy,
+                plan.source().clone(),
+                plan.destination().clone(),
+            )?,
+        };
         if expected != *plan {
             return Err(Error::Native(publication::Error::Conflict));
         }

@@ -1,20 +1,6 @@
 # Project refusal diagnostics: producer review
 
-Entry: main `81a97d3`. Targets: `git-asset-project` stderr mapping, CLI refusal
-regressions and `specs/PROJECT-DIAGNOSTICS.md`. Controls and exit obligations are
-recorded in that spec; this is a producer checklist, not independent acceptance.
+Completed component review retained in [immutable source](https://github.com/giodl73-repo/git-asset/blob/352f17cd3ce1c8339475d4a392d1bf22672720e9/docs/reviews/2026-11-01-project-diagnostics.md).
 
-Provider/privacy lens: only exact reviewed static errors map to public static
-codes/hints. Arbitrary provider text, paths, identifiers, appended secrets and
-terminal control characters fall back without interpolation. Private JSON result
-reports remain private. No new logging destination or telemetry is added.
-
-Concurrency/recovery lens: restore, source protection, copy, no-replace, progress
-and cleanup code are unchanged. Existing copies can remain after a reporting
-failure. The hint recommends verified retry and never claims rollback or safe
-disposal. No global lock or automatic recovery is introduced.
-
-Local verification: one bin privacy test, 42 project integration tests and eight
-single-restore CLI tests pass. Hosted qualification and consumer installation
-remain separate. Static error matching deliberately falls back when a library
-message changes; it cannot disclose new raw errors by default.
+LF SHA-256: `abdfa1e17fa1d28a1377cd31f8c695f4cc4429285d8b83730e79faa3b71c7b6a`.
+Current contracts and adoption gates remain in specs/ and docs/CONSUMER-ADOPTION.md.

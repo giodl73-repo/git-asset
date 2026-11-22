@@ -229,64 +229,9 @@ impl Execution<'_> {
                 keeper_snapshot_minimum: None,
             });
         }
-        // Open the actual enrolled roster root, never a copied namespace handle.
-        let snapshot = &plan.retained;
-        if !self
+        let kept = self
             .keeper
-            .profile
-            .pool
-            .binding
-            .members()
-            .iter()
-            .any(|m| m.namespace == snapshot.namespace && m.places.contains(&snapshot.place))
-        {
-            return Err(Error::Denied);
-        }
-        let member = self
-            .keeper
-            .profile
-            .pool
-            .members
-            .iter()
-            .find(|m| m.minimum.identity() == &snapshot.namespace)
-            .ok_or(Error::Denied)?;
-        let mut namespace = Namespace::open(&member.root, &member.minimum)?;
-        let state = namespace
-            .source(&snapshot.source)?
-            .ok_or(Error::ProtectionLost)?;
-        if state.owner != snapshot.owner || state.kind != Some(Kind::Retention) {
-            return Err(Error::Denied);
-        }
-        let current = state.current.as_ref().ok_or(Error::Unsupported)?;
-        let _generation = namespace
-            .source_use(&snapshot.source, &snapshot.owner, state.revision, current)
-            .map_err(|e| match e {
-                admission::source_use::UseError::Unsupported => Error::Unsupported,
-                admission::source_use::UseError::Owner => Error::Denied,
-                admission::source_use::UseError::Stale
-                | admission::source_use::UseError::Inactive => Error::Stale,
-                admission::source_use::UseError::Admission(e) => e.into(),
-            })?;
-        let _retained = snapshot.verify(
-            &mut namespace,
-            keeper.metadata,
-            TreeLimits {
-                max_entries: keeper.limits.bindings,
-                max_reads: keeper.limits.reads,
-                max_read_bytes: keeper.limits.read_bytes,
-                ..TreeLimits::default()
-            },
-        )?;
-        // Original completion/origin/config and actual bytes stay pinned, even
-        // when the original per-object ingest claim was replaced by this cohort.
-        let kept = self.keeper.observe(keeper_plan, keeper)?;
-        if !kept.status.registered
-            || !kept.status.historical_completion
-            || !kept.status.accounting_settled
-            || !kept.status.bytes_verified
-        {
-            return Err(Error::NeedsRecovery);
-        }
+            .open_retained(keeper_plan, &plan.retained, keeper)?;
         let _source = self.source.reopen(source_plan, source)?;
         let (state, _) = retained(source_plan, source.namespace)?;
         let withdrew = original.withdraw.is_some();
@@ -319,12 +264,8 @@ impl Execution<'_> {
         Ok(Report {
             status: plan.status(source.namespace)?,
             historical: false,
-            keeper_recovery: Some(Recovery {
-                metadata_minimum: keeper.metadata.checkpoint().clone(),
-                namespace_minimum: keeper.namespace.checkpoint(),
-                capacity_minimum: keeper.ledger.checkpoint(),
-            }),
-            keeper_snapshot_minimum: Some(namespace.checkpoint()),
+            keeper_recovery: Some(kept.recovery().clone()),
+            keeper_snapshot_minimum: Some(kept.snapshot_minimum().clone()),
         })
     }
 }

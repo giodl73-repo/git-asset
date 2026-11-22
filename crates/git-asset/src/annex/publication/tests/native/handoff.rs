@@ -426,8 +426,15 @@ fn active_job_survives_ingest_handoff_and_blocks_native_eviction() {
     );
 }
 
-fn cohort(native: bool, same_pool: bool) {
-    let (mut source, mut keeper) = pair(native, true);
+pub(super) fn cohort_setup(
+    native: bool,
+) -> (
+    Fixture,
+    Fixture,
+    crate::annex::snapshot::Snapshot,
+    git_asset_store::source_claims::Version,
+) {
+    let (source, mut keeper) = pair(native, true);
     let mut metadata =
         MetadataStore::open(&keeper.root.join("metadata"), keeper.metadata.checkpoint()).unwrap();
     let path = LogicalPath::parse("cohort/kept").unwrap();
@@ -488,6 +495,10 @@ fn cohort(native: bool, same_pool: bool) {
         path,
         object: source.plan.candidate().object.clone(),
     };
+    (source, keeper, snapshot, version)
+}
+fn cohort(native: bool, same_pool: bool) {
+    let (mut source, mut keeper, snapshot, version) = cohort_setup(native);
     if same_pool {
         keeper.save();
         let mut alias = Fixture::load(keeper.root.clone());

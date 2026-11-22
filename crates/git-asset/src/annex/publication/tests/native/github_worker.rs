@@ -17,7 +17,7 @@ fn git(root: &Path, args: &[&str]) -> Vec<u8> {
     );
     output.stdout
 }
-fn matrix(native: bool, demanded: bool) {
+fn matrix(native: bool, demanded: bool, snapshot_mode: bool) {
     let bytes = vec![45; 256 * 1024];
     let tools = native.then(|| {
         (
@@ -27,7 +27,7 @@ fn matrix(native: bool, demanded: bool) {
                 .collect(),
         )
     });
-    let mut source = Fixture::build_setup(&bytes, tools.clone(), false, None, false);
+    let mut source = Fixture::build_setup(&bytes, tools.clone(), false, None, snapshot_mode);
     let mut target = Fixture::build_setup(&bytes, tools, true, None, true);
     retirement::publish(&mut source);
     let profile = crate::annex::replication::Profile {
@@ -36,9 +36,19 @@ fn matrix(native: bool, demanded: bool) {
         source_domain: k("retained-domain"),
         destination_domain: k("working-domain"),
     };
-    let plan =
+    let plan = if snapshot_mode {
+        let snapshot = retirement::snapshot(&mut source);
+        crate::annex::replication::Plan::from_snapshot(
+            &profile,
+            source.plan.clone(),
+            target.plan.clone(),
+            snapshot,
+        )
+        .unwrap()
+    } else {
         crate::annex::replication::Plan::new(&profile, source.plan.clone(), target.plan.clone())
-            .unwrap();
+            .unwrap()
+    };
     let policy = WorkerPolicy {
         copy: profile,
         source_control: None,
@@ -318,15 +328,25 @@ fn matrix(native: bool, demanded: bool) {
 }
 #[test]
 fn authenticated_native_copy_uses_exact_selected_demand_and_original_retry() {
-    matrix(false, true);
+    matrix(false, true, false);
 }
 #[test]
 #[ignore = "explicit native tools; synthetic pools only"]
 fn actual_authenticated_native_copy_reopens_original_after_head_advance() {
-    matrix(true, true);
+    matrix(true, true, false);
 }
 
 #[test]
 fn authenticated_native_copy_refuses_undemanded_candidate_before_publication() {
-    matrix(false, false);
+    matrix(false, false, false);
+}
+
+#[test]
+fn authenticated_native_snapshot_copy_keeps_exact_git_admission() {
+    matrix(false, true, true);
+}
+#[test]
+#[ignore = "explicit native tools; fresh synthetic pools only"]
+fn actual_authenticated_native_snapshot_copy_keeps_exact_git_admission() {
+    matrix(true, true, true);
 }

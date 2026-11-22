@@ -1185,3 +1185,5 @@ fn legacy_plan_encoding_and_retained_bytes_remain_readable_without_closure_quali
 mod github_worker;
 
 mod handoff;
+
+mod snapshot_copy;

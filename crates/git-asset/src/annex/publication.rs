@@ -25,6 +25,8 @@ use std::{
     time::{Duration, Instant},
 };
 pub mod handoff;
+mod retained;
+pub use retained::Retained;
 mod staging;
 #[cfg(test)]
 mod tests;
