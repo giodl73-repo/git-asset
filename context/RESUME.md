@@ -7,7 +7,7 @@ renders or deployment on resume. Foundation qualification uses synthetic fixture
 
 Owned lane: feat/trusted-native-placement, draft PR74, based on
 feat/source-generation-use/PR73. Current refinement input is
-af878de168aea7c980d7bde1cf6e59b657a4a3e3. Derive later committed source and its
+4a153bf487b5f37553d70ebbb941b2aa5666b452. Derive later committed source and its
 hosted run; a prior pending run is not qualification of the next head.
 
 ## Series state
@@ -55,8 +55,24 @@ key snapshots at later time and retry the same Saved handle. Source generation
 fencing is required; no legacy upgrade is implicit. Final qualification is external
 saved-worker-*; derive current source/CI from its source record after commit.
 
-Next: fixed-worker/receiver bounded
-preview/apply scheduling, and explicit stale-index replan. Remaining full gates:
+Bounded restore_preview/restore_apply receiver phases now intersect exact current
+objects with working demand, load registered retirement/restore originals and save
+before effect. Preview does not change native/pending/index state. Apply attempts
+one eligible object and requires a fresh pass after index advancement; old cursors
+refuse. The native temporary read ends before index preparation; durable ingress
+protection remains and the index SDK spans adoption with its own fresh guard.
+Current requirement tables and P3 trace remain local; older trace checkpoints
+link their hash-pinned immutable4a153bf copy. Qualification: restore-pass-*.
+Current-source qualification: explicit native ordinary/bare scheduler fixture
+passes; eight interface, twelve worker, two pending and eight index tests pass.
+Native fixture precedes only documentation/module-comment cleanup. Strict
+workspace/all-feature/all-target Clippy, standalone annex-publish, fmt, L0,
+branding and diff pass. External restore-pass-source.json pins source/logs;
+new-head hosted CI remains separate from successful parent45075410903.
+Index-only saved-body recovery preserves historical receipts with a stale hold;
+it neither prepares another native operation nor retargets a newer selection.
+
+Next: explicit stale-index replan and complete placement orchestration. Remaining full gates:
 owner publication/archival orchestration, unexplained-loss/deprecated backup
 repair, full HTTP/account/TLS, measured workload/journal lifetime, P2 mixed-authority
 handoff, P4 consumer acceptance, P5 RC and P6 private owner cutover. No final

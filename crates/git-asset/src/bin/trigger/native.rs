@@ -16,6 +16,8 @@ enum Phase {
     EvictionApply,
     HistoryPreview,
     HistoryApply,
+    RestorePreview,
+    RestoreApply,
 }
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -108,7 +110,13 @@ pub(super) fn dispatch(
     if storage.pending.as_ref().map(|p| p.minimum.identity()) != scope.map(|p| &p.namespace)
         || ((matches!(storage.phase, Phase::Copy)
             && storage.policy.actions.as_ref().is_some_and(|a| a.handoff))
-            || matches!(storage.phase, Phase::EvictionPreview | Phase::EvictionApply))
+            || matches!(
+                storage.phase,
+                Phase::EvictionPreview
+                    | Phase::EvictionApply
+                    | Phase::RestorePreview
+                    | Phase::RestoreApply
+            ))
             && scope.is_none()
     {
         return Err(github::Error::Trust);
@@ -127,6 +135,9 @@ pub(super) fn dispatch(
         .is_some_and(|r| history.is_none_or(|h| r.minimum.identity() != &h.records.namespace))
     {
         return Err(github::Error::Trust);
+    }
+    if matches!(storage.phase, Phase::RestorePreview | Phase::RestoreApply) {
+        return restore_dispatch(profile, client, proof, cursor, &storage);
     }
     if history_phase {
         let h = history.ok_or(github::Error::Trust)?;
@@ -241,6 +252,7 @@ pub(super) fn dispatch(
             )
             .and_then(|r| serde_json::to_value(r).map_err(|_| publication::Error::Invalid.into())),
         Phase::HistoryPreview | Phase::HistoryApply => unreachable!("history dispatched above"),
+        Phase::RestorePreview | Phase::RestoreApply => unreachable!("restore dispatched above"),
     };
     match result {
         Ok(report) => Ok(report),
@@ -248,5 +260,105 @@ pub(super) fn dispatch(
                 "git-asset.native-copy-pass-refusal.experimental-1"
             } else { "git-asset.native-eviction-pass-refusal.experimental-1" },
             "ok":false,"failure":Failure::from(&e),"storage_converged":null})),
+    }
+}
+fn restore_dispatch(
+    profile: &Profile,
+    client: &Client,
+    proof: github::Verified,
+    cursor: Option<Cursor>,
+    storage: &Storage,
+) -> github::Result<Value> {
+    if !cfg!(windows) {
+        return Ok(
+            json!({"schema":"git-asset.native-restore-pass-refusal.experimental-1",
+            "ok":false,"failure":{"layer":"native","code":"unsupported"},"storage_converged":null}),
+        );
+    }
+    let head = &storage
+        .policy
+        .producer_heads
+        .as_ref()
+        .ok_or(github::Error::Trust)?
+        .destination;
+    let control = storage
+        .policy
+        .destination_control
+        .as_ref()
+        .ok_or(github::Error::Trust)?;
+    let retirement = storage
+        .policy
+        .actions
+        .as_ref()
+        .and_then(|a| a.eviction.as_ref())
+        .ok_or(github::Error::Trust)?;
+    let pending = storage.pending.as_ref().ok_or(github::Error::Trust)?;
+    let mut records =
+        Namespace::open(&pending.root, &pending.minimum).map_err(|_| github::Error::Unavailable)?;
+    let mut destination = storage.destination.open()?;
+    let mut native_ns = Namespace::open(
+        &storage.destination.namespace.root,
+        &storage.destination.namespace.minimum,
+    )
+    .map_err(|_| github::Error::Unavailable)?;
+    let mut native_nodes = MetadataStore::open(
+        &storage.destination.metadata_root,
+        &storage.destination.metadata_minimum,
+    )
+    .map_err(|_| github::Error::Unavailable)?;
+    let mut index_ns =
+        Namespace::open(&head.root, &head.minimum).map_err(|_| github::Error::Unavailable)?;
+    let mut index_nodes = MetadataStore::open(
+        &storage.destination.metadata_root,
+        &storage.destination.metadata_minimum,
+    )
+    .map_err(|_| github::Error::Unavailable)?;
+    let mut namespace = Namespace::open(&profile.namespace.root, &profile.namespace.minimum)
+        .map_err(|_| github::Error::Unavailable)?;
+    let mut metadata = MetadataStore::open(&profile.metadata_root, &profile.metadata_minimum)
+        .map_err(|_| github::Error::Unavailable)?;
+    let repository = github::source::AnnexSource {
+        client,
+        trust: &profile.trust,
+    };
+    let result = native::Execution {
+        trust: &profile.trust,
+        request: &proof,
+        policy: &storage.policy,
+        enrollment: &profile.enrollment,
+        repository: &repository,
+        namespace: &mut namespace,
+        metadata: &mut metadata,
+        limits: &storage.limits,
+    }
+    .reconcile_restores(
+        native::restore::pass::Pass {
+            cursor: cursor.as_ref(),
+            budget: &profile.budget,
+            pending: &mut records,
+            context: &mut publication::restore::Context {
+                profile: &storage.policy.copy.destination,
+                control,
+                retirement,
+                namespace: &mut native_ns,
+                metadata: &mut native_nodes,
+                limits: &storage.limits,
+            },
+            target: &mut git_asset::annex::producer_index::update::restore::Target {
+                profile: &head.profile,
+                namespace: &mut index_ns,
+                nodes: &mut index_nodes,
+            },
+            apply: matches!(storage.phase, Phase::RestoreApply),
+        },
+        &mut destination.resources(&storage.limits),
+        now,
+    );
+    match result {
+        Ok(report) => serde_json::to_value(report).map_err(|_| github::Error::Invalid),
+        Err(error) => Ok(
+            json!({"schema":"git-asset.native-restore-pass-refusal.experimental-1",
+            "ok":false,"failure":Failure::from(&error),"storage_converged":null}),
+        ),
     }
 }

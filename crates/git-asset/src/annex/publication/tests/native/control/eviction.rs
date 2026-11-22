@@ -54,6 +54,8 @@ fn matrix_mode(exits: bool, races: bool, copies: bool, trusted: bool) {
     matrix_profile(exits, races, copies, trusted, 0);
 }
 fn matrix_profile(exits: bool, races: bool, copies: bool, trusted: bool, batch: u8) {
+    let scheduled_restore = batch == 4;
+    let batch = if scheduled_restore { 0 } else { batch };
     let git: PathBuf = std::env::var_os("GIT_ASSET_TEST_GIT_EXE").unwrap().into();
     let annex: PathBuf = std::env::var_os("GIT_ASSET_TEST_ANNEX_EXE").unwrap().into();
     let path = std::env::split_paths(&std::env::var_os("GIT_ASSET_TEST_ANNEX_PATH").unwrap())
@@ -743,7 +745,22 @@ fn matrix_profile(exits: bool, races: bool, copies: bool, trusted: bool, batch: 
         assert_eq!(retained_bytes, bytes);
 
         // Restore uses a new native request and an explicit new control incarnation.
-        if copies {
+        if scheduled_restore {
+            #[cfg(feature = "github")]
+            {
+                f.plan = trusted::State::named(
+                    &mut f,
+                    &backup,
+                    &policy,
+                    "restore-pass-project",
+                    "restore-pass-main",
+                    object.clone(),
+                )
+                .restore_pass(&mut f, &mut backup, &policy, &planned, &old_native);
+            }
+            #[cfg(not(feature = "github"))]
+            panic!("scheduled restoration needs github");
+        } else if copies {
             f.plan = pipeline::restore(&mut f, &mut backup, &policy, &planned, &old_native);
         } else {
             let mut request = old_native.request.clone();
@@ -863,6 +880,13 @@ fn actual_native_executor_fences_conflicts_and_allows_unrelated_metadata() {
 fn actual_native_controlled_copy_retained_eviction_and_restore_pipeline() {
     assert!(std::env::var_os("GIT_ASSET_TEST_FRONT_DOOR_EXE").is_some());
     matrix(false, false, true);
+}
+
+#[cfg(feature = "github")]
+#[test]
+#[ignore = "explicit native tools and distinct owned volumes; bounded restore scheduler"]
+fn actual_restore_pass_preview_apply_and_new_head_retry() {
+    matrix_profile(false, false, true, false, 4);
 }
 
 #[cfg(feature = "github")]

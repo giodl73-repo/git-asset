@@ -54,7 +54,7 @@ impl Resolved {
     }
 }
 impl Head {
-    fn hold(&self, nodes: &MetadataReader) -> Result<(Pin, HeldRoot), Error> {
+    pub(super) fn hold(&self, nodes: &MetadataReader) -> Result<(Pin, HeldRoot), Error> {
         let mut namespace =
             Namespace::open(&self.root, &self.minimum).map_err(publication::Error::from)?;
         let held = self.profile.hold_current(&mut namespace, nodes)?;

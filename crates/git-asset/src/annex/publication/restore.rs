@@ -23,6 +23,16 @@ pub struct Operations {
     /// Existing owned Retention source; must be empty when preparing.
     pub source: Key,
 }
+impl super::Plan {
+    /// Existing candidate retention slot; no lookup or enrollment.
+    pub fn retention_source(&self) -> &Key {
+        &self.request.source
+    }
+}
+/// Read-only completed-retirement observation; grants no repair authority.
+pub fn inspect(ctx: &Context<'_>, input: Original<'_>) -> Result<planning::execution::Status> {
+    original(ctx, &input)
+}
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Plan {

@@ -5,6 +5,7 @@ use crate::github::native::{Actions, Execution, Policy};
 use crate::{github, lifecycle, source};
 mod batch;
 mod restore;
+mod restore_pass;
 pub(super) struct State {
     repository: source::Repository,
     enrollment: lifecycle::Enrollment,

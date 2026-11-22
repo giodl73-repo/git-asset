@@ -1,4 +1,4 @@
-//! Authenticated original saved execution; no plan replacement or receiver scheduler.
+//! Authenticated saved execution and bounded scheduling; no original plan replacement.
 use super::*;
 use crate::annex::{
     pending::{self, Operation, Saved},
@@ -6,6 +6,7 @@ use crate::annex::{
     publication::restore as native,
 };
 use git_asset_core::{Object, identity};
+pub mod pass;
 
 pub struct Restored {
     pub report: Mutation<publication::Receipt>,

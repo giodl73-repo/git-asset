@@ -20,7 +20,8 @@ Operations and Plan. The Context supplies actual private native/control/retireme
 profiles, the existing Namespace and MetadataStore, and protection limits.
 `allow_publish` and `allow_reacquire` must both be explicit. The existing eviction
 status contract also requires its admitted retirement profile; inspection here
-does not perform a removal. No new CLI or receiver phase is exposed.
+does not perform a removal. The kernel adds no standalone CLI; bounded receiver
+composition is described below.
 
 `prepare` verifies original plan/object/namespace/control bindings and completed
 native removal plus metadata retirement. Uncertain removal returns Uncertain;
@@ -214,3 +215,47 @@ Target to the exact signed profiles; no supplied plan/path becomes authority.
 Placement preserves existing admission budgets. Adoption keeps receiver phases,
 explicit stale-index replan and all private owner gates open. These are producer
 checks, not independent or human approval.
+
+## Bounded receiver restoration
+
+Input4a153bf487b5f37553d70ebbb941b2aa5666b452; same P3 controls above.
+Allowed: bounded current-demand/index lookup, existing saved plans and authenticated
+execution, fixed private restore_preview/restore_apply phases and synthetic tests.
+No discovery, new engine, event plans/paths, source deletion or cache enrollment.
+Entry: fenced exact committed source, enrolled mutable destination index head,
+existing pending namespace/native metadata and explicit admitted permissions.
+Exit: read-only eligibility report, held original recovery handles, or verified
+restored publication plus expected-baseline index receipt. L0 pins/links/budget;
+L1 signed/cursor/budget/refusal and strict checks; L2 ordinary/bare native revert
+flow with preview, save-before-effect, duplicate apply and index recovery.
+
+Preview inspects only declared current objects and registered original recipes,
+then looks up their saved eviction/restore/index actions. Missing registration or
+retirement is unknown/not applicable, never authority to repair unexplained loss.
+It does not prepare native metadata, save actions, import bytes or update the index.
+Apply prepares deterministic restore operations into an existing owned Retention
+source, finishes metadata, saves/readbacks originals before execution and registers
+the restored recipe through the qualified index SDK. Existing originals win.
+
+The destination index generation is pinned during lookup/preparation, then released
+before its own index write; existing expected-baseline CAS detects other writers.
+An apply pass attempts at most one eligible asset. Index advancement requires a
+fresh pass/basis rather than a continuation cursor into old producer metadata.
+Object/stream/time limits remain explicit; metadata lookups are bounded separately
+by existing protection limits. Reports retain saved handles and completed receipts
+after later refusal, distinguish holds, and never claim whole-storage convergence.
+Stale saved index plans require original status and explicit replan; no silent
+replacement or repeated native operation is introduced by this scheduler. A saved
+index body is sufficient for recovery even without a separate native-phase slot.
+A completed receipt whose root is no longer current is retained with a stale hold;
+it never becomes an indexed-success report or reselects the historical root.
+
+Producer review: recovery/concurrency (high) releases the destination head guard
+before its own CAS and never carries the temporary restore reader into the index
+SDK's fresh original-status/reopen sequence. Durable ingest protection remains;
+the index SDK holds its own verified guard across actual adoption. Identity
+rejects inconsistent lengths for the same current digest and deduplicates declared
+recipes. Custody/placement intersect declared objects with working demand and
+preserve receipts/handles on holds. Privacy keeps all locators/config private and
+never opens a request-supplied path. Adoption keeps HTTP, scale, explicit stale
+replan and owner gates open. Producer review is not independent acceptance.

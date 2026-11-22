@@ -179,3 +179,33 @@ set, then freshly checks bytes; metadata never selects an arbitrary current reci
 or hides uncertainty. Owners can record completed work through the
 [producer SDK sequence](NATIVE-PRODUCER-ROOTS.md#record-the-recipe-that-actually-completed).
 The receiver does not accept arbitrary recipe registration in event bodies.
+
+## Restore preview and apply
+
+Set the fixed private storage phase to `restore_preview` or `restore_apply`.
+These require the pending namespace, enrolled producer heads, fenced committed
+source, copy permission and destination-control reacquire permission. Apply also
+requires write permission in the signed destination head profile. Events still
+supply commit IDs/cursors only. No new cache or source is enrolled by this phase.
+
+The pass intersects exact current definitions with working-place demand, reads
+registered recipes and finds their saved retirement/restore/index originals.
+Preview reports eligibility/holds without saving plans or changing native/index
+state. Apply saves/readbacks deterministic originals before effect, restores from
+the fixed retained managed pool and adopts the new producer under expected-baseline
+CAS. It does not open the retained location's metadata/witness merely to recover
+a working-side saved index action. Missing retirement/registration never grants
+repair authority. `not_applicable` is not evidence that bytes are present.
+
+An apply pass attempts at most one eligible object. After an index write, use a
+fresh pass: `fresh_pass_required` is true and no old-head cursor is returned.
+Old-basis cursors refuse. Other lookup/stream/time bounds stay explicit, and
+`storage_converged` remains unknown. Preserve `native_saved`/`index_saved` and
+any completed receipts on a held outcome. Stale saved index plans need original
+status and explicit SDK replan; this phase does not overwrite them. Index-only
+saved bodies can recover an original receipt without a native-phase slot. A
+historical receipt carries a stale hold rather than claiming current indexing.
+Native support
+is Windows-qualified; unsupported hosts refuse before opening native resources.
+Full HTTP/account/TLS, multi-object scale and project-owner acceptance remain
+separate from the synthetic scheduler/native fixtures.
