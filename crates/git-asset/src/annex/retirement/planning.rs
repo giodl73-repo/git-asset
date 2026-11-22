@@ -9,6 +9,66 @@ use git_asset_store::{
     retirement as metadata,
 };
 use serde::{Deserialize, Serialize};
+pub(crate) mod execution;
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EffectProfile {
+    pub root: std::path::PathBuf,
+    pub store: Digest,
+    pub ledger: std::path::PathBuf,
+    pub minimum: git_asset_store::ledger::Checkpoint,
+    pub job: git_asset_store::ledger::JournalRef,
+    pub owner: Key,
+}
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MetadataNamespace {
+    pub root: std::path::PathBuf,
+    pub minimum: git_asset_store::source_claims::Checkpoint,
+}
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct Runtime {
+    pub effect: EffectProfile,
+    pub job: git_asset_store::ledger::JournalRef,
+    pub namespaces: Vec<MetadataNamespace>,
+}
+impl Runtime {
+    fn id(&self) -> Result<Digest> {
+        if !crate::annex::absolute(&self.effect.root)
+            || !crate::annex::absolute(&self.effect.ledger)
+            || self.namespaces.is_empty()
+            || self.namespaces.len() > 64
+        {
+            return Err(publication::Error::Invalid.into());
+        }
+        let mut members = self
+            .namespaces
+            .iter()
+            .map(|n| {
+                if !crate::annex::absolute(&n.root) {
+                    return Err(publication::Error::Invalid.into());
+                }
+                Ok((n.minimum.identity().clone(), n.root.clone()))
+            })
+            .collect::<Result<Vec<_>>>()?;
+        members.sort();
+        if members.windows(2).any(|w| w[0].0 == w[1].0) {
+            return Err(publication::Error::Invalid.into());
+        }
+        digest(&(
+            "git-asset.native-effect-runtime.experimental-1",
+            &self.effect.root,
+            &self.effect.store,
+            &self.effect.ledger,
+            self.effect.minimum.identity(),
+            &self.effect.job,
+            &self.effect.owner,
+            &self.job,
+            members,
+        ))
+    }
+}
 
 #[derive(Clone, Copy, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -33,6 +93,8 @@ pub struct Profile {
     pub unshared_direct_backing: bool,
     #[serde(default)]
     pub actor_boundary: ActorBoundary,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub runtime: Option<Runtime>,
 }
 fn digest(value: &impl Serialize) -> Result<Digest> {
     Ok(Digest::blob(&encode(value)?))
@@ -64,7 +126,7 @@ impl Profile {
         {
             return Err(publication::Error::Denied.into());
         }
-        digest(&(
+        let legacy = digest(&(
             "git-asset.native-eviction-owner.experimental-1",
             self.source.binding(source)?,
             self.keeper.binding(keeper)?,
@@ -73,7 +135,15 @@ impl Profile {
             self.actor_boundary,
             self.allow_evict,
             self.unshared_direct_backing,
-        ))
+        ))?;
+        match &self.runtime {
+            None => Ok(legacy),
+            Some(runtime) => digest(&(
+                "git-asset.native-eviction-owner.experimental-2",
+                legacy,
+                runtime.id()?,
+            )),
+        }
     }
 }
 /// Immutable preview. It must be re-admitted and reverified by an executor;
@@ -183,6 +253,9 @@ impl StorageSeparation<'_, '_> {
         let source_store = self.keeper._source.store();
         let keeper_store = self.keeper.store();
         let policy = profile.admit(&source_store, keeper_store)?;
+        if profile.runtime.is_some() {
+            execution::authority(&self.keeper._source.profile.pool, &policy)?;
+        }
         self.revalidate()?;
         let basis = self.keeper._source.replay_basis()?.id()?;
         if source.pool != source_store

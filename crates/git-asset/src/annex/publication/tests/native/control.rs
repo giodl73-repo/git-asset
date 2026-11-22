@@ -22,6 +22,14 @@ impl Control {
         Self::build_reacquirable(f, native_tools, false)
     }
     fn build_reacquirable(f: &mut Fixture, native_tools: bool, allow_reacquire: bool) -> Self {
+        Self::build_enrolled(f, native_tools, allow_reacquire, |_, _, _| None)
+    }
+    fn build_enrolled(
+        f: &mut Fixture,
+        native_tools: bool,
+        allow_reacquire: bool,
+        enrollment: impl FnOnce(&control::Profile, &JournalRef, &Namespace) -> Option<Digest>,
+    ) -> Self {
         let native = crate::annex::Reader::new(f.profile.pool.pool.clone())
             .unwrap()
             .store();
@@ -107,6 +115,23 @@ impl Control {
             let mut bytes = fs::read(&config).unwrap();
             bytes.extend_from_slice(id.as_str().as_bytes());
             fs::write(&config, bytes).unwrap();
+        }
+        if let Some(authority) = enrollment(&profile, &job, &namespace) {
+            assert!(
+                native_tools,
+                "authority enrollment fixture requires actual native tools"
+            );
+            crate::annex::process::fixture_command(
+                &f.profile.pool.pool,
+                false,
+                &[
+                    "config",
+                    "--local",
+                    "gitasset.evictionpolicy",
+                    authority.as_str(),
+                ],
+            )
+            .unwrap();
         }
         f.profile.pool.pool.configuration = Object::from_bytes(&fs::read(config).unwrap());
         f.control_profile = Some(profile);

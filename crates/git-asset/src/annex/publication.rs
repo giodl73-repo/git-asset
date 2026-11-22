@@ -505,6 +505,11 @@ pub struct ProducerCompletion {
     _control: control::Use,
     _completion: upload_witness::Completed,
 }
+impl ProducerCompletion {
+    pub(crate) fn release_control(self) -> upload_witness::Completed {
+        self._completion
+    }
+}
 impl Plan {
     /// Metadata-only exact reopen. Caller separately pins actual native configuration,
     /// bytes, complete protection scope and custody. Aliases and legacy plans refuse.

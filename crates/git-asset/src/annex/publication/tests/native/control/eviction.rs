@@ -1,51 +1,11 @@
-//! Connected synthetic proof, deliberately not a public removal API.
+//! Connected internal native controller over fresh synthetic pools only.
 use super::*;
-use crate::annex::{process, retirement::Assessor};
-use git_asset_store::upload_witness::{Document, Packet};
-
-fn canonical(value: serde_json::Value) -> Vec<u8> {
-    git_asset_core::identity::canonical_json(&value).unwrap()
-}
-
-/// Open the actual enrolled metadata root internally, never a supplied same-ID clone.
-fn execute(
-    f: &Fixture,
-    source: &mut Control,
-    keeper: &mut Control,
-    plan: &retirement::Plan,
-    effect: impl FnMut(&retirement::Plan) -> retirement::Result<()>,
-) -> retirement::Result<retirement::Receipt> {
-    let profile = f.control_profile.as_ref().unwrap();
-    let native = crate::annex::Reader::new(f.profile.pool.pool.clone())
-        .unwrap()
-        .store();
-    control::configuration(
-        &f.profile.pool.pool,
-        &f.profile.pool.binding.id().unwrap(),
-        Some(&profile.binding(&native).unwrap()),
-    )
-    .unwrap();
-    let store = LocalStore::open(&profile.root)?;
-    assert_eq!(store.identity(), &profile.store);
-    assert_eq!(store.place(), &control::place(&native).unwrap());
-    let mut backups = [retirement::Backup {
-        store: &keeper.store,
-        ledger: &mut keeper.ledger,
-        enrollment: &plan.request().keepers[0].enrollment,
-    }];
-    let mut execution = retirement::Execution {
-        store: &store,
-        ledger: &mut source.ledger,
-        job: &source.job,
-        namespaces: std::slice::from_mut(&mut source.namespace),
-        nodes: &MemoryNodes::default(),
-        limits: &Fixture::limits(),
-        backups: &mut backups,
-        admitted_context: &plan.request().context,
-        source_enrollment: &plan.request().source,
-    };
-    execution.apply_with_effect(plan, &plan.authorize()?, effect)
-}
+use crate::annex::retirement::Assessor;
+use crate::annex::retirement::planning::{
+    ActorBoundary, EffectProfile, MetadataNamespace, Plan as NativePlan, Profile as OwnerProfile,
+    Runtime,
+    execution::{self, Cut, Live},
+};
 
 #[test]
 #[ignore = "explicit native tools and distinct volume roots; fresh synthetic pools only"]
@@ -60,7 +20,14 @@ fn actual_native_eviction_retained_restore_and_stale_replay() {
     let keeper_root: PathBuf = std::env::var_os("GIT_ASSET_TEST_KEEPER_VOLUME_ROOT")
         .unwrap()
         .into();
-    for (bare, uncertain) in [(false, false), (true, false), (false, true), (true, true)] {
+    for (bare, cut) in [
+        (false, Cut::None),
+        (true, Cut::None),
+        (false, Cut::AfterCompletion),
+        (true, Cut::AfterCompletion),
+        (false, Cut::AfterRemoval),
+        (true, Cut::AfterRemoval),
+    ] {
         let bytes = vec![91; 256 * 1024];
         let mut f = Fixture::build_in(
             &bytes,
@@ -74,8 +41,49 @@ fn actual_native_eviction_retained_restore_and_stale_replay() {
             !bare,
             Some(&keeper_root),
         );
-        let mut source_control = Control::build_reacquirable(&mut f, true, true);
-        let mut keeper_control = Control::build(&mut backup, true);
+        let keeper_control = Control::build(&mut backup, true);
+        let source_native = crate::annex::Reader::new(f.profile.pool.pool.clone())
+            .unwrap()
+            .store();
+        let keeper_native = crate::annex::Reader::new(backup.profile.pool.pool.clone())
+            .unwrap()
+            .store();
+        let effect = EffectProfile {
+            root: f.root.join("witness"),
+            store: f.witness.identity().clone(),
+            ledger: f.root.join("ledger"),
+            minimum: f.ledger.checkpoint(),
+            job: f.plan.admission.job.clone(),
+            owner: k("owner"),
+        };
+        let metadata_namespace_root = f.root.join("control-namespace");
+        let keeper_profile = backup.control_profile.clone().unwrap();
+        let mut enrolled = None;
+        let mut source_control =
+            Control::build_enrolled(&mut f, true, true, |source, job, namespace| {
+                let policy = OwnerProfile {
+                    source: source.clone(),
+                    keeper: keeper_profile,
+                    source_domain: k("synthetic-metadata-source"),
+                    keeper_domain: k("keeper-domain"),
+                    allow_evict: true,
+                    unshared_direct_backing: true,
+                    actor_boundary: ActorBoundary::NamespaceOwned,
+                    runtime: Some(Runtime {
+                        effect,
+                        job: job.clone(),
+                        namespaces: vec![MetadataNamespace {
+                            root: metadata_namespace_root,
+                            minimum: namespace.checkpoint(),
+                        }],
+                    }),
+                };
+                let authority = policy.admit(&source_native, &keeper_native).unwrap();
+                enrolled = Some(policy);
+                Some(authority)
+            });
+        let policy = enrolled.unwrap();
+        let mut keeper_control = keeper_control;
         super::super::retirement::publish(&mut f);
         super::super::retirement::publish(&mut backup);
         let old_native = f.plan.clone();
@@ -135,9 +143,6 @@ fn actual_native_eviction_retained_restore_and_stale_replay() {
             )
             .unwrap();
         let separation = kept.compare_source_storage().unwrap();
-        use crate::annex::retirement::planning::{
-            ActorBoundary, Plan as NativePlan, Profile as OwnerProfile,
-        };
         let source_proof = old_native
             .producer_completion(
                 &f.profile,
@@ -155,15 +160,6 @@ fn actual_native_eviction_retained_restore_and_stale_replay() {
                 &mut backup.ledger,
             )
             .unwrap();
-        let policy = OwnerProfile {
-            source: f.control_profile.clone().unwrap(),
-            keeper: backup.control_profile.clone().unwrap(),
-            source_domain: k("synthetic-metadata-source"),
-            keeper_domain: k("keeper-domain"),
-            allow_evict: true,
-            unshared_direct_backing: true,
-            actor_boundary: ActorBoundary::NamespaceOwned,
-        };
         let before = (
             source_control.ledger.checkpoint(),
             keeper_control.ledger.checkpoint(),
@@ -233,6 +229,33 @@ fn actual_native_eviction_retained_restore_and_stale_replay() {
                 .code(),
             "stale"
         );
+        let mut changed_runtime = policy.clone();
+        changed_runtime.runtime.as_mut().unwrap().effect.root =
+            f.root.join("unadmitted-effect-root");
+        assert_eq!(
+            separation
+                .plan(
+                    &changed_runtime,
+                    k("native-eviction"),
+                    source_read.as_ref().unwrap(),
+                    &source_proof,
+                    &keeper_proof,
+                    grant.clone()
+                )
+                .err()
+                .unwrap()
+                .code(),
+            "stale"
+        );
+        assert!(
+            !changed_runtime
+                .runtime
+                .as_ref()
+                .unwrap()
+                .effect
+                .root
+                .exists()
+        );
         let mut bad = serde_json::to_value(&grant).unwrap();
         bad["sha256"] = serde_json::json!(Digest::blob(b"corrupt grant"));
         let bad = serde_json::from_value(bad).unwrap();
@@ -278,126 +301,104 @@ fn actual_native_eviction_retained_restore_and_stale_replay() {
             )
         );
         let retired = planned.metadata_plan().clone();
-        drop(source_proof);
-        drop(keeper_proof);
-        // Plan identity includes the original metadata incarnation, not just the hash.
-        let effect_id = retired.id().unwrap();
-        let packet = Packet::new(&f.witness, &effect_id, &k("owner"), ["intent", "completion"].map(|phase| Document {
-            operation: k(&format!("native-{phase}-{}", effect_id.as_str())),
-            bytes: canonical(serde_json::json!({"schema":"git-asset.synthetic-native-effect.v1","plan":effect_id,"phase":phase,"object":object})),
-        })).unwrap();
-        let native_key = format!("SHA256-s{}--{}", object.bytes, object.sha256.as_str());
-        let job = f.plan.admission.job.clone();
-        let mut effects = 0;
-        let witness = LocalStore::open(&f.root.join("witness")).unwrap();
-        // Separate native witness ledger is already admitted by this owned fixture.
-        let mut effect_ledger =
-            CapacityLedger::open(&f.root.join("ledger"), &f.ledger.checkpoint()).unwrap();
         let original_control = source_control.plan.clone();
-        assert!(
-            control::Profile::open(
-                f.control_profile.as_ref().unwrap(),
-                &assessed.store(),
-                &object,
-                &original_control
-            )
-            .is_ok()
-        );
-        let interrupted = execute(
-            &f,
-            &mut source_control,
-            &mut keeper_control,
-            &retired,
-            |_| {
-                packet
-                    .apply_once(&witness, &mut effect_ledger, &job, || {
-                        separation.revalidate().unwrap();
-                        // Pending original metadata denies native ingress before its data lookup.
-                        assert!(matches!(
-                            control::Profile::open(
-                                f.control_profile.as_ref().unwrap(),
-                                &assessed.store(),
-                                &object,
-                                &original_control
-                            ),
-                            Err(Error::NeedsRecovery)
-                        ));
-                        drop(source_read.take());
-                        effects += 1;
-                        let group = process::run_for_object(
-                            &f.profile.pool.pool,
-                            &object,
-                            true,
-                            &[
-                                "dropkey",
-                                "--force",
-                                "--json",
-                                "--json-error-messages",
-                                &native_key,
-                            ],
-                        )
-                        .unwrap();
-                        let response = git_asset_core::identity::parse_json(
-                            crate::annex::line(&group.stdout).unwrap().as_bytes(),
-                        )
-                        .unwrap();
-                        assert_eq!(response["command"], "dropkey");
-                        assert_eq!(response["key"], native_key);
-                        assert_eq!(response["success"], true);
-                        assert!(matches!(
-                            process::run(
-                                &f.profile.pool.pool,
-                                true,
-                                &["contentlocation", &native_key]
-                            ),
-                            Err(crate::annex::Error::Missing)
-                        ));
-                        separation.revalidate().unwrap();
-                        if uncertain {
-                            // Effect happened, but no durable completion: it must never be repeated.
-                            return Err(git_asset_store::upload_witness::Error::NeedsRecovery);
-                        }
-                        Ok(group)
-                    })
-                    .map_err(|_| git_asset_store::Error::NeedsRecovery)?;
-                // Simulate interruption after durable native completion, before metadata unlink.
-                Err(git_asset_store::Error::NeedsRecovery.into())
+        let nodes = MemoryNodes::default();
+        let result = execution::apply_hook(
+            &policy,
+            &planned,
+            Live {
+                separation: &separation,
+                source_read: source_read.take().unwrap(),
+                source_producer: source_proof,
+                keeper_producer: keeper_proof,
             },
+            &nodes,
+            &Fixture::limits(),
+            cut,
         );
-        assert!(matches!(
-            interrupted,
-            Err(retirement::Error::Store(
-                git_asset_store::Error::NeedsRecovery
-            ))
-        ));
-        assert!(matches!(
-            control::Profile::open(
-                f.control_profile.as_ref().unwrap(),
-                &assessed.store(),
-                &object,
-                &original_control
-            ),
-            Err(Error::NeedsRecovery)
-        ));
-        if uncertain {
-            let state = packet.inspect(&witness, &mut effect_ledger, &job).unwrap();
-            assert!(state.intent && !state.completion);
-            let repeated = packet.apply_once(
-                &witness,
-                &mut effect_ledger,
-                &job,
-                || -> git_asset_store::upload_witness::Result<()> {
-                    panic!("uncertain native deletion must never be retried")
-                },
+        if cut == Cut::None {
+            let report = result.unwrap();
+            assert!(!report.historical && !report.metadata.cancelled);
+            assert_eq!(report.logical_subject_bytes, object.bytes);
+            assert!(report.source_allocation_before.is_some());
+        } else {
+            assert_eq!(
+                result.err().unwrap().code(),
+                if cut == Cut::AfterRemoval {
+                    "uncertain"
+                } else {
+                    "needs_recovery"
+                }
             );
             assert!(matches!(
-                repeated,
-                Err(git_asset_store::upload_witness::OnceError::Uncertain)
+                control::Profile::open(
+                    f.control_profile.as_ref().unwrap(),
+                    &assessed.store(),
+                    &object,
+                    &original_control
+                ),
+                Err(Error::NeedsRecovery)
             ));
-            assert_eq!(effects, 1);
-            drop(separation);
-            drop(kept);
-            drop(assessed);
+        }
+        drop(separation);
+        drop(kept);
+        drop(assessed);
+        let before_status = (
+            CapacityLedger::open(&policy.source.ledger, &policy.source.minimum)
+                .unwrap()
+                .checkpoint(),
+            CapacityLedger::open(
+                &policy.runtime.as_ref().unwrap().effect.ledger,
+                &policy.runtime.as_ref().unwrap().effect.minimum,
+            )
+            .unwrap()
+            .checkpoint(),
+        );
+        let status = execution::status(&policy, &planned, &f.profile, &old_native).unwrap();
+        assert_eq!(
+            status.effect,
+            if cut == Cut::AfterRemoval {
+                "uncertain"
+            } else {
+                "completed"
+            }
+        );
+        assert!(!status.removal_authority);
+        assert!(matches!(
+            status.observed,
+            execution::Observation::ObservedAbsent
+        ));
+        assert_eq!(
+            before_status,
+            (
+                CapacityLedger::open(&policy.source.ledger, &policy.source.minimum)
+                    .unwrap()
+                    .checkpoint(),
+                CapacityLedger::open(
+                    &policy.runtime.as_ref().unwrap().effect.ledger,
+                    &policy.runtime.as_ref().unwrap().effect.minimum
+                )
+                .unwrap()
+                .checkpoint()
+            )
+        );
+        if cut == Cut::AfterRemoval {
+            for _ in 0..2 {
+                assert_eq!(
+                    execution::resume(
+                        &policy,
+                        &planned,
+                        &f.profile,
+                        &old_native,
+                        &nodes,
+                        &Fixture::limits()
+                    )
+                    .err()
+                    .unwrap()
+                    .code(),
+                    "uncertain"
+                );
+            }
             let mut surviving = Vec::new();
             crate::annex::managed::Reader::new(backup.profile.pool.clone())
                 .unwrap()
@@ -408,51 +409,65 @@ fn actual_native_eviction_retained_restore_and_stale_replay() {
             assert_eq!(surviving, bytes);
             continue;
         }
-        // Reopen the exact witnesses after the simulated interruption; never repeat dropkey.
-        let receipt = execute(
-            &f,
-            &mut source_control,
-            &mut keeper_control,
-            &retired,
-            |_| {
-                packet
-                    .apply_once(
-                        &witness,
-                        &mut effect_ledger,
-                        &job,
-                        || -> git_asset_store::upload_witness::Result<()> {
-                            panic!("completed native command repeated on recovery")
-                        },
-                    )
-                    .map_err(|_| git_asset_store::Error::NeedsRecovery)?;
-                Ok(())
-            },
+        // A new raw job demand after process-boundary guard release must not block
+        // historical finalization or cause a repeated removal.
+        f.namespaces[0]
+            .apply(
+                k("enroll-recovery-job"),
+                Command::Enroll {
+                    source: k("recovery-job"),
+                    owner: k("owner"),
+                    class: Kind::Job,
+                },
+                &f.metadata,
+                &Fixture::limits(),
+            )
+            .unwrap();
+        f.namespaces[0]
+            .select(
+                &Select {
+                    prepare: k("prepare-recovery-job"),
+                    adopt: k("adopt-recovery-job"),
+                    source: k("recovery-job"),
+                    owner: k("owner"),
+                    expected_revision: 1,
+                    selection: old_native.selection.selection.clone(),
+                },
+                &f.metadata,
+                &Fixture::limits(),
+            )
+            .unwrap();
+        assert_eq!(
+            Assessor::new(f.profile.pool.clone())
+                .unwrap()
+                .assess(&object, &f.metadata, &Fixture::limits())
+                .err()
+                .unwrap()
+                .code(),
+            "protected"
+        );
+        let report = execution::resume(
+            &policy,
+            &planned,
+            &f.profile,
+            &old_native,
+            &nodes,
+            &Fixture::limits(),
         )
         .unwrap();
-        assert!(!receipt.cancelled);
-        assert_eq!(effects, 1);
-        assert!(matches!(
-            process::run(
-                &f.profile.pool.pool,
-                true,
-                &["contentlocation", &native_key]
-            ),
-            Err(crate::annex::Error::Missing)
-        ));
-        packet.reopen(&witness, &mut effect_ledger, &job).unwrap();
-        let historical = execute(
-            &f,
-            &mut source_control,
-            &mut keeper_control,
-            &retired,
-            |_| panic!("completed native effect repeated"),
+        assert!(report.historical && !report.metadata.cancelled);
+        let again = execution::resume(
+            &policy,
+            &planned,
+            &f.profile,
+            &old_native,
+            &nodes,
+            &Fixture::limits(),
         )
         .unwrap();
-        assert!(historical.historical_replay);
-        // Reopen surviving media independently of the source metadata document.
-        drop(separation);
-        drop(kept);
-        drop(assessed);
+        assert!(again.metadata.historical_replay);
+        source_control.ledger =
+            CapacityLedger::open(&policy.source.ledger, &policy.source.minimum).unwrap();
         let mut retained_bytes = Vec::new();
         crate::annex::Reader::new(backup.profile.pool.pool.clone())
             .unwrap()
@@ -513,8 +528,11 @@ fn actual_native_eviction_retained_restore_and_stale_replay() {
         fs::remove_file(f.root.join("input/objects").join(object.sha256.as_str())).unwrap();
         let plan = f.plan.clone();
         f.refresh();
-        f.ledger =
-            CapacityLedger::open(&f.root.join("ledger"), &effect_ledger.checkpoint()).unwrap();
+        f.ledger = CapacityLedger::open(
+            &f.root.join("ledger"),
+            &policy.runtime.as_ref().unwrap().effect.minimum,
+        )
+        .unwrap();
         let mut publisher = f.publisher();
         let mut input = crate::annex::managed::Reader::new(backup.profile.pool.clone()).unwrap();
         let mut restored = publisher
@@ -525,15 +543,19 @@ fn actual_native_eviction_retained_restore_and_stale_replay() {
         assert_eq!(actual, bytes);
         drop(restored);
         // Old completion is explicitly historical, and cannot remove this same-hash birth.
-        let historical = execute(
-            &f,
-            &mut source_control,
-            &mut keeper_control,
-            &retired,
-            |_| panic!("stale plan deleted restored bytes"),
+        let historical = execution::resume(
+            &policy,
+            &planned,
+            &f.profile,
+            &old_native,
+            &nodes,
+            &Fixture::limits(),
         )
         .unwrap();
-        assert!(historical.historical_replay);
+        assert!(
+            historical.historical
+                && matches!(historical.observed, execution::Observation::VerifiedPresent)
+        );
         let mut current = Vec::new();
         crate::annex::Reader::new(f.profile.pool.pool.clone())
             .unwrap()
@@ -542,6 +564,5 @@ fn actual_native_eviction_retained_restore_and_stale_replay() {
             .read_to_end(&mut current)
             .unwrap();
         assert_eq!(current, bytes);
-        assert_eq!(effects, 1);
     }
 }

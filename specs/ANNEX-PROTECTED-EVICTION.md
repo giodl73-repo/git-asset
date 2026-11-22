@@ -393,3 +393,23 @@ private planning::Profile and retained metadata grant. It opens the configured
 control stores internally and freezes one canonical planning::Plan (64KiB max).
 No deserialized plan/token or owner declaration substitutes for fresh apply
 proofs. NamespaceOwned policy input is not mixed/old-actor handoff qualification.
+
+Execution entry input9c1ce35: same P2 WP/REQ/SPEC/IF/PKG controls and profiles.
+Allowed: internal native controller over the frozen planner/core retirement/
+one-shot witnesses; fresh synthetic tests only. Runtime admission binds effect
+store/ledger/job, source metadata job and full metadata namespace locations to
+owner policy. Source native config gitasset.evictionpolicy seals that policy;
+actual config guards span execution, so stale policy cannot survive committed
+revocation. Configure before initial native publication; epoch changes require
+handoff. Existing runtime-absent preview encodings retain their original policy
+identity and remain non-executable. No public native removal entry yet.
+Fresh apply reopens/rebuilds exact plan under live source/keeper/producer/device
+proofs, releases source control read only after birth pinning, persists metadata
+and effect intents before releasing source bytes, then fixed exact-key native
+removal/absence check. Original command guard spans witness completion. Historical
+completion uses full native scope fences without evaluating today's demand; it
+never repeats removal or deletes reappeared bytes. Unknown intent remains held.
+L0 pins/fmt/links/budget/audits; L1 runtime/authority/profile mismatch and replay
+holds; L2 actual F:/M: fresh application, completed/unknown interruption, new demand
+before historical completion and same-hash restore/stale replay. Public CLI,
+cancellation and authority/legacy handoff qualification remain P2 gates.

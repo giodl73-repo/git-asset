@@ -54,6 +54,18 @@ only after durable effect intent. Only the owned fixture executes native removal
 This is readonly planning, not the native apply/status/cancel/restore controller.
 Initial planner has one explicit keeper/domain; no silent quorum reduction.
 
+Internal execution (input9c1ce35) now consumes the frozen plan. Optional runtime
+binds effect store/ledger/job, source metadata job and metadata namespace roots;
+None preserves legacy preview policy identity and remains non-executable. Source
+native config gitasset.evictionpolicy seals runtime policy before publication.
+Fresh apply rebuilds proofs, persists both intents, holds original command group
+through completion and reports source file allocation separately from metadata.
+Resume uses full source namespace/config fences without today's no-demand check;
+new raw job demand does not repeat removal. Unknown effect never runs again;
+historical old completion preserves restored same-hash media. Bounded status is
+readonly. Controller is internal, not a public removal SDK/CLI yet. Cancellation,
+remaining authority/epoch handoff and native crash qualification remain open.
+
 Next: implement the admitted native controller using this connected proof:
 private direct-backing/failure-domain and actor-boundary admission, historical
 fence-only completion recovery, uncertainty-safe cancellation/reacquisition and
