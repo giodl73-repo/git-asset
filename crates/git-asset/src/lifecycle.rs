@@ -78,7 +78,7 @@ pub struct Budget {
     pub millis: u64,
 }
 impl Budget {
-    fn validate(&self) -> Result<()> {
+    pub(crate) fn validate(&self) -> Result<()> {
         if self.entries == 0
             || self.entries > 32768
             || self.nodes == 0
@@ -112,7 +112,7 @@ impl Budget {
             read_bytes: 512 * 1024 * 1024,
         }
     }
-    fn timed(&self, start: Instant) -> Result<()> {
+    pub(crate) fn timed(&self, start: Instant) -> Result<()> {
         if start.elapsed() >= Duration::from_millis(self.millis) {
             Err(Error::Budget)
         } else {

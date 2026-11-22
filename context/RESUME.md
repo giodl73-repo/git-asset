@@ -126,3 +126,24 @@ job settlement must not reactivate the old generation. P2 actor/roster/epoch
 handoff stays OPEN pending the legacy-boundary answer; MixedLegacy Unsupported.
 No production migration, independent or owner acceptance is implied. Derive the
 latest documentation-head CI from GitHub; qualified runtime SDK pin stays0ccb137.
+
+
+P4 now has main-based REEL PR401, head89a875c6c34ed84b1e890520db996d55cffe2bd7,
+ready for review. Adapter38/workflow38 tests, ten substantive native cases with
+nine real child exits, Clippy/fmt pass. Hosted45005020018/45005025258 (adapter),
+45005025263 (repository) and45005025214 (assembly) pass; PR deployment skipped.
+It uses SDK0ccb137, original control ingress, full Lifecycle and retained recovery.
+No old route/vendor replacement or production activation. Evidence
+reel-public-main-source.json in the external root above; project acceptance open.
+
+P3 worktree F:/src/git-asset-worktrees/trusted-native-placement, branch
+feat/trusted-native-placement, inputf6e66f2. Explicit native Git/HTTP committed
+source contract specs/ANNEX-COMMITTED-SOURCE.md; old LFS reader stays unchanged.
+Native key parsing is metadata-only, with distinct listing/selection domains.
+Actual annex-produced metadata resolves from a bare mirror without payloads.
+Full native merge-to-placement executor/receiver and P3 acceptance remain OPEN.
+Ten historical review records preserve full immutable f6e66 source links/LF hashes;
+source/runtime budgets and active contracts are unchanged. 43 focused source/lifecycle/GitHub integration cases and18 GitHub library cases
+pass, plus one actual native emitted-pointer/bare case. Strict workspace Clippy,
+fmt/L0/diff pass; external annex-source-final-* and native2 logs. Current source
+qualification is local; derive hosted status from the actual branch. No cache initialization, hydration or live operations.
