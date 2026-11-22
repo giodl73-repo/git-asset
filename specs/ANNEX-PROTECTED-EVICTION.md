@@ -363,3 +363,33 @@ peer exclusion and unknown no-repeat; L2 real exits before intent/during staging
 after import/after completion, native ordinary/bare and connected eviction/restore.
 Old acknowledgements stay readable; new eviction admission must refuse legacy
 unqualified producer completion. Producer roles remain non-independent checklists.
+
+Admitted planning entry inputd2ea6ff: same P2 controls/profiles above. Replace
+fixture-built intent with a reusable readonly planner. Entry: actual scoped
+source no-demand, exact retained native keeper/device guard, guarded original
+producer completions and actual control enrollments. Explicit private policy
+has eviction/direct-backing flags default false and actor boundary unqualified;
+unqualified/mixed legacy authority refuses. Initial plan admits one independent
+keeper/domain; broader quorum execution is unsupported, never silently reduced.
+Bind owner policy, both exact producer plans/current physical control origins,
+source checkpoint basis, keeper namespace/repository locations and exact retained
+snapshot/device view before existing incarnation-bound metadata retirement plan.
+Metadata grants remain separate from native media custody; reverify actual grant.
+Allowed: readonly planning/completion proof API, existing store opener factoring,
+bounded canonical plan and synthetic fixtures. No native apply/initialization.
+L0 pins/fmt/budget/links/audits; L1 denied/legacy/alias/unknown/wrong-profile proofs,
+plan canonical/binding and released/missing grant refusal; L2 actual F:/M: plans
+feed the connected eviction/restore fixture. Frozen plan is not removal authority:
+apply must re-admit/reopen all current proofs. Full owner/actor handoff, historical
+recovery/cancellation and CLI remain P2 gates, not waived by planning admission.
+
+SDK planning: obtain actual source Assessment, then read_for_plan before keeper
+borrows; its SourceRead binds verified bytes to that assessment basis. Open the
+exact keeper and StorageSeparation. Plan::producer_completion reopens both
+original guarded producers; it keeps physical control origins and exact settled
+witnesses live, without treating them as media custody. A completed alias cannot
+supply this proof. StorageSeparation::plan consumes these live references plus
+private planning::Profile and retained metadata grant. It opens the configured
+control stores internally and freezes one canonical planning::Plan (64KiB max).
+No deserialized plan/token or owner declaration substitutes for fresh apply
+proofs. NamespaceOwned policy input is not mixed/old-actor handoff qualification.

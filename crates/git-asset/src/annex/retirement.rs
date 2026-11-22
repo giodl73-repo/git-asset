@@ -10,6 +10,7 @@ use git_asset_store::{
     source_claims::admission::{Namespace, SubjectFence},
     store_protection::{self, NamespaceAssessment},
 };
+pub mod planning;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Error {
@@ -58,6 +59,12 @@ pub struct Assessment {
     _directory: std::fs::File,
     namespaces: Vec<Namespace>,
     facts: NamespaceAssessment,
+}
+/// Verified source bytes tied to the exact assessment basis. Keep this guard
+/// until effect intent is durable; it is not a removal capability.
+pub struct SourceRead {
+    basis: Digest,
+    read: VerifiedRead,
 }
 fn protection_error(error: store_protection::Error) -> Error {
     match error {
@@ -150,6 +157,13 @@ impl Assessor {
     }
 }
 impl Assessment {
+    pub fn read_for_plan(&mut self) -> Result<SourceRead> {
+        let read = self.read_source()?;
+        Ok(SourceRead {
+            basis: self.replay_basis()?.id()?,
+            read,
+        })
+    }
     pub fn store(&self) -> Digest {
         self.reader.store()
     }
@@ -183,6 +197,7 @@ pub struct RetainedRead<'a> {
     _configuration: VerifiedRead,
     _directory: std::fs::File,
     _fences: Vec<SubjectFence>,
+    profile: managed::Profile,
 }
 impl Assessment {
     /// Overlapping authorities borrow existing fences instead of reacquiring shared uses.
@@ -241,6 +256,7 @@ impl Assessment {
             _configuration: configuration,
             _directory: directory,
             _fences: fences,
+            profile: keeper.profile,
         })
     }
 }

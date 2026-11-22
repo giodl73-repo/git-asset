@@ -120,14 +120,7 @@ impl Profile {
     }
     pub(super) fn open(&self, native: &Digest, object: &Object, plan: &Plan) -> Result<Use> {
         self.check(native, object, plan)?;
-        let store = LocalStore::open(&self.root).map_err(store_error)?;
-        if store.identity() != &self.store
-            || store.place() != &place(native)?
-            || !store.supports_retirement()
-            || store.final_policy().is_some()
-        {
-            return Err(Error::Stale);
-        }
+        let store = self.open_store(native)?;
         let mut ledger = CapacityLedger::open(&self.ledger, &self.minimum)
             .map_err(|e| Error::from(accounted::AccountedError::Ledger(e)))?;
         let published = accounted::reopen(&mut ledger, &store, &plan.job, &plan.publication)
@@ -143,6 +136,18 @@ impl Profile {
         Ok(Use {
             _published: published,
         })
+    }
+    pub(super) fn open_store(&self, native: &Digest) -> Result<LocalStore> {
+        self.binding(native)?;
+        let store = LocalStore::open(&self.root).map_err(store_error)?;
+        if store.identity() != &self.store
+            || store.place() != &place(native)?
+            || !store.supports_retirement()
+            || store.final_policy().is_some()
+        {
+            return Err(Error::Stale);
+        }
+        Ok(store)
     }
 }
 fn store_error(e: git_asset_store::Error) -> Error {

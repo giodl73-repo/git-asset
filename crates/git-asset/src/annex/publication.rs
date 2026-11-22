@@ -493,6 +493,67 @@ pub struct Resources<'a> {
     pub witness: &'a LocalStore,
     pub ledger: &'a mut CapacityLedger,
 }
+/// Guarded original producer evidence, not native byte custody or removal authority.
+/// Keeps the current physical control origin and both exact witness records open.
+pub struct ProducerCompletion {
+    pub(super) pool: Digest,
+    pub(super) configuration: Object,
+    pub(super) object: Object,
+    pub(super) plan: Digest,
+    pub(super) control_binding: Digest,
+    pub(super) control: control::Plan,
+    _control: control::Use,
+    _completion: upload_witness::Completed,
+}
+impl Plan {
+    /// Metadata-only exact reopen. Caller separately pins actual native configuration,
+    /// bytes, complete protection scope and custody. Aliases and legacy plans refuse.
+    pub fn producer_completion(
+        &self,
+        profile: &Profile,
+        control: &control::Profile,
+        witness: &LocalStore,
+        ledger: &mut CapacityLedger,
+    ) -> Result<ProducerCompletion> {
+        if !self.has_guarded_effect() {
+            return Err(Error::Unsupported);
+        }
+        self.check_profile(profile)?;
+        let admission = self.control.as_ref().ok_or(Error::Denied)?;
+        if witness.identity() != &self.admission.witness
+            || ledger.identity() != &self.admission.capacity
+            || control.binding(&self.pool)? != admission.binding
+        {
+            return Err(Error::Stale);
+        }
+        let held = control.open(&self.pool, &self.candidate().object, &admission.plan)?;
+        if !held.allows_missing(profile, control, &self.request, &admission.plan)? {
+            return Err(Error::Denied);
+        }
+        let packet = self.packet(witness)?;
+        let state = packet.inspect(witness, ledger, &self.admission.job)?;
+        if state.intent && !state.completion {
+            return Err(Error::Uncertain);
+        }
+        let completion = packet.reopen(witness, ledger, &self.admission.job)?;
+        let allocation = ledger
+            .allocation_observation(&key(&self.scope()?, "payload")?)?
+            .ok_or(Error::NeedsRecovery)?;
+        if allocation.charged_bytes.is_none() {
+            return Err(Error::NeedsRecovery);
+        }
+        Ok(ProducerCompletion {
+            pool: self.pool.clone(),
+            configuration: self.configuration.clone(),
+            object: self.candidate().object.clone(),
+            plan: self.id()?,
+            control_binding: admission.binding.clone(),
+            control: admission.plan.clone(),
+            _control: held,
+            _completion: completion,
+        })
+    }
+}
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Receipt {

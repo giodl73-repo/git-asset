@@ -103,11 +103,29 @@ fn actual_native_eviction_retained_restore_and_stale_replay() {
         .grant;
         super::super::retirement::settle(&mut f);
         f.refresh();
+        let mut prior_assessment = Assessor::new(f.profile.pool.clone())
+            .unwrap()
+            .assess(&object, &f.metadata, &Fixture::limits())
+            .unwrap();
+        let prior_source_read = prior_assessment.read_for_plan().unwrap();
+        drop(prior_assessment);
+        f.namespaces[0]
+            .apply(
+                k("advance-plan-basis"),
+                Command::Enroll {
+                    source: k("unrelated-source"),
+                    owner: k("owner"),
+                    class: Kind::Branch,
+                },
+                &f.metadata,
+                &Fixture::limits(),
+            )
+            .unwrap();
         let mut assessed = Assessor::new(f.profile.pool.clone())
             .unwrap()
             .assess(&object, &f.metadata, &Fixture::limits())
             .unwrap();
-        let mut source_read = Some(assessed.read_source().unwrap());
+        let mut source_read = Some(assessed.read_for_plan().unwrap());
         let kept = assessed
             .open_keeper(
                 backup.profile.pool.clone(),
@@ -117,41 +135,151 @@ fn actual_native_eviction_retained_restore_and_stale_replay() {
             )
             .unwrap();
         let separation = kept.compare_source_storage().unwrap();
-        // Explicit synthetic namespace-owned/direct-backing admission is not owner approval.
-        let context = Digest::blob(&canonical(serde_json::json!([
-            "git-asset.synthetic-native-eviction.v1",
-            assessed.replay_basis().unwrap(),
-            separation.id().unwrap(),
-            "owned-fresh-namespace-only",
-            "unshared-direct-backing",
-            "source-domain",
-            "keeper-domain",
-            f.control_profile
-                .as_ref()
+        use crate::annex::retirement::planning::{
+            ActorBoundary, Plan as NativePlan, Profile as OwnerProfile,
+        };
+        let source_proof = old_native
+            .producer_completion(
+                &f.profile,
+                f.control_profile.as_ref().unwrap(),
+                &f.witness,
+                &mut f.ledger,
+            )
+            .unwrap();
+        let keeper_proof = backup
+            .plan
+            .producer_completion(
+                &backup.profile,
+                backup.control_profile.as_ref().unwrap(),
+                &backup.witness,
+                &mut backup.ledger,
+            )
+            .unwrap();
+        let policy = OwnerProfile {
+            source: f.control_profile.clone().unwrap(),
+            keeper: backup.control_profile.clone().unwrap(),
+            source_domain: k("synthetic-metadata-source"),
+            keeper_domain: k("keeper-domain"),
+            allow_evict: true,
+            unshared_direct_backing: true,
+            actor_boundary: ActorBoundary::NamespaceOwned,
+        };
+        let before = (
+            source_control.ledger.checkpoint(),
+            keeper_control.ledger.checkpoint(),
+        );
+        let mut denied = policy.clone();
+        denied.allow_evict = false;
+        assert_eq!(
+            separation
+                .plan(
+                    &denied,
+                    k("native-eviction"),
+                    source_read.as_ref().unwrap(),
+                    &source_proof,
+                    &keeper_proof,
+                    grant.clone()
+                )
+                .err()
                 .unwrap()
-                .binding(&assessed.store())
+                .code(),
+            "denied"
+        );
+        denied = policy.clone();
+        denied.actor_boundary = ActorBoundary::MixedLegacy;
+        assert_eq!(
+            separation
+                .plan(
+                    &denied,
+                    k("native-eviction"),
+                    source_read.as_ref().unwrap(),
+                    &source_proof,
+                    &keeper_proof,
+                    grant.clone()
+                )
+                .err()
                 .unwrap()
-        ])));
-        let retired = retirement::plan(
-            &source_control.store,
-            retirement::Request {
-                operation: k("native-eviction"),
-                owner: k("controller"),
-                publication: source_control.plan.publication.request().clone(),
-                context,
-                source: source_control.enrollment(),
-                keepers: vec![retirement::Keeper {
-                    grant,
-                    enrollment: ReplicaEnrollment {
-                        store: keeper_control.store.identity().clone(),
-                        failure_domain: k("keeper-domain"),
-                    },
-                }],
-                required_domains: 1,
-                capacity: source_control.ledger.identity().clone(),
-            },
-        )
-        .unwrap();
+                .code(),
+            "unsupported"
+        );
+        assert_eq!(
+            separation
+                .plan(
+                    &policy,
+                    k("native-eviction"),
+                    &prior_source_read,
+                    &source_proof,
+                    &keeper_proof,
+                    grant.clone()
+                )
+                .err()
+                .unwrap()
+                .code(),
+            "stale"
+        );
+        drop(prior_source_read);
+        assert_eq!(
+            separation
+                .plan(
+                    &policy,
+                    k("native-eviction"),
+                    source_read.as_ref().unwrap(),
+                    &keeper_proof,
+                    &source_proof,
+                    grant.clone()
+                )
+                .err()
+                .unwrap()
+                .code(),
+            "stale"
+        );
+        let mut bad = serde_json::to_value(&grant).unwrap();
+        bad["sha256"] = serde_json::json!(Digest::blob(b"corrupt grant"));
+        let bad = serde_json::from_value(bad).unwrap();
+        assert_eq!(
+            separation
+                .plan(
+                    &policy,
+                    k("native-eviction"),
+                    source_read.as_ref().unwrap(),
+                    &source_proof,
+                    &keeper_proof,
+                    bad
+                )
+                .err()
+                .unwrap()
+                .code(),
+            "corrupt"
+        );
+        let planned = separation
+            .plan(
+                &policy,
+                k("native-eviction"),
+                source_read.as_ref().unwrap(),
+                &source_proof,
+                &keeper_proof,
+                grant,
+            )
+            .unwrap();
+        let encoded = planned.to_json().unwrap();
+        assert_eq!(
+            NativePlan::from_json(&encoded).unwrap().id().unwrap(),
+            planned.id().unwrap()
+        );
+        let mut invalid = encoded.clone();
+        invalid.push(b'\n');
+        assert!(NativePlan::from_json(&invalid).is_err());
+        assert_eq!(planned.object(), &object);
+        assert_eq!(
+            before,
+            (
+                source_control.ledger.checkpoint(),
+                keeper_control.ledger.checkpoint()
+            )
+        );
+        let retired = planned.metadata_plan().clone();
+        drop(source_proof);
+        drop(keeper_proof);
         // Plan identity includes the original metadata incarnation, not just the hash.
         let effect_id = retired.id().unwrap();
         let packet = Packet::new(&f.witness, &effect_id, &k("owner"), ["intent", "completion"].map(|phase| Document {

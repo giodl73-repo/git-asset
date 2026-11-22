@@ -42,6 +42,18 @@ has_guarded_effect(); absent-field legacy plans/acknowledgements remain readable
 but are not qualified eviction closure. Actual producer completion still needs
 exact witness reopen and physical-origin control binding, never just the flag. See producer-* logs for this revision.
 
+Readonly native planning (inputd2ea6ff): planning::Profile defaults deny;
+mixed legacy authority is unsupported. Plan::producer_completion reopens guarded
+original physical producer witnesses/control origins; aliases, legacy and unknown
+producers refuse. Assessment::read_for_plan pins source bytes to the exact basis.
+StorageSeparation::plan combines those tokens, actual keeper snapshot/devices,
+private policy, configured control roots and a reverified metadata grant into a
+canonical64KiB native plan over the existing metadata retirement plan. Source/
+keeper proof guards must be dropped before metadata execution; source byte guard
+only after durable effect intent. Only the owned fixture executes native removal.
+This is readonly planning, not the native apply/status/cancel/restore controller.
+Initial planner has one explicit keeper/domain; no silent quorum reduction.
+
 Next: implement the admitted native controller using this connected proof:
 private direct-backing/failure-domain and actor-boundary admission, historical
 fence-only completion recovery, uncertainty-safe cancellation/reacquisition and

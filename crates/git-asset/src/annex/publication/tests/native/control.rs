@@ -454,6 +454,15 @@ fn configured_control_cannot_be_omitted_and_alias_cannot_repair_missing_native_b
     f.publisher()
         .apply(&alias, &mut f.resources(), &mut input)
         .unwrap();
+    assert!(matches!(
+        alias.producer_completion(
+            &f.profile,
+            f.control_profile.as_ref().unwrap(),
+            &f.witness,
+            &mut f.ledger
+        ),
+        Err(Error::Denied)
+    ));
     fs::remove_file(f.output_path()).unwrap();
     assert!(matches!(
         f.publisher().resume(&alias, &mut f.resources()),
@@ -583,3 +592,68 @@ fn controlled_copy_retains_both_metadata_guards_and_cannot_bypass_destination_pe
 }
 
 mod eviction;
+
+#[test]
+fn original_guarded_producer_completion_is_exact_readonly_and_holds_control_origin() {
+    let mut f = Fixture::new(b"guarded producer proof");
+    let mut c = Control::new(&mut f);
+    let plan = f.plan.clone();
+    let profile = f.control_profile.clone().unwrap();
+    assert!(matches!(
+        plan.producer_completion(&f.profile, &profile, &f.witness, &mut f.ledger),
+        Err(Error::NeedsRecovery)
+    ));
+    let mut input = f.input();
+    f.refresh();
+    f.publisher()
+        .apply(&plan, &mut f.resources(), &mut input)
+        .unwrap();
+    let before = f.ledger.checkpoint();
+    let held = plan
+        .producer_completion(&f.profile, &profile, &f.witness, &mut f.ledger)
+        .unwrap();
+    assert_eq!(f.ledger.checkpoint(), before);
+    let retired = c.retirement("proof-busy");
+    assert!(matches!(
+        c.execute(&retired, true, false),
+        Err(retirement::Error::Protection(
+            git_asset_store::store_protection::Error::Busy
+        ))
+    ));
+    drop(held);
+    let mut changed = profile.clone();
+    changed.root = f.root.join("missing-profile-root");
+    assert!(matches!(
+        plan.producer_completion(&f.profile, &changed, &f.witness, &mut f.ledger),
+        Err(Error::Stale)
+    ));
+    let mut legacy = plan.clone();
+    legacy.effect_protocol = None;
+    assert!(matches!(
+        legacy.producer_completion(&f.profile, &profile, &f.witness, &mut f.ledger),
+        Err(Error::Unsupported)
+    ));
+    assert!(!changed.root.exists());
+}
+#[test]
+fn incomplete_original_native_producer_cannot_supply_eviction_closure() {
+    let mut f = Fixture::new(b"unknown producer proof");
+    let _control = Control::new(&mut f);
+    let plan = f.plan.clone();
+    fs::write(f.profile.pool.pool.repository.join("mode"), b"lost-reply").unwrap();
+    let mut input = f.input();
+    f.refresh();
+    assert!(matches!(
+        f.publisher().apply(&plan, &mut f.resources(), &mut input),
+        Err(Error::Uncertain)
+    ));
+    assert!(matches!(
+        plan.producer_completion(
+            &f.profile,
+            f.control_profile.as_ref().unwrap(),
+            &f.witness,
+            &mut f.ledger
+        ),
+        Err(Error::Uncertain)
+    ));
+}
