@@ -63,6 +63,9 @@ fn commit(root: &Path) -> GitId {
 }
 impl Fixture {
     fn new() -> Self {
+        Self::with_source_use(false)
+    }
+    fn with_source_use(fenced: bool) -> Self {
         let temp = tempfile::Builder::new()
             .prefix("git-asset lifecycle fixture ")
             .tempdir()
@@ -85,7 +88,12 @@ impl Fixture {
         }
         commit(&repo);
         let repository = Repository::new(git_executable(), repo, Limits::default()).unwrap();
-        let mut namespace = Namespace::create(
+        let create = if fenced {
+            Namespace::create_fenced
+        } else {
+            Namespace::create
+        };
+        let mut namespace = create(
             &temp.path().join("namespace"),
             key("project"),
             key("epoch"),
@@ -786,12 +794,231 @@ fn exact_full_refs_support_unicode_and_never_select_a_prefix_neighbor_or_revisio
             .named_commit("refs/heads/main\nforged")
             .is_err()
     );
-    git(&f.repo(), &["checkout", "-b", "révision"]);
-    f.enrollment.ref_name = "refs/heads/révision".into();
+    git(&f.repo(), &["checkout", "-b", "rÃƒÆ’Ã‚Â©vision"]);
+    f.enrollment.ref_name = "refs/heads/rÃƒÆ’Ã‚Â©vision".into();
     let plan = f.plan();
     assert_eq!(plan.commit, other.as_str());
     assert_eq!(
         f.execution().apply(&plan).unwrap().observed_ref_current,
         Some(true)
     );
+}
+
+#[test]
+fn current_use_refuses_legacy_and_historical_selection_without_rewriting_claims() {
+    use git_asset::lifecycle::CurrentUseError as U;
+    use git_asset_store::source_claims::admission::source_use::UseError;
+    let mut f = Fixture::new();
+    let p = f.plan();
+    f.execution().apply(&p).unwrap();
+    let checkpoint = f.namespace.checkpoint();
+    assert!(matches!(
+        f.execution().hold_current(&p),
+        Err(U::Protection(UseError::Unsupported))
+    ));
+    assert_eq!(checkpoint, f.namespace.checkpoint());
+    f.update(b"new generation");
+    assert!(matches!(
+        f.execution().hold_current(&p),
+        Err(U::Selection(Error::Stale))
+    ));
+    assert_eq!(checkpoint, f.namespace.checkpoint());
+}
+
+#[test]
+fn native_current_use_fences_selected_generation_but_not_git_or_other_sources() {
+    use git_asset::lifecycle::CurrentUseError as U;
+    use git_asset::source::annex::Source;
+    let mut f = Fixture::with_source_use(true);
+    for (name, bytes) in [
+        ("shared.bin", b"shared".as_slice()),
+        ("changed.bin", b"old".as_slice()),
+    ] {
+        let object = Object::from_bytes(bytes);
+        fs::write(
+            f.repo().join("assets").join(name),
+            format!(
+                "/annex/objects/SHA256-s{}--{}\n",
+                object.bytes,
+                object.sha256.as_str()
+            ),
+        )
+        .unwrap();
+    }
+    let original = commit(&f.repo());
+    let native = Source {
+        repository: &f.repository,
+    };
+    let mut execution = Execution {
+        enrollment: &f.enrollment,
+        repository: &native,
+        namespace: &mut f.namespace,
+        metadata: &mut f.metadata,
+        allow_selection: true,
+    };
+    let p = execution.plan(Some(&original)).unwrap();
+    assert!(matches!(
+        execution.hold_current(&p),
+        Err(U::Selection(Error::Stale))
+    ));
+    execution.apply(&p).unwrap();
+    let checkpoint = execution.namespace.checkpoint();
+    let held = execution.hold_current(&p).unwrap();
+    assert_eq!(held.selection(), &p.selection);
+    assert_eq!(held.source(), &p.source);
+    assert_eq!(checkpoint, execution.namespace.checkpoint());
+    // A duplicate/no-op plan must acquire the actual current source revision.
+    let duplicate = execution.plan(Some(&original)).unwrap();
+    assert!(duplicate.no_op);
+    let duplicate_use = execution.hold_current(&duplicate).unwrap();
+    assert_eq!(held.revision(), duplicate_use.revision());
+    drop(duplicate_use);
+    let revision = held.revision();
+    let withdraw = Command::Withdraw {
+        source: p.source.clone(),
+        owner: p.owner.clone(),
+        expected_revision: revision,
+    };
+    assert!(matches!(
+        execution.namespace.apply(
+            key("competing-withdraw"),
+            withdraw.clone(),
+            execution.metadata,
+            &admission_limits()
+        ),
+        Err(git_asset_store::source_claims::admission::Error::Journal(
+            git_asset_store::source_claims::Error::Busy
+        ))
+    ));
+    execution
+        .namespace
+        .apply(
+            key("unrelated-enrollment"),
+            Command::Enroll {
+                source: key("unrelated"),
+                owner: key("owner"),
+                class: Kind::Branch,
+            },
+            execution.metadata,
+            &admission_limits(),
+        )
+        .unwrap();
+    // The scoped source gate does not lock Git: advancement must be detected,
+    // even while the original admitted version remains protected.
+    let repo = f.temp.path().join("repo");
+    git(
+        &repo,
+        &[
+            "-c",
+            "core.hooksPath=NUL",
+            "commit",
+            "--allow-empty",
+            "-m",
+            "advance",
+        ],
+    );
+    assert!(matches!(
+        execution.hold_current(&p),
+        Err(U::Selection(Error::Stale))
+    ));
+    assert_eq!(held.selection(), &p.selection);
+    drop(held);
+    execution
+        .namespace
+        .apply(
+            key("competing-withdraw"),
+            withdraw,
+            execution.metadata,
+            &admission_limits(),
+        )
+        .unwrap();
+    assert!(
+        execution
+            .namespace
+            .source(&p.source)
+            .unwrap()
+            .unwrap()
+            .current
+            .is_none()
+    );
+}
+
+#[test]
+fn current_use_rechecks_ref_after_acquisition_and_releases_failed_guard() {
+    use git_asset::lifecycle::{CommittedSource, CurrentUseError, FlatCapture};
+    struct Advance<'a> {
+        repository: &'a Repository,
+        repo: &'a Path,
+        calls: std::cell::Cell<u32>,
+    }
+    impl CommittedSource for Advance<'_> {
+        fn named_commit(&self, name: &str) -> Result<GitId, Error> {
+            self.calls.set(self.calls.get() + 1);
+            if self.calls.get() == 2 {
+                git(
+                    self.repo,
+                    &[
+                        "-c",
+                        "core.hooksPath=NUL",
+                        "commit",
+                        "--allow-empty",
+                        "-m",
+                        "race",
+                    ],
+                );
+            }
+            CommittedSource::named_commit(self.repository, name)
+        }
+        fn flat_capture(
+            &self,
+            _: GitId,
+            _: &[LogicalPath],
+            _: &Budget,
+        ) -> Result<FlatCapture, Error> {
+            panic!("holding a generation must not capture or hydrate it again")
+        }
+    }
+    let mut f = Fixture::with_source_use(true);
+    let p = f.plan();
+    f.execution().apply(&p).unwrap();
+    let repo = f.repo();
+    let source = Advance {
+        repository: &f.repository,
+        repo: &repo,
+        calls: std::cell::Cell::new(0),
+    };
+    let checkpoint = f.namespace.checkpoint();
+    let mut execution = Execution {
+        enrollment: &f.enrollment,
+        repository: &source,
+        namespace: &mut f.namespace,
+        metadata: &mut f.metadata,
+        allow_selection: false,
+    };
+    assert!(matches!(
+        execution.hold_current(&p),
+        Err(CurrentUseError::Selection(Error::Stale))
+    ));
+    assert_eq!(source.calls.get(), 2);
+    assert_eq!(checkpoint, execution.namespace.checkpoint());
+    let revision = execution
+        .namespace
+        .source(&p.source)
+        .unwrap()
+        .unwrap()
+        .revision;
+    // The unsuccessful return cannot leak a gate that blocks future recovery.
+    execution
+        .namespace
+        .apply(
+            key("after-ref-race"),
+            Command::Withdraw {
+                source: p.source.clone(),
+                owner: p.owner.clone(),
+                expected_revision: revision,
+            },
+            execution.metadata,
+            &admission_limits(),
+        )
+        .unwrap();
 }

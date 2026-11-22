@@ -48,3 +48,27 @@ OPEN. P2 mixed legacy refusal and P5/P6 release/adoption gates remain unchanged.
 Primary format references: [pointer files](https://git-annex.branchable.com/internals/pointer_file/),
 [keys](https://git-annex.branchable.com/internals/key_format/),
 [locked/unlocked files](https://git-annex.branchable.com/tips/unlocked_files/).
+
+## Current-generation provider-work guard
+
+Input69a1d5c7f78d8154aaead4002246e2a92e9519ca; same WP/REQ/SPEC/IF/PKG
+controls above, plus existing source-generation-use contract. Allowed extension:
+Execution::hold_current and synthetic committed-source race fixtures. Entry:
+exact admitted lifecycle Plan and design-3 source gate. Exit: original owner,
+full current Version and actual source revision held without namespace mutation;
+legacy Unsupported, wrong/historical generation Stale, conflicting writer Busy.
+L0 pins/format/source budget; L1 locked lifecycle/source fixtures and Clippy;
+L2 real synthetic Git commits with native pointer blobs and scoped journal gates.
+No native payload effects, receiver activation or custody qualification here.
+
+hold_current samples the enrolled Git ref before and after acquiring the existing
+source-use guard. It works with ordinary and native CommittedSource adapters,
+including duplicate/no-op plans; it uses the actual source revision, not a plan's
+pre-admission revision. Selection failures and source-use failures have distinct
+CurrentUseError variants. Legacy namespaces refuse without migration or writes.
+A returned guard blocks participating changes to that source generation, not
+unrelated sources or Git commits. Callers must sample the ref/authorization again
+between bounded effects; remote Git refs cannot be locked by this local guard.
+No TTL, serialization or durable worker receipt is introduced. Releasing a guard
+or process exit never withdraws claims or removes bytes. Native copy/eviction
+must still acquire their own actual custody, roster and physical-origin proofs.

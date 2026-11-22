@@ -147,3 +147,19 @@ source/runtime budgets and active contracts are unchanged. 43 focused source/lif
 pass, plus one actual native emitted-pointer/bare case. Strict workspace Clippy,
 fmt/L0/diff pass; external annex-source-final-* and native2 logs. Current source
 qualification is local; derive hosted status from the actual branch. No cache initialization, hydration or live operations.
+
+
+P3 source head69a1d5c passed hosted45008095794. Next extension adds
+lifecycle::Execution::hold_current using the existing design-3 source gate:
+actual current revision/full Version, duplicate/no-op support, before/after ref
+samples, no writes or implicit legacy upgrade. CurrentUseError separates lifecycle
+and source-use errors. Native pointer/real-Git fixtures cover competing withdraw,
+unrelated enrollment, Git advancement, historical refusal and failed-acquisition
+guard release. Full native worker/receiver and temporary-ingest handoff still OPEN;
+no copy/eviction activation. Six more completed dated reviews are preserved at
+immutable69a1d5c with LF hashes to admit implementation within the same 8MiB cap.
+
+Current-use qualification:20 focused tests pass (16 lifecycle,4 native-source;
+ignored tool entry not counted), strict workspace/all-feature/all-target Clippy,
+fmt and L0 pass. Initial fixture expected the outer Busy variant; the actual
+journal Busy is now asserted exactly. Full P3 integration remains OPEN.

@@ -18,3 +18,22 @@ emitted-pointer/bare case, strict workspace Clippy/fmt/L0/diff pass. Default nat
 entry remains ignored and is not counted as execution. Native fixture commit
 needed its explicitly admitted annex PATH; no runtime/global binding was changed.
 Full P3 native placement/receiver and P2/P5/P6 adoption remain OPEN.
+
+
+Current-generation extension, input69a1d5c (same controls): producer review of
+Execution::hold_current, its CurrentUseError and real-Git lifecycle fixtures.
+Identity/recovery H: use actual current source revision/full Version, including
+no-op captures; pre-admission expected_revision is not a live generation token.
+Implemented using the existing source_use gate. Placement/custody H: this pins
+one source, never bytes, all namespace demand or independent backup; native
+controller proofs remain mandatory. Provider H: Git may advance while held;
+sample before/after acquisition and require per-effect ref/auth revalidation.
+Adoption M: legacy returns explicit Protection(Unsupported), no implicit upgrade.
+All findings owned by P3 producer, addressed within this component's contract;
+full worker/handoff/revert/crash/outage qualification remains OPEN. Tests below
+must pass before the implementation checkpoint; producer checks are not approval.
+
+Current-use qualification:20 focused tests pass (16 lifecycle,4 native-source;
+ignored tool entry not counted), strict workspace/all-feature/all-target Clippy,
+fmt and L0 pass. Initial fixture expected the outer Busy variant; the actual
+journal Busy is now asserted exactly. Full P3 integration remains OPEN.
