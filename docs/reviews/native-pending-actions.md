@@ -26,3 +26,22 @@ with saved-plan replay, and distinct E:/F: eviction/restore with complete origin
 plan readback after removal. Strict workspace all-feature/all-target Clippy and
 standalone annex-publish build pass. Exact-source L0 and producer evidence remain
 separate from independent review or production acceptance.
+
+## Receiver handoff refinement
+
+Input e082c3133c2514155cb6ebf3d3c41ef7a1de3653; same controls, six producer
+checklists and owner. H identity/custody: use actual completed working recipe and
+exact original retained Select Version, with native custody verification retained.
+H recovery: copy/post-expiry progress survives; save precedes release and the
+report preserves Saved on later refusal. H provider: pending roots are private,
+authentication precedes open, signed namespace/provider identities are checked.
+M placement: existing object/deadline limits apply; no eviction or global
+convergence is inferred. Fixtures exercise expiration after backup, expiration
+after durable capture, original-handle retry and historical batch replay.
+Independent review and full native HTTP/account/TLS acceptance remain OPEN.
+
+Receiver handoff qualification:28 focused cases, one explicit real-annex
+interrupted/retried/historical batch case and the CLI private-file case pass.
+Strict workspace all-feature/all-target Clippy, standalone annex-publish and fmt
+pass. L0/pins/branding/diff qualification is recorded externally; no native HTTP
+account/TLS, full-system convergence or owner acceptance is inferred.

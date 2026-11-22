@@ -33,7 +33,7 @@ fn report<T>(saved: Saved, result: Result<Mutation<T>, Error>) -> Durable<T> {
     }
 }
 impl<R: CommittedSource + ?Sized> Execution<'_, R> {
-    fn pending_scope(&self) -> Result<pending::Scope, Error> {
+    pub(super) fn pending_scope(&self) -> Result<pending::Scope, Error> {
         Ok(self
             .policy
             .actions

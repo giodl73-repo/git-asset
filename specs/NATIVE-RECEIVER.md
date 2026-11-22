@@ -1,6 +1,6 @@
 # Native receiver and bounded copy reconciliation
 
-Inputd43c71e382579383e0549758e1d589f807a64b42; P3 WP-005/006/009 with
+Input e082c3133c2514155cb6ebf3d3c41ef7a1de3653; P3 WP-005/006/009 with
 WP-004/007; REQ-001/002/004/006/007/008/010; SPEC-002/003/004/005/007/008/010/011;
 IF-002/004/005/008/010/012; PKG-001/003/004/006. GIT/RUST/PROVIDER/INTEGRATION.
 Allowed: fixed receiver profile dispatch and bounded native copy reconciliation
@@ -21,8 +21,8 @@ One request reconciles at most128 required objects at the working alias, under
 the actual selected Main generation. Desired requirements are bounded metadata,
 never a payload census. Continuation binds policy, commit, admitted source revision
 and exact ordered desired objects. A stale/missing after-key refuses. A suffix
-does not prove prefix completion. Native action/retention/eviction and full batch
-convergence remain separate; storage_converged is always unknown here.
+does not prove prefix completion. Durable ingest handoff is optional; eviction
+and full batch convergence remain separate; storage_converged is always unknown here.
 
 Dry run resolves original plans without native payload observation or effects.
 Apply verifies actual managed working bytes and exact retained source custody;
@@ -64,3 +64,24 @@ asset-side; this adds no queue, mutable cache registry or operation journal.
 Optional reverse backup and its separate permission/receipt lifecycle are defined
 in [TRUSTED-NATIVE-BACKUP](TRUSTED-NATIVE-BACKUP.md). It uses the same fixed pair
 and frozen index records; root publication and eviction scheduling remain separate.
+
+With a private pending namespace binding, reconcile_with_actions runs admitted
+handoff after a successful copy, backup or verified-present observation. The
+original reconcile API remains copy-only. The receiver requires a pending binding
+matching signed Actions.pending whenever handoff is enabled; paths come only
+from its private profile. Existing namespaces are opened after authentication.
+The worker also checks the actual namespace/provider identities before selection.
+
+Handoff uses the actual completed working recipe and exact retained recipe,
+never the prospective forward-copy destination when original ingress supplied
+the bytes. An explicit producer-index snapshot wins. Otherwise the retained
+publication's original Select receipt identifies its exact Version; current/latest
+substitution is forbidden. Plan::retained_snapshot is metadata capture only;
+the native handoff still validates actual roster, generation, membership and bytes.
+
+Deadline/ref/admission checks precede the phase. A copy's post-effect hold skips
+new handoff work without losing its receipt. Durable capture precedes release.
+Outcome.handoff returns Saved and the mutation or failure; post-save failure also
+holds the page. A fresh authenticated retry discovers the same frozen action,
+including after temporary ingest release. No action slot is overwritten and no
+media bytes are removed by this phase. Storage convergence remains unknown.

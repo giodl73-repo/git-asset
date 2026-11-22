@@ -52,6 +52,25 @@ fn retained(
     }
     Ok((source, version))
 }
+impl super::Plan {
+    /// Capture this publication's exact retained Version, never the latest one.
+    /// Metadata only: callers still need native retained readback/custody checks.
+    pub fn retained_snapshot(
+        &self,
+        namespace: &mut Namespace,
+    ) -> Result<super::super::snapshot::Snapshot> {
+        let (_, version) = retained(self, namespace)?;
+        Ok(super::super::snapshot::Snapshot {
+            namespace: self.admission.namespace.clone(),
+            source: self.request.source.clone(),
+            owner: self.request.owner.clone(),
+            version,
+            place: self.retained_place.clone(),
+            path: LogicalPath::parse("candidate/output").map_err(|_| Error::Invalid)?,
+            object: self.candidate().object.clone(),
+        })
+    }
+}
 impl Plan {
     pub fn object(&self) -> &Object {
         &self.retained.object

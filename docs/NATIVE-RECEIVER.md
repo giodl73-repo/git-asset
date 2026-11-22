@@ -107,3 +107,18 @@ See the [contract](../specs/NATIVE-RECEIVER.md),
 [producer index](../specs/NATIVE-PRODUCER-INDEX.md) and
 [native worker](../specs/TRUSTED-NATIVE-WORKER.md). This is not a renderer, task
 scheduler, production cutover or approval of mixed legacy pruning.
+
+For automatic ingest handoff, add `pending: { root, minimum }` to the private native
+storage profile and enroll matching `policy.actions.pending`. These are existing
+metadata-only namespace/provider bindings; the receiver creates neither. Set
+`actions.handoff=true` and explicitly authorize pending `allow_store` for first
+capture. Missing/mismatched bindings refuse. No paths are accepted over HTTP.
+
+The receiver calls `Execution::reconcile_with_actions`; SDK callers retaining the
+old `reconcile` API keep copy-only behavior. After `copied`, `backed_up` or `present`,
+the optional `outcomes[].handoff` contains the saved original and its mutation or
+failure. Copy status stays separate from release status. Preserve `handoff.saved`
+on failure; a fresh signed retry recovers that same slot. Completed handoffs replay
+historically without reconstructing a plan from released ingest claims. Changing
+store permission to false still allows original-slot recovery. No timeout deletes
+bytes or saved plans. Eviction scheduling and complete convergence remain open.

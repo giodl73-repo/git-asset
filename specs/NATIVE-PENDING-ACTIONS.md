@@ -47,5 +47,5 @@ handle and explicit failure. Native uncertain intent never authorizes another pl
 This first storage surface does not retire or replace saved slots. Status/resume/
 cancel use the original backend APIs and saved bodies; metadata/byte forgetting
 needs a separate explicit contract. Registry-wide paging, stale-plan replacement,
-receiver phase scheduling, large-catalogue continuation and production remain
+receiver eviction scheduling, large-catalogue continuation and production remain
 OPEN. Growing records stay asset-side, not in Git or mutable per-object files.

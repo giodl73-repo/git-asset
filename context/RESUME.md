@@ -96,3 +96,18 @@ Derive final qualification from external native-actions-* logs and source record
 
 Prior detailed component/source progress remains in [immutable resume](https://github.com/giodl73-repo/git-asset/blob/352f17cd3ce1c8339475d4a392d1bf22672720e9/context/RESUME.md).
 LF SHA-256: `354164d5498b0fa90251245b91f6c871c1190eecfb11aadcdce86cb1a58862c5`.
+
+Receiver handoff refinement (input e082c31): reconcile_with_actions optionally
+runs saved ingest handoff after copy/backup/verified presence; original reconcile
+stays copy-only. Private pending root matches signed scope before use; receiver
+opens no new stores. Original retained Select receipt supplies exact snapshot
+when no explicit cohort was declared. Outcome.handoff preserves saved recovery
+handle and mutation/failure separately from successful copy progress. Eviction
+scheduling, stale-plan replacement, root lifecycle and full native HTTP acceptance
+remain OPEN. Qualification logs use receiver-handoff-* externally.
+
+Receiver handoff qualification:28 focused cases, one explicit real-annex
+interrupted/retried/historical batch case and the CLI private-file case pass.
+Strict workspace all-feature/all-target Clippy, standalone annex-publish and fmt
+pass. L0/pins/branding/diff qualification is recorded externally; no native HTTP
+account/TLS, full-system convergence or owner acceptance is inferred.

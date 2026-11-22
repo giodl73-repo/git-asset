@@ -110,6 +110,7 @@ pub struct Outcome {
     pub publication: Option<Digest>,
     pub backup: Option<Digest>,
     pub retained_publication: Option<Digest>,
+    pub handoff: Option<Durable<publication::handoff::Report>>,
     pub state: &'static str,
     pub hold: Option<Failure>,
 }
@@ -305,7 +306,7 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
         original: &publication::Plan,
         source: &mut publication::Resources<'_>,
         destination: &mut publication::Resources<'_>,
-    ) -> Result<Option<Digest>, Error> {
+    ) -> Result<Option<publication::Plan>, Error> {
         let Some(recipe) = completed(&[original, plan.destination()], destination)? else {
             return Ok(None);
         };
@@ -332,7 +333,7 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
         } else {
             let _retained = publisher.reopen(plan.source(), source)?;
         }
-        Ok(Some(recipe.id()?))
+        Ok(Some(recipe))
     }
     pub fn reconcile(
         &mut self,
@@ -340,11 +341,32 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
         budget: &super::super::placement::Budget,
         source: &mut publication::Resources<'_>,
         destination: &mut publication::Resources<'_>,
+        now: impl FnMut() -> Result<u64, AdmissionError>,
+    ) -> Result<Report, Error> {
+        self.reconcile_with_actions(cursor, budget, None, source, destination, now)
+    }
+    /// As `reconcile`, with optional durable ingest handoff after verified copies.
+    /// No eviction, scratch cleanup or global convergence is inferred.
+    pub fn reconcile_with_actions(
+        &mut self,
+        cursor: Option<&Cursor>,
+        budget: &super::super::placement::Budget,
+        mut pending: Option<&mut Namespace>,
+        source: &mut publication::Resources<'_>,
+        destination: &mut publication::Resources<'_>,
         mut now: impl FnMut() -> Result<u64, AdmissionError>,
     ) -> Result<Report, Error> {
         budget.validate().map_err(Error::Admission)?;
         let start = Instant::now();
         let ids = self.admission(true, &mut now)?;
+        if let Some(namespace) = pending.as_ref() {
+            let scope = self.pending_scope()?;
+            if namespace.identity() != &scope.namespace
+                || self.metadata.checkpoint().identity() != &scope.metadata
+            {
+                return Err(publication::Error::Denied.into());
+            }
+        }
         if self.policy.producers.is_none() {
             return Err(publication::Error::Unsupported.into());
         }
@@ -408,6 +430,7 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
                 publication: None,
                 backup: None,
                 retained_publication: None,
+                handoff: None,
                 state: "held",
                 hold: None,
             };
@@ -443,7 +466,7 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
                     outcome.state = "planned";
                     return Ok(());
                 }
-                if declared.needs_backup {
+                let working = if declared.needs_backup {
                     let backup = declared
                         .backup
                         .as_ref()
@@ -457,24 +480,56 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
                     report.post_effect_hold = copied.report().post_copy_hold;
                     selected.status.observed_ref_current =
                         copied.report().selection.observed_ref_current;
-                    return Ok(());
-                }
-                if let Some(publication) = self.present(plan, original, source, destination)? {
+                    backup.source().clone()
+                } else if let Some(publication) =
+                    self.present(plan, original, source, destination)?
+                {
                     outcome.state = "present";
-                    outcome.publication = Some(publication);
+                    outcome.publication = Some(publication.id()?);
                     outcome.retained_publication = Some(plan.source().id()?);
-                    return Ok(());
+                    publication
+                } else {
+                    self.revalidate(&selected, &mut now)?;
+                    let copied = self.copy(plan, source, destination, &mut now)?;
+                    outcome.state = "copied";
+                    outcome.publication = Some(plan.destination().id()?);
+                    outcome.retained_publication = Some(plan.source().id()?);
+                    report.post_effect_hold = copied.report().post_copy_hold;
+                    selected.status.observed_ref_current =
+                        copied.report().selection.observed_ref_current;
+                    plan.destination().clone()
+                };
+                if report.post_effect_hold.is_none()
+                    && self.policy.actions.as_ref().is_some_and(|a| a.handoff)
+                    && let Some(namespace) = pending.as_deref_mut()
+                {
+                    if start.elapsed() >= Duration::from_millis(budget.millis) {
+                        return Err(Error::Admission(AdmissionError::Budget));
+                    }
+                    self.revalidate(&selected, &mut now)?;
+                    let snapshot = match plan.source_snapshot() {
+                        Some(snapshot) => snapshot.clone(),
+                        None => plan.source().retained_snapshot(source.namespace)?,
+                    };
+                    let handed = self.handoff_durable(
+                        HandoffRequest {
+                            working: &working,
+                            retained: plan.source(),
+                            snapshot,
+                        },
+                        namespace,
+                        destination,
+                        source,
+                        &mut now,
+                    )?;
+                    outcome.hold = handed.failure.clone();
+                    if let Some(mutation) = &handed.mutation {
+                        report.post_effect_hold = mutation.post_effect_hold;
+                        selected.status.observed_ref_current =
+                            mutation.selection.observed_ref_current;
+                    }
+                    outcome.handoff = Some(handed);
                 }
-                self.revalidate(&selected, &mut now)?;
-                let publication = plan.destination().id()?;
-                let retained_publication = plan.source().id()?;
-                let copied = self.copy(plan, source, destination, &mut now)?;
-                outcome.state = "copied";
-                outcome.publication = Some(publication);
-                outcome.retained_publication = Some(retained_publication);
-                report.post_effect_hold = copied.report().post_copy_hold;
-                selected.status.observed_ref_current =
-                    copied.report().selection.observed_ref_current;
                 Ok(())
             })();
             if let Err(e) = result {

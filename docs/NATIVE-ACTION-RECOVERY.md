@@ -10,8 +10,9 @@ create a cache, daemon, separate journal or eviction authority.
 an existing fenced metadata namespace, metadata-provider identity, owner,
 source-key prefix and metadata-only place. `allow_store` defaults false. The
 namespace must be separate from all media-pool members; its job policy must retain
-current/pending/predecessor metadata on that one place. Receiver configuration
-and automatic phase scheduling remain separate work.
+current/pending/predecessor metadata on that one place. The native receiver can bind that namespace in its private profile and run
+durable ingest handoff after verified copy/backup/presence. Eviction scheduling
+remains separate work.
 
 `Execution::handoff_durable(HandoffRequest, namespace, working, retained, clock)`
 looks for the original saved slot before constructing a new handoff plan. After
@@ -52,6 +53,6 @@ capture while the same scope remains readable for recovery.
 Component fixtures cover a separate-process reopen, competing preview, denied
 store, bounded/corrupt/foreign handles, scoped blocking with unrelated progress,
 and durable native handoff/eviction paths. These are producer tests, not independent
-review, full receiver scheduling or production adoption. See the
+review, complete receiver eviction scheduling or production adoption. See the
 [contract](../specs/NATIVE-PENDING-ACTIONS.md) and
 [native receiver](NATIVE-RECEIVER.md).

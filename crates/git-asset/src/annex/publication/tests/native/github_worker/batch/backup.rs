@@ -128,9 +128,10 @@ pub(in super::super) fn exercise(
     // Successful backup survives admission expiry at the post-effect boundary.
     let mut calls = 0;
     let report = worker
-        .reconcile(
+        .reconcile_with_actions(
             None,
             &budget,
+            Some(pending),
             &mut m.resources(),
             &mut f.resources(),
             || {
@@ -146,6 +147,7 @@ pub(in super::super) fn exercise(
         serde_json::to_string(&report).unwrap()
     );
     assert_eq!(calls, 5);
+    assert!(report.outcomes[0].handoff.is_none());
     assert_eq!(report.post_effect_hold, Some(github::Error::Expired));
     assert_eq!(report.selection.observed_ref_current, Some(true));
     assert_eq!(report.outcomes[0].backup, Some(plan.id().unwrap()));
@@ -161,11 +163,61 @@ pub(in super::super) fn exercise(
         .unwrap();
     assert!(state.completion && state.settled);
     let renewed = signer.verify(&signer.claims, 1000).unwrap();
-    let mut active = configured(worker, &policy, &trust, &renewed);
-    let duplicate = active
-        .reconcile(
+    let mut expiring = configured(worker, &policy, &trust, &renewed);
+    // The original fixed roots suffice to recover the actual backup recipe.
+    let snapshot = plan
+        .destination()
+        .retained_snapshot(&mut m.namespaces[0])
+        .unwrap();
+    assert_eq!(snapshot, retirement::snapshot(m));
+    assert_eq!(
+        plan.destination()
+            .retained_snapshot(&mut f.namespaces[0])
+            .unwrap_err(),
+        Error::Denied
+    );
+    let handoff = crate::annex::publication::handoff::Plan::new(
+        &f.plan,
+        plan.destination(),
+        snapshot.clone(),
+        &mut f.namespaces[0],
+    )
+    .unwrap();
+    // Lose admission after durable capture, before the first handoff command.
+    let mut calls = 0;
+    let interrupted = expiring
+        .reconcile_with_actions(
             None,
             &budget,
+            Some(pending),
+            &mut m.resources(),
+            &mut f.resources(),
+            || {
+                calls += 1;
+                Ok(if calls >= 5 { 1300 } else { 1000 })
+            },
+        )
+        .unwrap();
+    let interrupted = &interrupted.outcomes[0];
+    assert_eq!(interrupted.state, "present");
+    assert_eq!(interrupted.hold.as_ref().unwrap().code, "expired");
+    let saved = &interrupted.handoff.as_ref().unwrap().saved;
+    assert!(interrupted.handoff.as_ref().unwrap().mutation.is_none());
+    assert!(
+        f.namespaces[0]
+            .source(&k("asset"))
+            .unwrap()
+            .unwrap()
+            .current
+            .is_some()
+    );
+    let fresh = signer.verify(&signer.claims, 1000).unwrap();
+    let mut active = configured(worker, &policy, &trust, &fresh);
+    let duplicate = active
+        .reconcile_with_actions(
+            None,
+            &budget,
+            Some(pending),
             &mut m.resources(),
             &mut f.resources(),
             || Ok(1000),
@@ -182,29 +234,9 @@ pub(in super::super) fn exercise(
         duplicate.outcomes[0].retained_publication,
         Some(plan.destination().id().unwrap())
     );
-    // The original fixed roots suffice to recover the actual backup recipe.
-    let snapshot = retirement::snapshot(m);
-    let handoff = crate::annex::publication::handoff::Plan::new(
-        &f.plan,
-        plan.destination(),
-        snapshot.clone(),
-        &mut f.namespaces[0],
-    )
-    .unwrap();
     let f_plan = f.plan.clone();
-    let handed = active
-        .handoff_durable(
-            github::native::HandoffRequest {
-                working: &f_plan,
-                retained: plan.destination(),
-                snapshot: snapshot.clone(),
-            },
-            pending,
-            &mut f.resources(),
-            &mut m.resources(),
-            || Ok(1000),
-        )
-        .unwrap();
+    let handed = duplicate.outcomes[0].handoff.as_ref().unwrap();
+    assert_eq!(&handed.saved, saved);
     assert!(handed.failure.is_none(), "{:?}", handed.failure);
     assert!(
         handed
@@ -286,9 +318,10 @@ pub(in super::super) fn exercise(
     assert_eq!(replay.saved, handed.saved);
     assert!(replay.failure.is_none());
     let after = active
-        .reconcile(
+        .reconcile_with_actions(
             None,
             &budget,
+            Some(pending),
             &mut m.resources(),
             &mut f.resources(),
             || Ok(1000),
@@ -301,6 +334,10 @@ pub(in super::super) fn exercise(
         serde_json::to_string(&after).unwrap()
     );
     assert_eq!(after.outcomes[0].publication, Some(f_plan.id().unwrap()));
+    let replayed = after.outcomes[0].handoff.as_ref().unwrap();
+    assert_eq!(replayed.saved, handed.saved);
+    assert!(replayed.mutation.as_ref().unwrap().result.historical);
+    assert!(replayed.failure.is_none());
     let mut copier = replication::Copier::controlled(
         reverse,
         f.control_profile.clone(),

@@ -24,6 +24,8 @@ struct Storage {
     policy: native::Policy,
     source: Location,
     destination: Location,
+    #[serde(default)]
+    pending: Option<profiles::NamespaceRoot>,
     limits: Limits,
 }
 struct Opened {
@@ -79,6 +81,16 @@ pub(super) fn dispatch(
         &profile.enrollment.id().map_err(|_| github::Error::Trust)?,
         &policy,
     )?;
+    let scope = storage
+        .policy
+        .actions
+        .as_ref()
+        .and_then(|a| a.pending.as_ref());
+    if storage.pending.as_ref().map(|p| p.minimum.identity()) != scope.map(|p| &p.namespace)
+        || storage.policy.actions.as_ref().is_some_and(|a| a.handoff) && scope.is_none()
+    {
+        return Err(github::Error::Trust);
+    }
     if !profile.allow_selection {
         return Err(github::Error::Disabled);
     }
@@ -91,6 +103,11 @@ pub(super) fn dispatch(
     // No resource locations, plans, tools or credentials come from the request.
     let mut source = storage.source.open()?;
     let mut destination = storage.destination.open()?;
+    let mut pending = storage
+        .pending
+        .as_ref()
+        .map(|p| Namespace::open(&p.root, &p.minimum).map_err(|_| github::Error::Unavailable))
+        .transpose()?;
     let mut namespace = Namespace::open(&profile.namespace.root, &profile.namespace.minimum)
         .map_err(|_| github::Error::Unavailable)?;
     let mut metadata = MetadataStore::open(&profile.metadata_root, &profile.metadata_minimum)
@@ -109,9 +126,10 @@ pub(super) fn dispatch(
         metadata: &mut metadata,
         limits: &storage.limits,
     }
-    .reconcile(
+    .reconcile_with_actions(
         cursor.as_ref(),
         &profile.budget,
+        pending.as_mut(),
         &mut source.resources(&storage.limits),
         &mut destination.resources(&storage.limits),
         now,
