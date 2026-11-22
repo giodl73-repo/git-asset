@@ -6,7 +6,7 @@ acceptance; keep the full goal active.
 
 Active owned lane: F:/src/git-asset-worktrees/trusted-native-placement,
 feat/trusted-native-placement, draft PR74 based on feat/source-generation-use.
-Inputd43c71e382579383e0549758e1d589f807a64b42; derive newer source/CI from Git.
+Inputb009a2a5ebdf015a0a632ec1ce3b4e9a7f9744ac; derive newer source/CI from Git.
 PR70 and P1/PR71 merged. P2 PR72 and source-generation prerequisite PR73 remain
 stack dependencies; P2 mixed legacy/owner/roster/epoch handoff is OPEN, never
 inferred from NamespaceOwned policy. See docs/reviews/p2-closure-audit.md.
@@ -47,8 +47,15 @@ and deterministic copy-context recipes remain distinct; report publication ID
 never invents copy completion.26 focused cases, two explicit actual-annex cases,
 CLI/document tests, strict Clippy and standalone feature builds pass. Exact source
 evidence is external native-receiver-*; derive hosted terminal state live.
-Receiver connection is copy-only: creating missing backup custody, root
-publication, handoff/eviction plan persistence/scheduling, complete revert and
+Receiver now includes separately authorized reverse backup over the same profiles,
+controls and domains. Frozen pre-copy records still reconstruct actual completed
+backup recipes; incomplete intent returns the original backup-plan ID without
+another import. Fresh backup guards prove both copies through post-effect checks;
+post-expiry preserves completion. Contract: TRUSTED-NATIVE-BACKUP; external
+native-backup-* logs record qualification separately.28 focused cases and three
+explicit native cases pass, including controlled backup/handoff/readback;
+strict workspace Clippy and standalone feature builds pass. Root publication,
+handoff/eviction plan persistence/scheduling, complete revert and
 project acceptance remain OPEN. Global storage convergence stays unknown.
 
 P4: REEL main-based PR401, qualified89a875c6c34ed84b1e890520db996d55cffe2bd7,

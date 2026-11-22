@@ -33,11 +33,17 @@ fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool, 
         tools.clone(),
         false,
         None,
-        snapshot_mode || action_mode,
+        snapshot_mode || action_mode || batch_mode >= 4,
     );
     let mut target = Fixture::build_setup(&bytes, tools, true, None, true);
-    retirement::publish(&mut source);
-    if batch_mode == 3 {
+    if batch_mode >= 4 {
+        super::control::enable(&mut source, native);
+        super::control::enable(&mut target, native);
+    }
+    if batch_mode < 4 {
+        retirement::publish(&mut source);
+    }
+    if batch_mode == 3 || batch_mode >= 4 {
         retirement::publish(&mut target);
     }
     let profile = crate::annex::replication::Profile {
@@ -62,8 +68,8 @@ fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool, 
     let target_plan = target.plan.clone();
     let policy = WorkerPolicy {
         copy: profile,
-        source_control: None,
-        destination_control: None,
+        source_control: source.control_profile.clone(),
+        destination_control: target.control_profile.clone(),
         namespace: target.namespaces[0].identity().clone(),
         required_place: k("pool"),
         allow_selection: true,
@@ -76,10 +82,19 @@ fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool, 
             ),
             destination: batch::index(&mut target, target_plan.clone(), None),
         }),
-        actions: action_mode.then_some(github::native::Actions {
-            handoff: true,
-            eviction: None,
-        }),
+        actions: if batch_mode >= 4 {
+            Some(github::native::Actions {
+                backup: true,
+                handoff: true,
+                eviction: None,
+            })
+        } else {
+            action_mode.then_some(github::native::Actions {
+                handoff: true,
+                eviction: None,
+                backup: false,
+            })
+        },
     };
     let policy: WorkerPolicy =
         serde_json::from_slice(&serde_json::to_vec(&policy).unwrap()).unwrap();
@@ -197,6 +212,14 @@ fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool, 
                 .join(object.sha256.as_str()),
         )
         .unwrap();
+        if batch_mode == 5 {
+            batch::backup::uncertain(&mut worker, &mut source, &mut target);
+            return;
+        }
+        if batch_mode >= 4 {
+            batch::backup::exercise(&mut worker, &mut source, &mut target, &project, &signer);
+            return;
+        }
         if batch_mode == 3 {
             batch::existing(&mut worker, &mut source, &mut target, &plan);
             return;

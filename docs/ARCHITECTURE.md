@@ -270,7 +270,9 @@ native publisher/controller verifies those separately. See
 [contract and fixtures](../specs/NATIVE-PRODUCER-INDEX.md). The
 [native receiver](NATIVE-RECEIVER.md) now routes authenticated commits to bounded
 copy reconciliation over fixed index roots, including dry run and held original
-publication recovery. Durable retention/eviction scheduling and full merge-driven
+publication recovery. Separately authorized [backup](../specs/TRUSTED-NATIVE-BACKUP.md)
+reverses the same copier/profiles to establish retained custody from working ingress
+before handoff. Durable retention/eviction scheduling and full merge-driven
 acceptance remain open.
 
 ## Storage orchestration entry

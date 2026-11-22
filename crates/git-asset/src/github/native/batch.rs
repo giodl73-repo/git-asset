@@ -108,6 +108,8 @@ pub struct Outcome {
     pub object: Object,
     pub plan: Option<Digest>,
     pub publication: Option<Digest>,
+    pub backup: Option<Digest>,
+    pub retained_publication: Option<Digest>,
     pub state: &'static str,
     pub hold: Option<Failure>,
 }
@@ -172,6 +174,47 @@ fn basis(policy: &Digest, commit: &str, revision: u64, objects: &[Object]) -> Di
     )
     .unwrap()
 }
+fn completed(
+    plans: &[&publication::Plan],
+    resources: &mut publication::Resources<'_>,
+) -> Result<Option<publication::Plan>, Error> {
+    let mut chosen = None;
+    let mut conflict = false;
+    for (i, recipe) in plans.iter().copied().enumerate() {
+        if plans[..i].contains(&recipe) {
+            continue;
+        }
+        let state = match recipe.progress(resources.witness, resources.ledger) {
+            Ok(state) => state,
+            Err(publication::Error::Conflict) => {
+                conflict = true;
+                continue;
+            }
+            Err(e) => return Err(e.into()),
+        };
+        if state.intent && !state.completion {
+            return Err(publication::Error::Uncertain.into());
+        }
+        if state.completion {
+            if !state.settled {
+                return Err(publication::Error::NeedsRecovery.into());
+            }
+            if chosen.replace(recipe).is_some() {
+                return Err(publication::Error::Conflict.into());
+            }
+        }
+    }
+    if chosen.is_none() && conflict {
+        return Err(publication::Error::Conflict.into());
+    }
+    Ok(chosen.cloned())
+}
+struct Declared {
+    forward: replication::Plan,
+    original: publication::Plan,
+    backup: Option<replication::Plan>,
+    needs_backup: bool,
+}
 impl<R: CommittedSource + ?Sized> Execution<'_, R> {
     fn declared_plan(
         &self,
@@ -179,7 +222,8 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
         source: &mut publication::Resources<'_>,
         destination: &mut publication::Resources<'_>,
         meter: &mut Metrics,
-    ) -> Result<(replication::Plan, publication::Plan), Error> {
+        outcome: &mut Outcome,
+    ) -> Result<Declared, Error> {
         let roots = self
             .policy
             .producers
@@ -200,17 +244,61 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
         meter.add(metrics);
         let b = b.ok_or(publication::Error::Missing)?;
         let original = b.producer.clone();
-        let plan = match a.retained {
+        let initial = match &a.retained {
             Some(snapshot) => replication::Plan::from_snapshot(
                 &self.policy.copy,
-                a.producer,
-                b.producer,
-                snapshot,
+                a.producer.clone(),
+                original.clone(),
+                snapshot.clone(),
             )?,
-            None => replication::Plan::new(&self.policy.copy, a.producer, b.producer)?,
+            None => {
+                replication::Plan::new(&self.policy.copy, a.producer.clone(), original.clone())?
+            }
         };
-        Ok((plan, original))
+        outcome.plan = Some(initial.id()?);
+        let allowed = self.policy.actions.as_ref().is_some_and(|a| a.backup);
+        let first = completed(&[&a.producer], source);
+        let mut backup = None;
+        let mut needs_backup = false;
+        let retained = match first {
+            Ok(Some(recipe)) => recipe,
+            Ok(None) if !allowed => a.producer.clone(),
+            Ok(None) | Err(Error::Native(publication::Error::Conflict)) => {
+                let reverse = self.policy.backup_profile();
+                let reverse = match b.retained {
+                    Some(snapshot) => replication::Plan::from_snapshot(
+                        &reverse,
+                        b.producer.clone(),
+                        a.producer.clone(),
+                        snapshot,
+                    )?,
+                    None => {
+                        replication::Plan::new(&reverse, b.producer.clone(), a.producer.clone())?
+                    }
+                };
+                outcome.backup = Some(reverse.id()?);
+                let recipe = completed(&[&a.producer, reverse.destination()], source)?;
+                needs_backup = recipe.is_none();
+                let recipe = recipe.unwrap_or_else(|| reverse.destination().clone());
+                backup = Some(reverse);
+                recipe
+            }
+            Err(e) => return Err(e),
+        };
+        let forward = match a.retained {
+            Some(snapshot) => {
+                replication::Plan::from_snapshot(&self.policy.copy, retained, b.producer, snapshot)?
+            }
+            None => replication::Plan::new(&self.policy.copy, retained, b.producer)?,
+        };
+        Ok(Declared {
+            forward,
+            original,
+            backup,
+            needs_backup,
+        })
     }
+
     fn present(
         &self,
         plan: &replication::Plan,
@@ -218,44 +306,14 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
         source: &mut publication::Resources<'_>,
         destination: &mut publication::Resources<'_>,
     ) -> Result<Option<Digest>, Error> {
-        let mut chosen = None;
-        let mut conflict = false;
-        for (i, recipe) in [original, plan.destination()].into_iter().enumerate() {
-            if i == 1 && original == recipe {
-                continue;
-            }
-            let state = match recipe.progress(destination.witness, destination.ledger) {
-                Ok(state) => state,
-                Err(publication::Error::Conflict) => {
-                    conflict = true;
-                    continue;
-                }
-                Err(e) => return Err(e.into()),
-            };
-            if state.intent && !state.completion {
-                return Err(publication::Error::Uncertain.into());
-            }
-            if state.completion {
-                if !state.settled {
-                    return Err(publication::Error::NeedsRecovery.into());
-                }
-                if chosen.replace(recipe).is_some() {
-                    return Err(publication::Error::Conflict.into());
-                }
-            }
-        }
-        let Some(recipe) = chosen else {
-            return if conflict {
-                Err(publication::Error::Conflict.into())
-            } else {
-                Ok(None)
-            };
+        let Some(recipe) = completed(&[original, plan.destination()], destination)? else {
+            return Ok(None);
         };
         let mut working = super::mutations::publisher(
             &self.policy.copy.destination,
             &self.policy.destination_control,
         )?;
-        let observed = working.observe_guarded(recipe, destination)?;
+        let observed = working.observe_guarded(&recipe, destination)?;
         let status = observed.status();
         if status.intent_recorded && !status.historical_completion {
             return Err(publication::Error::Uncertain.into());
@@ -348,6 +406,8 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
                 object: object.clone(),
                 plan: None,
                 publication: None,
+                backup: None,
+                retained_publication: None,
                 state: "held",
                 hold: None,
             };
@@ -362,26 +422,59 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
                 if next > budget.stream_bytes {
                     return Err(publication::Error::Budget.into());
                 }
-                let (plan, original) =
-                    self.declared_plan(object, source, destination, &mut report.lookup)?;
+                let declared = self.declared_plan(
+                    object,
+                    source,
+                    destination,
+                    &mut report.lookup,
+                    &mut outcome,
+                )?;
+                let plan = &declared.forward;
+                let original = &declared.original;
                 outcome.plan = Some(plan.id()?);
+                outcome.backup = declared
+                    .backup
+                    .as_ref()
+                    .map(replication::Plan::id)
+                    .transpose()?;
                 self.revalidate(&selected, &mut now)?;
                 report.prospective_bytes = next;
                 if !self.policy.allow_copy {
                     outcome.state = "planned";
                     return Ok(());
                 }
-                if let Some(publication) = self.present(&plan, &original, source, destination)? {
+                if declared.needs_backup {
+                    let backup = declared
+                        .backup
+                        .as_ref()
+                        .ok_or(publication::Error::Invalid)?;
+                    let working_id = backup.source().id()?;
+                    let retained_id = backup.destination().id()?;
+                    let copied = self.backup(backup, destination, source, &mut now)?;
+                    outcome.state = "backed_up";
+                    outcome.publication = Some(working_id);
+                    outcome.retained_publication = Some(retained_id);
+                    report.post_effect_hold = copied.report().post_copy_hold;
+                    selected.status.observed_ref_current =
+                        copied.report().selection.observed_ref_current;
+                    return Ok(());
+                }
+                if let Some(publication) = self.present(plan, original, source, destination)? {
                     outcome.state = "present";
                     outcome.publication = Some(publication);
+                    outcome.retained_publication = Some(plan.source().id()?);
                     return Ok(());
                 }
                 self.revalidate(&selected, &mut now)?;
                 let publication = plan.destination().id()?;
-                let copied = self.copy(&plan, source, destination, &mut now)?;
+                let retained_publication = plan.source().id()?;
+                let copied = self.copy(plan, source, destination, &mut now)?;
                 outcome.state = "copied";
                 outcome.publication = Some(publication);
+                outcome.retained_publication = Some(retained_publication);
                 report.post_effect_hold = copied.report().post_copy_hold;
+                selected.status.observed_ref_current =
+                    copied.report().selection.observed_ref_current;
                 Ok(())
             })();
             if let Err(e) = result {

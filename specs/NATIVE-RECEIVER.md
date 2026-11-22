@@ -60,3 +60,7 @@ at most128 outcome records. A deadline stops between native operations, not by
 interrupting a successful native effect and losing its receipt. Required custody
 and Main guards stay held during each operation. Runtime evidence belongs
 asset-side; this adds no queue, mutable cache registry or operation journal.
+
+Optional reverse backup and its separate permission/receipt lifecycle are defined
+in [TRUSTED-NATIVE-BACKUP](TRUSTED-NATIVE-BACKUP.md). It uses the same fixed pair
+and frozen index records; root publication and eviction scheduling remain separate.

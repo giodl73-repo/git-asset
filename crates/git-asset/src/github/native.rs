@@ -41,8 +41,21 @@ pub struct ProducerRoots {
 pub struct Actions {
     pub handoff: bool,
     pub eviction: Option<retirement::planning::Profile>,
+    #[serde(skip_serializing_if = "disabled")]
+    pub backup: bool,
+}
+fn disabled(value: &bool) -> bool {
+    !*value
 }
 impl Policy {
+    fn backup_profile(&self) -> replication::Profile {
+        replication::Profile {
+            source: self.copy.destination.clone(),
+            destination: self.copy.source.clone(),
+            source_domain: self.copy.destination_domain.clone(),
+            destination_domain: self.copy.source_domain.clone(),
+        }
+    }
     /// Pure enrollment identity; never opens a pool or discovers locations.
     pub fn id(&self) -> Result<Digest, Error> {
         if self.producers.as_ref().is_some_and(|r| {
@@ -173,28 +186,60 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
         plan: &replication::Plan,
         source: &mut publication::Resources<'_>,
         destination: &mut publication::Resources<'_>,
+        now: impl FnMut() -> Result<u64, AdmissionError>,
+    ) -> Result<Copied, Error> {
+        self.copy_direction(false, plan, source, destination, now)
+    }
+    pub fn backup(
+        &mut self,
+        plan: &replication::Plan,
+        working: &mut publication::Resources<'_>,
+        retained: &mut publication::Resources<'_>,
+        now: impl FnMut() -> Result<u64, AdmissionError>,
+    ) -> Result<Copied, Error> {
+        self.copy_direction(true, plan, working, retained, now)
+    }
+    fn copy_direction(
+        &mut self,
+        backup: bool,
+        plan: &replication::Plan,
+        source: &mut publication::Resources<'_>,
+        destination: &mut publication::Resources<'_>,
         mut now: impl FnMut() -> Result<u64, AdmissionError>,
     ) -> Result<Copied, Error> {
-        let ids = self.admission(self.policy.allow_copy, &mut now)?;
-        let mut copier = replication::Copier::controlled(
-            self.policy.copy.clone(),
-            self.policy.source_control.clone(),
-            self.policy.destination_control.clone(),
-        )?;
+        let allowed = self.policy.allow_copy
+            && (!backup || self.policy.actions.as_ref().is_some_and(|a| a.backup));
+        let ids = self.admission(allowed, &mut now)?;
+        let profile = if backup {
+            self.policy.backup_profile()
+        } else {
+            self.policy.copy.clone()
+        };
+        let (source_control, destination_control) = if backup {
+            (
+                self.policy.destination_control.clone(),
+                self.policy.source_control.clone(),
+            )
+        } else {
+            (
+                self.policy.source_control.clone(),
+                self.policy.destination_control.clone(),
+            )
+        };
+        let mut copier =
+            replication::Copier::controlled(profile.clone(), source_control, destination_control)?;
         // Validate the frozen per-object plan against the enrolled pair before
         // any selection mutation; do not substitute a new publication attempt.
         let expected = match plan.source_snapshot() {
             Some(snapshot) => replication::Plan::from_snapshot(
-                &self.policy.copy,
+                &profile,
                 plan.source().clone(),
                 plan.destination().clone(),
                 snapshot.clone(),
             )?,
-            None => replication::Plan::new(
-                &self.policy.copy,
-                plan.source().clone(),
-                plan.destination().clone(),
-            )?,
+            None => {
+                replication::Plan::new(&profile, plan.source().clone(), plan.destination().clone())?
+            }
         };
         if expected != *plan {
             return Err(Error::Native(publication::Error::Conflict));
@@ -221,7 +266,11 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
         let hold = self.post(&mut state, &mut now);
         Ok(Copied {
             report: Report {
-                schema: "git-asset.trusted-native-copy-report.experimental-1",
+                schema: if backup {
+                    "git-asset.trusted-native-backup-report.experimental-1"
+                } else {
+                    "git-asset.trusted-native-copy-report.experimental-1"
+                },
                 policy: state.policy,
                 provenance: self.request.provenance().clone(),
                 selection: state.status,

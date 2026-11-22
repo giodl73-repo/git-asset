@@ -1,6 +1,6 @@
 # Native copy receiver
 
-Experimental P3 copy reconciliation over Git and git-annex. This extends the
+Experimental P3 copy and backup reconciliation over Git and git-annex. This extends the
 existing foreground receiver; it does not install a service or activate caches.
 Full superseded-asset handoff/eviction scheduling and project acceptance remain
 open. Use synthetic enrolled locations before any owner-approved installation.
@@ -58,11 +58,15 @@ performs one page per request. Supply `next` to continue on the same basis. An
 empty suffix is not proof that its prefix ran. A changed job/input set, selected
 generation, policy or commit invalidates continuation.
 
-Outcomes are `planned`, `copied`, `present` or `held`. `present` requires verified
+Outcomes are `planned`, `copied`, `backed_up`, `present` or `held`. `present` requires verified
 working bytes, original completed/settled publication records and retained source
-custody; it works after the temporary working ingest claim is retired. Copying
-requires the exact admitted source publication or retained snapshot to exist
-already. This entry does not create a missing backup or invent an incarnation.
+custody; it works after the temporary working ingest claim is retired. Forward
+copying requires the exact admitted retained publication or snapshot. With both
+`allow_copy=true` and `actions.backup=true`, the receiver can copy original F
+ingress to the enrolled retained location when that backup has not started.
+Both producer plans must already exist in the pinned indexes. The reverse
+profile, controls and domains come from the same fixed pair; there is no
+event-supplied destination or automatic incarnation creation.
 `storage_converged` remains unknown because retention/eviction phases are separate.
 
 The outcome's `plan` is the deterministic copy-plan handle; `publication` names
@@ -73,6 +77,15 @@ then verifies actual bytes with its guards held. It never invents a successful
 copy receipt merely because an earlier ingress already supplies the bytes.
 `Plan::progress` is metadata-only; `Publisher::observe_guarded` supplies the
 separate fresh byte/configuration/control observation. Neither creates retention.
+
+`backup` names the original reverse copy plan, and `retained_publication` names
+the verified retained publication. A `backed_up` result holds the existing
+copier's verified F source and new M destination through its post-effect check.
+It does not repeat a forward transfer. Duplicate requests recognize that exact
+backup recipe even while the index still names its frozen pre-copy plan. Backup
+permission is separately denied by default; false is omitted from old policy
+serialization. Dry run reports both plan handles without native payload work.
+See [backup contract](../specs/TRUSTED-NATIVE-BACKUP.md).
 
 Preserve the report's policy, basis, object and copy-plan ID. The same pinned
 index records reconstruct that original plan; native receipts remain in the

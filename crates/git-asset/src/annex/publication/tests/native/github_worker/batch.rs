@@ -1,3 +1,4 @@
+pub(super) mod backup;
 use super::*;
 use crate::annex::{producer_index::Record, replication, snapshot::Snapshot};
 

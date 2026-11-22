@@ -108,6 +108,7 @@ impl State {
             actions: Some(Actions {
                 handoff: false,
                 eviction: Some(owner.clone()),
+                backup: false,
             }),
         };
         let mut signer = github::fixture::Fixture::new();
