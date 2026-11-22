@@ -175,3 +175,16 @@ Default provider and explicitly invoked real-annex/bare fixtures pass; final
 qualification logs native-worker-* in external evidence root. Full receiver,
 retention handoff, eviction/reacquisition and P3 acceptance remain OPEN. No live
 operations. Nine historical records remain immutable atde79da3 with LF hashes.
+
+
+P3 input8124cd4 passed hosted45012037613. Native ingest handoff extension:
+publication::handoff frozen plan/status/apply reuses original Withdraw/Retire,
+actual keeper roster-root generation, native completion/accounting/byte guards
+and exact retained snapshot. Flat cohorts can replace per-asset ingest; original
+Publisher::reopen remains strict. Same-pool case is metadata-only. Child exit
+between commands preserves hard history; original retry/offline receipt recovery,
+newer-version/forgery refusal and active-job protection are synthetic fixtures.
+Contract NATIVE-INGEST-HANDOFF.md; producer review native-ingest-handoff.md.
+Full trusted worker orchestration/eviction/reacquisition/consumer adoption still
+OPEN. Historical reviews preserved at immutable8124cd4 with LF hashes; ceiling
+unchanged. Logs ingest-handoff-* in the external evidence root; derive final gates.

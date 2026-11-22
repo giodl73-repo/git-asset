@@ -24,6 +24,7 @@ use std::{
     path::PathBuf,
     time::{Duration, Instant},
 };
+pub mod handoff;
 mod staging;
 #[cfg(test)]
 mod tests;

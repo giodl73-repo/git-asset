@@ -1183,3 +1183,5 @@ fn legacy_plan_encoding_and_retained_bytes_remain_readable_without_closure_quali
 
 #[cfg(feature = "github")]
 mod github_worker;
+
+mod handoff;
