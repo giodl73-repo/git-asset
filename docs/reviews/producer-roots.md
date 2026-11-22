@@ -38,3 +38,39 @@ exact source/log pins are recorded separately before commit. Validation confirms
 indexed historical bytes after original ingress retirement and working-repository
 loss, while unavailable sibling media stays missing. Independent review, trusted
 worker root adoption, full HTTP/scale and owner acceptance remain OPEN.
+
+## Enrolled head-consumer review
+
+Inputffccf8cb206077908a3d667863acb5737189af65; same six producer checklists and
+implementing-maintainer ownership. H identity: asset commits stay immutable while
+the two explicitly enrolled index sources are mutable; each pass captures exact
+Versions and binds them to continuation. H recovery: both live generations remain
+held through effects; readers drop on exit without withdrawing durable history;
+old cursor/unknown head refuses rather than falling back. H custody: head/record
+availability never establishes native bytes or independent keeper custody.
+H provider/privacy: fixed signed namespace/provider/owner/source, separate from
+native pools; pure policy validation opens nothing; report pins omit paths.
+H placement: original shared lookup and namespace/source bounds remain; no census
+or global lock. M Git/adoption: optional absent fields preserve legacy wire/basis,
+explicit enrollment replaces per-edit reenrollment, and no request gains an index
+writer or native stale-plan replacement authority. Independent/human review is open.
+
+Qualification targets: signed immutable Git source plus retained/working index
+heads; metadata update without changing enrollment; changed-head cursor refusal;
+blocked writer during copy and successful update after exit; missing/wrong provider
+without fallback; exact copied/present recipe retry; real registered eviction with
+late protection, expiry and saved original replay using head enrollment. Full
+transport/account/TLS, orchestration and production adoption remain separate.
+
+Head-consumer terminal local verification:11 default worker cases pass, with7
+explicit native cases ignored in that default run;7 producer-index and2 actual
+pending-action metadata cases pass (child entries and separate-process parents
+retain their stated scope).8 GitHub/authentication/CLI-discovery cases pass.
+Two explicitly invoked actual git-annex cases pass: enrolled-head copy/update/
+writer fencing/present retry and distinct-volume registered eviction with late
+protection, expiry and saved replay. Strict workspace/all-feature/all-target
+Clippy, standalone annex-publish and fmt pass. Validation separates exact producer
+pins from byte custody and demonstrates no policy reenrollment per index edit.
+Trace/source/log pins use producer-heads-source.json externally; L0/branding/diff
+close separately before commit. Review remains producer-applied; full HTTP,
+publication orchestration, scale and owner adoption remain OPEN.

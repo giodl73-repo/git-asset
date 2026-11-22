@@ -40,6 +40,8 @@ pub struct Report {
     pub lookup: batch::Metrics,
     pub post_effect_hold: Option<AdmissionError>,
     pub storage_converged: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub producer_heads: Option<super::producers::Pins>,
 }
 impl<R: CommittedSource + ?Sized> Execution<'_, R> {
     fn apply_registered_eviction(
@@ -113,11 +115,8 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
         if !cfg!(windows) || profile.runtime.is_none() {
             return Err(publication::Error::Unsupported.into());
         }
-        let roots = self
-            .policy
-            .producers
-            .as_ref()
-            .ok_or(publication::Error::Unsupported)?;
+        let producers = self.resolve_producers(source.metadata, destination.metadata)?;
+        let roots = &producers.roots;
         let mut selected = self.select(ids)?;
         let mut nodes = self
             .metadata
@@ -142,7 +141,7 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
             .ok_or(publication::Error::Unsupported)?
             .current
             .contains(&self.policy.required_place);
-        let basis = Digest::blob(
+        let basis = producers.basis(Digest::blob(
             &identity::canonical_json(&serde_json::json!([
                 "git-asset.native-eviction-pass.experimental-1",
                 selected.policy,
@@ -151,7 +150,7 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
                 roots.destination
             ]))
             .map_err(|_| publication::Error::Invalid)?,
-        );
+        ))?;
         if pass.cursor.is_some_and(|c| c.basis != basis) {
             return Err(Error::Admission(AdmissionError::Stale));
         }
@@ -178,6 +177,7 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
             lookup,
             post_effect_hold: None,
             storage_converged: None,
+            producer_heads: producers.pins.clone(),
         };
         let mut after = pass.cursor.map(|c| c.after.clone());
         for row in page.records {

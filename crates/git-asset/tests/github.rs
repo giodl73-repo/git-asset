@@ -228,6 +228,10 @@ fn receiver_cli_discovery_and_default_disabled_startup_never_open_machine_roots(
         described["native_copy_reconciliation"],
         cfg!(feature = "annex-publish")
     );
+    assert_eq!(
+        described["native_producer_head_resolution"],
+        cfg!(feature = "annex-publish")
+    );
     assert!(described["native_storage_convergence"].is_null());
     assert_eq!(
         described["native_storage_phases"],

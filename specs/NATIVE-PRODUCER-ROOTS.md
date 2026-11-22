@@ -82,3 +82,54 @@ The receiver still consumes explicitly signed immutable producer roots. This SDK
 does not silently adopt a mutable registry head or update a trusted policy. Root
 reenrollment/worker integration, missing-backup repair, full transport/account/TLS,
 larger-catalogue lifetime and owner cutover acceptance remain separate obligations.
+
+## Explicitly enrolled head consumers
+
+Refinement inputffccf8cb206077908a3d667863acb5737189af65; the same P3 controls
+and no-native-effect authority boundary apply. Optional signed
+`github::native::Policy.producer_heads` enrolls source/destination Head locators:
+fixed namespace root/minimum plus root Profile. It is mutually exclusive with
+`producers` immutable roots. Absent optional fields preserve older policy bytes.
+Each minimum must identify its profile namespace; head namespaces must be separate
+from both native pools, and the pair cannot name the same namespace/source slot.
+Pure policy identity validation opens nothing. A new enrollment is explicit;
+there is no fallback from an invalid head to a static root or another registry.
+
+`update::Profile::hold_current` validates the real namespace/provider, fenced
+capability, owner/Job class and metadata-only placement. It refuses pending or
+missing current selection and holds its exact source revision/Version through
+the existing source-use gate. Root read permission does not require allow_store;
+the worker acquires no index-write or metadata-deletion authority. Dropping the
+handle releases only live source stability, never durable current/history claims.
+The source minimum is an admitted checkpoint floor, not an inventory certificate.
+
+Copy and registered eviction passes resolve both named heads after authenticated
+admission, using the actual source/destination MetadataReaders. They retain both
+generation guards through the pass, including native actions and post-effect
+checks. Index advancement on those exact slots is Busy while a reader participates;
+unrelated namespace/source slots remain usable. There is no cache-wide lock.
+Failed resolution drops any earlier live guard and returns a structured refusal.
+Required metadata still goes through the original aggregate bounded index lookup.
+Two source lookups and their gates retain the existing namespace/provider bounds;
+no runtime limit is raised or payload census introduced.
+
+Dynamic reports include producer_heads pins: namespace, source key, source revision
+and exact Version for each index. No physical paths or credentials are returned.
+Cursor basis includes both pins in addition to its existing policy, immutable Git
+commit/Main source and requested-object/page basis. Advancing either index requires
+a new pass and rejects an old cursor even when the media hash or root content is
+unchanged. Missing/current/malformed metadata remains explicit and never means
+latest asset selection. Project asset identity still comes from the exact admitted
+Git commit; only the explicitly enrolled producer metadata heads are mutable.
+
+The private receiver accepts this signed option on its existing copy/eviction
+phases and strict commit/cursor request. Events cannot enroll heads or write rows.
+`git-asset-trigger describe` advertises native_producer_head_resolution when built
+with annex-publish. Static-root reports/bases retain their previous behavior.
+History scheduling does not need producer lookup and remains independently usable.
+
+This consumes already published roots; it does not automatically create a root,
+register a new producer, repair backups or replace an uncertain native plan. The
+original native completion/control/roster/independent-custody checks remain
+mandatory. Worker publication/archival orchestration, controlled reacquisition,
+full HTTP/account/TLS, scale/lifetime and owner acceptance remain separate.

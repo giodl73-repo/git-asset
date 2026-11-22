@@ -314,3 +314,10 @@ Historical archives can rebind a row's retained membership while preserving the
 original publication recipe. This grants no media custody or eviction authority;
 receiver policy adoption remains explicit. See
 [producer-root lifecycle](NATIVE-PRODUCER-ROOTS.md).
+
+Signed native producer_heads can explicitly enroll metadata index source slots
+instead of static roots. Copy/eviction holds both current index generations,
+reports their exact pins and includes them in continuation identity. Owner index
+updates no longer require trust reenrollment per edit; binding/permission changes
+still do. There is no asset-latest fallback or index writer in a request. See the
+[head consumer contract](../specs/NATIVE-PRODUCER-ROOTS.md#explicitly-enrolled-head-consumers).

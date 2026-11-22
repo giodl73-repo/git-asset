@@ -17,7 +17,7 @@ unchanged. Point its private `placement_profile` at a document with these fields
 | Field | Meaning |
 | --- | --- |
 | `schema` | `git-asset.native-receiver-placement.experimental-1` |
-| `policy` | `github::native::Policy`: fixed source/retained and destination/working profiles, controls, distinct admitted domains, required namespace/alias, permissions and exact producer roots |
+| `policy` | `github::native::Policy`: fixed source/retained and destination/working profiles, controls, distinct admitted domains, required namespace/alias, permissions and exact producer roots or explicitly enrolled heads |
 | `source`, `destination` | Existing resource bindings: `namespace` (`root`,`minimum`), `metadata_root`,`metadata_minimum`,`witness_root`,`ledger_root`,`capacity_minimum` |
 | `limits` | Existing protection bounds: `millis`,`roots`,`bindings`,`associations`,`reads`,`read_bytes` |
 
@@ -30,13 +30,15 @@ binding holds rather than choosing a different namespace.
 
 Publish immutable producer records through
 `annex::producer_index::Record::store` and the existing Tree/metadata mechanisms.
-`policy.producers.source` and `.destination` pin those exact tree Objects.
+In static mode, `policy.producers.source` and `.destination` pin those exact tree Objects.
 They contain original publication plans and optional exact retained snapshots,
 not commands supplied by a webhook. Publishing/retaining these roots is an
 explicit operator/SDK responsibility; no automatic registry editor exists here.
 The [producer-root SDK](NATIVE-PRODUCER-ROOTS.md) can retain and advance an
-index through existing namespace transactions. Changing a receiver root or permission
-changes its policy identity and requires explicit trust reenrollment. Existing policies without producer roots retain their hashes
+index through existing namespace transactions. Changing either mode's bindings or
+permissions requires trust reenrollment. A static root replacement changes that
+binding; enrolled head mode instead freezes current versions of its fixed sources
+per pass. Existing policies without producer roots retain their hashes
 and continue to support the single-object worker.
 
 Start with outer `allow_receive` and `allow_selection` deliberately enabled,
@@ -159,3 +161,14 @@ and record namespaces only, before the ordinary native payload resource dispatch
 See [configuration, recovery and bounds](HISTORICAL-ROOTS.md#run-a-bounded-history-pass).
 The signed history profile separately permits archival and predecessor release;
 copy/backup permissions do not grant either. No physical byte removal occurs.
+
+## Enrolled producer heads
+
+Instead of fixed policy.producers roots, explicitly enroll policy.producer_heads
+with the two existing metadata-only namespace/profile bindings in the
+[producer guide](NATIVE-PRODUCER-ROOTS.md#let-a-worker-follow-an-enrolled-index).
+The modes are mutually exclusive. Compiled describe reports
+native_producer_head_resolution. Copy/eviction passes hold both exact generations,
+return bounded producer_heads pins and invalidate continuation after either head
+advances. Events cannot change these bindings or register producers. Missing heads
+refuse; asset selection still resolves the exact authenticated Git commit.

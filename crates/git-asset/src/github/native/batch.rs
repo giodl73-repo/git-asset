@@ -127,6 +127,8 @@ pub struct Report {
     pub lookup: Metrics,
     pub post_effect_hold: Option<AdmissionError>,
     pub storage_converged: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub producer_heads: Option<super::producers::Pins>,
 }
 #[derive(Default, Serialize)]
 pub struct Metrics {
@@ -219,17 +221,13 @@ struct Declared {
 impl<R: CommittedSource + ?Sized> Execution<'_, R> {
     fn declared_plan(
         &self,
+        roots: &ProducerRoots,
         object: &Object,
         source: &mut publication::Resources<'_>,
         destination: &mut publication::Resources<'_>,
         meter: &mut Metrics,
         outcome: &mut Outcome,
     ) -> Result<Declared, Error> {
-        let roots = self
-            .policy
-            .producers
-            .as_ref()
-            .ok_or(publication::Error::Unsupported)?;
         let (a, metrics) = Index::from_root(roots.source.clone()).get(
             object,
             source.metadata,
@@ -367,12 +365,13 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
                 return Err(publication::Error::Denied.into());
             }
         }
-        if self.policy.producers.is_none() {
+        if self.policy.producers.is_none() && self.policy.producer_heads.is_none() {
             return Err(publication::Error::Unsupported.into());
         }
         if self.policy.allow_copy && !cfg!(windows) {
             return Err(publication::Error::Unsupported.into());
         }
+        let producers = self.resolve_producers(source.metadata, destination.metadata)?;
         let mut selected = self.select(ids)?;
         let nodes = self
             .metadata
@@ -389,12 +388,12 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
             .map(|a| a.object)
             .collect();
         objects.sort_by(|a, b| a.sha256.cmp(&b.sha256));
-        let basis = basis(
+        let basis = producers.basis(basis(
             &selected.policy,
             self.request.commit().as_str(),
             selected.status.source_revision,
             &objects,
-        );
+        ))?;
         if cursor.is_some_and(|c| c.basis != basis || !objects.iter().any(|o| o.sha256 == c.after))
         {
             return Err(Error::Admission(AdmissionError::Stale));
@@ -411,6 +410,7 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
             lookup: Metrics::default(),
             post_effect_hold: None,
             storage_converged: None,
+            producer_heads: producers.pins.clone(),
         };
         let mut after = cursor.map(|c| c.after.clone());
         for object in objects
@@ -446,6 +446,7 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
                     return Err(publication::Error::Budget.into());
                 }
                 let declared = self.declared_plan(
+                    &producers.roots,
                     object,
                     source,
                     destination,

@@ -5,11 +5,11 @@ use crate::annex::pending::Scope;
 use git_asset_core::tree::{TreeError, TreeResult};
 use git_asset_store::{
     Key,
-    metadata::MetadataStore,
+    metadata::{MetadataReader, MetadataStore},
     protection::Limits,
     source_claims::{
         Kind, Receipt, Selection, Version,
-        admission::{Namespace, Select},
+        admission::{Namespace, Select, source_use},
     },
 };
 use std::{
@@ -395,4 +395,49 @@ pub fn apply(
     let receipt = ns.select(&selection, &meter, &p.limits)?;
     let hold = admit().err().map(Error::code);
     Ok(report(p, plan, &selection, ns, receipt, hold))
+}
+
+/// Live generation guard for one explicitly enrolled metadata index head.
+/// Dropping this handle never withdraws the durable index/history obligations.
+pub struct HeldRoot {
+    generation: source_use::Use,
+}
+impl HeldRoot {
+    pub fn version(&self) -> &Version {
+        self.generation.version()
+    }
+    pub fn revision(&self) -> u64 {
+        self.generation.revision()
+    }
+}
+impl Profile {
+    /// Read-only named head resolution; no lookup of another source or latest asset.
+    pub fn hold_current(&self, ns: &mut Namespace, nodes: &MetadataReader) -> Result<HeldRoot> {
+        self.limits.validate().map_err(|_| Error::Budget)?;
+        self.scope
+            .check_metadata(ns, nodes.checkpoint().identity())?;
+        let state = self.state(ns)?;
+        if state.pending.is_some() {
+            return Err(Error::Stale);
+        }
+        let current = state.current.as_ref().ok_or(Error::ProtectionLost)?;
+        if current.selection.root.bytes == 0 || current.selection.root.bytes > 65536 {
+            return Err(Error::Budget);
+        }
+        let generation = ns
+            .source_use(
+                &self.scope.prefix,
+                &self.scope.owner,
+                state.revision,
+                current,
+            )
+            .map_err(|e| match e {
+                source_use::UseError::Unsupported => Error::Unsupported,
+                source_use::UseError::Owner => Error::Denied,
+                source_use::UseError::Inactive => Error::ProtectionLost,
+                source_use::UseError::Stale => Error::Stale,
+                source_use::UseError::Admission(e) => Error::from(e),
+            })?;
+        Ok(HeldRoot { generation })
+    }
 }

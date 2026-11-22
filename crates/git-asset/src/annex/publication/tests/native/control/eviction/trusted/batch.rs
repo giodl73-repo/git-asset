@@ -21,6 +21,7 @@ impl State {
         keeper: &mut Fixture,
         plan: &NativePlan,
         uncertain: bool,
+        named_heads: bool,
     ) {
         let working = Record::new(f.plan.clone(), None).unwrap();
         let destination = root(&working, &mut self.metadata);
@@ -47,6 +48,39 @@ impl State {
             destination,
         });
         self.signer.trust.placement_enrollment = self.policy.id().unwrap();
+        let named = named_heads.then(|| {
+            let retained = super::super::super::super::github_worker::heads::register(
+                keeper,
+                self.policy.producers.as_ref().unwrap().source.clone(),
+                "retained-producers",
+            );
+            let working = super::super::super::super::github_worker::heads::register(
+                f,
+                self.policy.producers.as_ref().unwrap().destination.clone(),
+                "working-producers",
+            );
+            self.metadata =
+                MetadataStore::open(&f.root.join("metadata"), f.metadata.checkpoint()).unwrap();
+            let mut policy = self.policy.clone();
+            policy.producers = None;
+            policy.producer_heads = Some(github::native::producers::Heads {
+                source: retained.head,
+                destination: working.head,
+            });
+            let mut trust = self.signer.trust.clone();
+            trust.placement_enrollment = policy.id().unwrap();
+            (policy, trust)
+        });
+        let named_request = named.as_ref().map(|(_, trust)| {
+            github::verify(
+                trust,
+                &self.signer.keys,
+                &self.signer.token(&self.signer.claims),
+                &self.signer.commit,
+                1000,
+            )
+            .unwrap()
+        });
         let native = source::annex::Source {
             repository: &self.repository,
         };
@@ -168,6 +202,11 @@ impl State {
         worker.policy = &self.policy;
         worker.trust = &self.signer.trust;
         worker.request = &request;
+        if let Some((policy, trust)) = &named {
+            worker.policy = policy;
+            worker.trust = trust;
+            worker.request = named_request.as_ref().unwrap();
+        }
         // A job added after preview still prevents new planning/removal.
         let working_plan = f.plan.clone();
         demand(f, &working_plan);
@@ -239,6 +278,7 @@ impl State {
             serde_json::to_string(&applied).unwrap()
         );
         assert_eq!(applied.post_effect_hold, Some(github::Error::Expired));
+        assert_eq!(applied.producer_heads.is_some(), named_heads);
         assert!(!payload.exists());
         let saved = &applied.outcomes[0].eviction.as_ref().unwrap().saved;
         assert!(
@@ -253,7 +293,14 @@ impl State {
                 .historical
         );
         // New authentication can reconcile the original without source bytes or keeper payload config.
-        let fresh = self.signer.verify(&self.signer.claims, 1000).unwrap();
+        let fresh = github::verify(
+            worker.trust,
+            &self.signer.keys,
+            &self.signer.token(&self.signer.claims),
+            &self.signer.commit,
+            1000,
+        )
+        .unwrap();
         worker.request = &fresh;
         let config = keeper
             .profile

@@ -447,6 +447,7 @@ fn matrix_profile(exits: bool, races: bool, copies: bool, trusted: bool, batch: 
                 &mut backup,
                 &planned,
                 batch == 2,
+                batch == 3,
             );
             continue;
         }
@@ -878,4 +879,11 @@ fn actual_registered_eviction_preview_protection_expiry_and_saved_replay() {
 #[ignore = "explicit native tools and distinct synthetic volumes only"]
 fn actual_registered_eviction_uncertain_saved_intent_never_repeats_removal() {
     matrix_profile(false, false, false, true, 2);
+}
+
+#[cfg(feature = "github")]
+#[test]
+#[ignore = "explicit native tools and distinct synthetic volumes only"]
+fn actual_named_producer_heads_eviction_protection_expiry_and_saved_replay() {
+    matrix_profile(false, false, false, true, 3);
 }

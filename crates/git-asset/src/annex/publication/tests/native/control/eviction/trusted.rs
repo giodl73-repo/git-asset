@@ -108,6 +108,7 @@ impl State {
             required_place: k("pool"),
             allow_selection: true,
             allow_copy: false,
+            producer_heads: None,
             producers: None,
             actions: Some(Actions {
                 handoff: false,

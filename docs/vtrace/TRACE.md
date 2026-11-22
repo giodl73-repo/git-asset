@@ -831,3 +831,9 @@ history::Loaded::producer_record -> metadata conflict/race/recovery and native
 indexed historical reopen fixtures. Same P3 controls as the contract. External
 producer-update-* evidence records source/log identities and terminal checks;
 root policy adoption, full HTTP and project acceptance remain separate.
+
+Explicit producer-head consumers -> update::Profile::hold_current, shared metadata
+Scope checks, native::producers resolution, copy/eviction basis/pins and receiver
+admission -> synthetic signed head update/stale cursor/racing writer/no fallback
+and actual native copy/eviction fixtures. Same producer-root P3 controls; external
+producer-heads-* logs pin qualification. Full HTTP/scale/owner acceptance stays open.

@@ -29,6 +29,8 @@ pub struct Policy {
     pub actions: Option<Actions>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub producers: Option<ProducerRoots>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub producer_heads: Option<producers::Heads>,
 }
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -62,6 +64,26 @@ impl Policy {
     }
     /// Pure enrollment identity; never opens a pool or discovers locations.
     pub fn id(&self) -> Result<Digest, Error> {
+        if let Some(heads) = &self.producer_heads {
+            if self.producers.is_some() {
+                return Err(Error::Admission(AdmissionError::Trust));
+            }
+            heads.validate()?;
+            for head in [&heads.source, &heads.destination] {
+                if [&self.copy.source, &self.copy.destination]
+                    .iter()
+                    .any(|profile| {
+                        profile
+                            .pool
+                            .members
+                            .iter()
+                            .any(|m| m.minimum.identity() == &head.profile.scope.namespace)
+                    })
+                {
+                    return Err(Error::Admission(AdmissionError::Trust));
+                }
+            }
+        }
         if let Some(h) = self.actions.as_ref().and_then(|a| a.history.as_ref()) {
             h.binding()?;
             if h.working.namespace != self.namespace
@@ -450,3 +472,5 @@ mod durable;
 pub use durable::{Durable, HandoffRequest};
 pub mod eviction;
 pub mod history;
+
+pub mod producers;

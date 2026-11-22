@@ -18,6 +18,7 @@ pub(super) fn git(root: &Path, args: &[&str]) -> Vec<u8> {
     output.stdout
 }
 pub(super) mod batch;
+pub(super) mod heads;
 mod history;
 fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool, batch_mode: u8) {
     let bytes = vec![45; 256 * 1024];
@@ -41,10 +42,10 @@ fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool, 
         super::control::enable(&mut source, native);
         super::control::enable(&mut target, native);
     }
-    if batch_mode < 4 {
+    if batch_mode < 4 || batch_mode == 7 {
         retirement::publish(&mut source);
     }
-    if batch_mode == 3 || batch_mode >= 4 {
+    if batch_mode == 3 || (batch_mode >= 4 && batch_mode != 7) {
         retirement::publish(&mut target);
     }
     let profile = crate::annex::replication::Profile {
@@ -76,6 +77,7 @@ fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool, 
         required_place: k("pool"),
         allow_selection: true,
         allow_copy: true,
+        producer_heads: None,
         producers: (batch_mode != 0).then(|| github::native::ProducerRoots {
             source: batch::index(
                 &mut source,
@@ -218,6 +220,10 @@ fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool, 
                 .join(object.sha256.as_str()),
         )
         .unwrap();
+        if batch_mode == 7 {
+            heads::exercise(&mut worker, &mut source, &mut target, &signer);
+            return;
+        }
         if batch_mode == 6 {
             history::exercise(&mut worker, &mut source, &mut target, &project, &signer);
             return;
@@ -598,4 +604,14 @@ fn actual_authenticated_handoff_revalidates_after_custody_and_between_commands()
 #[test]
 fn authenticated_history_pass_preserves_exact_roots_and_continues_after_release() {
     matrix(false, true, false, false, 6);
+}
+
+#[test]
+fn authenticated_named_producer_heads_follow_updates_and_fence_writers() {
+    matrix(false, true, false, false, 7);
+}
+#[test]
+#[ignore = "explicit native tools; owned synthetic pools only"]
+fn actual_authenticated_named_producer_heads_follow_updates_and_fence_writers() {
+    matrix(true, true, false, false, 7);
 }

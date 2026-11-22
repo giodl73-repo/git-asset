@@ -50,9 +50,41 @@ retains the old index, retires the original keeper ingress, releases the old
 working obligation and reopens indexed historical bytes with the working repo
 offline. Unavailable sibling media remains missing.
 
-The current receiver pins producer roots in its signed policy. Use explicit
-trusted reenrollment to consume another root; this SDK does not rewrite policy
-or accept root changes from events. Automatic worker integration, missing-backup
+The receiver supports two explicit signed modes. `policy.producers` keeps exact
+immutable roots and needs reenrollment for another root. Alternatively enroll
+`policy.producer_heads` as described below. They cannot be combined. Neither
+mode accepts root changes or publication instructions from event bodies. Automatic worker integration, missing-backup
 repair, full HTTP/account/TLS and production acceptance remain open. See the
 [contract](../specs/NATIVE-PRODUCER-ROOTS.md) and
 [history guide](HISTORICAL-ROOTS.md).
+
+## Let a worker follow an enrolled index
+
+Enroll `policy.producer_heads.source` and `.destination`, each containing:
+
+| Field | Binding |
+| --- | --- |
+| root, minimum | Existing metadata-only namespace path and checkpoint floor. |
+| profile.scope | Exact namespace/provider/owner/source prefix and metadata alias from the publisher profile. |
+| profile.limits | Existing finite metadata/protection limits. |
+
+The source prefix must already be an owned Job with a current index. No namespace
+is created by a receiver request. The read-side profile can have allow_store false;
+keep the writer's authorization separate. Bind the actual source/destination
+metadata providers, not a similarly named drive/path. Missing head/provider refuses
+without using the previous static root or another source.
+
+After this deliberate trust enrollment, the owner can publish another index with
+the expected-baseline SDK without changing the worker policy for every edit. A
+copy/eviction pass freezes both index generations until it returns, reports both
+exact pins and binds its cursor to them. A concurrent edit of either named source
+is Busy and can retry the same prepared update after the reader ends. Other source
+slots remain available. Restart a pass when an index advancement makes its cursor
+stale; it never silently switches roots mid-page.
+
+This changes producer metadata lookup, not which asset version a Git commit
+selects. Saved native original plans/receipts remain authoritative after a head
+advances; a new registry Version is not permission to repeat uncertain native work.
+Check compiled support with git-asset-trigger describe. Runtime root creation,
+producer registration/archival orchestration, backup repair, controlled
+reacquisition, full HTTP and project acceptance still need their own qualification.

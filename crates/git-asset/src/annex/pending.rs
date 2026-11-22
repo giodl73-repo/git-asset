@@ -54,8 +54,11 @@ impl Scope {
         ))?))
     }
     pub(super) fn check(&self, ns: &Namespace, nodes: &MetadataStore) -> Result<()> {
+        self.check_metadata(ns, nodes.checkpoint().identity())
+    }
+    pub(super) fn check_metadata(&self, ns: &Namespace, metadata: &Digest) -> Result<()> {
         self.id()?;
-        if ns.identity() != &self.namespace || nodes.checkpoint().identity() != &self.metadata {
+        if ns.identity() != &self.namespace || metadata != &self.metadata {
             return Err(Error::Stale);
         }
         if !ns.supports_source_use() {

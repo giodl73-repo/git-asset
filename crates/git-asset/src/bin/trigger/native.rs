@@ -82,7 +82,11 @@ pub(super) fn dispatch(
 ) -> github::Result<Value> {
     let storage: Storage = serde_json::from_value(document).map_err(|_| github::Error::Invalid)?;
     let history_phase = matches!(storage.phase, Phase::HistoryPreview | Phase::HistoryApply);
-    if storage.schema != SCHEMA || (!history_phase && storage.policy.producers.is_none()) {
+    if storage.schema != SCHEMA
+        || (!history_phase
+            && storage.policy.producers.is_none()
+            && storage.policy.producer_heads.is_none())
+    {
         return Err(github::Error::Invalid);
     }
     storage
