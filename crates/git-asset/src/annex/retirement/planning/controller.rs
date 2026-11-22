@@ -128,7 +128,7 @@ impl<'a> Controller<'a> {
             execution::apply_hook(self.profile, plan, live, source_nodes, limits, cut)
         })
     }
-    #[cfg(test)]
+    #[cfg(all(test, windows))]
     pub(crate) fn apply_hook<N: NodeStore, K: NodeStore>(
         &self,
         plan: &Plan,

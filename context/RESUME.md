@@ -75,8 +75,12 @@ public plan/apply share acquisition and apply compares the entire frozen plan.
 Status/resume/cancel delegate the same internal recovery engines. Construction
 performs no IO; denied owner input holds, mixed legacy remains Unsupported.
 See docs/guides/NATIVE-EVICTION.md and controller-* qualification evidence.
-Next: bounded facade storage CLI, actual native executor process exits/races and
-remaining authority/epoch handoff. No native CLI or production activation yet.
+CLI entry (input61816a0): git asset storage native describe/plan/status/apply/
+resume/cancel delegates Controller via a bounded trusted profile. Mutation flags
+default false; saved preview ID and original-operation recovery are explicit.
+Ordinary storage sibling dispatch remains. See native-cli-* external evidence.
+Next: actual native executor process exits/races and remaining authority/epoch
+handoff; production activation/acceptance remains unavailable.
 Core limits remain16 births,16384 commands,16MiB journal; P5 scale gates stay open.
 
 Evidence: F:/src/tig-dev-temp/git-asset-protected-eviction-20261121.

@@ -1,4 +1,5 @@
-//! Connected internal native controller over fresh synthetic pools only.
+//! Connected native controller/facade over fresh synthetic pools only.
+mod cli;
 use super::*;
 use crate::annex::retirement::Assessor;
 use crate::annex::retirement::planning::{
@@ -400,35 +401,43 @@ fn actual_native_eviction_retained_restore_and_stale_replay() {
             )
             .unwrap();
         assert_eq!(public_preview.id().unwrap(), planned.id().unwrap());
-        let result = if cut == Cut::None {
-            controller.apply(
-                &planned,
-                sources!(),
-                Nodes {
-                    source: &f.metadata,
-                    keeper: &mut backup.metadata,
-                    limits: &Fixture::limits(),
-                    tree_limits: TreeLimits::default(),
-                },
-            )
+        let cli = cli::Client::new(&f, &backup, &policy, &planned, &pin);
+        let result = if let (Cut::None, Some(cli)) = (cut, &cli) {
+            Ok(cli.call("apply", true)["report"].clone())
+        } else if cut == Cut::None {
+            controller
+                .apply(
+                    &planned,
+                    sources!(),
+                    Nodes {
+                        source: &f.metadata,
+                        keeper: &mut backup.metadata,
+                        limits: &Fixture::limits(),
+                        tree_limits: TreeLimits::default(),
+                    },
+                )
+                .map(|r| serde_json::to_value(r).unwrap())
         } else {
-            controller.apply_hook(
-                &planned,
-                sources!(),
-                Nodes {
-                    source: &f.metadata,
-                    keeper: &mut backup.metadata,
-                    limits: &Fixture::limits(),
-                    tree_limits: TreeLimits::default(),
-                },
-                cut,
-            )
+            controller
+                .apply_hook(
+                    &planned,
+                    sources!(),
+                    Nodes {
+                        source: &f.metadata,
+                        keeper: &mut backup.metadata,
+                        limits: &Fixture::limits(),
+                        tree_limits: TreeLimits::default(),
+                    },
+                    cut,
+                )
+                .map(|r| serde_json::to_value(r).unwrap())
         };
         if cut == Cut::None {
             let report = result.unwrap();
-            assert!(!report.historical && !report.metadata.cancelled);
-            assert_eq!(report.logical_subject_bytes, object.bytes);
-            assert!(report.source_allocation_before.is_some());
+            assert_eq!(report["historical"], false);
+            assert_eq!(report["metadata"]["cancelled"], false);
+            assert_eq!(report["logical_subject_bytes"], object.bytes);
+            assert!(report["source_allocation_before"].is_u64());
         } else {
             assert_eq!(
                 result.err().unwrap().code(),
@@ -470,6 +479,12 @@ fn actual_native_eviction_retained_restore_and_stale_replay() {
                 _ => "completed",
             }
         );
+        if let Some(cli) = &cli {
+            assert_eq!(
+                cli.call("status", true)["report"],
+                serde_json::to_value(&status).unwrap()
+            );
+        }
         assert!(!status.removal_authority);
         assert!(if cut == Cut::BeforeEffect {
             matches!(status.observed, execution::Observation::VerifiedPresent)
@@ -492,6 +507,12 @@ fn actual_native_eviction_retained_restore_and_stale_replay() {
         );
         if cut == Cut::BeforeEffect {
             demand(&mut f, &old_native);
+            if let Some(cli) = &cli {
+                assert_eq!(
+                    cli.call("cancel", true)["report"]["metadata"]["cancelled"],
+                    true
+                );
+            }
             let result = controller
                 .cancel(
                     &planned,
@@ -555,7 +576,15 @@ fn actual_native_eviction_retained_restore_and_stale_replay() {
                 .code(),
             "uncertain"
         );
+        if let Some(cli) = &cli {
+            let denied = cli.call("cancel", false);
+            assert_eq!(denied["code"], "uncertain");
+            assert_eq!(denied["retry"], "inspect_original_operation");
+        }
         if cut == Cut::AfterRemoval {
+            if let Some(cli) = &cli {
+                assert_eq!(cli.call("resume", false)["code"], "uncertain");
+            }
             for _ in 0..2 {
                 assert_eq!(
                     controller
@@ -614,6 +643,9 @@ fn actual_native_eviction_retained_restore_and_stale_replay() {
             )
             .unwrap();
         assert!(again.metadata.historical_replay);
+        if let Some(cli) = &cli {
+            assert_eq!(cli.call("resume", true)["report"]["historical"], true);
+        }
         source_control.ledger =
             CapacityLedger::open(&policy.source.ledger, &policy.source.minimum).unwrap();
         let mut retained_bytes = Vec::new();
@@ -713,4 +745,11 @@ fn actual_native_eviction_retained_restore_and_stale_replay() {
             .unwrap();
         assert_eq!(current, bytes);
     }
+}
+
+#[test]
+#[ignore = "fresh facade executable plus native tools and separate volume roots"]
+fn actual_native_storage_facade_ordinary_bare_lifecycle() {
+    assert!(std::env::var_os("GIT_ASSET_TEST_FRONT_DOOR_EXE").is_some());
+    actual_native_eviction_retained_restore_and_stale_replay();
 }

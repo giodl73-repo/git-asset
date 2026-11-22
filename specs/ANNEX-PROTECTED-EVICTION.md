@@ -439,3 +439,17 @@ L0 source pins/fmt/size/links/audits; L1 pure constructor/default-denied owner a
 mismatched source/keeper; L2 ordinary/bare native fixture through public fresh
 plan/apply and historical status/resume/cancel. Actual executor process exits,
 CLI, epoch/legacy handoff and production acceptance remain separate gates.
+
+CLI entry input61816a0: same P2 WP/REQ/SPEC/IF/PKG controls; RUST/PROVIDER/GIT/
+INTEGRATION. Allowed: facade storage native describe/plan/status/apply/resume/
+cancel over the public Controller, preserving ordinary storage sibling dispatch.
+Trusted private profile only, no event-supplied roots/code; explicit mutation
+flags default false. Profile/request <=64KiB; saved preview/report <=128KiB;
+canonical inner plan <=64KiB. Validate duplicate keys/schema/arity before native
+operations. Saved previews carry exact plan ID; errors retain that handle and
+explicit retry/reconciliation semantics. Status opens no metadata writer or
+keeper payload; cancellation opens no keeper. L0 pins/fmt/links/size/audits;
+L1 discovery/default-disabled/invalid/oversize/duplicate/mismatched preview and
+ordinary dispatch; L2 new ordinary/bare F:/M: pools via real freshly built facade
+for preview/apply/status/resume/cancel. Actual executor exit/race, epoch handoff
+and P2 acceptance remain separate. No live cache operation is authorized.

@@ -47,7 +47,53 @@ incarnation; old completion reports history and current presence separately.
 Reports distinguish logical subject bytes, source file allocation (fresh apply
 only), metadata receipts and presence. They do not claim net free disk space.
 
-The native CLI and actual executor process-exit/epoch qualification remain open.
+The explicit facade CLI below uses this same controller. Actual executor
+process-exit/epoch qualification and production acceptance remain open.
 The ordinary/bare synthetic native fixture exercises the SDK preview, fresh
 apply, readonly status, historical resume, cancellation and retained restore.
 No cache operations run on startup, help or construction.
+
+## Explicit storage commands
+
+Build the facade with `annex-publish`; discovery/help also work without it and
+report availability. Existing `git asset storage` commands keep their original
+service dispatch. Native commands never initialize providers or discover caches.
+
+```powershell
+git asset storage native describe
+git asset storage native plan PROFILE.json REQUEST.json > SAVED_PLAN.json
+git asset storage native status PROFILE.json SAVED_PLAN.json
+git asset storage native apply PROFILE.json SAVED_PLAN.json
+git asset storage native resume PROFILE.json SAVED_PLAN.json
+git asset storage native cancel PROFILE.json SAVED_PLAN.json
+```
+
+Use absolute document paths. These commands require an explicitly qualified
+private owner profile; they do not enable production use by themselves. Retain
+the saved preview before apply. The full preview is accepted as `SAVED_PLAN`,
+as is an equivalent bare plan. The CLI validates the canonical inner plan and
+its exact ID; pretty-printing cannot retarget it. Missing/changed profiles or
+plans have no latest fallback. Keep runtime profiles/plans/reports asset-side.
+
+The profile schema is `git-asset.native-storage-profile.experimental-1`:
+
+- `owner`: SDK `planning::Profile`, including sealed runtime/control bindings.
+- `source`, `keeper`: each contains publication `profile`, original physical
+  publication `plan`, `witness` root, `ledger` root and ledger `minimum` checkpoint.
+- `source_metadata`, `keeper_metadata`: existing `root` and metadata `minimum`.
+- `limits`: existing protection limits. Keeper point reads have fixed ceilings
+  of65536 entries/reads,32MiB read bytes and depth64; metadata writers are absent.
+- `allow_apply`, `allow_resume`, `allow_cancel`: separate invocation gates,
+  default false. They are not epoch/legacy actor fences or revocation leases.
+
+The request schema is `git-asset.native-storage-request.experimental-1`, with
+`operation`, exact retained `snapshot` and independently retained metadata `grant`.
+Profile/request documents are limited to64KiB, saved plans/reports to128KiB and
+canonical inner plans to64KiB. Duplicate keys, extra fields, wrong preview IDs,
+relative/traversing paths and non-regular document leaves refuse. Output is one
+bounded JSON object; success exits0 and failure exits2. Mutation failures retain
+`plan_id`, a retry classification and original-plan status guidance. If stdout
+fails after an operation, inspect the original saved plan; do not assume rollback.
+Status opens no metadata writer or keeper payload. Cancellation needs surviving
+source bytes, not an online keeper. Historical resume uses existing lifecycle
+requirements; unavailable required metadata/custody still holds reconciliation.
