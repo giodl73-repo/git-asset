@@ -183,7 +183,7 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
         for row in page.records {
             let mut outcome = Outcome {
                 object: row.object.clone(),
-                publication: row.producer.id()?,
+                publication: row.publication.as_ref().unwrap_or(&row.producer).id()?,
                 retained_publication: None,
                 backup: None,
                 plan: None,
@@ -219,7 +219,7 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
                     self.metadata,
                     self.limits,
                 )?;
-                let mut working = row.producer.clone();
+                let mut working = row.publication.as_ref().unwrap_or(&row.producer).clone();
                 let mut retained = None;
                 let mut snapshot = None;
                 let mut grant = None;
@@ -231,28 +231,31 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
                     )?;
                     report.lookup.add(metrics);
                     let a = a.ok_or(publication::Error::Missing)?;
-                    let keeper = match batch::completed(&[&a.producer], source) {
-                        Ok(Some(p)) => p,
-                        Ok(None) | Err(Error::Native(publication::Error::Conflict)) => {
-                            let reverse = match row.retained {
-                                Some(s) => replication::Plan::from_snapshot(
-                                    &self.policy.backup_profile(),
-                                    row.producer.clone(),
-                                    a.producer.clone(),
-                                    s,
-                                )?,
-                                None => replication::Plan::new(
-                                    &self.policy.backup_profile(),
-                                    row.producer.clone(),
-                                    a.producer.clone(),
-                                )?,
-                            };
-                            outcome.backup = Some(reverse.id()?);
-                            batch::completed(&[&a.producer, reverse.destination()], source)?
-                                .ok_or(publication::Error::Missing)?
-                        }
-                        Err(e) => return Err(e),
-                    };
+                    let keeper =
+                        match batch::completed(&a.publications().collect::<Vec<_>>(), source) {
+                            Ok(Some(p)) => p,
+                            Ok(None) | Err(Error::Native(publication::Error::Conflict)) => {
+                                let reverse = match row.retained.clone() {
+                                    Some(s) => replication::Plan::from_snapshot(
+                                        &self.policy.backup_profile(),
+                                        row.producer.clone(),
+                                        a.producer.clone(),
+                                        s,
+                                    )?,
+                                    None => replication::Plan::new(
+                                        &self.policy.backup_profile(),
+                                        row.producer.clone(),
+                                        a.producer.clone(),
+                                    )?,
+                                };
+                                outcome.backup = Some(reverse.id()?);
+                                let mut candidates = a.publications().collect::<Vec<_>>();
+                                candidates.push(reverse.destination());
+                                batch::completed(&candidates, source)?
+                                    .ok_or(publication::Error::Missing)?
+                            }
+                            Err(e) => return Err(e),
+                        };
                     let forward = match &a.retained {
                         Some(s) => replication::Plan::from_snapshot(
                             &self.policy.copy,
@@ -266,9 +269,10 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
                             row.producer.clone(),
                         )?,
                     };
-                    working =
-                        batch::completed(&[&row.producer, forward.destination()], destination)?
-                            .ok_or(publication::Error::Missing)?;
+                    let mut candidates = row.publications().collect::<Vec<_>>();
+                    candidates.push(forward.destination());
+                    working = batch::completed(&candidates, destination)?
+                        .ok_or(publication::Error::Missing)?;
                     outcome.publication = working.id()?;
                     saved = pending::find(
                         &scope,

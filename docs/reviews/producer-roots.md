@@ -74,3 +74,36 @@ pins from byte custody and demonstrates no policy reenrollment per index edit.
 Trace/source/log pins use producer-heads-source.json externally; L0/branding/diff
 close separately before commit. Review remains producer-applied; full HTTP,
 publication orchestration, scale and owner adoption remain OPEN.
+
+## Completed-recipe refinement
+
+Inputcb798cbc9993cbb8b6649476e6fe7c9ae66c7154; same six producer lenses and owner.
+H identity: record original and completed copy-context recipe separately; normalized
+origin equality prevents candidate/request/control changes. H recovery: original
+intents remain checked; an installed recipe is write-once through preparation and
+parsed-plan apply, and cannot be hidden by metadata replacement. H custody: exact
+historical completion/accounting is not current byte presence; fresh native reads
+and keeper proofs remain mandatory. H placement: at most two declared plus one
+prospective recipe, shared existing lookup/status bounds and32KiB record ceiling;
+no census or budget increase. H provider/privacy: only fixed original witness,
+ledger and native publisher ports; no event-supplied recipe writer. M Git/adoption:
+absent field preserves old bytes and index roots stay immutable/retained. Producer
+review only; full owner workflow, HTTP/scale and independent acceptance stay open.
+
+Qualification targets: reject foreign/uncompleted/unsettled/uncertain recipes and
+replacement; preserve legacy serialization; root registration before source rebind;
+original present reuse without new allocation; indexed reverse-backup read after
+both temporary ingests retire and the working repository becomes unavailable.
+
+Completed-recipe terminal local verification:12 default worker cases pass, with8
+explicit native cases ignored;8 producer-index and8 archive cases pass. Three
+explicit actual git-annex cases pass: copy registration/rebind reuse without new
+allocation; recorded reverse-backup archive read after both ingests retire and
+working-repository loss; distinct-volume eviction using a recorded publication
+that differs from its prospective context, including expiry and saved replay.
+Strict workspace/all-feature/all-target Clippy, standalone annex-publish and fmt
+pass. Validation preserves original identity, legacy absent-field bytes, exact
+completed recipes and fresh native checks; metadata does not assert custody.
+L0/pins/branding/diff close separately. Source/log/test-binary hashes are external
+producer-recipe-source.json. Review is producer-applied; full orchestration,
+repair/reacquisition, transport/scale and owner acceptance remain OPEN.

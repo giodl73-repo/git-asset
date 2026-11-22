@@ -220,6 +220,10 @@ fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool, 
                 .join(object.sha256.as_str()),
         )
         .unwrap();
+        if batch_mode == 8 {
+            heads::exercise_backup(&mut worker, &mut source, &mut target, &signer);
+            return;
+        }
         if batch_mode == 7 {
             heads::exercise(&mut worker, &mut source, &mut target, &signer);
             return;
@@ -614,4 +618,14 @@ fn authenticated_named_producer_heads_follow_updates_and_fence_writers() {
 #[ignore = "explicit native tools; owned synthetic pools only"]
 fn actual_authenticated_named_producer_heads_follow_updates_and_fence_writers() {
     matrix(true, true, false, false, 7);
+}
+
+#[test]
+fn registered_backup_recipe_reopens_archive_after_both_ingests_retire() {
+    matrix(false, true, false, false, 8);
+}
+#[test]
+#[ignore = "explicit native tools; owned synthetic pools only"]
+fn actual_registered_backup_recipe_reopens_archive_after_both_ingests_retire() {
+    matrix(true, true, false, false, 8);
 }

@@ -133,3 +133,47 @@ register a new producer, repair backups or replace an uncertain native plan. The
 original native completion/control/roster/independent-custody checks remain
 mandatory. Worker publication/archival orchestration, controlled reacquisition,
 full HTTP/account/TLS, scale/lifetime and owner acceptance remain separate.
+
+## Preserve a completed copy or backup recipe
+
+Refinement inputcb798cbc9993cbb8b6649476e6fe7c9ae66c7154; same P3 WP/REQ/SPEC/IF/
+PKG controls and L0/L1/L2 profiles. Optional Record.publication names at most one
+additional immutable publication recipe. It defaults absent and is omitted when
+None, preserving old canonical record bytes. The recipe must equal producer after
+removing only copy context: candidate, provenance, request, selection, namespace,
+control, witness/capacity admission, configuration and budget cannot change.
+The original producer remains mandatory and immutable. Record cap stays32KiB;
+large two-recipe records refuse rather than raising bounds.
+
+Record::with_completed_publication checks the exact recipe's original witness and
+ledger status. An unfinished intent is Uncertain; missing completion/unsettled
+accounting is NeedsRecovery. It never starts/resumes native work or checks current
+payload presence. Its output declares historical completion only, not byte custody.
+Once an additional recipe is recorded, ordinary expected-baseline index edits and
+parsed-plan apply cannot clear or replace it, including with another copy context.
+Original native ambiguity must not be hidden by changing metadata. Controlled
+reacquisition/stale-plan replacement requires separate qualified admission.
+
+Record::publications enumerates the original and optional recorded recipe (at most
+two). Copy/backup/eviction checks those plus the one currently derived prospective
+recipe (at most three), deduplicating exact plans. A known unfinished intent in any
+candidate holds; one unique completed/settled recipe must be freshly verified.
+Conflicting/ambiguous completions are not resolved by last writer or presence alone.
+The declaration is never sufficient to import or remove bytes. Saved eviction can
+be found by its recorded exact publication before keeper payload opens; original
+saved action/status checks remain authoritative.
+
+This preserves a completed working copy when a retained membership reference later
+changes, and preserves a completed reverse backup after old ingest is released.
+Archival rebinding copies the optional publication unchanged alongside the original
+producer/control grant. Historical readers can pass that exact recorded recipe
+and retained Snapshot to open_retained; it verifies real claims and bytes again.
+No working checkout or source-pool fallback is necessary for that named read.
+
+Owner sequence: complete original native work; inspect exact completion/settlement;
+construct the publication-bearing Record; prepare expected-old-record root update;
+durably preserve its exact canonical Plan before apply; select through existing
+namespace admission and preserve the returned receipt. Archive/ingest release
+remains separately admitted. A metadata failure after native success keeps the
+native original/receipt; it never authorizes another transfer. No new queue,
+operation journal, RPC producer editor or automatic cache adoption is introduced.

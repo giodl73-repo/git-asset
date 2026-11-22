@@ -66,3 +66,9 @@ not re-proven by an index declaration.
 [Producer-root updates](NATIVE-PRODUCER-ROOTS.md) add explicit metadata finish/
 readback, expected-baseline source selection and original status recovery over
 these immutable records. Root publication is not native custody or policy adoption.
+
+Optional publication retains one exact completed copy-context recipe alongside
+producer. Absent serialization remains unchanged; canonical rows still cap32KiB.
+This is a historical declaration, not current custody. The bounded completion
+lookup and write-once rules are in
+[NATIVE-PRODUCER-ROOTS](NATIVE-PRODUCER-ROOTS.md#preserve-a-completed-copy-or-backup-recipe).

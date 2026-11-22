@@ -93,3 +93,23 @@ counted as successes. Separate actual head-copy and distinct-volume head-evictio
 cases pass. Workspace Clippy, standalone annex-publish and fmt pass. Exact current
 source/logs are external producer-heads-source.json. Parentffccf8c hosted45059199408
 passed; current-head hosted qualification must be derived after this commit.
+
+Completed-recipe refinement fromcb798cb adds optional Record.publication (absent
+wire unchanged) and historical completion/settlement inspection. Original producer
+stays immutable; only copy context may differ. Root prepare/apply cannot clear or
+replace an installed recipe. Worker considers original/recorded/prospective plans
+under bounded unique-completion checks and fresh byte verification; uncertainty
+never becomes presence. Owner fixture persists the exact root-update Plan before
+apply, reuses copied bytes after a history rebind, and records a reverse backup
+that remains readable through an exact retained root after both ingests retire
+and F's repository goes offline. Qualification: producer-recipe-* externally.
+This is publication registration composition, not a new RPC editor/cache engine
+or complete production orchestration. Backup repair/reacquisition, full transport,
+remaining P2/P4 acceptance, P5 RC and P6 owner cutover remain OPEN.
+
+Completed-recipe local qualification:12 default worker,8 index and8 archive cases
+pass;8 explicit native worker cases are ignored in the default run. Separate actual
+copy/rebind, reverse-backup archive and distinct-volume recorded-recipe eviction
+cases pass. Workspace Clippy, standalone annex-publish and fmt pass. External
+producer-recipe-source.json pins the committed source/logs. Parentcb798cb hosted
+45061875678 passed; current-head hosted status remains separate.

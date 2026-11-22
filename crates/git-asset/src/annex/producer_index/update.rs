@@ -257,7 +257,9 @@ pub fn prepare(
         }
         if let Some(old) = previous {
             let old = read(&path, &old, &meter, limits(p), &mut TreeMetrics::default())?;
-            if old.producer != change.record.producer {
+            if old.producer != change.record.producer
+                || (old.publication.is_some() && old.publication != change.record.publication)
+            {
                 return Err(Error::Conflict);
             }
         }
@@ -373,7 +375,10 @@ pub fn apply(
         if let Some(base) = &plan.expected {
             let (previous, _) =
                 Index::from_root(base.selection.root.clone()).get(object, &mut meter, limits(p))?;
-            if previous.is_some_and(|old| old.producer != record.producer) {
+            if previous.is_some_and(|old| {
+                old.producer != record.producer
+                    || (old.publication.is_some() && old.publication != record.publication)
+            }) {
                 return Err(Error::Conflict);
             }
         }

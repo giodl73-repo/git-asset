@@ -23,7 +23,17 @@ impl State {
         uncertain: bool,
         named_heads: bool,
     ) {
-        let working = Record::new(f.plan.clone(), None).unwrap();
+        let mut working = Record::new(f.plan.clone(), None).unwrap();
+        if named_heads {
+            // Keep an earlier prospective context while naming the actual completion.
+            working.producer = f
+                .plan
+                .clone()
+                .with_context(Some(Digest::blob(b"earlier prospective storage recipe")));
+            working = working
+                .with_completed_publication(f.plan.clone(), &f.witness, &mut f.ledger)
+                .unwrap();
+        }
         let destination = root(&working, &mut self.metadata);
         f.metadata =
             MetadataReader::open(&f.root.join("metadata"), &self.metadata.checkpoint()).unwrap();

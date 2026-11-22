@@ -465,6 +465,16 @@ pub(super) fn uncertain(
             .filter(|s| s.contains("reinject"))
             .count()
     };
+    let row = crate::annex::producer_index::Record::new(target.plan.clone(), None).unwrap();
+    assert_eq!(
+        row.with_completed_publication(
+            plan.destination().clone(),
+            &target.witness,
+            &mut target.ledger
+        )
+        .unwrap_err(),
+        Error::Uncertain
+    );
     let before = imports();
     assert!(
         before > 0,

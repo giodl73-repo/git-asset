@@ -1,3 +1,4 @@
+mod backup;
 use super::*;
 use crate::annex::{
     pending::Scope,
@@ -104,7 +105,7 @@ pub(super) fn exercise(
 ) {
     let old = worker.policy.producers.as_ref().unwrap();
     let mut source = register(m, old.source.clone(), "retained-producers");
-    let destination = register(f, old.destination.clone(), "working-producers");
+    let mut destination = register(f, old.destination.clone(), "working-producers");
     let mut policy = worker.policy.clone();
     policy.producers = None;
     policy.producer_heads = Some(Heads {
@@ -288,6 +289,20 @@ pub(super) fn exercise(
         1000,
     )
     .unwrap();
+    let copy = crate::annex::replication::Plan::from_snapshot(
+        &policy.copy,
+        source.row.producer.clone(),
+        destination.row.producer.clone(),
+        updated.retained.clone().unwrap(),
+    )
+    .unwrap();
+    assert_eq!(
+        destination
+            .row
+            .with_completed_publication(copy.destination().clone(), &f.witness, &mut f.ledger)
+            .unwrap_err(),
+        Error::NeedsRecovery
+    );
     let mut calls = 0;
     let mut raced = false;
     let applied = batch::configured(worker, &policy, &trust, &request)
@@ -327,6 +342,63 @@ pub(super) fn exercise(
         applied.producer_heads.as_ref().unwrap().source.version,
         source.version
     );
+    assert_eq!(applied.outcomes[0].plan, Some(copy.id().unwrap()));
+    // Preserve the actual immutable copy recipe before another history rebind.
+    let published = destination
+        .row
+        .with_completed_publication(copy.destination().clone(), &f.witness, &mut f.ledger)
+        .unwrap();
+    assert_eq!(published.producer, destination.row.producer);
+    assert_eq!(published.publication.as_ref(), Some(copy.destination()));
+    assert_eq!(
+        published
+            .with_completed_publication(destination.row.producer.clone(), &f.witness, &mut f.ledger)
+            .unwrap_err(),
+        Error::Conflict
+    );
+    let registration = roots::prepare(
+        &destination.profile,
+        Some(&destination.version),
+        &[roots::Change {
+            expected_record: Some(destination.row.metadata_object().unwrap()),
+            record: published.clone(),
+        }],
+        &mut destination.namespace,
+        &mut destination.nodes,
+    )
+    .unwrap()
+    .unwrap();
+    let mut saved = fs::File::create_new(f.root.join("publication-registration-plan")).unwrap();
+    std::io::Write::write_all(&mut saved, &registration.to_json().unwrap()).unwrap();
+    saved.sync_all().unwrap();
+    let registered = roots::apply(
+        &destination.profile,
+        &registration,
+        &mut destination.namespace,
+        &mut destination.nodes,
+        || Ok(()),
+    )
+    .unwrap();
+    destination.version = registered.version;
+    f.metadata =
+        MetadataReader::open(&f.root.join("metadata"), &destination.nodes.checkpoint()).unwrap();
+    *worker.metadata =
+        MetadataStore::open(&f.root.join("metadata"), &destination.nodes.checkpoint()).unwrap();
+    // Ordinary root edits cannot erase a recorded recipe and hide its uncertainty.
+    assert_eq!(
+        roots::prepare(
+            &destination.profile,
+            Some(&destination.version),
+            &[roots::Change {
+                expected_record: Some(published.metadata_object().unwrap()),
+                record: destination.row.clone(),
+            }],
+            &mut destination.namespace,
+            &mut destination.nodes
+        )
+        .err(),
+        Some(Error::Conflict)
+    );
     let repeated = batch::configured(worker, &policy, &trust, &request)
         .reconcile(
             None,
@@ -355,6 +427,29 @@ pub(super) fn exercise(
         || Ok(()),
     )
     .unwrap();
+    m.metadata =
+        MetadataReader::open(&m.root.join("metadata"), &source.nodes.checkpoint()).unwrap();
+    let checkpoint = f.ledger.checkpoint();
+    let rebound = batch::configured(worker, &policy, &trust, &request)
+        .reconcile(
+            None,
+            &budget,
+            &mut m.resources(),
+            &mut f.resources(),
+            || Ok(1000),
+        )
+        .unwrap();
+    assert_eq!(
+        rebound.outcomes[0].state,
+        "present",
+        "{}",
+        serde_json::to_string(&rebound).unwrap()
+    );
+    assert_eq!(
+        rebound.outcomes[0].publication,
+        applied.outcomes[0].publication
+    );
+    assert_eq!(checkpoint, f.ledger.checkpoint());
     assert!(
         source
             .namespace
@@ -364,4 +459,13 @@ pub(super) fn exercise(
             .predecessors
             .contains(&source.version)
     );
+}
+
+pub(super) fn exercise_backup(
+    worker: &mut Execution<'_, impl lifecycle::CommittedSource>,
+    m: &mut Fixture,
+    f: &mut Fixture,
+    signer: &github::fixture::Fixture,
+) {
+    backup::exercise(worker, m, f, signer);
 }

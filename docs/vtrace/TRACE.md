@@ -837,3 +837,10 @@ Scope checks, native::producers resolution, copy/eviction basis/pins and receive
 admission -> synthetic signed head update/stale cursor/racing writer/no fallback
 and actual native copy/eviction fixtures. Same producer-root P3 controls; external
 producer-heads-* logs pin qualification. Full HTTP/scale/owner acceptance stays open.
+
+Completed producer recipes -> Record.publication/with_completed_publication,
+write-once root update and bounded native recipe lookup -> origin/canonicality/
+uncertainty refusal, copy reuse after rebind, backup-index/archive after both
+ingests retire and independent working-repository loss. Controls in
+NATIVE-PRODUCER-ROOTS; producer-recipe-* external evidence. Full owner orchestration,
+backup repair/reacquisition and production acceptance remain separate.

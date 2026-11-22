@@ -22,6 +22,8 @@ pub struct Record {
     pub producer: Plan,
     pub retained: Option<Snapshot>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub publication: Option<Plan>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub control_retention: Option<git_asset_store::retention::RetentionGrant>,
 }
 impl Record {
@@ -31,6 +33,7 @@ impl Record {
             object: producer.candidate().object.clone(),
             producer,
             retained,
+            publication: None,
             control_retention: None,
         };
         row.bytes()?;
@@ -39,6 +42,37 @@ impl Record {
     /// Exact canonical record identity, distinct from the media Object it describes.
     pub fn metadata_object(&self) -> Result<Object> {
         Ok(Object::from_bytes(&self.bytes()?))
+    }
+    /// Original registration and at most one declared completed copy-context recipe.
+    /// Every consumer still checks original status and fresh native custody separately.
+    pub fn publications(&self) -> impl Iterator<Item = &Plan> {
+        std::iter::once(&self.producer).chain(self.publication.as_ref())
+    }
+    /// Preserve an exact historical completion; this observes no current payload bytes.
+    pub fn with_completed_publication(
+        &self,
+        publication: Plan,
+        witness: &git_asset_store::local::LocalStore,
+        ledger: &mut git_asset_store::ledger::CapacityLedger,
+    ) -> Result<Self> {
+        let mut updated = self.clone();
+        if self
+            .publication
+            .as_ref()
+            .is_some_and(|old| old != &publication)
+        {
+            return Err(Error::Conflict);
+        }
+        updated.publication = Some(publication.clone());
+        updated.bytes()?;
+        let progress = publication.progress(witness, ledger)?;
+        if progress.intent && !progress.completion {
+            return Err(Error::Uncertain);
+        }
+        if !progress.completion || !progress.settled {
+            return Err(Error::NeedsRecovery);
+        }
+        Ok(updated)
     }
     fn bytes(&self) -> Result<Vec<u8>> {
         if let Some(grant) = &self.control_retention {
@@ -61,6 +95,12 @@ impl Record {
             return Err(Error::Integrity);
         }
         self.producer.id()?;
+        if let Some(publication) = &self.publication {
+            publication.id()?;
+            if self.producer.clone().with_context(None) != publication.clone().with_context(None) {
+                return Err(Error::Integrity);
+            }
+        }
         let bytes =
             identity::canonical_json(&serde_json::to_value(self).map_err(|_| Error::Invalid)?)
                 .map_err(|_| Error::Invalid)?;

@@ -30,6 +30,12 @@ fn exact_index_lookup_pages_budget_and_stale_roots_without_native_io() {
         assert!(
             serde_json::to_value(&row)
                 .unwrap()
+                .get("publication")
+                .is_none()
+        );
+        assert!(
+            serde_json::to_value(&row)
+                .unwrap()
                 .get("control_retention")
                 .is_none()
         );
@@ -233,4 +239,37 @@ fn index_rejects_wrong_key_noncanonical_missing_and_corrupt_records() {
     let mut invalid = row;
     invalid.object.bytes += 1;
     assert_eq!(invalid.store(&mut nodes).unwrap_err(), Error::Integrity);
+}
+
+#[test]
+fn declared_publication_preserves_origin_and_rejects_foreign_recipe() {
+    let root = tempfile::tempdir().unwrap();
+    let p = profile(root.path());
+    let mut nodes = MemoryNodes::default();
+    let request = request(&mut nodes);
+    let original = plan(&mut nodes, &p, request.clone());
+    let mut row = Record::new(original.clone(), None).unwrap();
+    let recipe = original
+        .clone()
+        .with_context(Some(Digest::blob(b"exact copy context")));
+    row.publication = Some(recipe.clone());
+    let (path, object) = row.store(&mut nodes).unwrap();
+    let (tree, _) = Tree::build(
+        &BTreeMap::from([(path, object)]),
+        &mut nodes,
+        TreeLimits::default(),
+    )
+    .unwrap();
+    let found = Index::from_root(tree.root().clone())
+        .get(&row.object, &mut nodes, TreeLimits::default())
+        .unwrap()
+        .0
+        .unwrap();
+    assert_eq!(found.publications().count(), 2);
+    assert_eq!(found.producer, original);
+    assert_eq!(found.publication, Some(recipe));
+    let mut changed = request;
+    changed.operation = k("another-registration");
+    row.publication = Some(plan(&mut nodes, &p, changed));
+    assert_eq!(row.store(&mut nodes).unwrap_err(), Error::Integrity);
 }

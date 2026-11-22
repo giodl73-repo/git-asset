@@ -88,3 +88,29 @@ advances; a new registry Version is not permission to repeat uncertain native wo
 Check compiled support with git-asset-trigger describe. Runtime root creation,
 producer registration/archival orchestration, backup repair, controlled
 reacquisition, full HTTP and project acceptance still need their own qualification.
+
+## Record the recipe that actually completed
+
+A copy or backup may finish with a context-specific publication Plan. Preserve it
+before advancing historical membership references; deriving a new prospective
+recipe from changed metadata is not recovery of the old operation.
+
+Use Record::with_completed_publication with the exact completed destination Plan
+and its original witness/ledger. It refuses unfinished intent, incomplete accounting,
+a changed registration or replacement of an already recorded recipe. Prepare the
+expected-row index update, persist its Plan, then apply through the existing root
+SDK. This records original metadata only; it does not transfer or acknowledge bytes
+that have not been independently verified by the native adapter.
+
+The worker considers the original, this recorded recipe and its current prospective
+recipe under bounded status checks, then freshly opens the one unique completed
+publication. Uncertainty/conflicting completions hold. Archive helpers preserve
+both recipes; native historical reads use the exact recorded publication with
+its retained member Snapshot. A missing/corrupt/offline byte path remains explicit.
+
+The synthetic workflow backs up working ingress to M, records its actual backup
+recipe into the retained index, adopts an exact retained member tree, releases both
+temporary ingests, and reopens indexed archived bytes with F's native repository
+offline. The separate copy case changes retained references after registration
+and proves present reuse without new allocation. These component cases do not
+qualify physical independence, every project or whole-placement convergence.

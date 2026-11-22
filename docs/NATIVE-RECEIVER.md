@@ -172,3 +172,10 @@ native_producer_head_resolution. Copy/eviction passes hold both exact generation
 return bounded producer_heads pins and invalidate continuation after either head
 advances. Events cannot change these bindings or register producers. Missing heads
 refuse; asset selection still resolves the exact authenticated Git commit.
+
+Producer records may carry one recorded copy/backup publication in addition to
+the original. Worker lookup verifies original status across the bounded recipe
+set, then freshly checks bytes; metadata never selects an arbitrary current recipe
+or hides uncertainty. Owners can record completed work through the
+[producer SDK sequence](NATIVE-PRODUCER-ROOTS.md#record-the-recipe-that-actually-completed).
+The receiver does not accept arbitrary recipe registration in event bodies.

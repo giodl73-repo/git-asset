@@ -86,3 +86,9 @@ retained Snapshot. Publish it through the bounded
 [producer-root update SDK](NATIVE-PRODUCER-ROOTS.md); lookup/readback and actual
 native open_retained remain separate from registration. Old index roots remain
 readable and a historical recovery receipt never reselects an old root.
+
+When ingest was supplied by copy/backup, retain Record.publication as the exact
+completed recipe before replacing its membership Snapshot. Loaded::producer_record
+preserves that field. Historical open_retained uses this recipe (or the original
+producer when no additional recipe is recorded) and the exact retained member;
+current bytes/control/custody are always checked separately.

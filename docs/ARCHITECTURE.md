@@ -321,3 +321,10 @@ reports their exact pins and includes them in continuation identity. Owner index
 updates no longer require trust reenrollment per edit; binding/permission changes
 still do. There is no asset-latest fallback or index writer in a request. See the
 [head consumer contract](../specs/NATIVE-PRODUCER-ROOTS.md#explicitly-enrolled-head-consumers).
+
+Producer records can retain one completed copy/backup recipe alongside the original
+registration. Historical references can then advance without losing the exact
+native receipt lineage. Completion/settlement inspection is metadata-only; every
+consumer still verifies fresh bytes and keeps original uncertainty checks. Ordinary
+root updates cannot clear or replace the recorded recipe. See
+[recipe registration](NATIVE-PRODUCER-ROOTS.md#record-the-recipe-that-actually-completed).

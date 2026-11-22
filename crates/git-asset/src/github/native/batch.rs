@@ -215,6 +215,7 @@ pub(super) fn completed(
 struct Declared {
     forward: replication::Plan,
     original: publication::Plan,
+    publication: Option<publication::Plan>,
     backup: Option<replication::Plan>,
     needs_backup: bool,
 }
@@ -256,7 +257,7 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
         };
         outcome.plan = Some(initial.id()?);
         let allowed = self.policy.actions.as_ref().is_some_and(|a| a.backup);
-        let first = completed(&[&a.producer], source);
+        let first = completed(&a.publications().collect::<Vec<_>>(), source);
         let mut backup = None;
         let mut needs_backup = false;
         let retained = match first {
@@ -276,7 +277,9 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
                     }
                 };
                 outcome.backup = Some(reverse.id()?);
-                let recipe = completed(&[&a.producer, reverse.destination()], source)?;
+                let mut candidates = a.publications().collect::<Vec<_>>();
+                candidates.push(reverse.destination());
+                let recipe = completed(&candidates, source)?;
                 needs_backup = recipe.is_none();
                 let recipe = recipe.unwrap_or_else(|| reverse.destination().clone());
                 backup = Some(reverse);
@@ -284,6 +287,7 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
             }
             Err(e) => return Err(e),
         };
+        let publication = b.publication.clone();
         let forward = match a.retained {
             Some(snapshot) => {
                 replication::Plan::from_snapshot(&self.policy.copy, retained, b.producer, snapshot)?
@@ -293,6 +297,7 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
         Ok(Declared {
             forward,
             original,
+            publication,
             backup,
             needs_backup,
         })
@@ -302,10 +307,13 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
         &self,
         plan: &replication::Plan,
         original: &publication::Plan,
+        publication: Option<&publication::Plan>,
         source: &mut publication::Resources<'_>,
         destination: &mut publication::Resources<'_>,
     ) -> Result<Option<publication::Plan>, Error> {
-        let Some(recipe) = completed(&[original, plan.destination()], destination)? else {
+        let mut candidates = vec![original, plan.destination()];
+        candidates.extend(publication);
+        let Some(recipe) = completed(&candidates, destination)? else {
             return Ok(None);
         };
         let mut working = super::mutations::publisher(
@@ -482,9 +490,13 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
                     selected.status.observed_ref_current =
                         copied.report().selection.observed_ref_current;
                     backup.source().clone()
-                } else if let Some(publication) =
-                    self.present(plan, original, source, destination)?
-                {
+                } else if let Some(publication) = self.present(
+                    plan,
+                    original,
+                    declared.publication.as_ref(),
+                    source,
+                    destination,
+                )? {
                     outcome.state = "present";
                     outcome.publication = Some(publication.id()?);
                     outcome.retained_publication = Some(plan.source().id()?);
