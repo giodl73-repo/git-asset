@@ -1,4 +1,4 @@
-//! Explicit native ordinary-retirement assessment. No removal/initialization API.
+//! Explicit native retirement assessment/coordinator. No initialization or implicit effects.
 use super::{managed, process, publication, snapshot};
 use git_asset_core::{
     Digest, Object,

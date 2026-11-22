@@ -1,8 +1,4 @@
-//! Internal native executor. No public SDK/CLI removal entry before qualification.
-#![allow(
-    dead_code,
-    reason = "internal P2 controller pending public admission/CLI qualification"
-)]
+//! Shared native executor behind the explicit experimental controller.
 use super::*;
 use git_asset_core::tree::NodeStore;
 use git_asset_store::{
@@ -107,12 +103,12 @@ pub(crate) struct Live<'a, 'read, 'source> {
 }
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "snake_case")]
-pub(crate) enum Observation {
+pub enum Observation {
     VerifiedPresent,
     ObservedAbsent,
 }
 #[derive(Debug, Serialize)]
-pub(crate) struct Report {
+pub struct Report {
     pub plan: Digest,
     pub metadata: metadata::Receipt,
     pub logical_subject_bytes: u64,
@@ -164,16 +160,7 @@ pub(crate) enum Cut {
     AfterRemoval,
     AfterCompletion,
 }
-pub(crate) fn apply<N: NodeStore>(
-    profile: &Profile,
-    plan: &Plan,
-    live: Live<'_, '_, '_>,
-    nodes: &N,
-    limits: &Limits,
-) -> Result<Report> {
-    apply_hook(profile, plan, live, nodes, limits, Cut::None)
-}
-/// Fault hook only cuts after durable effect completion, before metadata unlink.
+/// Internal execution with fixture cuts at metadata intent, removal and completion.
 pub(crate) fn apply_hook<N: NodeStore>(
     profile: &Profile,
     plan: &Plan,
@@ -488,7 +475,7 @@ pub(crate) fn resume<N: NodeStore>(
 }
 
 #[derive(Debug, Serialize)]
-pub(crate) struct Status {
+pub struct Status {
     pub plan: Digest,
     pub effect: &'static str,
     pub metadata_phase: metadata::status::Phase,

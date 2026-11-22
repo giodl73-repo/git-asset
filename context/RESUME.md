@@ -69,13 +69,15 @@ surviving bytes, tolerates new raw demand and refuses unknown/completed effects.
 Cancelled historical resume cannot run removal. Native crash qualification and
 remaining authority/epoch handoff stay open; see cancel-* evidence.
 
-Next: implement the admitted native controller using this connected proof:
-private direct-backing/failure-domain and actor-boundary admission, historical
-fence-only completion recovery, uncertainty-safe cancellation/reacquisition and
-bounded CLI. Historical completion must not delete a later birth or
-require today's lack of new demand. Unknown outcomes retain protection and deny
-blind repeat/cancel/reacquire. No native removal API exists yet. Core limits stay
-16 births,16384 commands and16MiB journal; continuation/scale gates remain P5.
+Public controller (input24c9ed4): planning::Controller assembles fresh source/
+keeper bytes, original producer completion, snapshot/device and metadata proofs;
+public plan/apply share acquisition and apply compares the entire frozen plan.
+Status/resume/cancel delegate the same internal recovery engines. Construction
+performs no IO; denied owner input holds, mixed legacy remains Unsupported.
+See docs/guides/NATIVE-EVICTION.md and controller-* qualification evidence.
+Next: bounded facade storage CLI, actual native executor process exits/races and
+remaining authority/epoch handoff. No native CLI or production activation yet.
+Core limits remain16 births,16384 commands,16MiB journal; P5 scale gates stay open.
 
 Evidence: F:/src/tig-dev-temp/git-asset-protected-eviction-20261121.
 Build: F:/src/tig-dev-builds/annex-protected-eviction-20261121;

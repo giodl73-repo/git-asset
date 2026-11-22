@@ -2,9 +2,9 @@
 use super::*;
 use crate::annex::retirement::Assessor;
 use crate::annex::retirement::planning::{
-    ActorBoundary, EffectProfile, MetadataNamespace, Plan as NativePlan, Profile as OwnerProfile,
-    Runtime,
-    execution::{self, Cut, Live},
+    ActorBoundary, Controller, EffectProfile, MetadataNamespace, Nodes, Plan as NativePlan,
+    Producer, Profile as OwnerProfile, Request as EvictionRequest, Runtime, Sources,
+    execution::{self, Cut},
 };
 
 fn demand(f: &mut Fixture, old_native: &Plan) {
@@ -334,19 +334,96 @@ fn actual_native_eviction_retained_restore_and_stale_replay() {
         let retired = planned.metadata_plan().clone();
         let original_control = source_control.plan.clone();
         let nodes = MemoryNodes::default();
-        let result = execution::apply_hook(
-            &policy,
-            &planned,
-            Live {
-                separation: &separation,
-                source_read: source_read.take().unwrap(),
-                source_producer: source_proof,
-                keeper_producer: keeper_proof,
-            },
-            &nodes,
-            &Fixture::limits(),
-            cut,
+        // Public controller must assemble the same proofs without manual orchestration.
+        drop(source_proof);
+        drop(keeper_proof);
+        drop(source_read.take());
+        drop(separation);
+        drop(kept);
+        drop(assessed);
+        let controller = Controller::new(&policy);
+        macro_rules! sources {
+            () => {
+                Sources {
+                    source: Producer {
+                        profile: &f.profile,
+                        plan: &old_native,
+                        witness: &f.witness,
+                        ledger: &mut f.ledger,
+                    },
+                    keeper: Producer {
+                        profile: &backup.profile,
+                        plan: &backup.plan,
+                        witness: &backup.witness,
+                        ledger: &mut backup.ledger,
+                    },
+                }
+            };
+        }
+        let mut denied = policy.clone();
+        denied.allow_evict = false;
+        assert_eq!(
+            Controller::new(&denied)
+                .plan(
+                    EvictionRequest {
+                        operation: k("native-eviction"),
+                        snapshot: pin.clone(),
+                        grant: planned.metadata_plan().request().keepers[0].grant.clone()
+                    },
+                    sources!(),
+                    Nodes {
+                        source: &f.metadata,
+                        keeper: &mut backup.metadata,
+                        limits: &Fixture::limits(),
+                        tree_limits: TreeLimits::default()
+                    },
+                )
+                .err()
+                .unwrap()
+                .code(),
+            "denied"
         );
+        let public_preview = controller
+            .plan(
+                EvictionRequest {
+                    operation: k("native-eviction"),
+                    snapshot: pin.clone(),
+                    grant: planned.metadata_plan().request().keepers[0].grant.clone(),
+                },
+                sources!(),
+                Nodes {
+                    source: &f.metadata,
+                    keeper: &mut backup.metadata,
+                    limits: &Fixture::limits(),
+                    tree_limits: TreeLimits::default(),
+                },
+            )
+            .unwrap();
+        assert_eq!(public_preview.id().unwrap(), planned.id().unwrap());
+        let result = if cut == Cut::None {
+            controller.apply(
+                &planned,
+                sources!(),
+                Nodes {
+                    source: &f.metadata,
+                    keeper: &mut backup.metadata,
+                    limits: &Fixture::limits(),
+                    tree_limits: TreeLimits::default(),
+                },
+            )
+        } else {
+            controller.apply_hook(
+                &planned,
+                sources!(),
+                Nodes {
+                    source: &f.metadata,
+                    keeper: &mut backup.metadata,
+                    limits: &Fixture::limits(),
+                    tree_limits: TreeLimits::default(),
+                },
+                cut,
+            )
+        };
         if cut == Cut::None {
             let report = result.unwrap();
             assert!(!report.historical && !report.metadata.cancelled);
@@ -364,16 +441,13 @@ fn actual_native_eviction_retained_restore_and_stale_replay() {
             assert!(matches!(
                 control::Profile::open(
                     f.control_profile.as_ref().unwrap(),
-                    &assessed.store(),
+                    &source_native,
                     &object,
                     &original_control
                 ),
                 Err(Error::NeedsRecovery)
             ));
         }
-        drop(separation);
-        drop(kept);
-        drop(assessed);
         let before_status = (
             CapacityLedger::open(&policy.source.ledger, &policy.source.minimum)
                 .unwrap()
@@ -385,7 +459,9 @@ fn actual_native_eviction_retained_restore_and_stale_replay() {
             .unwrap()
             .checkpoint(),
         );
-        let status = execution::status(&policy, &planned, &f.profile, &old_native).unwrap();
+        let status = controller
+            .status(&planned, &f.profile, &old_native)
+            .unwrap();
         assert_eq!(
             status.effect,
             match cut {
@@ -416,35 +492,35 @@ fn actual_native_eviction_retained_restore_and_stale_replay() {
         );
         if cut == Cut::BeforeEffect {
             demand(&mut f, &old_native);
-            let result = execution::cancel(
-                &policy,
-                &planned,
-                &f.profile,
-                &old_native,
-                &nodes,
-                &Fixture::limits(),
-            )
-            .unwrap();
+            let result = controller
+                .cancel(
+                    &planned,
+                    &f.profile,
+                    &old_native,
+                    &nodes,
+                    &Fixture::limits(),
+                )
+                .unwrap();
             assert!(result.metadata.cancelled);
-            let again = execution::cancel(
-                &policy,
-                &planned,
-                &f.profile,
-                &old_native,
-                &nodes,
-                &Fixture::limits(),
-            )
-            .unwrap();
+            let again = controller
+                .cancel(
+                    &planned,
+                    &f.profile,
+                    &old_native,
+                    &nodes,
+                    &Fixture::limits(),
+                )
+                .unwrap();
             assert!(again.metadata.cancelled);
-            let history = execution::resume(
-                &policy,
-                &planned,
-                &f.profile,
-                &old_native,
-                &nodes,
-                &Fixture::limits(),
-            )
-            .unwrap();
+            let history = controller
+                .resume(
+                    &planned,
+                    &f.profile,
+                    &old_native,
+                    &nodes,
+                    &Fixture::limits(),
+                )
+                .unwrap();
             assert!(history.historical && history.metadata.cancelled);
             assert!(
                 control::Profile::open(
@@ -466,33 +542,33 @@ fn actual_native_eviction_retained_restore_and_stale_replay() {
             continue;
         }
         assert_eq!(
-            execution::cancel(
-                &policy,
-                &planned,
-                &f.profile,
-                &old_native,
-                &nodes,
-                &Fixture::limits()
-            )
-            .err()
-            .unwrap()
-            .code(),
+            controller
+                .cancel(
+                    &planned,
+                    &f.profile,
+                    &old_native,
+                    &nodes,
+                    &Fixture::limits()
+                )
+                .err()
+                .unwrap()
+                .code(),
             "uncertain"
         );
         if cut == Cut::AfterRemoval {
             for _ in 0..2 {
                 assert_eq!(
-                    execution::resume(
-                        &policy,
-                        &planned,
-                        &f.profile,
-                        &old_native,
-                        &nodes,
-                        &Fixture::limits()
-                    )
-                    .err()
-                    .unwrap()
-                    .code(),
+                    controller
+                        .resume(
+                            &planned,
+                            &f.profile,
+                            &old_native,
+                            &nodes,
+                            &Fixture::limits()
+                        )
+                        .err()
+                        .unwrap()
+                        .code(),
                     "uncertain"
                 );
             }
@@ -518,25 +594,25 @@ fn actual_native_eviction_retained_restore_and_stale_replay() {
                 .code(),
             "protected"
         );
-        let report = execution::resume(
-            &policy,
-            &planned,
-            &f.profile,
-            &old_native,
-            &nodes,
-            &Fixture::limits(),
-        )
-        .unwrap();
+        let report = controller
+            .resume(
+                &planned,
+                &f.profile,
+                &old_native,
+                &nodes,
+                &Fixture::limits(),
+            )
+            .unwrap();
         assert!(report.historical && !report.metadata.cancelled);
-        let again = execution::resume(
-            &policy,
-            &planned,
-            &f.profile,
-            &old_native,
-            &nodes,
-            &Fixture::limits(),
-        )
-        .unwrap();
+        let again = controller
+            .resume(
+                &planned,
+                &f.profile,
+                &old_native,
+                &nodes,
+                &Fixture::limits(),
+            )
+            .unwrap();
         assert!(again.metadata.historical_replay);
         source_control.ledger =
             CapacityLedger::open(&policy.source.ledger, &policy.source.minimum).unwrap();
@@ -615,15 +691,15 @@ fn actual_native_eviction_retained_restore_and_stale_replay() {
         assert_eq!(actual, bytes);
         drop(restored);
         // Old completion is explicitly historical, and cannot remove this same-hash birth.
-        let historical = execution::resume(
-            &policy,
-            &planned,
-            &f.profile,
-            &old_native,
-            &nodes,
-            &Fixture::limits(),
-        )
-        .unwrap();
+        let historical = controller
+            .resume(
+                &planned,
+                &f.profile,
+                &old_native,
+                &nodes,
+                &Fixture::limits(),
+            )
+            .unwrap();
         assert!(
             historical.historical
                 && matches!(historical.observed, execution::Observation::VerifiedPresent)

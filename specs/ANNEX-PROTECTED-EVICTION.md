@@ -402,7 +402,7 @@ owner policy. Source native config gitasset.evictionpolicy seals that policy;
 actual config guards span execution, so stale policy cannot survive committed
 revocation. Configure before initial native publication; epoch changes require
 handoff. Existing runtime-absent preview encodings retain their original policy
-identity and remain non-executable. No public native removal entry yet.
+identity and remain non-executable. Public controller entry follows below.
 Fresh apply reopens/rebuilds exact plan under live source/keeper/producer/device
 proofs, releases source control read only after birth pinning, persists metadata
 and effect intents before releasing source bytes, then fixed exact-key native
@@ -427,3 +427,15 @@ same operation excludes peers; L2 F:/M: pre-effect cancellation preserves bytes/
 control origin, unknown/completed effects refuse and new demand remains intact.
 Source/root/owner handoff, native executor actual exits and public CLI remain
 separate P2 gates. No production operation is enabled by these synthetic tests.
+
+Public controller entry input24c9ed4: same P2 WP/REQ/SPEC/IF/PKG controls;
+RUST/PROVIDER/INTEGRATION. Allowed: an explicit experimental SDK coordinator
+assembling existing source/keeper/producer/device proofs and delegating to the
+qualified internal plan/apply/status/resume/cancel engines. No new storage,
+authority grant, cache initialization or implicit operation on construction.
+Fresh plan/apply share proof acquisition; apply must rebuild the frozen plan.
+Recovery uses original source context and no fresh absence-of-demand assertion.
+L0 source pins/fmt/size/links/audits; L1 pure constructor/default-denied owner and
+mismatched source/keeper; L2 ordinary/bare native fixture through public fresh
+plan/apply and historical status/resume/cancel. Actual executor process exits,
+CLI, epoch/legacy handoff and production acceptance remain separate gates.

@@ -1,4 +1,4 @@
-//! Explicit annex reads and optional retained publication/copy. No initialization or removal.
+//! Explicit annex reads, retained publication/copy and experimental guarded eviction.
 use git_asset_core::{Digest, Object};
 use git_asset_store::existing::{
     self, ByteSource, Limits, ProviderPath, ReadCache, RequiredProtection, VerifiedRead,

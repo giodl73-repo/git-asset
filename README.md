@@ -111,7 +111,9 @@ selected label is insufficient.
 These diagrams describe the lifecycle contract and product direction. The current
 native-annex adapter supplies explicit guarded local reads and an optional Rust
 candidate-publication slice on Windows. It retains unselected outputs with exact
-retry/readback; participating native pruner execution remains integration work.
+retry/readback. The experimental [native eviction SDK](docs/guides/NATIVE-EVICTION.md)
+assembles guarded plan/apply/recovery for namespace-owned actors. Native CLI,
+executor crash/authority qualification and production acceptance remain open.
 Existing local-provider teaching fixtures demonstrate bounded
 lifecycle slices; consuming workflows own build execution, rerender decisions and
 creative approval. The capability table below defines today's implemented scope.

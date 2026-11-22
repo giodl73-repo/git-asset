@@ -1,4 +1,4 @@
-//! Admitted single-keeper planning over existing retirement. No native removal.
+//! Admitted single-keeper planning and explicit experimental native execution.
 use super::*;
 use crate::annex::control;
 use git_asset_store::{
@@ -9,7 +9,10 @@ use git_asset_store::{
     retirement as metadata,
 };
 use serde::{Deserialize, Serialize};
+mod controller;
 pub(crate) mod execution;
+pub use controller::{Controller, Nodes, Producer, Request, Sources};
+pub use execution::{Observation, Report, Status};
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct EffectProfile {
@@ -375,6 +378,8 @@ mod tests {
             "source_domain":"one","keeper_domain":"two"
         }))
         .unwrap();
+        let _controller = Controller::new(&profile);
+        assert_eq!(std::fs::read_dir(root.path()).unwrap().count(), 0);
         let source = Digest::blob(b"native-source");
         let keeper = Digest::blob(b"native-keeper");
         assert_eq!(
