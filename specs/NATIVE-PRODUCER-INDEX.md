@@ -62,3 +62,7 @@ publication/tests/producer_index.rs uses synthetic plans/metadata without native
 processes: exact size/hash/key, missing/noncanonical rows, stale roots and shared
 tree-plus-record budgets. Native custody/executor tests remain prerequisites,
 not re-proven by an index declaration.
+
+[Producer-root updates](NATIVE-PRODUCER-ROOTS.md) add explicit metadata finish/
+readback, expected-baseline source selection and original status recovery over
+these immutable records. Root publication is not native custody or policy adoption.

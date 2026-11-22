@@ -109,3 +109,25 @@ Clippy, standalone annex-publish and fmt pass. Final source/log hashes are exter
 history-receiver-source.json; derive current-head hosted status separately.
 Next P3 slice: retain/publish producer roots and update archived member references,
 then missing-backup/reacquisition and full transport/recovery qualification.
+
+Producer-root refinement from5c4228a adds producer_index::update preparation,
+status/apply using existing metadata-only Job namespace selection. Exact old
+Version/record baselines, original recipe preservation, declared-edit readback,
+old-root retention and original-receipt recovery are required. Caller persists
+canonical Plan asset-side before apply. No new journal, native effects or implicit
+policy reenrollment. Loaded::producer_record maps exact archived membership onto
+an original producer Record; native history fixture reopens through that index
+with old ingress retired and working repository offline. Contracts/runbook:
+NATIVE-PRODUCER-ROOTS. External producer-update-* qualification remains source-
+scoped; derive terminal results rather than assuming fixtures passed.
+Next: connect retained root advancement to the trusted worker/policy lifecycle;
+repair deprecated missing backups and controlled reacquisition; qualify native
+stale-plan replacement, transport/account/TLS and declared workload/lifetime.
+P2 mixed-authority handoff, P4 acceptance, P5 RC and P6 owner cutover remain OPEN.
+
+Producer-root terminal qualification:7 index cases (including child entry and
+separate-process recovery),8 archive cases,1 fake adapter and1 explicit actual
+annex indexed historical reopen pass. The authenticated history receiver case,
+strict workspace Clippy, standalone annex-publish and fmt pass. External
+producer-update-source.json pins the committed source/logs. Hosted source state
+is separate; do not assume an earlier pending run qualified this refinement.

@@ -78,3 +78,11 @@ Pages contain at most32 roots and the configured lower object limit, under an
 outer deadline and disclosed per-root metadata bounds. Media stream bytes are0;
 this is not a media availability survey. The report never claims whole-storage
 convergence. HTTP/account/TLS and production installation require separate acceptance.
+
+To preserve a usable producer recipe alongside archived membership, call
+`Loaded::producer_record` with the original Record and exact historical path.
+It preserves the original native Plan/control grant and returns an updated
+retained Snapshot. Publish it through the bounded
+[producer-root update SDK](NATIVE-PRODUCER-ROOTS.md); lookup/readback and actual
+native open_retained remain separate from registration. Old index roots remain
+readable and a historical recovery receipt never reselects an old root.

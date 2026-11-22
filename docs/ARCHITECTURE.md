@@ -306,3 +306,11 @@ native keeper/protection checks still govern physical eviction. See the
 [SDK/receiver guide](HISTORICAL-ROOTS.md). Authenticated history preview/apply
 pages compose this metadata-only lifecycle; producer advancement and full HTTP/
 project qualification remain open.
+
+Producer index updates use existing Tree edits, MetadataStore finish/readback and
+atomic metadata-only namespace selection. They preserve old roots, baseline-fence
+writers and recover original receipts without rolling back a newer head.
+Historical archives can rebind a row's retained membership while preserving the
+original publication recipe. This grants no media custody or eviction authority;
+receiver policy adoption remains explicit. See
+[producer-root lifecycle](NATIVE-PRODUCER-ROOTS.md).

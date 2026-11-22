@@ -825,3 +825,9 @@ Receiver history scheduling -> github::native::history and private receiver phas
 stale-policy/cursor and historical-reopen fixtures. Same archive controls apply;
 external history-receiver-* evidence records terminal checks. Producer-root
 lifecycle, full HTTP/account/TLS and project acceptance remain OPEN.
+
+NATIVE-PRODUCER-ROOTS.md -> producer_index::update, Record::metadata_object and
+history::Loaded::producer_record -> metadata conflict/race/recovery and native
+indexed historical reopen fixtures. Same P3 controls as the contract. External
+producer-update-* evidence records source/log identities and terminal checks;
+root policy adoption, full HTTP and project acceptance remain separate.

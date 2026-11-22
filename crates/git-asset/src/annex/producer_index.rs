@@ -9,6 +9,8 @@ use git_asset_core::{
 };
 use serde::{Deserialize, Serialize};
 
+pub mod update;
+
 const SCHEMA: &str = "git-asset.native-producer.experimental-1";
 const MAX_RECORD: usize = 32768;
 
@@ -33,6 +35,10 @@ impl Record {
         };
         row.bytes()?;
         Ok(row)
+    }
+    /// Exact canonical record identity, distinct from the media Object it describes.
+    pub fn metadata_object(&self) -> Result<Object> {
+        Ok(Object::from_bytes(&self.bytes()?))
     }
     fn bytes(&self) -> Result<Vec<u8>> {
         if let Some(grant) = &self.control_retention {

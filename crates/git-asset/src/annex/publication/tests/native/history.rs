@@ -153,7 +153,101 @@ fn matrix(native: bool) {
     )
     .unwrap();
     let mut reader = nodes.finished_reader().unwrap();
-    let member = loaded.member(&profile, old_path, &mut reader).unwrap();
+    let member = loaded
+        .member(&profile, old_path.clone(), &mut reader)
+        .unwrap();
+    // Advance a retained producer index while the archive's record guard is live.
+    // Both index versions remain metadata obligations, not claimed media custody.
+    use crate::annex::producer_index::{Index, Record, update as roots};
+    let original = Record::new(m.plan.clone(), None).unwrap();
+    let root_profile = roots::Profile {
+        scope: crate::annex::pending::Scope {
+            namespace: records.identity().clone(),
+            metadata: nodes.checkpoint().identity().clone(),
+            owner: k("owner"),
+            prefix: k("producer-root"),
+            place: k("metadata"),
+            allow_store: true,
+        },
+        limits: Fixture::limits(),
+    };
+    records
+        .apply(
+            k("enroll-producer-root"),
+            Command::Enroll {
+                source: k("producer-root"),
+                owner: k("owner"),
+                class: Kind::Job,
+            },
+            &nodes,
+            &Fixture::limits(),
+        )
+        .unwrap();
+    let initial = roots::prepare(
+        &root_profile,
+        None,
+        &[roots::Change {
+            expected_record: None,
+            record: original.clone(),
+        }],
+        &mut records,
+        &mut nodes,
+    )
+    .unwrap()
+    .unwrap();
+    let initial_report =
+        roots::apply(&root_profile, &initial, &mut records, &mut nodes, || Ok(())).unwrap();
+    let updated = loaded
+        .producer_record(&profile, old_path.clone(), &original, &mut reader)
+        .unwrap();
+    assert_eq!(
+        updated.producer.id().unwrap(),
+        original.producer.id().unwrap()
+    );
+    assert_eq!(updated.retained.as_ref(), Some(&member));
+    assert_eq!(
+        loaded
+            .producer_record(
+                &profile,
+                LogicalPath::parse("assets/unavailable").unwrap(),
+                &original,
+                &mut reader
+            )
+            .unwrap_err(),
+        Error::Conflict
+    );
+    let advanced = roots::prepare(
+        &root_profile,
+        Some(&initial_report.version),
+        &[roots::Change {
+            expected_record: Some(original.metadata_object().unwrap()),
+            record: updated,
+        }],
+        &mut records,
+        &mut nodes,
+    )
+    .unwrap()
+    .unwrap();
+    roots::apply(
+        &root_profile,
+        &advanced,
+        &mut records,
+        &mut nodes,
+        || Ok(()),
+    )
+    .unwrap();
+    let indexed = Index::from_root(advanced.root().clone())
+        .get(&object, &mut nodes, TreeLimits::default())
+        .unwrap()
+        .0
+        .unwrap();
+    assert_eq!(
+        Index::from_root(initial.root().clone())
+            .get(&object, &mut nodes, TreeLimits::default())
+            .unwrap()
+            .0,
+        Some(original)
+    );
     let released = loaded
         .release(
             &profile,
@@ -220,7 +314,11 @@ fn matrix(native: bool) {
     .unwrap();
     let mut actual = Vec::new();
     m.publisher()
-        .open_retained(&m_plan, &member, &mut m.resources())
+        .open_retained(
+            &indexed.producer,
+            indexed.retained.as_ref().unwrap(),
+            &mut m.resources(),
+        )
         .unwrap()
         .read_to_end(&mut actual)
         .unwrap();

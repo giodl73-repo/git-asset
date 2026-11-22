@@ -34,8 +34,9 @@ Publish immutable producer records through
 They contain original publication plans and optional exact retained snapshots,
 not commands supplied by a webhook. Publishing/retaining these roots is an
 explicit operator/SDK responsibility; no automatic registry editor exists here.
-Changing a root or permission changes the policy identity and requires explicit
-trust reenrollment. Existing policies without producer roots retain their hashes
+The [producer-root SDK](NATIVE-PRODUCER-ROOTS.md) can retain and advance an
+index through existing namespace transactions. Changing a receiver root or permission
+changes its policy identity and requires explicit trust reenrollment. Existing policies without producer roots retain their hashes
 and continue to support the single-object worker.
 
 Start with outer `allow_receive` and `allow_selection` deliberately enabled,

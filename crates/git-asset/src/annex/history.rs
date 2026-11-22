@@ -791,6 +791,24 @@ impl Loaded {
             object: object.ok_or(Error::Missing)?,
         })
     }
+    /// Rebind only retained membership; preserve the exact original producer/control grant.
+    pub fn producer_record(
+        &self,
+        p: &Profile,
+        path: LogicalPath,
+        original: &super::producer_index::Record,
+        nodes: &mut impl NodeStore,
+    ) -> Result<super::producer_index::Record> {
+        let member = self.member(p, path, nodes)?;
+        if member.object != original.object {
+            return Err(Error::Conflict);
+        }
+        original.metadata_object()?;
+        let mut updated = original.clone();
+        updated.retained = Some(member);
+        updated.metadata_object()?;
+        Ok(updated)
+    }
     /// Release only this old metadata obligation after full retained-tree readback.
     /// Native bytes remain unknown; this receipt never grants physical eviction.
     pub fn release<F: NodeStore, M: NodeStore>(
