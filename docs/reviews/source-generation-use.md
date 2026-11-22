@@ -22,3 +22,11 @@ legacy handoff, workload scale and production acceptance remain open.
 Completed older review prose is kept via immutable94865 source links and LF
 SHA-256 stubs. Active contracts and P2 closure audit remain in this checkout;
 no source budget or safety limit is raised to fit this slice.
+
+
+At b9f9d84, six focused Windows fixtures and L0/branding passed; the full
+combined local suite remained running. Hosted44993567982 used stable Rust1.100
+and rejected an explicit unit expression in the new schema-match arm. Replace
+it with an empty unit arm (no runtime/encoding change); do not waive strict lint
+or qualify that failed head. REEL candidate integration has passing source-use
+and actual ordinary/bare native protection fixtures; full Lifecycle remains open.

@@ -609,10 +609,7 @@ impl SourceJournal {
         match (&config.schema[..], &config.admission) {
             ("tig.source-claims.design-1", None) => (),
             ("tig.source-claims.design-2" | "git-asset.source-claims.design-3", Some(policy))
-                if policy.valid() =>
-            {
-                ()
-            }
+                if policy.valid() => {}
             _ => return Err(Error::Corrupt),
         }
         let genesis = Digest::blob(&encode(&config)?);
