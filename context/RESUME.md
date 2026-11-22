@@ -7,7 +7,7 @@ renders or deployment on resume. Foundation qualification uses synthetic fixture
 
 Owned lane: feat/trusted-native-placement, draft PR74, based on
 feat/source-generation-use/PR73. Current refinement input is
-c10b4682ce0042494a8f490044be4eeada7d1a26. Derive later committed source and its
+ec8bf476a629f61015599615f74ddf5f03eee59d. Derive later committed source and its
 hosted run; a prior pending run is not qualification of the next head.
 
 ## Series state
@@ -143,3 +143,15 @@ are in NATIVE-RESTORE. External restore-index-* records distinguish development
 passes from final qualification; derive current source/CI after commit. Next is
 fixed-worker restore preview/apply and index orchestration, then remaining series
 gates. No receiver restore phase or production activation is claimed here.
+
+Saved restoration refinement fromec8bf47 adds pending Restore/RestoreIndex phases
+to the existing four-blob Scope/Saved mechanism. Native bodies bind exact original
+eviction/publications and restore Plan; index bodies require that same restore
+recipe. Pure check_original and index restoration accessors grant no custody or
+IO authority. Save/readback precedes execution; an existing original wins even
+against invalid later previews with store disabled. Fresh-process new-body reopen
+is exercised through the existing pending child fixture in the native lifecycle.
+External restore-actions-* logs/source pins retain exact qualification. Completed
+producer-root/pending-action reviews link their hash-pinned immutableec8bf47 copies;
+current contracts/gates remain local. Trusted worker/receiver restore execution,
+bounded index-replan orchestration and the remaining series gates are still OPEN.

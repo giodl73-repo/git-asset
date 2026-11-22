@@ -28,6 +28,12 @@ fn reopen_worker() {
     .unwrap();
     match loaded.action.operation {
         Operation::Handoff(ref p) => assert_eq!(p.id().unwrap(), data.plan),
+        Operation::Restore(ref p) => {
+            assert_eq!(Digest::blob(&p.restore.to_json().unwrap()), data.plan)
+        }
+        Operation::RestoreIndex(ref p) => {
+            assert_eq!(Digest::blob(&p.index.to_json().unwrap()), data.plan)
+        }
         _ => panic!("wrong operation"),
     };
 }

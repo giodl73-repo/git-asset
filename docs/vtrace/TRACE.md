@@ -857,3 +857,9 @@ restored bytes, metered one-row edit/CAS, saved-plan retry and offline historica
 receipt. Ordinary updates still reject swaps; original roots remain retained.
 Controls/review: [restoration contract](../../specs/NATIVE-RESTORE.md#restore-specific-index-transaction).
 Receiver scheduling, missing-backup repair and production acceptance remain OPEN.
+
+Saved restore/index actions -> pending Restore/RestoreIndex phases, pure original
+chain binding and index recipe equality -> wrong-chain/cross-link refusal,
+fresh-process reopen, denied-store retry preserving original and native lifecycle
+fixtures. [Controls](../../specs/NATIVE-RESTORE.md#saved-restore-actions). Existing
+four-blob source mechanism only; no native authority or receiver activation.

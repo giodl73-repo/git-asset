@@ -74,3 +74,14 @@ Completed replay returns retained readback without another registration. This
 does not retarget creative selection, repair unexplained loss, or add a receiver
 restore phase. See [controlled restoration](../specs/NATIVE-RESTORE.md) for
 permissions, crash boundaries, limits and remaining qualification gates.
+
+The same four-blob pending mechanism now retains `Restore` and `RestoreIndex`
+actions. Native bodies preserve the exact eviction plus restore Plan; index bodies
+also preserve the qualified index Plan and require the same native restore recipe.
+Both original producer publications remain retained separately. Save/read back
+before execution, then execute the loaded body rather than a later preview.
+Existing phase/object/original-producer slots win on retry, including when new
+storage is disabled. A stale index Plan is not overwritten; use its original
+status and explicit SDK replan. These metadata records alone prove no media
+custody and do not add a receiver restore phase. The [saved-action contract](../specs/NATIVE-RESTORE.md#saved-restore-actions)
+defines bounds and the remaining authenticated orchestration gate.

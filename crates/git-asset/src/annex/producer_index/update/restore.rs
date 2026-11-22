@@ -19,6 +19,10 @@ pub struct Plan {
     update: super::Plan,
 }
 impl Plan {
+    /// Original native restore recipe; this accessor performs no media IO.
+    pub fn restoration(&self) -> &native::Plan {
+        &self.restored
+    }
     fn record(&self) -> Result<Record> {
         Record::new(self.restored.publication().clone(), None)
     }

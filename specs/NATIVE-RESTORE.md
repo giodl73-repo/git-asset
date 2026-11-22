@@ -137,3 +137,40 @@ keeps candidate/provenance fixed and old root blobs unchanged. Placement retains
 all existing budgets and separate permission. Privacy adds no event paths or new
 execution. Adoption leaves automation/owner acceptance open. These dispositions
 are producer checks, not independent review or authorization to enroll caches.
+
+## Saved restore actions
+
+Inputec8bf476a629f61015599615f74ddf5f03eee59d; same P3 controls above.
+Entry: saved exact retirement/publication identities, explicit existing pending
+Scope/namespace/metadata and bounded restore or restore-index Plan. Allowed:
+additive phases in the existing four-blob pending-action mechanism, pure binding
+accessors and synthetic fixtures. No new journal/cache, media mutation, enrollment
+of cache locations, automatic expiry/forgetting or receiver activation.
+Exit: original action and both producer recipes retained/read back before effect,
+stable lookup/reopen across retries, or explicit refusal. L0 pins/links/budget;
+L1 strict Clippy, existing pending/index regressions and feature checks; L2 native
+restore pipeline with saved restore and index actions and wrong-chain refusal.
+
+`pending::Phase::{Restore,RestoreIndex}` reuse existing Scope/Saved/find/save/reopen.
+Restore bodies hold the original eviction and native restore Plan. Index bodies
+add the restore-specific index Plan. Original working and retained publications
+remain separate retained blobs, just as for eviction. Pure validation binds the
+exact eviction producer IDs, original restore digests and unchanged candidate;
+index actions must embed the same restore Plan. Canonical body/readback and all
+existing per-blob64KiB, aggregate metadata and namespace lifetime limits apply.
+These records assert no current media custody and grant no native authority.
+
+Find the original phase/object/working-publication slot before preparing another
+operation. Existing saved slots win over later previews; immutable old plans are
+not overwritten by retry, timeout or changed index baseline. Native uncertainty
+must use the same saved restore; index stale/conflict needs explicit original
+status and replan through the index SDK. Completed index receipts remain readable
+without native IO. Retaining these bodies does not itself execute, replace or
+schedule an operation. Authenticated worker/receiver restore orchestration stays
+open until it actually consumes these saved actions under current demand guards.
+
+Producer review: recovery/identity (high) require exact original producer IDs and
+the same embedded restore recipe, plus fresh-process reopen and immutable retry.
+Custody (high) forbids treating saved metadata as completed media work. Placement
+retains existing bounds/refusal. Privacy adds no execution or event paths. Git/
+adoption keeps expanding evidence asset-side and receiver/owner gates open.

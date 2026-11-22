@@ -2,6 +2,7 @@
 use super::*;
 use crate::annex::replication;
 mod index;
+mod pending;
 pub(super) fn restore(
     f: &mut Fixture,
     keeper: &mut Fixture,
@@ -61,6 +62,17 @@ pub(super) fn restore(
     .unwrap();
     assert_eq!(plan.publication().candidate(), old.candidate());
     let raw = plan.to_json().unwrap();
+    let mut actions = pending::Harness::new(f, "restore-actions");
+    actions.save(crate::annex::pending::Action {
+        operation: crate::annex::pending::Operation::Restore(Box::new(
+            crate::annex::pending::RestoreAction {
+                eviction: evicted.clone(),
+                restore: plan.clone(),
+            },
+        )),
+        working: old.clone(),
+        retained: keeper.plan.clone(),
+    });
     let path = f.root.join("saved-restore-plan");
     let mut saved = fs::File::create_new(&path).unwrap();
     std::io::Write::write_all(&mut saved, &raw).unwrap();
@@ -150,7 +162,7 @@ pub(super) fn restore(
     .unwrap();
     drop(again);
     assert_eq!(checkpoint, f.namespaces[0].checkpoint());
-    index::exercise(f, owner, evicted, old, &reopened);
+    index::exercise(f, keeper, owner, evicted, old, &reopened);
     reopened.publication().clone()
 }
 pub(super) fn copy(source: &mut Fixture, keeper: &mut Fixture, owner: &OwnerProfile, bytes: &[u8]) {

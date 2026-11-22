@@ -101,6 +101,22 @@ impl Plan {
     pub fn publication(&self) -> &super::Plan {
         &self.native
     }
+    /// Pure original-chain binding only; not completion, custody or IO authority.
+    pub fn check_original(&self, input: Original<'_>) -> Result<()> {
+        let original = input.publication.id()?;
+        if self.schema != "git-asset.native-restore-plan.experimental-1"
+            || self.original != original
+            || self.eviction != input.eviction.id().map_err(native_error)?
+            || input.eviction.source_producer() != &original
+            || input.eviction.object() != &input.publication.candidate().object
+            || self.native.candidate() != input.publication.candidate()
+            || self.native.admission != input.publication.admission
+            || self.native.request.owner != input.publication.request.owner
+        {
+            return Err(Error::Stale);
+        }
+        Ok(())
+    }
     pub fn to_json(&self) -> Result<Vec<u8>> {
         super::encode(&serde_json::to_value(self).map_err(|_| Error::Invalid)?)
     }
@@ -117,14 +133,8 @@ impl Plan {
         Ok(plan)
     }
     fn bound(&self, ctx: &Context<'_>, input: &Original<'_>) -> Result<()> {
-        if self.schema != "git-asset.native-restore-plan.experimental-1"
-            || self.original != input.publication.id()?
-            || self.eviction != input.eviction.id().map_err(native_error)?
-            || &self.metadata != ctx.metadata.checkpoint().identity()
-            || self.native.candidate() != input.publication.candidate()
-            || self.native.admission != input.publication.admission
-            || self.native.request.owner != input.publication.request.owner
-        {
+        self.check_original(*input)?;
+        if &self.metadata != ctx.metadata.checkpoint().identity() {
             return Err(Error::Stale);
         }
         self.native.check_profile(ctx.profile)?;

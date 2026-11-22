@@ -83,11 +83,27 @@ impl Scope {
 pub enum Phase {
     Handoff,
     Eviction,
+    Restore,
+    RestoreIndex,
+}
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct RestoreAction {
+    pub eviction: planning::Plan,
+    pub restore: publication::restore::Plan,
+}
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct RestoreIndexAction {
+    pub original: RestoreAction,
+    pub index: super::producer_index::update::restore::Plan,
 }
 #[derive(Clone, Debug)]
 pub enum Operation {
     Handoff(Box<publication::handoff::Plan>),
     Eviction(Box<planning::Plan>),
+    Restore(Box<RestoreAction>),
+    RestoreIndex(Box<RestoreIndexAction>),
 }
 #[derive(Clone, Debug)]
 pub struct Action {
@@ -100,12 +116,16 @@ impl Action {
         match self.operation {
             Operation::Handoff(_) => Phase::Handoff,
             Operation::Eviction(_) => Phase::Eviction,
+            Operation::Restore(_) => Phase::Restore,
+            Operation::RestoreIndex(_) => Phase::RestoreIndex,
         }
     }
     pub fn object(&self) -> &Object {
         match &self.operation {
             Operation::Handoff(p) => p.object(),
             Operation::Eviction(p) => p.object(),
+            Operation::Restore(p) => &p.restore.publication().candidate().object,
+            Operation::RestoreIndex(p) => &p.original.restore.publication().candidate().object,
         }
     }
     fn body(&self) -> Result<Vec<u8>> {
@@ -132,7 +152,32 @@ impl Action {
                     _ => Error::Invalid,
                 })
             }
+            Operation::Restore(p) => {
+                self.restore_binding(p)?;
+                encode(p)
+            }
+            Operation::RestoreIndex(p) => {
+                self.restore_binding(&p.original)?;
+                if p.index.restoration().to_json()? != p.original.restore.to_json()? {
+                    return Err(Error::Integrity);
+                }
+                p.index.to_json()?;
+                encode(p)
+            }
         }
+    }
+    fn restore_binding(&self, p: &RestoreAction) -> Result<()> {
+        if p.eviction.source_producer() != &self.working.id()?
+            || p.eviction.keeper_producer() != &self.retained.id()?
+        {
+            return Err(Error::Integrity);
+        }
+        p.restore.check_original(publication::restore::Original {
+            eviction: &p.eviction,
+            publication: &self.working,
+        })?;
+        p.restore.to_json()?;
+        Ok(())
     }
 }
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -273,6 +318,12 @@ pub fn reopen(
         }
         Phase::Eviction => Operation::Eviction(Box::new(
             planning::Plan::from_json(&body).map_err(|_| Error::Integrity)?,
+        )),
+        Phase::Restore => Operation::Restore(Box::new(
+            serde_json::from_slice(&body).map_err(|_| Error::Integrity)?,
+        )),
+        Phase::RestoreIndex => Operation::RestoreIndex(Box::new(
+            serde_json::from_slice(&body).map_err(|_| Error::Integrity)?,
         )),
     };
     let action = Action {

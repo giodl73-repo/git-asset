@@ -9,6 +9,7 @@ use roots::restore as register;
 
 pub(super) fn exercise(
     f: &mut Fixture,
+    keeper: &Fixture,
     owner: &OwnerProfile,
     evicted: &NativePlan,
     old: &Plan,
@@ -106,6 +107,20 @@ pub(super) fn exercise(
         &mut f.resources(),
     )
     .unwrap();
+    let mut actions = super::pending::Harness::new(f, "restore-index-actions");
+    actions.save(crate::annex::pending::Action {
+        operation: crate::annex::pending::Operation::RestoreIndex(Box::new(
+            crate::annex::pending::RestoreIndexAction {
+                original: crate::annex::pending::RestoreAction {
+                    eviction: evicted.clone(),
+                    restore: restored.clone(),
+                },
+                index: plan.clone(),
+            },
+        )),
+        working: old.clone(),
+        retained: keeper.plan.clone(),
+    });
     let replacement = Record::new(restored.publication().clone(), None).unwrap();
     assert_eq!(
         roots::prepare(
