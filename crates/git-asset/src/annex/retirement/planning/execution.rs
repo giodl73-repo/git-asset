@@ -168,6 +168,21 @@ pub(crate) enum Cut {
 }
 #[cfg(all(test, windows))]
 fn exit_at(cut: Cut, stage: Cut) {
+    if cut == Cut::ExitBeforeEffect
+        && stage == Cut::BeforeEffect
+        && let Some(root) = std::env::var_os("GIT_ASSET_TEST_EVICTION_PAUSE")
+    {
+        let root = std::path::PathBuf::from(root);
+        std::fs::write(root.join("ready"), b"metadata_intent").unwrap();
+        let started = std::time::Instant::now();
+        while !root.join("release").exists() {
+            assert!(
+                started.elapsed() < std::time::Duration::from_secs(60),
+                "parent release timeout"
+            );
+            std::thread::sleep(std::time::Duration::from_millis(10));
+        }
+    }
     if matches!(
         (cut, stage),
         (Cut::ExitBeforeEffect, Cut::BeforeEffect)

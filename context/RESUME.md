@@ -83,7 +83,10 @@ Abrupt exits (inputc05a69d): test-only child stops without Rust cleanup at
 metadata intent/no native effect, post-removal unknown, and durable completion.
 Parent exercises original CLI/SDK recovery, new demand, retained reopen and
 same-hash restore/history. See exit-* source/terminal evidence; no production
-fault hook. Next: concurrent native actor races and authority/epoch handoff;
+fault hook. Paused native races (input4c35c15) now exercise actual same-object
+job admission/config replacement refusal while unrelated source enrollment
+progresses, then new-demand cancellation after exit; race-* evidence is external.
+Next: authority/roster/epoch handoff and remaining P2 coverage/closeout;
 production activation/acceptance remains unavailable.
 Core limits remain16 births,16384 commands,16MiB journal; P5 scale gates stay open.
 

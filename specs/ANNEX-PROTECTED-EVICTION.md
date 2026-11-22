@@ -465,3 +465,13 @@ actual exits: no-effect cancellation preserves bytes, unknown effects stay held,
 completed effects resume with new demand, retained bytes reopen and old history
 spares restored same-hash content. This is process-exit evidence, not power-loss
 or legacy/epoch handoff qualification. No production operation is enabled.
+
+Native race entry input4c35c15: same P2 controls and RUST/PROVIDER/INTEGRATION.
+Test-only bounded pause after metadata intent/before native effect while actual
+source/keeper scopes are held. Parent attempts same-object job admission and
+native config replacement, permits unrelated source enrollment, then releases
+child to abrupt exit. Original cancellation with new demand preserves bytes.
+L0 pins/fmt/size/links/audits; L1 platform guards/no production hooks; L2 actual
+ordinary/bare F:/M: races. This checks participating actor fencing and metadata
+progress, not arbitrary legacy exclusion or completed epoch handoff. Owner/
+roster/epoch qualification and full P2 closeout remain required.

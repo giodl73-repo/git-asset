@@ -106,19 +106,54 @@ impl Client {
         assert_eq!(value["ok"], success, "{value}");
         value
     }
-    pub fn exit(&self, cut: Cut) {
+    fn child(&self, cut: Cut) -> std::process::Command {
         let stage = match cut {
             Cut::BeforeEffect => "before",
             Cut::AfterRemoval => "removed",
             Cut::AfterCompletion => "completed",
             _ => panic!("unsupported child exit boundary"),
         };
-        let status=std::process::Command::new(std::env::current_exe().unwrap())
-            .args(["--exact","annex::publication::tests::native::control::eviction::process::eviction_exit_worker","--nocapture"])
-            .env("GIT_ASSET_TEST_EVICTION_PROFILE",&self.profile)
-            .env("GIT_ASSET_TEST_EVICTION_PLAN",&self.saved)
-            .env("GIT_ASSET_TEST_EVICTION_CUT",stage).status().unwrap();
-        assert_eq!(status.code(), Some(73));
+        let mut cmd = std::process::Command::new(std::env::current_exe().unwrap());
+        cmd.args([
+            "--exact",
+            "annex::publication::tests::native::control::eviction::process::eviction_exit_worker",
+            "--nocapture",
+        ])
+        .env("GIT_ASSET_TEST_EVICTION_PROFILE", &self.profile)
+        .env("GIT_ASSET_TEST_EVICTION_PLAN", &self.saved)
+        .env("GIT_ASSET_TEST_EVICTION_CUT", stage);
+        cmd
+    }
+    pub fn exit(&self, cut: Cut) {
+        assert_eq!(self.child(cut).status().unwrap().code(), Some(73));
+    }
+    pub fn race(&self, check: impl FnOnce()) {
+        let root = self.profile.parent().unwrap().join("race-pause");
+        fs::create_dir(&root).unwrap();
+        let mut child = self
+            .child(Cut::BeforeEffect)
+            .env("GIT_ASSET_TEST_EVICTION_PAUSE", &root)
+            .spawn()
+            .unwrap();
+        let started = std::time::Instant::now();
+        while !root.join("ready").exists() {
+            assert!(
+                child.try_wait().unwrap().is_none(),
+                "child exited before pause"
+            );
+            if started.elapsed() > std::time::Duration::from_secs(180) {
+                child.kill().unwrap();
+                child.wait().unwrap();
+                panic!("child readiness timeout");
+            }
+            std::thread::sleep(std::time::Duration::from_millis(10));
+        }
+        let checked = std::panic::catch_unwind(std::panic::AssertUnwindSafe(check));
+        fs::write(root.join("release"), b"continue_to_exit").unwrap();
+        assert_eq!(child.wait().unwrap().code(), Some(73));
+        if let Err(error) = checked {
+            std::panic::resume_unwind(error);
+        }
     }
     pub fn call(&self, op: &str, success: bool) -> Value {
         self.invoke(op, &self.profile, &self.saved, success)

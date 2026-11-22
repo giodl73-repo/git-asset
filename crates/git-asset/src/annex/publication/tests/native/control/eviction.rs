@@ -1,6 +1,7 @@
 //! Connected native controller/facade over fresh synthetic pools only.
 mod cli;
 mod process;
+mod race;
 use super::*;
 use crate::annex::retirement::Assessor;
 use crate::annex::retirement::planning::{
@@ -41,9 +42,9 @@ fn demand(f: &mut Fixture, old_native: &Plan) {
 #[test]
 #[ignore = "explicit native tools and distinct volume roots; fresh synthetic pools only"]
 fn actual_native_eviction_retained_restore_and_stale_replay() {
-    matrix(false);
+    matrix(false, false);
 }
-fn matrix(exits: bool) {
+fn matrix(exits: bool, races: bool) {
     let git: PathBuf = std::env::var_os("GIT_ASSET_TEST_GIT_EXE").unwrap().into();
     let annex: PathBuf = std::env::var_os("GIT_ASSET_TEST_ANNEX_EXE").unwrap().into();
     let path = std::env::split_paths(&std::env::var_os("GIT_ASSET_TEST_ANNEX_PATH").unwrap())
@@ -64,7 +65,7 @@ fn matrix(exits: bool) {
         (false, Cut::AfterRemoval),
         (true, Cut::AfterRemoval),
     ] {
-        if exits && cut == Cut::None {
+        if (exits && cut == Cut::None) || (races && cut != Cut::BeforeEffect) {
             continue;
         }
         eprintln!(
@@ -419,7 +420,13 @@ fn matrix(exits: bool) {
         assert_eq!(public_preview.id().unwrap(), planned.id().unwrap());
         let cli = cli::Client::new(&f, &backup, &policy, &planned, &pin);
         let result = if exits {
-            cli.as_ref().unwrap().exit(cut);
+            if races {
+                cli.as_ref()
+                    .unwrap()
+                    .race(|| race::check(&mut f, &old_native));
+            } else {
+                cli.as_ref().unwrap().exit(cut);
+            }
             None
         } else {
             Some(if let (Cut::None, Some(cli)) = (cut, &cli) {
@@ -781,5 +788,12 @@ fn actual_native_storage_facade_ordinary_bare_lifecycle() {
 #[ignore = "fresh facade executable, native tools and distinct volumes; actual child exits"]
 fn actual_native_executor_process_exits_preserve_original_operation() {
     assert!(std::env::var_os("GIT_ASSET_TEST_FRONT_DOOR_EXE").is_some());
-    matrix(true);
+    matrix(true, false);
+}
+
+#[test]
+#[ignore = "fresh facade/native tools and separate volumes; actual paused actor races"]
+fn actual_native_executor_fences_conflicts_and_allows_unrelated_metadata() {
+    assert!(std::env::var_os("GIT_ASSET_TEST_FRONT_DOOR_EXE").is_some());
+    matrix(true, true);
 }
