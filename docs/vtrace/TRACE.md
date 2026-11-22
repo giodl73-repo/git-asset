@@ -820,4 +820,8 @@ HISTORICAL-ROOT-ARCHIVE.md -> annex::history and existing MetadataStore/source
 claims -> bounded, restart, Main-race/refresh and native exact-member fixtures.
 Controls are in the contract; external history-* evidence pins verification.
 Metadata obligation handoff grants no media custody or native removal authority.
-Receiver scheduling, producer-root lifecycle and project acceptance remain OPEN.
+Receiver history scheduling -> github::native::history and private receiver phases
+-> synthetic immutable-Git preview, paged release/receipt continuation, expiry,
+stale-policy/cursor and historical-reopen fixtures. Same archive controls apply;
+external history-receiver-* evidence records terminal checks. Producer-root
+lifecycle, full HTTP/account/TLS and project acceptance remain OPEN.

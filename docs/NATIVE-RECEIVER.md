@@ -147,3 +147,14 @@ native intent holds instead of repeating its effect. A historical report never
 authorizes removal of a restored same-hash incarnation. Storage convergence,
 stale-plan replacement and root publication remain separate. See the
 [eviction-pass contract](../specs/NATIVE-EVICTION-PASS.md).
+
+## Historical Main obligations
+
+Private phases `history_preview` and `history_apply` compose the existing exact
+archive SDK through `github::native::Execution::reconcile_history`. Bind optional
+`policy.actions.history` and the separate `history_records` namespace locator;
+these phases do not require producer roots. They open working/retained metadata
+and record namespaces only, before the ordinary native payload resource dispatch.
+See [configuration, recovery and bounds](HISTORICAL-ROOTS.md#run-a-bounded-history-pass).
+The signed history profile separately permits archival and predecessor release;
+copy/backup permissions do not grant either. No physical byte removal occurs.

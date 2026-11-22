@@ -18,6 +18,7 @@ pub(super) fn git(root: &Path, args: &[&str]) -> Vec<u8> {
     output.stdout
 }
 pub(super) mod batch;
+mod history;
 fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool, batch_mode: u8) {
     let bytes = vec![45; 256 * 1024];
     let tools = native.then(|| {
@@ -86,6 +87,7 @@ fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool, 
         actions: if batch_mode >= 4 {
             Some(github::native::Actions {
                 backup: true,
+                history: None,
                 pending: pending.as_ref().map(|ns| batch::pending_scope(&target, ns)),
                 handoff: true,
                 eviction: None,
@@ -95,6 +97,7 @@ fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool, 
                 handoff: true,
                 eviction: None,
                 backup: false,
+                history: None,
                 pending: None,
             })
         },
@@ -215,6 +218,10 @@ fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool, 
                 .join(object.sha256.as_str()),
         )
         .unwrap();
+        if batch_mode == 6 {
+            history::exercise(&mut worker, &mut source, &mut target, &project, &signer);
+            return;
+        }
         if batch_mode == 5 {
             batch::backup::uncertain(&mut worker, &mut source, &mut target);
             return;
@@ -586,4 +593,9 @@ fn authenticated_handoff_revalidates_after_custody_and_between_commands() {
 #[ignore = "explicit native tools; fresh synthetic pools only"]
 fn actual_authenticated_handoff_revalidates_after_custody_and_between_commands() {
     matrix(true, true, true, true, 0);
+}
+
+#[test]
+fn authenticated_history_pass_preserves_exact_roots_and_continues_after_release() {
+    matrix(false, true, false, false, 6);
 }

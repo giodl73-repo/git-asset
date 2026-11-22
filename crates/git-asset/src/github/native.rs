@@ -45,6 +45,8 @@ pub struct Actions {
     pub backup: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub pending: Option<crate::annex::pending::Scope>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub history: Option<crate::annex::history::Profile>,
 }
 fn disabled(value: &bool) -> bool {
     !*value
@@ -60,6 +62,27 @@ impl Policy {
     }
     /// Pure enrollment identity; never opens a pool or discovers locations.
     pub fn id(&self) -> Result<Digest, Error> {
+        if let Some(h) = self.actions.as_ref().and_then(|a| a.history.as_ref()) {
+            h.binding()?;
+            if h.working.namespace != self.namespace
+                || !self.copy.source.pool.binding.members().iter().any(|m| {
+                    m.namespace == h.target.namespace && m.places.contains(&h.target.place)
+                })
+                || [&self.copy.source, &self.copy.destination].iter().any(|p| {
+                    p.pool
+                        .members
+                        .iter()
+                        .any(|m| m.minimum.identity() == &h.records.namespace)
+                })
+                || self
+                    .actions
+                    .as_ref()
+                    .and_then(|a| a.pending.as_ref())
+                    .is_some_and(|s| s.namespace == h.records.namespace)
+            {
+                return Err(Error::Admission(AdmissionError::Trust));
+            }
+        }
         if let Some(scope) = self.actions.as_ref().and_then(|a| a.pending.as_ref()) {
             scope.id()?;
             if self.namespace == scope.namespace
@@ -426,3 +449,4 @@ pub mod batch;
 mod durable;
 pub use durable::{Durable, HandoffRequest};
 pub mod eviction;
+pub mod history;

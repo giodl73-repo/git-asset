@@ -14,6 +14,8 @@ enum Phase {
     Copy,
     EvictionPreview,
     EvictionApply,
+    HistoryPreview,
+    HistoryApply,
 }
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -36,6 +38,8 @@ struct Storage {
     pending: Option<profiles::NamespaceRoot>,
     #[serde(default)]
     phase: Phase,
+    #[serde(default)]
+    history_records: Option<profiles::NamespaceRoot>,
     limits: Limits,
 }
 struct Opened {
@@ -77,7 +81,8 @@ pub(super) fn dispatch(
     document: Value,
 ) -> github::Result<Value> {
     let storage: Storage = serde_json::from_value(document).map_err(|_| github::Error::Invalid)?;
-    if storage.schema != SCHEMA || storage.policy.producers.is_none() {
+    let history_phase = matches!(storage.phase, Phase::HistoryPreview | Phase::HistoryApply);
+    if storage.schema != SCHEMA || (!history_phase && storage.policy.producers.is_none()) {
         return Err(github::Error::Invalid);
     }
     storage
@@ -97,14 +102,81 @@ pub(super) fn dispatch(
         .as_ref()
         .and_then(|a| a.pending.as_ref());
     if storage.pending.as_ref().map(|p| p.minimum.identity()) != scope.map(|p| &p.namespace)
-        || (storage.policy.actions.as_ref().is_some_and(|a| a.handoff)
-            || !matches!(storage.phase, Phase::Copy))
+        || ((matches!(storage.phase, Phase::Copy)
+            && storage.policy.actions.as_ref().is_some_and(|a| a.handoff))
+            || matches!(storage.phase, Phase::EvictionPreview | Phase::EvictionApply))
             && scope.is_none()
     {
         return Err(github::Error::Trust);
     }
     if !profile.allow_selection {
         return Err(github::Error::Disabled);
+    }
+    let history = storage
+        .policy
+        .actions
+        .as_ref()
+        .and_then(|a| a.history.as_ref());
+    if storage
+        .history_records
+        .as_ref()
+        .is_some_and(|r| history.is_none_or(|h| r.minimum.identity() != &h.records.namespace))
+    {
+        return Err(github::Error::Trust);
+    }
+    if history_phase {
+        let h = history.ok_or(github::Error::Trust)?;
+        let records = storage
+            .history_records
+            .as_ref()
+            .ok_or(github::Error::Trust)?;
+        if storage.source.namespace.minimum.identity() != &h.target.namespace
+            || storage.source.metadata_minimum.identity() != &h.records.metadata
+        {
+            return Err(github::Error::Trust);
+        }
+        let mut records = Namespace::open(&records.root, &records.minimum)
+            .map_err(|_| github::Error::Unavailable)?;
+        let mut retained = MetadataStore::open(
+            &storage.source.metadata_root,
+            &storage.source.metadata_minimum,
+        )
+        .map_err(|_| github::Error::Unavailable)?;
+        let mut namespace = Namespace::open(&profile.namespace.root, &profile.namespace.minimum)
+            .map_err(|_| github::Error::Unavailable)?;
+        let mut metadata = MetadataStore::open(&profile.metadata_root, &profile.metadata_minimum)
+            .map_err(|_| github::Error::Unavailable)?;
+        let repository = github::source::AnnexSource {
+            client,
+            trust: &profile.trust,
+        };
+        let result = native::Execution {
+            trust: &profile.trust,
+            request: &proof,
+            policy: &storage.policy,
+            enrollment: &profile.enrollment,
+            repository: &repository,
+            namespace: &mut namespace,
+            metadata: &mut metadata,
+            limits: &storage.limits,
+        }
+        .reconcile_history(
+            native::history::Pass {
+                cursor: cursor.as_ref(),
+                budget: &profile.budget,
+                records: &mut records,
+                metadata: &mut retained,
+                apply: matches!(storage.phase, Phase::HistoryApply),
+            },
+            now,
+        );
+        return match result {
+            Ok(report) => serde_json::to_value(report).map_err(|_| github::Error::Invalid),
+            Err(e) => Ok(
+                json!({"schema":"git-asset.native-history-pass-refusal.experimental-1",
+                "ok":false,"failure":Failure::from(&e),"storage_converged":null}),
+            ),
+        };
     }
     if (storage.policy.allow_copy || !matches!(storage.phase, Phase::Copy)) && !cfg!(windows) {
         return Ok(
@@ -164,6 +236,7 @@ pub(super) fn dispatch(
                 now,
             )
             .and_then(|r| serde_json::to_value(r).map_err(|_| publication::Error::Invalid.into())),
+        Phase::HistoryPreview | Phase::HistoryApply => unreachable!("history dispatched above"),
     };
     match result {
         Ok(report) => Ok(report),

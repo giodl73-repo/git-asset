@@ -49,9 +49,20 @@ preview, late job protection, admitted removal/post-expiry, completed saved repl
 with keeper payload offline, and uncertain original intent with unchanged effect
 ledger. Derive terminal outcomes from actual logs before claiming qualification.
 
+Current refinement from2f4f5fce48f34e4e96d21bae6352cb38447248c7 adds the
+metadata-only authenticated history receiver. Optional signed Actions.history and
+private history_records dispatch history_preview/history_apply without payload
+resource opens. Exact predecessor pages compose archive/refresh/release; cursors
+bind current Version, and removed after-keys need saved original release proof.
+Post-release expiry preserves receipt/handle and a usable continuation. Preview
+may reconcile authenticated Git selection, but never archives/releases history.
+No media custody/convergence is inferred. See HISTORICAL-ROOT-ARCHIVE and
+HISTORICAL-ROOTS. External history-receiver-* logs pin terminal qualification;
+check their outcomes and exact committed source before inheriting evidence.
+
 Next obligations: safe stale-plan replacement after original status/cancel;
 producer-root publication/retention and incremental advancement, including
-explicit historical Main snapshot custody/handoff before releasing predecessors; missing deprecated
+retained producer member references for archived Main roots; missing deprecated
 backup repair and complete controlled reacquisition; full native HTTP/account/TLS
 qualification; larger-catalogue lifetime and measured bounds. Then close P3/P4
 acceptance, qualify P5 and seek concrete P6 owner acceptance. No timeout forgetting,
@@ -90,3 +101,11 @@ Historical-root terminal qualification:8 metadata cases including separate-child
 reopen,1 fake native adapter case and1 explicit real-annex case pass. Workspace
 all-target/all-feature Clippy, standalone annex-publish, fmt, L0/pins/branding/diff
 pass. These are SDK/component results, not full receiver or production acceptance.
+
+History receiver local qualification:8 archive,10 default worker and8 GitHub/CLI
+tests pass (6 explicit native worker cases skipped). The separate actual git-annex
+historical-member reopen case passes. Strict workspace/all-feature/all-target
+Clippy, standalone annex-publish and fmt pass. Final source/log hashes are external
+history-receiver-source.json; derive current-head hosted status separately.
+Next P3 slice: retain/publish producer roots and update archived member references,
+then missing-backup/reacquisition and full transport/recovery qualification.

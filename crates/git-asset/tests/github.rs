@@ -230,6 +230,20 @@ fn receiver_cli_discovery_and_default_disabled_startup_never_open_machine_roots(
     );
     assert!(described["native_storage_convergence"].is_null());
     assert_eq!(
+        described["native_storage_phases"],
+        if cfg!(feature = "annex-publish") {
+            json!([
+                "copy",
+                "history_preview",
+                "history_apply",
+                "eviction_preview",
+                "eviction_apply"
+            ])
+        } else {
+            json!([])
+        }
+    );
+    assert_eq!(
         described["native_payload_supported"],
         cfg!(all(feature = "annex-publish", windows))
     );

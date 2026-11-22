@@ -87,3 +87,51 @@ No timeout forgets roots or plans. Existing source-count, predecessor, provider
 and IO bounds may refuse safely; unlimited history is not claimed. Receiver phase
 scheduling, producer-root advancement/retention, full HTTP qualification and
 project convergence/acceptance remain OPEN. This component does not close P3-P6.
+
+## Authenticated receiver scheduling
+
+Receiver refinement input2f4f5fce48f34e4e96d21bae6352cb38447248c7; same controls
+and metadata-only scope as above. `github::native::Actions.history` is optional
+and omitted when absent, preserving older signed policy serialization. A present
+profile participates in the signed policy identity. Its working namespace must
+match selection enrollment; retained namespace/place must be in the fixed source
+pool, and the record namespace must be separate from both pools and native-action
+records. At execution, working source/owner/class and actual metadata/namespace
+identities must also match. No producer-index root is needed for this phase.
+
+`Execution::reconcile_history(history::Pass, clock)` selects the exact authenticated
+commit through the existing lifecycle path, then pages only that source's exact
+predecessor Versions in revision order. Preview captures plans but does not archive,
+release, open media readers or change retained claims. As with copy preview, source
+selection itself can advance to the authenticated commit. Apply composes original
+`publish`, explicit monotonic `refresh` when needed, and permitted `release`.
+Publication and release permissions remain separate; neither `allow_copy` nor
+an event grants them. Current Main/ref and admission are checked before each phase
+and at the original archive/release boundaries. The selected generation handle is
+dropped before release; exact current Version plus revision CAS fence that change.
+
+A cursor binds policy, immutable commit and exact current Version, rather than the
+source revision changed by its own historical release. The after-key is the stable
+archive ID. If its predecessor is gone, continuation requires a matching saved
+record and positive original release receipt, with an origin older than current.
+Unknown/deleted keys and changed basis refuse. A successful release receipt and
+saved handle survive subsequent expiry/ref drift; a stopped page may continue from
+that completed archive. No suffix/empty page proves prefix coverage or convergence.
+
+Each request visits at most min(budget.objects,32) roots; budget.pages is validated
+and one page is executed. There are zero media stream bytes, independent of the
+prospective stream-byte budget. Metadata uses the archive profile's explicit
+per-root read/write/count/byte/deadline limits; aggregate cost is bounded by the
+finite root count times those limits, plus existing selection/source-claim work.
+The outer deadline stops between phases and at callback boundaries. This does not
+interrupt a completed journal effect or hide its receipt. Reports disclose
+metadata_limits_per_root, media_stream_bytes:0 and storage_converged:null, with
+per-root structured holds and a separate post_effect_hold.
+
+Private receiver phases history_preview/history_apply open only the existing
+working/retained metadata and record namespaces after authenticated intake. They
+return before native payload/witness/capacity resources are opened. Roots and
+permissions come exclusively from private configuration, not request fields.
+Transport/account/TLS, producer-root advancement, missing payload repair and full
+project acceptance remain separate. A metadata-only pass does not qualify native
+media operations on an unsupported platform.

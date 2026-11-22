@@ -11,10 +11,10 @@ Use `git_asset::annex::history` with `annex-publish`:
 | --- | --- |
 | `Plan::capture(profile, working, origin)` | Freeze one exact predecessor and expected current source generation. |
 | `publish(profile, plan, working, destinations, input, metadata, admit)` | Mirror only metadata nodes; finish/read back the exact tree and plan, then adopt media/record obligations. |
-| `find` / `load` | Recover the current saved slot or one exact retained Saved Version with its live metadata-generation guard. |
+| `find` / `find_archive` / `load` | Recover the current saved slot or one exact retained Saved Version with its live metadata-generation guard. |
 | `Loaded::saved` / `plan` | Preserve the exact reconciliation handle and original plan with owned workflow evidence. |
 | `Loaded::member` | Resolve one logical path to the original Object/Snapshot without current/latest fallback or unrelated payload reads. |
-| `Loaded::release` | Recheck metadata retention and working revision, then retire only the old working predecessor. |
+| `Loaded::release_status` / `release` | Recheck metadata retention and working revision, then retire only the old working predecessor. |
 | `refresh` | Explicitly update an unexecuted release's baseline after Main advances; retain old plans and the same archived root. |
 
 Profiles use existing fenced namespaces: working branch/draft, retained media
@@ -45,6 +45,36 @@ the archived tree. Current/historical registration, availability, custody and
 creative selection remain separate.
 
 The [contract](../specs/HISTORICAL-ROOT-ARCHIVE.md) defines failure, fence and budget
-rules. This is an SDK component; automatic receiver history scheduling, advancing
-producer roots, broader scale and owner adoption are still required for the full
+rules. The authenticated receiver also exposes an
+explicit metadata-only history pass, described below. Advancing producer roots,
+payload repair, broader scale and owner adoption remain required for the full
 merge-to-placement offering.
+
+## Run a bounded history pass
+
+Use `github::native::Execution::reconcile_history` or the existing private receiver
+with `phase: "history_preview"` first, then an explicitly reenrolled
+`"history_apply"` policy/profile when approved. Set `policy.actions.history` to the
+archive profile and `history_records` to its existing namespace root/checkpoint.
+The retained `source.metadata_root/metadata_minimum` must match that profile's
+record metadata provider. No producer indexes or payload resource opens are needed
+for these phases. They retain the same strict authenticated request body.
+
+Preview can reconcile the exact Git selection; it does not archive or release
+historical obligations. Apply only publishes/releases as permitted by the signed
+history profile. Archive-only operation uses allow_publish with allow_release
+false. Permissions/configuration changes require a newly admitted policy identity.
+
+Save each outcome's archive ID, plan ID, Saved handle and release receipt. Pass
+`next` unchanged to continue. Releasing a predecessor changes its source revision;
+the cursor remains bound to the unchanged current Version and proves a removed
+after-key with its original retained record/release receipt. A changed commit or
+policy needs a new pass. Reconnect/expiry never deletes media or forgets history.
+A successful receipt remains authoritative even when its outcome also has a late
+hold. Missing/corrupt/stale/denied/unsupported holds require repairing that stated
+condition; uncertain native effects use their separate original-operation recovery.
+
+Pages contain at most32 roots and the configured lower object limit, under an
+outer deadline and disclosed per-root metadata bounds. Media stream bytes are0;
+this is not a media availability survey. The report never claims whole-storage
+convergence. HTTP/account/TLS and production installation require separate acceptance.

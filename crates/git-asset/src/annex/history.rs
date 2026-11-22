@@ -122,7 +122,7 @@ impl Profile {
             self.records.id()?,
         ))
     }
-    fn archive_id(&self, origin: &Version) -> Result<Digest> {
+    pub fn archive_id(&self, origin: &Version) -> Result<Digest> {
         digest(&(
             "git-asset.history-root.experimental-1",
             self.binding()?,
@@ -196,6 +196,9 @@ impl Plan {
     }
     pub fn origin(&self) -> &Version {
         &self.origin
+    }
+    pub fn expected_revision(&self) -> u64 {
+        self.revision
     }
     pub fn id(&self) -> Result<Digest> {
         Ok(Digest::blob(&self.to_json()?))
@@ -380,9 +383,18 @@ pub fn find(
     d: Destinations<'_>,
     nodes: &MetadataStore,
 ) -> Result<Option<Loaded>> {
+    find_archive(p, &p.archive_id(origin)?, d, nodes)
+}
+/// Point recovery by stable archive ID, including after its working predecessor retired.
+pub fn find_archive(
+    p: &Profile,
+    archive: &Digest,
+    d: Destinations<'_>,
+    nodes: &MetadataStore,
+) -> Result<Option<Loaded>> {
     p.binding()?;
     p.records.check(d.records, nodes)?;
-    let name = key(&p.records.prefix, &p.archive_id(origin)?)?;
+    let name = key(&p.records.prefix, archive)?;
     let Some(state) = d.records.source(&name)? else {
         return Ok(None);
     };
@@ -410,7 +422,11 @@ pub fn find(
         version,
         record: object.ok_or(Error::Integrity)?,
     };
-    load_meter(p, &saved, d, nodes, &mut used).map(Some)
+    let loaded = load_meter(p, &saved, d, nodes, &mut used)?;
+    if &loaded.plan.archive != archive {
+        return Err(Error::Integrity);
+    }
+    Ok(Some(loaded))
 }
 struct Mirror<'a, N> {
     source: &'a N,
@@ -742,6 +758,15 @@ impl Loaded {
     }
     pub fn plan(&self) -> &Plan {
         &self.plan
+    }
+    pub fn release_status(&self, p: &Profile, working: &mut Namespace) -> Result<Option<Receipt>> {
+        self.plan.bound(p)?;
+        if working.identity() != &p.working.namespace {
+            return Err(Error::Denied);
+        }
+        working
+            .command_status(self.plan.operation("history-release")?, self.plan.retire(p))
+            .map_err(Error::from)
     }
     /// One exact historical binding, with no current/latest substitution or payload IO.
     pub fn member(

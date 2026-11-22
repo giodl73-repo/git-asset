@@ -54,7 +54,7 @@ pub(super) fn index(f: &mut Fixture, plan: Plan, snapshot: Option<Snapshot>) -> 
     f.metadata = MetadataReader::open(&f.root.join("metadata"), &checkpoint).unwrap();
     tree.root().clone()
 }
-fn configured<'a, R: lifecycle::CommittedSource + ?Sized>(
+pub(super) fn configured<'a, R: lifecycle::CommittedSource + ?Sized>(
     worker: &'a mut Execution<'_, R>,
     policy: &'a WorkerPolicy,
     trust: &'a github::Trust,

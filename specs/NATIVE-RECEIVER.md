@@ -85,3 +85,10 @@ Outcome.handoff returns Saved and the mutation or failure; post-save failure als
 holds the page. A fresh authenticated retry discovers the same frozen action,
 including after temporary ingest release. No action slot is overwritten and no
 media bytes are removed by this phase. Storage convergence remains unknown.
+
+The metadata-only history_preview/history_apply phases are specified in
+[HISTORICAL-ROOT-ARCHIVE](HISTORICAL-ROOT-ARCHIVE.md#authenticated-receiver-scheduling).
+They use optional signed Actions.history plus the private history_records locator,
+without producer-index or payload resource opens. Their cursor binds current
+Version rather than the source revision changed by predecessor release. These
+phases grant no native copy/removal authority and report custody as unknown.

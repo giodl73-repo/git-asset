@@ -272,14 +272,15 @@ native publisher/controller verifies those separately. See
 copy reconciliation over fixed index roots, including dry run and held original
 publication recovery. Separately authorized [backup](../specs/TRUSTED-NATIVE-BACKUP.md)
 reverses the same copier/profiles to establish retained custody from working ingress
-before handoff. Durable retention/eviction scheduling and full merge-driven
-acceptance remain open.
+before handoff. Durable handoff and registered eviction preview/apply are
+configured receiver phases; complete merge-driven acceptance remains open.
 
 [Original-action recovery](NATIVE-ACTION-RECOVERY.md) stores complete frozen
 handoff/eviction plans and both producer recipes in the existing metadata store,
 with metadata-only source retention. Durable SDK entries load that original
 before calling the qualified worker; no new journal or removal authority is
-introduced. Receiver phase scheduling remains open.
+introduced. The receiver composes saved handoff and registered eviction phases;
+safe stale-plan replacement and full transport qualification remain open.
 
 ## Storage orchestration entry
 
@@ -302,4 +303,6 @@ tree and origin record into an existing retained metadata provider, adopts
 retained/record claims, and revision-fences release of that old working obligation.
 It preserves current selection and reports media custody as unknown. Existing
 native keeper/protection checks still govern physical eviction. See the
-[SDK guide](HISTORICAL-ROOTS.md); automatic receiver history scheduling remains open.
+[SDK/receiver guide](HISTORICAL-ROOTS.md). Authenticated history preview/apply
+pages compose this metadata-only lifecycle; producer advancement and full HTTP/
+project qualification remain open.

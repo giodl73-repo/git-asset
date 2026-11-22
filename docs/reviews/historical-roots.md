@@ -32,3 +32,38 @@ Trace:contract controls/source seams and reviewed target pins are recorded;
 exact committed source/log hashes are external history-source.json.
 Review:producer findings incorporated. Independent review, receiver integration,
 full HTTP/scale and owner acceptance remain OPEN.
+
+## Receiver refinement producer review
+
+Input2f4f5fce48f34e4e96d21bae6352cb38447248c7; same six producer checklists and
+implementing-maintainer ownership. H identity: cursor binds current Version and
+immutable commit, not a revision changed by its own release. Removed keys require
+positive original record/receipt; arbitrary unknown keys refuse. H recovery:
+post-release expiry keeps successful receipts and advances only that completed
+archive's continuation; renewal uses a newly verified request, never clock rewind.
+H custody: metadata-only transport declares no payload coverage/removal right.
+H provider/privacy: fixed signed profile and separate metadata namespace; dispatch
+returns before payload/witness/capacity opens. H placement:32-root ceiling,
+outer deadline and explicit per-root metadata bounds; no claim that stream-byte
+budget meters metadata. M Git/adoption: old absent optional fields retain policy
+identity, preview can reconcile exact Main, and full HTTP/production acceptance
+remains distinct. Source/trace/pins and final checks are separate from this review.
+
+Fixture: real synthetic Git advances through three immutable selections; native
+repositories remain offline during preview/apply. Preview preserves archive
+namespaces/metadata, unsigned policy and wrong source refuse, unknown cursor
+refuses, expired post-release receipt survives, renewed admission resumes the
+removed cursor entry, both historical records reopen, duplicate suffix is empty
+and newer Git Main rejects the old request. Library/native media qualification
+from the preceding SDK slice remains scoped to those unchanged mechanisms.
+
+Receiver verification:8 archive tests,10 default worker tests and8 GitHub/CLI
+cases pass;6 explicit native worker cases are skipped, not counted as successes.
+The separate real git-annex historical-member reopen case passes on this source.
+Strict workspace/all-feature/all-target Clippy, standalone annex-publish and fmt
+pass. Validation: exact historical receipt continuation survives expiry/renewal
+with native configurations offline; no media reads or removal are admitted by the
+receiver history phase. Trace: source controls and reviewed targets map the public
+API/configuration to these fixtures; final L0/source/log pins are external
+history-receiver-* evidence. Review: producer-applied only; hosted current-head,
+full native HTTP/account/TLS and independent/owner acceptance remain separate.
