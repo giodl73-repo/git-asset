@@ -53,7 +53,7 @@ impl Scope {
             &self.place,
         ))?))
     }
-    fn check(&self, ns: &Namespace, nodes: &MetadataStore) -> Result<()> {
+    pub(super) fn check(&self, ns: &Namespace, nodes: &MetadataStore) -> Result<()> {
         self.id()?;
         if ns.identity() != &self.namespace || nodes.checkpoint().identity() != &self.metadata {
             return Err(Error::Stale);

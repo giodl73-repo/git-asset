@@ -1,6 +1,6 @@
 # Source and runtime data budgets
 
-Current ordinary source/documentation ceiling: **8.25 MiB** (8,650,752 bytes),
+Current ordinary source/documentation ceiling: **8.5 MiB** (8,912,896 bytes),
 with **128 KiB** per file, enforced by tools/validate.ps1. Earlier 1, 2, 3, 3.25, 3.5 and 4 MiB ceilings were historical checkpoints. This covers implemented Rust,
 locked dependencies, synthetic fixtures and docs; it does not allocate cache
 space or allow runtime evidence in Git.
@@ -38,3 +38,19 @@ L2 explicit synthetic native pools. Six-role producer review: identity/data wire
 unchanged; placement/custody limits not relaxed; original recovery preserved;
 no private/generated source; release/adoption gates remain independent and OPEN.
 This source allowance closes no P2-P6 runtime/acceptance gate.
+
+2026-11-22 controlled allowance, input b02d5ad7e5a373bc672e528d52589162a3d9ad74:
+ordinary source measured8,638,221 bytes, leaving12,531 bytes under8.25MiB.
+Exact historical-root archival, retained metadata readback, revision-fenced
+release and their restart/race/native-member fixtures exceed that remainder.
+Add256KiB for generic implementation/contracts/fixtures and the independent U4
+review integration. Keep128KiB/file and every binary/private/generated exclusion.
+No runtime cache, metadata, journal, response, payload, admission or source-count
+limit changes. No dependency or production enrollment is added.
+WP-000/004/005/007/009/015, SPEC-003/005/007/008/010/011/015,
+IF-004/005/008/010/012, PKG-001/003/004/006/009; RUST/PROVIDER/INTEGRATION.
+Six producer checks: exact identities/data wire stay stable; metadata placement
+is not byte custody; revision fencing and original recovery remain; scoped locks
+permit unrelated progress; only authored code/tests/docs enter Git; acceptance
+remains separate. L0 budget/pins/branding/diff, L1 locked/Clippy/features and L2
+synthetic restart/native readback qualify component scope, not P2-P6 completion.

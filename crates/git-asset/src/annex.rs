@@ -7,6 +7,8 @@ use serde::{Deserialize, Serialize};
 use std::path::{Component, Path, PathBuf};
 #[cfg(feature = "annex-publish")]
 pub mod control;
+#[cfg(feature = "annex-publish")]
+pub mod history;
 pub mod managed;
 #[cfg(feature = "annex-publish")]
 pub mod pending;

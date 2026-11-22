@@ -295,3 +295,11 @@ enrolled journals and resolves admitted flat byte-binding roots through existing
 Tree/NodeStore ports. It joins current/pending/predecessor demands with owner and
 kind provenance; missing/opaque/changing scope remains a bounded gap. Its View
 adapter keeps complete protection false. See [scope and limits](../specs/PROTECTION-DEMAND-SNAPSHOT.md).
+
+Historical-root metadata archival is an experimental SDK component under
+[its contract](../specs/HISTORICAL-ROOT-ARCHIVE.md). It mirrors an exact historical
+tree and origin record into an existing retained metadata provider, adopts
+retained/record claims, and revision-fences release of that old working obligation.
+It preserves current selection and reports media custody as unknown. Existing
+native keeper/protection checks still govern physical eviction. See the
+[SDK guide](HISTORICAL-ROOTS.md); automatic receiver history scheduling remains open.

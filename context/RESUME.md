@@ -59,7 +59,7 @@ final archival deletion or automatic production enrollment is introduced.
 
 Run L0/pins/branding/diff, fmt, relevant locked tests, strict workspace/all-feature/
 all-target Clippy and standalone feature checks before commits. Build/temp roots
-must be explicit and outside source. Source-only ceiling is8.25MiB; runtime limits
+must be explicit and outside source. Source-only ceiling is8.5MiB; runtime limits
 are unchanged. Current relevant files plus tests/contracts must stay reviewed.
 
 Terminal local qualification:28 GitHub,2 index,51 retention and1 CLI cases pass;
@@ -67,3 +67,26 @@ Terminal local qualification:28 GitHub,2 index,51 retention and1 CLI cases pass;
 workspace Clippy, standalone annex-publish, fmt and actual describe discovery pass.
 Exact source/log hashes live in receiver-eviction-source.json externally. Hosted
 qualification for the committed refinement must be checked separately.
+
+Historical-root SDK refinement (input b02d5ad; hosted45036579080 passed):
+annex::history captures exact predecessor/current generations, mirrors complete
+metadata into an existing retained provider, and adopts retained media/metadata
+record claims before explicit working-history release. media_custody_verified
+stays null and authorizes_eviction false. Actual native eviction still needs
+fresh keeper/protection proof. member is an exact point lookup; find/load retain
+saved originals. Explicit refresh after monotonic Main advance keeps older saved
+plans and the same archived root; it does not replace native eviction plans.
+Portable history cases cover restart, partial adoption/enrollment, budgets,
+Main-race refusal/refresh and unrelated progress. Native composition reads an
+archived exact member after ingress release and an offline working repository;
+unavailable siblings remain unavailable. Qualification uses history-* externally.
+Next: connect receiver history phase and advance retained producer references;
+qualify producer-root lifecycle, native stale-plan replacement, deprecated backup
+repair and controlled reacquisition. Full HTTP/scale/project acceptance stay OPEN.
+Issue75 review is separate docs/issue75-tool-preview/PR76 at9fcabb7; no U4 runtime
+API was implemented there. Keep that main-based documentation lane separate.
+
+Historical-root terminal qualification:8 metadata cases including separate-child
+reopen,1 fake native adapter case and1 explicit real-annex case pass. Workspace
+all-target/all-feature Clippy, standalone annex-publish, fmt, L0/pins/branding/diff
+pass. These are SDK/component results, not full receiver or production acceptance.

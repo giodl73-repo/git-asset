@@ -5,6 +5,7 @@ use git_asset_store::{
     source_claims::{Command, admission::Policy},
 };
 use std::process::Command as Process;
+mod history;
 
 struct Fixture {
     root: PathBuf,

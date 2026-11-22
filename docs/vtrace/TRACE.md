@@ -815,3 +815,9 @@ producer control-retention declarations -> registered eviction native fixtures.
 WP-004/005/006/007/009 and contract REQ/SPEC/IF/PKG anchors apply. Component
 verification is external receiver-eviction-* evidence; full HTTP, replacement,
 root lifecycle, independent review and project acceptance remain OPEN.
+
+HISTORICAL-ROOT-ARCHIVE.md -> annex::history and existing MetadataStore/source
+claims -> bounded, restart, Main-race/refresh and native exact-member fixtures.
+Controls are in the contract; external history-* evidence pins verification.
+Metadata obligation handoff grants no media custody or native removal authority.
+Receiver scheduling, producer-root lifecycle and project acceptance remain OPEN.

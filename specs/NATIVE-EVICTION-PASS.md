@@ -70,3 +70,8 @@ reacquisition, missing deprecated backup repair, full native HTTP acceptance and
 larger-catalogue lifetime remain OPEN. Historical Main predecessors remain
 protective until an explicit retained-snapshot handoff qualifies their release. Ordinary eviction always needs a keeper;
 final archival deletion and metadata forgetting are separate contracts.
+
+Historical metadata obligation archival is separately implemented under
+[HISTORICAL-ROOT-ARCHIVE](HISTORICAL-ROOT-ARCHIVE.md). Its no-eviction receipt is
+not keeper-byte evidence. The native controller still requires fresh independent
+retained custody, including when a working predecessor was explicitly released.
