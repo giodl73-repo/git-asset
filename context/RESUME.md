@@ -6,7 +6,7 @@ acceptance; keep the full goal active.
 
 Active owned lane: F:/src/git-asset-worktrees/trusted-native-placement,
 feat/trusted-native-placement, draft PR74 based on feat/source-generation-use.
-Inputb009a2a5ebdf015a0a632ec1ce3b4e9a7f9744ac; derive newer source/CI from Git.
+Input1c0f870f8efa8a538fc0948139f62f31ea3e625b; derive newer source/CI from Git.
 PR70 and P1/PR71 merged. P2 PR72 and source-generation prerequisite PR73 remain
 stack dependencies; P2 mixed legacy/owner/roster/epoch handoff is OPEN, never
 inferred from NamespaceOwned policy. See docs/reviews/p2-closure-audit.md.
@@ -55,8 +55,21 @@ post-expiry preserves completion. Contract: TRUSTED-NATIVE-BACKUP; external
 native-backup-* logs record qualification separately.28 focused cases and three
 explicit native cases pass, including controlled backup/handoff/readback;
 strict workspace Clippy and standalone feature builds pass. Root publication,
-handoff/eviction plan persistence/scheduling, complete revert and
+handoff/eviction receiver scheduling, complete revert and
 project acceptance remain OPEN. Global storage convergence stays unknown.
+
+Original-action persistence now uses annex::pending over the existing metadata
+store and separate fenced metadata-only job namespace. Full bodies/producer
+recipes are hash/length verified and source-adopted before effects; existing
+slots return original plans. handoff_durable/evict_durable preserve saved handles
+on effect failure, with current native worker revalidation. Scope is optional
+and absent-field policy wire unchanged. NATIVE-PENDING-ACTIONS and
+NATIVE-ACTION-RECOVERY document bounds/API; native-pending-* evidence records
+separate-process reopen, scoped guards and native paths. No slot forgetting or
+replacement; receiver phase scheduling and stale-plan replacement remain OPEN.
+Qualification:separate-process saved-plan reopen plus28 focused cases, explicit
+native saved handoff and distinct-device saved eviction/restore pass. Strict
+workspace Clippy/standalone annex-publish pass; exact source/logs external.
 
 P4: REEL main-based PR401, qualified89a875c6c34ed84b1e890520db996d55cffe2bd7,
 ready for review. SDK pin0ccb137cf5a78416e780f8a3372017f642a5cb71 unchanged;

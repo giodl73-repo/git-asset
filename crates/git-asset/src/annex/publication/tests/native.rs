@@ -1186,4 +1186,6 @@ mod github_worker;
 
 mod handoff;
 
+#[cfg(feature = "github")]
+mod pending;
 mod snapshot_copy;

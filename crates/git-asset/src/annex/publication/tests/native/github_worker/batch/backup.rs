@@ -5,6 +5,7 @@ pub(in super::super) fn exercise(
     f: &mut Fixture,
     project: &Path,
     signer: &github::fixture::Fixture,
+    pending: &mut Namespace,
 ) {
     let object = f.plan.candidate().object.clone();
     fs::remove_file(m.root.join("input/objects").join(object.sha256.as_str())).unwrap();
@@ -186,23 +187,104 @@ pub(in super::super) fn exercise(
     let handoff = crate::annex::publication::handoff::Plan::new(
         &f.plan,
         plan.destination(),
-        snapshot,
+        snapshot.clone(),
         &mut f.namespaces[0],
     )
     .unwrap();
     let f_plan = f.plan.clone();
     let handed = active
-        .handoff(
-            &handoff,
-            &f_plan,
-            plan.destination(),
+        .handoff_durable(
+            github::native::HandoffRequest {
+                working: &f_plan,
+                retained: plan.destination(),
+                snapshot: snapshot.clone(),
+            },
+            pending,
             &mut f.resources(),
             &mut m.resources(),
             || Ok(1000),
         )
         .unwrap();
-    assert!(handed.result.status.retire.is_some());
-    assert!(handed.post_effect_hold.is_none());
+    assert!(handed.failure.is_none(), "{:?}", handed.failure);
+    assert!(
+        handed
+            .mutation
+            .as_ref()
+            .unwrap()
+            .result
+            .status
+            .retire
+            .is_some()
+    );
+    assert!(handed.mutation.as_ref().unwrap().post_effect_hold.is_none());
+    // The original frozen handoff is discoverable after release; no re-freeze.
+    let repeated = active
+        .handoff_durable(
+            github::native::HandoffRequest {
+                working: &f_plan,
+                retained: plan.destination(),
+                snapshot: snapshot.clone(),
+            },
+            pending,
+            &mut f.resources(),
+            &mut m.resources(),
+            || Ok(1000),
+        )
+        .unwrap();
+    assert_eq!(repeated.saved, handed.saved);
+    assert!(repeated.mutation.as_ref().unwrap().result.historical);
+    let scope = policy.actions.as_ref().unwrap().pending.as_ref().unwrap();
+    let mut reopened =
+        Namespace::open(&f.root.join("pending-actions"), &pending.checkpoint()).unwrap();
+    let loaded = crate::annex::pending::reopen(
+        scope,
+        &handed.saved,
+        &mut reopened,
+        active.metadata,
+        &Fixture::limits(),
+    )
+    .unwrap();
+    match loaded.action.operation {
+        crate::annex::pending::Operation::Handoff(ref p) => {
+            assert_eq!(p.id().unwrap(), handoff.id().unwrap())
+        }
+        _ => panic!("wrong saved action"),
+    };
+    drop(loaded);
+    let mut readonly = policy.clone();
+    readonly
+        .actions
+        .as_mut()
+        .unwrap()
+        .pending
+        .as_mut()
+        .unwrap()
+        .allow_store = false;
+    let mut readonly_trust = trust.clone();
+    readonly_trust.placement_enrollment = readonly.id().unwrap();
+    let readonly_request = github::verify(
+        &readonly_trust,
+        &signer.keys,
+        &signer.token(&signer.claims),
+        active.request.commit(),
+        1000,
+    )
+    .unwrap();
+    let replay = configured(&mut active, &readonly, &readonly_trust, &readonly_request)
+        .handoff_durable(
+            github::native::HandoffRequest {
+                working: &f_plan,
+                retained: plan.destination(),
+                snapshot,
+            },
+            pending,
+            &mut f.resources(),
+            &mut m.resources(),
+            || Ok(1000),
+        )
+        .unwrap();
+    assert_eq!(replay.saved, handed.saved);
+    assert!(replay.failure.is_none());
     let after = active
         .reconcile(
             None,

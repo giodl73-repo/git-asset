@@ -9,6 +9,7 @@ pub(super) struct State {
     policy: Policy,
     signer: github::fixture::Fixture,
     metadata: MetadataStore,
+    pending: Namespace,
 }
 impl State {
     pub(super) fn new(f: &mut Fixture, keeper: &Fixture, owner: &OwnerProfile) -> Self {
@@ -91,6 +92,8 @@ impl State {
         };
         let plan = selected.plan(Some(&commit)).unwrap();
         selected.apply(&plan).unwrap();
+        let pending = super::super::super::github_worker::batch::pending_namespace(f);
+        let pending_scope = super::super::super::github_worker::batch::pending_scope(f, &pending);
         let policy = Policy {
             copy: crate::annex::replication::Profile {
                 source: keeper.profile.clone(),
@@ -109,6 +112,7 @@ impl State {
                 handoff: false,
                 eviction: Some(owner.clone()),
                 backup: false,
+                pending: Some(pending_scope),
             }),
         };
         let mut signer = github::fixture::Fixture::new();
@@ -122,6 +126,7 @@ impl State {
             policy,
             signer,
             metadata,
+            pending,
         }
     }
     pub(super) fn execute(
@@ -221,11 +226,38 @@ impl State {
         let fresh = self.signer.verify(&self.signer.claims, 1000).unwrap();
         worker.request = &fresh;
         let report = worker
-            .evict(plan, producers!(), readers!(), || Ok(1000))
+            .evict_durable(plan, &mut self.pending, producers!(), readers!(), || {
+                Ok(1000)
+            })
             .unwrap();
+        assert!(report.failure.is_none(), "{:?}", report.failure);
+        let saved = report.saved.clone();
+        let report = report.mutation.unwrap();
         assert!(report.post_effect_hold.is_none());
         assert!(report.selection.desired_current);
         assert_eq!(report.storage_converged, None);
+        let scope = self
+            .policy
+            .actions
+            .as_ref()
+            .unwrap()
+            .pending
+            .as_ref()
+            .unwrap();
+        let loaded = crate::annex::pending::reopen(
+            scope,
+            &saved,
+            &mut self.pending,
+            worker.metadata,
+            &limits,
+        )
+        .unwrap();
+        match &loaded.action.operation {
+            crate::annex::pending::Operation::Eviction(p) => {
+                assert_eq!(p.id().unwrap(), plan.id().unwrap())
+            }
+            _ => panic!("wrong saved action"),
+        };
         report.result
     }
 }

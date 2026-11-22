@@ -1,6 +1,40 @@
 pub(super) mod backup;
 use super::*;
 use crate::annex::{producer_index::Record, replication, snapshot::Snapshot};
+pub(in super::super) fn pending_namespace(f: &Fixture) -> Namespace {
+    let places = Places {
+        current: vec![k("metadata")],
+        pending: vec![k("metadata")],
+        predecessor: vec![k("metadata")],
+    };
+    let policy = admission::Policy {
+        prefer_active: true,
+        classes: [Kind::Branch, Kind::Draft, Kind::Job, Kind::Retention]
+            .into_iter()
+            .map(|k| (k, places.clone()))
+            .collect(),
+    };
+    Namespace::create_fenced(
+        &f.root.join("pending-actions"),
+        k("pending"),
+        k("epoch"),
+        policy,
+    )
+    .unwrap()
+}
+pub(in super::super) fn pending_scope(
+    f: &Fixture,
+    namespace: &Namespace,
+) -> crate::annex::pending::Scope {
+    crate::annex::pending::Scope {
+        namespace: namespace.identity().clone(),
+        metadata: f.metadata.checkpoint().identity().clone(),
+        owner: k("owner"),
+        prefix: k("pending"),
+        place: k("metadata"),
+        allow_store: true,
+    }
+}
 
 pub(super) fn index(f: &mut Fixture, plan: Plan, snapshot: Option<Snapshot>) -> Object {
     let mut metadata =

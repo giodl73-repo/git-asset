@@ -190,6 +190,12 @@ impl Intent {
     }
 }
 impl Plan {
+    pub fn source_producer(&self) -> &Digest {
+        &self.intent.source_producer
+    }
+    pub fn keeper_producer(&self) -> &Digest {
+        &self.intent.keeper_producer
+    }
     pub fn metadata_plan(&self) -> &metadata::Plan {
         &self.metadata
     }

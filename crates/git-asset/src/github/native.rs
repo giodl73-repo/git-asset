@@ -43,6 +43,8 @@ pub struct Actions {
     pub eviction: Option<retirement::planning::Profile>,
     #[serde(skip_serializing_if = "disabled")]
     pub backup: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub pending: Option<crate::annex::pending::Scope>,
 }
 fn disabled(value: &bool) -> bool {
     !*value
@@ -58,6 +60,19 @@ impl Policy {
     }
     /// Pure enrollment identity; never opens a pool or discovers locations.
     pub fn id(&self) -> Result<Digest, Error> {
+        if let Some(scope) = self.actions.as_ref().and_then(|a| a.pending.as_ref()) {
+            scope.id()?;
+            if self.namespace == scope.namespace
+                || [&self.copy.source, &self.copy.destination].iter().any(|p| {
+                    p.pool
+                        .members
+                        .iter()
+                        .any(|m| m.minimum.identity() == &scope.namespace)
+                })
+            {
+                return Err(Error::Admission(AdmissionError::Trust));
+            }
+        }
         if self.producers.as_ref().is_some_and(|r| {
             [&r.source, &r.destination]
                 .iter()
@@ -408,3 +423,5 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
 mod mutations;
 pub use mutations::Mutation;
 pub mod batch;
+mod durable;
+pub use durable::{Durable, HandoffRequest};

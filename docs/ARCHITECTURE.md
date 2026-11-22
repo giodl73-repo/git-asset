@@ -275,6 +275,12 @@ reverses the same copier/profiles to establish retained custody from working ing
 before handoff. Durable retention/eviction scheduling and full merge-driven
 acceptance remain open.
 
+[Original-action recovery](NATIVE-ACTION-RECOVERY.md) stores complete frozen
+handoff/eviction plans and both producer recipes in the existing metadata store,
+with metadata-only source retention. Durable SDK entries load that original
+before calling the qualified worker; no new journal or removal authority is
+introduced. Receiver phase scheduling remains open.
+
 ## Storage orchestration entry
 
 The experimental git-asset-store::orchestration module binds a bounded exact plan to

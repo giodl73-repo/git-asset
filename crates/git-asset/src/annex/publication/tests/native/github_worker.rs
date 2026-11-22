@@ -17,7 +17,7 @@ pub(super) fn git(root: &Path, args: &[&str]) -> Vec<u8> {
     );
     output.stdout
 }
-mod batch;
+pub(super) mod batch;
 fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool, batch_mode: u8) {
     let bytes = vec![45; 256 * 1024];
     let tools = native.then(|| {
@@ -66,6 +66,7 @@ fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool, 
             .unwrap()
     };
     let target_plan = target.plan.clone();
+    let mut pending = (batch_mode == 4).then(|| batch::pending_namespace(&target));
     let policy = WorkerPolicy {
         copy: profile,
         source_control: source.control_profile.clone(),
@@ -85,6 +86,7 @@ fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool, 
         actions: if batch_mode >= 4 {
             Some(github::native::Actions {
                 backup: true,
+                pending: pending.as_ref().map(|ns| batch::pending_scope(&target, ns)),
                 handoff: true,
                 eviction: None,
             })
@@ -93,6 +95,7 @@ fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool, 
                 handoff: true,
                 eviction: None,
                 backup: false,
+                pending: None,
             })
         },
     };
@@ -217,7 +220,14 @@ fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool, 
             return;
         }
         if batch_mode >= 4 {
-            batch::backup::exercise(&mut worker, &mut source, &mut target, &project, &signer);
+            batch::backup::exercise(
+                &mut worker,
+                &mut source,
+                &mut target,
+                &project,
+                &signer,
+                pending.as_mut().unwrap(),
+            );
             return;
         }
         if batch_mode == 3 {

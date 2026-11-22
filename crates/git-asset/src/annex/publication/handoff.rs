@@ -53,6 +53,15 @@ fn retained(
     Ok((source, version))
 }
 impl Plan {
+    pub fn object(&self) -> &Object {
+        &self.retained.object
+    }
+    pub fn source_plan(&self) -> &Digest {
+        &self.source
+    }
+    pub fn keeper_plan(&self) -> &Digest {
+        &self.keeper
+    }
     /// Readonly original journal/selection lookup. No native IO or release grant.
     pub fn new(
         source: &super::Plan,

@@ -8,6 +8,8 @@ use std::path::{Component, Path, PathBuf};
 #[cfg(feature = "annex-publish")]
 pub mod control;
 pub mod managed;
+#[cfg(feature = "annex-publish")]
+pub mod pending;
 mod process;
 #[cfg(feature = "annex-publish")]
 pub mod producer_index;
