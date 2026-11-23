@@ -3,6 +3,9 @@ use git_asset::catalogue::{Catalogue, Config};
 use std::{path::Path, process::ExitCode};
 #[path = "git-asset-catalogue/demotion.rs"]
 mod demotion;
+#[cfg(all(windows, feature = "annex-read"))]
+#[path = "git-asset-catalogue/demotion_provider.rs"]
+mod demotion_provider;
 fn save(report: &serde_json::Value, path: &str) -> Result<(), String> {
     use std::io::Write;
     if !Path::new(path).is_absolute() {
@@ -55,6 +58,24 @@ fn eviction_report(
 }
 fn run() -> Result<(), String> {
     let args: Vec<_> = std::env::args().skip(1).collect();
+    if args.first().is_some_and(|action| action == "demotion-run") {
+        #[cfg(all(windows, feature = "annex-read"))]
+        {
+            let [_, action, profile, request, journal] = args.as_slice() else {
+                return Err("demotion-run requires verify|apply PROFILE REQUEST JOURNAL".into());
+            };
+            let report = demotion_provider::run(
+                action,
+                Path::new(profile),
+                Path::new(request),
+                Path::new(journal),
+            )?;
+            println!("{report}");
+            return Ok(());
+        }
+        #[cfg(not(all(windows, feature = "annex-read")))]
+        return Err("demotion-run requires Windows provider-process support".into());
+    }
     if args
         .first()
         .is_some_and(|action| action == "demotion-prepare")

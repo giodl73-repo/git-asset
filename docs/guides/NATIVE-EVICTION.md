@@ -114,6 +114,16 @@ exact objects, provider policy and plan, consumer roster, and verification budge
 The command rechecks the match and writes a new request without widening the
 batch. Use that same request with the provider's verification and apply commands.
 
+On Windows with provider-process support, invoke the fixed REEL command through
+`git asset catalogue demotion-run verify PROFILE REQUEST JOURNAL`. The private
+profile schema is `git-asset.reel-demotion-provider.experimental-1`. It pins
+`executable`, `executable_sha256`, `project_root`, `journal` and
+`request_sha256`. Use absolute paths in owner-controlled directories.
+`allow_apply` defaults to false. An explicitly admitted `apply` uses the pinned
+request and its original apply journal. An uncertain outcome requires inspection
+of that journal before retry. The provider still performs live checks and writes
+the authoritative result. Git-asset validates the returned request and plan IDs.
+
 The ordinary demotion provider requires a keeper. Final retirement of a
 rebuildable render has its own execution and approval path.
 
