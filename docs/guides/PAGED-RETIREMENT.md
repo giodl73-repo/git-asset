@@ -175,6 +175,10 @@ as `predecessor` and `replacement`, and `observed_at_ms` and positive
 The command evaluates supplied assertions, holds unknown fields and emits no
 decision usable by the executor. It does not read Git, resolve the evidence
 digest, or open any cache. Use an independently trusted producer for the request.
+Pass the optional selection report as the final argument to match the commit
+pair and exact old binding/object. A surviving direct binding holds that digest
+even if the request asserts no protection. Both documents are bounded to 64 KiB;
+a matching report is consistency evidence and still requires trusted provenance.
 
 `git asset storage render-retirement verify-inputs REQUEST` checks a supplied
 list of exact retained objects through the local retention engine. Provide

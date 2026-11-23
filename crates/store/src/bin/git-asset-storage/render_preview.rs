@@ -138,6 +138,46 @@ struct Version {
     rebuild_evidence: Option<Digest>,
 }
 
+#[derive(Deserialize)]
+struct SelectionReport {
+    schema: String,
+    predecessor: String,
+    replacement: String,
+    changes: Vec<SelectionChange>,
+}
+
+#[derive(Deserialize)]
+struct SelectionChange {
+    asset: LogicalPath,
+    previous_object: Object,
+    same_digest_directly_bound_in_replacement: bool,
+}
+
+fn selection_holds(request: &Request, selection: SelectionReport) -> Result<BTreeSet<Digest>> {
+    if selection.schema != "git-asset.selection-changes.experimental-1"
+        || selection.predecessor != request.predecessor
+        || selection.replacement != request.replacement
+    {
+        return Err("selection_basis_mismatch");
+    }
+    let mut changes = BTreeMap::new();
+    let mut holds = BTreeSet::new();
+    for row in selection.changes {
+        if row.same_digest_directly_bound_in_replacement {
+            holds.insert(row.previous_object.sha256.clone());
+        }
+        if changes.insert(row.asset, row.previous_object).is_some() {
+            return Err("duplicate_selection_change");
+        }
+    }
+    for version in &request.versions {
+        if changes.get(&version.binding) != Some(&version.object) {
+            return Err("selection_object_mismatch");
+        }
+    }
+    Ok(holds)
+}
+
 fn exact_commit(commit: &str) -> bool {
     matches!(commit.len(), 40 | 64)
         && commit
@@ -146,7 +186,7 @@ fn exact_commit(commit: &str) -> bool {
         && commit.bytes().any(|b| b != b'0')
 }
 
-fn preview(request: Request) -> Result<Vec<u8>> {
+fn preview(request: Request, selection: Option<SelectionReport>) -> Result<Vec<u8>> {
     if request.schema != REQUEST
         || !exact_commit(&request.predecessor)
         || !exact_commit(&request.replacement)
@@ -157,6 +197,11 @@ fn preview(request: Request) -> Result<Vec<u8>> {
     {
         return Err("invalid_request");
     }
+    let selection_report_matched = selection.is_some();
+    let direct_holds = selection
+        .map(|report| selection_holds(&request, report))
+        .transpose()?
+        .unwrap_or_default();
     let mut bindings = BTreeSet::new();
     let mut objects = BTreeMap::new();
     let mut rows = Vec::new();
@@ -165,6 +210,9 @@ fn preview(request: Request) -> Result<Vec<u8>> {
             return Err("duplicate_binding");
         }
         let mut holds = Vec::new();
+        if direct_holds.contains(&version.object.sha256) {
+            holds.push("direct_binding_survives");
+        }
         if version.derived_render != Some(true) {
             holds.push("derived_render_unconfirmed");
         }
@@ -218,6 +266,7 @@ fn preview(request: Request) -> Result<Vec<u8>> {
         "observed_at_ms":request.observed_at_ms,"minimum_age_ms":request.minimum_age_ms,
         "rows":rows,"eligible_unique_logical_bytes":eligible_logical_bytes,
         "physical_reclaim_bytes":null,"archive_destination":null,
+        "selection_report_matched":selection_report_matched,
         "evidence_verified_by_command":false,"removal_authority":false
     }))
 }
@@ -225,12 +274,16 @@ fn preview(request: Request) -> Result<Vec<u8>> {
 pub(super) fn run(args: &[String]) -> Result<Vec<u8>> {
     match args {
         [action] if action == "describe" => report(json!({
-            "operations":["preview REQUEST","verify-inputs REQUEST"],"request_schema":REQUEST,
+            "operations":["preview REQUEST [SELECTION_REPORT]","verify-inputs REQUEST"],"request_schema":REQUEST,
             "input_request_schema":INPUT_REQUEST,"max_inputs":MAX_INPUTS,"max_input_bytes":MAX_INPUT_BYTES,
             "max_document_bytes":65536,"max_versions":MAX_VERSIONS,
             "removal_authority":false
         })),
-        [action, path] if action == "preview" => preview(document(Path::new(path))?),
+        [action, path] if action == "preview" => preview(document(Path::new(path))?, None),
+        [action, path, selection] if action == "preview" => preview(
+            document(Path::new(path))?,
+            Some(document(Path::new(selection))?),
+        ),
         [action, path] if action == "verify-inputs" => verify_inputs(document(Path::new(path))?),
         _ => Err("usage"),
     }
@@ -273,7 +326,7 @@ mod tests {
             version("old/c", b"held"),
             protected,
         ];
-        let result: Value = serde_json::from_slice(&preview(request(rows)).unwrap()).unwrap();
+        let result: Value = serde_json::from_slice(&preview(request(rows), None).unwrap()).unwrap();
         assert_eq!(result["eligible_unique_logical_bytes"], 6);
         assert_eq!(result["rows"][2]["holds"], json!(["shared_object_held"]));
         assert_eq!(result["archive_destination"], Value::Null);
@@ -288,7 +341,7 @@ mod tests {
         unknown.rebuild_evidence = None;
         unknown.superseded_at_ms = Some(101);
         let result: Value =
-            serde_json::from_slice(&preview(request(vec![unknown])).unwrap()).unwrap();
+            serde_json::from_slice(&preview(request(vec![unknown]), None).unwrap()).unwrap();
         assert_eq!(result["eligible_unique_logical_bytes"], 0);
         assert_eq!(
             result["rows"][0]["holds"],
@@ -298,5 +351,34 @@ mod tests {
                 "rebuild_evidence_missing"
             ])
         );
+    }
+
+    #[test]
+    fn matched_selection_reports_hold_live_bindings_and_refuse_mismatches() {
+        let request = request(vec![version("old/render", b"render")]);
+        let version = &request.versions[0];
+        let report = |previous_object| SelectionReport {
+            schema: "git-asset.selection-changes.experimental-1".into(),
+            predecessor: request.predecessor.clone(),
+            replacement: request.replacement.clone(),
+            changes: vec![SelectionChange {
+                asset: version.binding.clone(),
+                previous_object,
+                same_digest_directly_bound_in_replacement: true,
+            }],
+        };
+        assert_eq!(
+            selection_holds(&request, report(Object::from_bytes(b"wrong"))),
+            Err("selection_object_mismatch")
+        );
+        let matched = report(version.object.clone());
+        let result: Value =
+            serde_json::from_slice(&preview(request, Some(matched)).unwrap()).unwrap();
+        assert_eq!(result["selection_report_matched"], true);
+        assert_eq!(
+            result["rows"][0]["holds"],
+            json!(["direct_binding_survives"])
+        );
+        assert_eq!(result["eligible_unique_logical_bytes"], 0);
     }
 }
