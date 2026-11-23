@@ -100,6 +100,9 @@ fn preview(request: Request) -> Result<Vec<u8>> {
                 holds.push("shared_object_held");
             }
             json!({"binding":version.binding,"object":version.object,"holds":holds,
+                "superseded_at_ms":version.superseded_at_ms,
+                "derived_render":version.derived_render,"protected":version.protected,
+                "rebuild_evidence":version.rebuild_evidence,
             "eligible_under_supplied_evidence":holds.is_empty()})
         })
         .collect();
