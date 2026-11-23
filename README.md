@@ -108,6 +108,29 @@ working cache. Eviction requires current protection checks and verified retained
 custody. Final deletion is a separate explicit retirement decision; losing the
 selected label is insufficient.
 
+### Retain inputs and choose which releases to back up
+
+Use external backup space for original and versioned primary assets, plus the
+recipes and dependencies needed to rebuild them. Retain exact release bytes when
+a delivery, audit or other obligation calls for them, or when a rebuild cannot
+meet the project's recovery needs. A current selection can stay protected in its
+working cache while the project makes a separate backup decision.
+
+A project can designate superseded, rebuildable renders for final retirement
+without first archiving them. Before enabling that policy, define the minimum
+age after supersession, which output classes qualify, and whether recovery means
+identical bytes or an equivalent rebuild. Record the exact historical release,
+verified retained input and recipe closure, and evidence that the chosen rebuild
+standard can be met. Keep any output with an active selection, job, delivery,
+retention obligation or unresolved shared reference.
+
+A merge can trigger a preview against the exact committed selection. Production
+automation would need to recheck protection across enrolled writers, bind the
+decision to the exact versions and placements, and record the outcome. The
+catalogue reports working-cache usage today. It does not execute this render
+retirement policy. The final-retirement specification describes the remaining
+execution gates. [Final retirement](specs/FINAL-RETIREMENT.md)
+
 The capability table below describes what is implemented.
 
 ## When a working drive is full

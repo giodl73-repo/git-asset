@@ -53,6 +53,62 @@ fn success(output: Output) -> Value {
     assert!(output.stderr.is_empty());
     serde_json::from_slice(&output.stdout).unwrap()
 }
+
+#[test]
+fn render_inputs_require_exact_settled_retention() {
+    let f = Fixture::new();
+    let root = f.root.path();
+    let keeper = &f.profile["backups"][0];
+    let mut request = json!({
+        "schema":"git-asset.render-input-verification-request.experimental-1",
+        "store_root":keeper["root"],"store_identity":keeper["enrollment"]["store"],
+        "ledger_root":keeper["ledger_root"],"minimum":keeper["minimum"],
+        "max_bytes":f.publication.object.bytes,
+        "inputs":[{"object":f.publication.object,"grant":keeper["grant"]}]
+    });
+    let run = |value: &Value| {
+        write(root, "render-inputs.json", value);
+        Process::new(env!("CARGO_BIN_EXE_git-asset-storage"))
+            .args(["render-retirement", "verify-inputs"])
+            .arg(root.join("render-inputs.json"))
+            .output()
+            .unwrap()
+    };
+    let verified = success(run(&request));
+    assert_eq!(
+        verified["verified_inputs"][0]["object"],
+        json!(f.publication.object)
+    );
+    assert_eq!(verified["closure_complete"], false);
+    assert_eq!(verified["removal_authority"], false);
+    request["max_bytes"] = json!(0);
+    let refused = run(&request);
+    assert!(!refused.status.success());
+    assert_eq!(
+        serde_json::from_slice::<Value>(&refused.stdout).unwrap()["code"],
+        "input_budget"
+    );
+    request["max_bytes"] = json!(f.publication.object.bytes);
+    let payload = root
+        .join("backup/objects")
+        .join(f.publication.object.sha256.as_str());
+    let corrupt = vec![b'x'; usize::try_from(f.publication.object.bytes).unwrap()];
+    fs::write(&payload, &corrupt).unwrap();
+    let refused = run(&request);
+    assert!(!refused.status.success());
+    assert_eq!(
+        serde_json::from_slice::<Value>(&refused.stdout).unwrap()["code"],
+        "retained_input_corrupt"
+    );
+    assert_eq!(fs::read(&payload).unwrap(), corrupt);
+    fs::rename(payload, root.join("displaced-fixture-payload")).unwrap();
+    let refused = run(&request);
+    assert!(!refused.status.success());
+    assert_eq!(
+        serde_json::from_slice::<Value>(&refused.stdout).unwrap()["code"],
+        "retained_input_missing"
+    );
+}
 struct Fixture {
     root: tempfile::TempDir,
     profile: Value,

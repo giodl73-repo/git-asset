@@ -26,6 +26,69 @@ pub mod teaching;
 pub mod works;
 
 pub type Result<T> = std::result::Result<T, String>;
+
+/// Compare exact selected objects from one enrolled project without probing storage.
+pub fn selection_changes(
+    config: &Config,
+    project: &str,
+    predecessor: &str,
+    replacement: &str,
+) -> Result<Value> {
+    let enrollment = config
+        .projects
+        .iter()
+        .find(|entry| entry.id == project)
+        .ok_or("Project not enrolled")?;
+    let profile: ResolverProfile = read(&enrollment.profile, 65536)?;
+    if profile.schema != "tig.asset-resolver-profile.experimental-1" {
+        return Err("Unsupported resolver profile".into());
+    }
+    let previous = Project::capture(&profile, predecessor)?;
+    let current = Project::capture(&profile, replacement)?;
+    let current_by_id: BTreeMap<_, _> = current
+        .selected_records()
+        .map(|record| (&record.reference().id, record))
+        .collect();
+    let current_objects: BTreeSet<_> = current
+        .selected_records()
+        .flat_map(|record| {
+            record.selected().ok().into_iter().chain(
+                record
+                    .stream_bindings()
+                    .iter()
+                    .map(|binding| &binding.object),
+            )
+        })
+        .map(|object| &object.sha256)
+        .collect();
+    let mut rows = Vec::new();
+    for record in previous.selected_records() {
+        let Ok(object) = record.selected() else {
+            continue;
+        };
+        let asset = &record.reference().id;
+        let new_record = current_by_id.get(asset).copied();
+        let new_object = new_record.and_then(|record| record.selected().ok());
+        if new_object == Some(object) {
+            continue;
+        }
+        if rows.len() == 1024 {
+            return Err("Selection changes exceed 1024-row report budget".into());
+        }
+        rows.push(json!({
+            "asset":asset,"previous_object":object,"replacement_object":new_object,
+            "previous_record":record.reference(),
+            "replacement_record":new_record.map(Resolved::reference),
+            "same_digest_directly_bound_in_replacement":current_objects.contains(&object.sha256)
+        }));
+    }
+    Ok(json!({
+        "schema":"git-asset.selection-changes.experimental-1","project":project,
+        "predecessor":predecessor,"replacement":replacement,
+        "predecessor_checkpoint":previous.checkpoint(),"replacement_checkpoint":current.checkpoint(),
+        "changes":rows,"consumer_coverage_complete":false,"removal_authorized":false
+    }))
+}
 #[derive(Clone, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct ResolverProfile {

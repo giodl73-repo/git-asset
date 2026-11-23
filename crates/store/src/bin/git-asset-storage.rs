@@ -23,6 +23,8 @@ mod age;
 mod bulk;
 #[path = "git-asset-storage/paged.rs"]
 mod paged;
+#[path = "git-asset-storage/render_preview.rs"]
+mod render_preview;
 #[path = "git-asset-storage/retire.rs"]
 mod retire;
 #[cfg(feature = "s3")]
@@ -109,6 +111,9 @@ fn report(value: Value) -> Result<Vec<u8>> {
     identity::canonical_json(&value).map_err(|_| "response_budget")
 }
 fn run(args: &[String]) -> Result<Vec<u8>> {
+    if args.first().is_some_and(|s| s == "render-retirement") {
+        return render_preview::run(&args[1..]);
+    }
     if args.first().is_some_and(|s| s == "paged") {
         return paged::run(&args[1..]);
     }
@@ -130,7 +135,7 @@ fn run(args: &[String]) -> Result<Vec<u8>> {
             "schema": RESPONSE, "operations": ["plan REQUEST", "peak PROFILE PLAN", "status PROFILE PLAN INDEX", "apply PROFILE PLAN INDEX", "resume PROFILE PLAN INDEX"],
             "max_actions": orchestration::MAX_ACTIONS, "max_document_bytes": 65536,
             "copy_only": true, "removal_authority": false,
-            "profile_schema": "tig.storage-profile.design-1", "additional_interfaces":{"age":"git-asset-storage age describe","bulk":"git-asset-storage bulk describe","paged":"git-asset-storage paged describe","retire":"git-asset-storage retire describe","s3":{"command":"git-asset-storage s3 describe","compiled":cfg!(feature="s3")}}
+            "profile_schema": "tig.storage-profile.design-1", "additional_interfaces":{"render_retirement":"git-asset-storage render-retirement describe","age":"git-asset-storage age describe","bulk":"git-asset-storage bulk describe","paged":"git-asset-storage paged describe","retire":"git-asset-storage retire describe","s3":{"command":"git-asset-storage s3 describe","compiled":cfg!(feature="s3")}}
         })),
         Some("plan") if args.len() == 2 => {
             let request: PlanRequest = document(Path::new(&args[1]))?;

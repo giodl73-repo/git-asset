@@ -37,12 +37,11 @@ fn profiles(f: &Fixture) -> Vec<Profile> {
     profiles
 }
 fn fixture() -> (Fixture, AssetSnapshot) {
+    fixture_with_output(b"unique")
+}
+fn fixture_with_output(output: &[u8]) -> (Fixture, AssetSnapshot) {
     let f = Fixture::new();
-    for (name, bytes) in [
-        ("a", b"shared".as_slice()),
-        ("b", b"shared"),
-        ("c", b"unique"),
-    ] {
+    for (name, bytes) in [("a", b"shared".as_slice()), ("b", b"shared"), ("c", output)] {
         f.record(name, &format!("asset/{name}"), true, json!([]), Some(bytes));
     }
     let snapshot = capture(&reader(f.root()), commit(f.root()));

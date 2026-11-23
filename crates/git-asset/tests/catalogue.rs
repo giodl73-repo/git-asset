@@ -27,6 +27,51 @@ struct Fixture {
 }
 
 #[test]
+fn selection_changes_uses_exact_commits_and_reports_surviving_alias() {
+    let f = Fixture::new();
+    let repo = f.temp.path().join("alpha");
+    let mut record: Value =
+        serde_json::from_slice(&git(&repo, &["show", "HEAD:records/0.asset"]).stdout).unwrap();
+    let old = record["selected"].clone();
+    let new = Object::from_bytes(b"new render candidate");
+    record["selected"] = json!(new);
+    write(&repo, "records/0.asset", &record);
+    let replacement = commit(&repo);
+    let report_path = f.temp.path().join("selection-changes.json");
+    let run = |predecessor: &str| {
+        std::process::Command::new(env!("CARGO_BIN_EXE_git-asset-catalogue"))
+            .arg("selection-changes")
+            .arg(&f.config)
+            .args(["alpha", predecessor, &replacement])
+            .arg(&report_path)
+            .output()
+            .unwrap()
+    };
+    assert!(!run("HEAD").status.success());
+    assert!(!report_path.exists());
+    let result = run(&f.first);
+    assert!(result.status.success(), "{result:?}");
+    let saved = fs::read(&report_path).unwrap();
+    let report: Value = serde_json::from_slice(&saved).unwrap();
+    let changes = report["changes"].as_array().unwrap();
+    assert_eq!(changes.len(), 1);
+    assert_eq!(changes[0]["previous_object"], old);
+    assert_eq!(changes[0]["replacement_object"], json!(new));
+    assert_eq!(changes[0]["previous_record"]["id"], "asset/0");
+    assert_ne!(
+        changes[0]["previous_record"],
+        changes[0]["replacement_record"]
+    );
+    assert_eq!(
+        changes[0]["same_digest_directly_bound_in_replacement"],
+        true
+    );
+    assert_eq!(report["removal_authorized"], false);
+    assert!(!run(&f.first).status.success());
+    assert_eq!(fs::read(&report_path).unwrap(), saved);
+}
+
+#[test]
 fn shared_selected_is_exact_deduplicated_scoped_and_payload_free() {
     use git_asset::catalogue::shared::compare;
     let f = Fixture::new();
