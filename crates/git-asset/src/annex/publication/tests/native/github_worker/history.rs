@@ -75,6 +75,7 @@ pub(super) fn exercise(
     policy.actions.as_mut().unwrap().history = Some(profile.clone());
     let mut indexed_target = None;
     let mut actions = indexed.then(|| batch::pending_namespace_at(&f.root.join("archive-actions")));
+    let mut backup_recipe = None;
     if indexed {
         let old = policy.producers.take().unwrap();
         let mut retained = heads::register(m, old.source, "archive-retained").head;
@@ -122,6 +123,50 @@ pub(super) fn exercise(
         read.read_to_end(&mut bytes).unwrap();
         assert_eq!(bytes, b"synthetic version 2");
         retained.profile.scope.allow_store = true;
+        let recipe = prepare_golden(m);
+        let mut retained_ns = Namespace::open(&retained.root, &retained.minimum).unwrap();
+        let mut retained_nodes =
+            MetadataStore::open(&m.root.join("metadata"), m.metadata.checkpoint()).unwrap();
+        use crate::annex::producer_index::{Record, update as roots};
+        let state = retained_ns
+            .source(&retained.profile.scope.prefix)
+            .unwrap()
+            .unwrap();
+        let plan = roots::prepare(
+            &retained.profile,
+            state.current.as_ref(),
+            &[roots::Change {
+                expected_record: None,
+                record: Record::new(recipe.clone(), None).unwrap(),
+            }],
+            &mut retained_ns,
+            &mut retained_nodes,
+        )
+        .unwrap()
+        .unwrap();
+        roots::apply(
+            &retained.profile,
+            &plan,
+            &mut retained_ns,
+            &mut retained_nodes,
+            || Ok(()),
+        )
+        .unwrap();
+        m.metadata = retained_nodes.finished_reader().unwrap();
+        backup_recipe = Some(
+            crate::annex::replication::Plan::new(
+                &crate::annex::replication::Profile {
+                    source: policy.copy.destination.clone(),
+                    destination: policy.copy.source.clone(),
+                    source_domain: policy.copy.destination_domain.clone(),
+                    destination_domain: policy.copy.source_domain.clone(),
+                },
+                golden,
+                recipe,
+            )
+            .unwrap(),
+        );
+        policy.actions.as_mut().unwrap().handoff = false;
         indexed_target = Some(Namespace::open(&retained.root, &retained.minimum).unwrap());
         policy.producer_heads = Some(github::native::producers::Heads {
             source: retained,
@@ -144,6 +189,34 @@ pub(super) fn exercise(
         stream_bytes: 1,
         millis: 60000,
     };
+    if let Some(recipe) = backup_recipe {
+        let copy_budget = github::placement::Budget {
+            stream_bytes: 1024 * 1024,
+            ..budget
+        };
+        let report = batch::configured(worker, &policy, &trust, &request)
+            .reconcile(
+                None,
+                &copy_budget,
+                &mut m.resources(),
+                &mut f.resources(),
+                || Ok(1000),
+            )
+            .unwrap();
+        assert_eq!(
+            report.outcomes[0].state,
+            "backed_up",
+            "{}",
+            serde_json::to_string(&report).unwrap()
+        );
+        let mut read = m
+            .publisher()
+            .reopen(recipe.destination(), &mut m.resources())
+            .unwrap();
+        let mut bytes = Vec::new();
+        read.read_to_end(&mut bytes).unwrap();
+        assert_eq!(bytes, b"synthetic version 2");
+    }
     // Native repositories are offline throughout the metadata-only pass.
     let configs: Vec<_> = [
         m.profile
@@ -559,6 +632,14 @@ pub(super) fn exercise(
 }
 
 fn publish_golden(f: &mut Fixture) -> Plan {
+    let golden = prepare_golden(f);
+    let old = std::mem::replace(&mut f.plan, golden.clone());
+    retirement::publish(f);
+    f.plan = old;
+    golden
+}
+
+fn prepare_golden(f: &mut Fixture) -> Plan {
     use crate::annex::control;
     let bytes = b"synthetic version 2";
     let mut request = f.plan.request.clone();
@@ -611,7 +692,7 @@ fn publish_golden(f: &mut Fixture) -> Plan {
     )
     .unwrap();
     let old = std::mem::replace(&mut f.plan, golden.clone());
-    retirement::publish(f);
+    f.refresh();
     f.plan = old;
     golden
 }

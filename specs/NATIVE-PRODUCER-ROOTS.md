@@ -288,3 +288,8 @@ Golden publication fixture, input60b3a5f. Existing owner/archival controls and
 synthetic scope apply. Publish distinct new bytes in the working pool, register
 against its enrolled index, select that Object through Git, and verify both the
 working golden bytes and the separate historical retained read. L0/L1/L2 as above.
+
+Golden backup fixture, input48753f1. Same owner, archive and bounded receiver
+controls. Enter with registered working publication and an admitted retained
+recipe. Exit after authenticated backup and exact retained readback. L0 pins,
+L1 worker/strict checks, L2 synthetic native backup and historical reopen.
