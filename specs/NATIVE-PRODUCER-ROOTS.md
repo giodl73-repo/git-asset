@@ -249,3 +249,10 @@ historical receipts never reselect. Placement holds missing/unknown producers;
 custody/control are not fabricated by metadata. Privacy uses fixed enrolled
 namespaces and synthetic fixtures. Adoption keeps the flag default-denied/omitted
 and preserves previous policy hashes; P2-P6 acceptance gates remain OPEN.
+
+Release fence refinement, input54a74e49d38791df3983b4baf490214401855493.
+Same WP/REQ/SPEC/IF/PKG and RUST/PROVIDER/INTEGRATION controls as above.
+Enter with enrolled retained head and exact archive. Exit with a contiguous
+sequence of verified index versions and its final generation held through
+working release, or a stale hold. L0 pins/diff, L1 focused worker/strict checks,
+L2 synthetic archive and release. Scope is metadata fencing only.

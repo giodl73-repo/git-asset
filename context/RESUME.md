@@ -139,6 +139,9 @@ hosted45087332687. A new head requires its own hosted qualification.
 Ordinary/bare native renamed-definition (shared bytes) placement/retry/read passes.
 It does not qualify initial different-byte producer admission or control handoff.
 
+Archive release now holds the final verified retained index generation through
+working release. Unexpected index generations between rows stop with a stale hold.
+
 Next: initial owner producer admission, retained control handoff and stale
 ordinary-index recovery; do not mistake recorded completion for custody. Remaining full gates:
 owner publication/archival orchestration, unexplained-loss/deprecated backup

@@ -36,7 +36,7 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
         &mut self,
         pass: Pass<'_>,
         now: &mut impl FnMut() -> Result<u64, AdmissionError>,
-    ) -> Report {
+    ) -> (Report, Option<roots::HeldRoot>) {
         let mut out = Report {
             examined: 0,
             indexed: 0,
@@ -46,7 +46,7 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
             index_limits_per_row: None,
             hold: None,
         };
-        let result = (|| -> Result<(), Error> {
+        let result = (|| -> Result<roots::HeldRoot, Error> {
             let heads = self
                 .policy
                 .producer_heads
@@ -78,6 +78,7 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
                     .entry(member.object.sha256.clone())
                     .or_insert(member);
             }
+            let mut expected_head = None;
             for member in distinct.into_values() {
                 let gate =
                     |worker: &Self, observer: &mut Namespace, clock: &mut _| -> Result<(), Error> {
@@ -94,6 +95,13 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
                     .map_err(|_| publication::Error::NeedsRecovery)?;
                 let held = head.profile.hold_current(pass.namespace, &reader)?;
                 let version = held.version().clone();
+                if expected_head
+                    .as_ref()
+                    .is_some_and(|expected| expected != &version)
+                {
+                    return Err(publication::Error::Stale.into());
+                }
+                expected_head = Some(version.clone());
                 let (retained, m) = Index::from_root(version.selection.root.clone()).get(
                     &member.object,
                     pass.nodes,
@@ -199,6 +207,7 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
                 )
                 .map_err(|e| refused.take().unwrap_or(Error::Native(e)))?;
                 let current = receipt.current;
+                expected_head = Some(receipt.version.clone());
                 out.registration = Some(receipt);
                 out.indexed += 1;
                 if let Some(e) = refused {
@@ -208,11 +217,25 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
                     return Err(publication::Error::NeedsRecovery.into());
                 }
             }
-            Ok(())
+            let reader = pass
+                .nodes
+                .finished_reader()
+                .map_err(|_| publication::Error::NeedsRecovery)?;
+            let held = head.profile.hold_current(pass.namespace, &reader)?;
+            if expected_head
+                .as_ref()
+                .is_some_and(|expected| expected != held.version())
+            {
+                return Err(publication::Error::Stale.into());
+            }
+            Ok(held)
         })();
-        if let Err(error) = result {
-            out.hold = Some(batch::Failure::from(&error));
+        match result {
+            Ok(held) => (out, Some(held)),
+            Err(error) => {
+                out.hold = Some(batch::Failure::from(&error));
+                (out, None)
+            }
         }
-        out
     }
 }

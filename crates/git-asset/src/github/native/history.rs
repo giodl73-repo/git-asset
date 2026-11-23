@@ -288,6 +288,7 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
                     return Err(e);
                 }
                 outcome.state = "archived";
+                let _index_generation;
                 if self
                     .policy
                     .actions
@@ -295,7 +296,7 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
                     .is_some_and(|a| a.archive_index)
                 {
                     let target = pass.index.as_mut().ok_or(publication::Error::Unsupported)?;
-                    let indexed = self.index_archive(
+                    let (indexed, generation) = self.index_archive(
                         indexing::Pass {
                             profile: &p,
                             archive: &loaded,
@@ -309,6 +310,7 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
                         },
                         &mut now,
                     );
+                    _index_generation = generation;
                     outcome.hold = indexed.hold.clone();
                     outcome.indexing = Some(indexed);
                     if outcome.hold.is_some() {
