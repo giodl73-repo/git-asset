@@ -37,9 +37,22 @@ fn selection_changes_uses_exact_commits_and_reports_surviving_alias() {
     record["selected"] = json!(new);
     write(&repo, "records/0.asset", &record);
     let replacement = commit(&repo);
-    let config = Config::load(&f.config).unwrap();
-    let report =
-        git_asset::catalogue::selection_changes(&config, "alpha", &f.first, &replacement).unwrap();
+    let report_path = f.temp.path().join("selection-changes.json");
+    let run = |predecessor: &str| {
+        std::process::Command::new(env!("CARGO_BIN_EXE_git-asset-catalogue"))
+            .arg("selection-changes")
+            .arg(&f.config)
+            .args(["alpha", predecessor, &replacement])
+            .arg(&report_path)
+            .output()
+            .unwrap()
+    };
+    assert!(!run("HEAD").status.success());
+    assert!(!report_path.exists());
+    let result = run(&f.first);
+    assert!(result.status.success(), "{result:?}");
+    let saved = fs::read(&report_path).unwrap();
+    let report: Value = serde_json::from_slice(&saved).unwrap();
     let changes = report["changes"].as_array().unwrap();
     assert_eq!(changes.len(), 1);
     assert_eq!(changes[0]["previous_object"], old);
@@ -49,9 +62,8 @@ fn selection_changes_uses_exact_commits_and_reports_surviving_alias() {
         true
     );
     assert_eq!(report["removal_authorized"], false);
-    assert!(
-        git_asset::catalogue::selection_changes(&config, "alpha", "HEAD", &replacement).is_err()
-    );
+    assert!(!run(&f.first).status.success());
+    assert_eq!(fs::read(&report_path).unwrap(), saved);
 }
 
 #[test]
