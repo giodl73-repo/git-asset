@@ -614,6 +614,11 @@ fn named_object_placement_versions_shared_bytes_and_stale_previews() {
         b"old body",
     )
     .unwrap();
+    fs::hard_link(
+        fast.join("objects").join(old.sha256.as_str()),
+        root.join("old-alias"),
+    )
+    .unwrap();
     let repo = root.join("alpha");
     let mut record: Value = serde_json::from_slice(
         &git(&repo, &["show", &format!("{}:records/0.asset", f.first)]).stdout,
@@ -787,6 +792,8 @@ fn named_object_placement_versions_shared_bytes_and_stale_previews() {
     assert_eq!(evidence["state"], "verify_candidate");
     assert_eq!(evidence["archive_bytes_verified"], false);
     assert!(evidence["reclaimable_bytes"].is_null());
+    #[cfg(any(unix, all(windows, feature = "annex-read")))]
+    assert_eq!(evidence["single_path_reclaim_estimate"], 0);
     assert_eq!(review["removal_authorized"], false);
     assert!(
         c.cache_eviction_preview(observed.observed, 1, "stale")

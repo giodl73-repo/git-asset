@@ -55,6 +55,25 @@ fn hash(domain: &[u8], bytes: &[u8]) -> [u8; 32] {
         .finalize()
         .into()
 }
+/// Query a named regular file handle. Reparse points are outside this view.
+pub fn hard_links(file: &File) -> io::Result<u64> {
+    use windows_sys::Win32::Storage::FileSystem::{
+        BY_HANDLE_FILE_INFORMATION, FILE_ATTRIBUTE_DIRECTORY, FILE_ATTRIBUTE_REPARSE_POINT,
+        GetFileInformationByHandle,
+    };
+    let mut info = BY_HANDLE_FILE_INFORMATION::default();
+    // SAFETY: the borrowed file remains open and info is valid writable storage.
+    if unsafe { GetFileInformationByHandle(file.as_raw_handle(), &mut info) } == 0 {
+        return Err(io::Error::last_os_error());
+    }
+    if info.dwFileAttributes & (FILE_ATTRIBUTE_DIRECTORY | FILE_ATTRIBUTE_REPARSE_POINT) != 0
+        || info.nNumberOfLinks == 0
+    {
+        return Err(unsupported());
+    }
+    Ok(u64::from(info.nNumberOfLinks))
+}
+
 fn volume_name(directory: &File) -> io::Result<String> {
     let mut buffer = [0u16; 1024];
     // SAFETY: live borrowed file handle and initialized output buffer with exact u16 count.

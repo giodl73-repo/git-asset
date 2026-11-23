@@ -58,6 +58,7 @@ pub(super) struct Sample {
     pub(super) domain: Option<String>,
     pub(super) bytes: u64,
     pub(super) allocated: Option<u64>,
+    pub(super) hard_links: Option<u64>,
     pub(super) time: Option<u64>,
     pub(super) projects: BTreeSet<String>,
     pub(super) conflict: bool,
@@ -201,6 +202,7 @@ impl Catalogue {
                                 domain: domain.clone(),
                                 bytes: copy.bytes,
                                 allocated: copy.allocated_bytes,
+                                hard_links: copy.hard_links,
                                 time: observation.report.census_completed_unix_seconds,
                                 projects: references
                                     .get(&e.row.sha256)
@@ -211,6 +213,10 @@ impl Catalogue {
                             let k = (key.clone(), e.row.sha256.clone());
                             if let Some(old) = samples.get_mut(&k) {
                                 let conflict = old.conflict
+                                    || old
+                                        .hard_links
+                                        .zip(sample.hard_links)
+                                        .is_some_and(|(a, b)| a != b)
                                     || old.bytes != sample.bytes
                                     || old
                                         .allocated

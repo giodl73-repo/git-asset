@@ -217,9 +217,16 @@ impl Catalogue {
             } else {
                 "unknown"
             };
+            let linked = row["copies"].as_array().is_some_and(|copies| {
+                copies.iter().any(|copy| {
+                    copy["cache_id"] == cache
+                        && copy["hard_links"].as_u64().is_some_and(|links| links > 1)
+                })
+            });
             row["eviction_review"] = json!({
                 "state":state,"holds":review["holds"],"other_copy_listed":overlap,
-                "archive_bytes_verified":false,"reclaimable_bytes":null
+                "archive_bytes_verified":false,"reclaimable_bytes":null,
+                "single_path_reclaim_estimate":linked.then_some(0)
             });
         }
         let end = offset.saturating_add(rows.len());
@@ -623,7 +630,7 @@ impl Catalogue {
                 item.bytes = s.bytes;
             }
             item.conflict |= s.conflict;
-            item.copies.push(json!({"cache_id":cache_id(&s.cache),"domain":s.domain,"bytes":s.bytes,"allocated_bytes":s.allocated,"observed_at":s.time,"hash_verified":false}));
+            item.copies.push(json!({"cache_id":cache_id(&s.cache),"domain":s.domain,"bytes":s.bytes,"allocated_bytes":s.allocated,"hard_links":s.hard_links,"observed_at":s.time,"hash_verified":false}));
         }
         let mut rows = vec![];
         let mut kinds = BTreeSet::new();

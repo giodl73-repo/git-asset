@@ -7,15 +7,18 @@ use std::{
 
 #[cfg(windows)]
 fn physical(path: &Path) -> std::io::Result<(Option<String>, u64, Option<u64>)> {
-    // Safe standard-library metadata does not expose stable Windows file identity.
-    // Keep identity/link coverage unknown instead of treating paths as physical IDs.
     use std::os::windows::fs::OpenOptionsExt;
     // FILE_READ_ATTRIBUTES only; never request payload read access for accounting.
     let file = std::fs::OpenOptions::new()
         .access_mode(0x80)
         .share_mode(0x1 | 0x2 | 0x4)
+        .custom_flags(0x0020_0000) // FILE_FLAG_OPEN_REPARSE_POINT
         .open(path)?;
-    Ok((None, fs2::FileExt::allocated_size(&file)?, None))
+    #[cfg(feature = "annex-read")]
+    let links = git_asset_windows_process::storage::hard_links(&file).ok();
+    #[cfg(not(feature = "annex-read"))]
+    let links = None;
+    Ok((None, fs2::FileExt::allocated_size(&file)?, links))
 }
 #[cfg(unix)]
 fn physical(path: &Path) -> std::io::Result<(Option<String>, u64, Option<u64>)> {

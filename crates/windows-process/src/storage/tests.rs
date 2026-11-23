@@ -188,3 +188,13 @@ fn actual_declared_distinct_volume_pair_is_revalidated_without_identifier_output
     assert!(pair.revalidate().unwrap());
     assert_eq!(pair.fingerprints(), id);
 }
+
+#[test]
+fn counts_links_on_open_file() {
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("object");
+    let file = File::create(&path).unwrap();
+    assert_eq!(hard_links(&file).unwrap(), 1);
+    std::fs::hard_link(&path, dir.path().join("alias")).unwrap();
+    assert_eq!(hard_links(&file).unwrap(), 2);
+}

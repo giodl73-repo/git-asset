@@ -55,6 +55,9 @@ function cacheReviewControl(cache){
     entry.append(node('strong','',labels[review.state]),node('small','mono',item.sha256),
       node('p','muted',bytes(item.bytes)+' content, '+item.binding_count+' registered bindings'));
     review.holds.forEach(reason=>entry.append(node('p','muted',reason)));
+    if(review.single_path_reclaim_estimate===0)
+     entry.append(node('p','muted','Recorded hard links: removing one path is estimated to free no space.'));
+
     if(review.state==='verify_candidate'){
      for(const copy of item.copies.filter(copy=>copy.cache_id!==cache&&copy.bytes===item.bytes)){
       const location=objectCache(copy.cache_id,page);
