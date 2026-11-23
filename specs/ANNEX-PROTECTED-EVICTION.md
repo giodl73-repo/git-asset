@@ -44,6 +44,27 @@ loss, remote provider, renderer, automatic activation or production migration.
   denied without qualified owner-side handoff. Preserve originals, active jobs,
   minima and pending outcomes. No private implementation enters public ancestry.
 
+## Existing-cache handoff requirements
+
+A handoff binds the old writer roster and its last admitted generation, the
+exact source and keeper copies, and the successor namespace roster. Capture
+active demands and unsettled operations under the old authority. Unknown
+actors, aliases that can bypass the identified authority, or a pending
+operation with an unknown outcome hold the transition.
+
+Drain admitted old operations and fence new ones before committing the successor
+generation. The owner must enforce the fence at the old actors' effect
+boundary, including when a paused process resumes or a service restarts. A
+metadata lock held only by Git-Asset cannot fence a raw legacy command.
+
+Verify the original keeper under an independent live read guard. Record the
+source incarnation and retained original provenance without issuing a
+publication completion for a copy that was never made by that publisher.
+Carry the handoff identity into preview and fresh execution. Under the execution
+fences, recheck the generation, newly active demand, custody and source
+incarnation before allowing removal. Recovery must reopen the original handoff
+and any original removal intent. An ambiguous retirement or handoff stays held.
+
 ## Exit and named proof families
 
 L0: controls/roles/format/source hash/link/budget checks; old identifiers frozen.

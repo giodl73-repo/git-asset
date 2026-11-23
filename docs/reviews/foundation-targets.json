@@ -660,7 +660,7 @@
   {"path":"specs/AGENT-QUERY.schema.json","bytes":8000,"sha256":"ae399a70de439e3f0216d1663d352bc782d79fe387fdae6662b89fd5ca2ff0bd"},
   {"path":"specs/ANNEX-CANDIDATE-PUBLICATION.md","bytes":12760,"sha256":"13ed7ff369e910f5fe84762d8385c9ce0f059c0e6456d6560d949612c9599d0c"},
   {"path":"specs/ANNEX-MANAGED-READ.md","bytes":5708,"sha256":"3c4b083f1ce45d03fd7d80bb58ffa50e4e99fdbd1c62464b78b6c19b6e8aeb3a"},
-  {"path":"specs/ANNEX-PROTECTED-EVICTION.md","bytes":36390,"sha256":"d8354be1934a85c54f6d68809c82f5d6f5543dadc8ed63cde41d2247dca1c9f9"},
+  {"path":"specs/ANNEX-PROTECTED-EVICTION.md","bytes":37614,"sha256":"f383a80b8970f68367c555982fb47ef53b0494a89492f415842d9274afc2af94"},
   {"path":"specs/ANNEX-READ-ADAPTER.md","bytes":5632,"sha256":"7b2cfd9a42c69b9e5dbe1e302d96767df64b4cc42a82ae643ba0f79064c2c3c8"},
   {"path":"specs/ANNEX-RETAINED-COPY.md","bytes":6366,"sha256":"88f42252af1e8cb66aecad1037d6e8911d226a1b9fcf22c7dd9805332f35efef"},
   {"path":"specs/ASSET-DELIVERY-HISTORY.md","bytes":6748,"sha256":"e3a8794916b95580234529787e622b29730661a6358975720e6d7721f285e041"},
