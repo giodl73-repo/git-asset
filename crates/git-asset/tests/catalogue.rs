@@ -790,6 +790,7 @@ fn named_object_placement_versions_shared_bytes_and_stale_previews() {
         .unwrap();
     let evidence = &candidate["eviction_review"];
     assert_eq!(evidence["state"], "verify_candidate");
+    assert_eq!(evidence["older_copy_proposed"], true);
     assert_eq!(evidence["archive_bytes_verified"], false);
     assert!(evidence["reclaimable_bytes"].is_null());
     #[cfg(any(unix, all(windows, feature = "annex-read")))]

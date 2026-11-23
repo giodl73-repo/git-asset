@@ -111,8 +111,8 @@ test('an observed object without registered declaring records remains explicitly
 
 test('cache review carries its evidence basis to the next page',async()=>{
  const f=catalogueFixture({objectMode:true});await objects(f);
- f.override('/api/storage/eviction-preview',q=>({items:[],next_offset:q.basis?null:100,page_basis:'frozen'}));
+ f.override('/api/storage/eviction-preview',q=>({items:[{eviction_review:{state:"unknown",holds:[]}}],next_offset:q.basis?null:100,page_basis:'frozen'}));
  vm.runInContext("const panel=cacheReviewControl('hot');panel.isConnected=true;$('assets').append(panel)",f.context);
- await f.click('Review this cache for eviction');await f.click('Next review page');
+ await f.click('Review this cache for eviction');assert.match(f.get('assets').textContent,/No matching copy listed/);await f.click('Next review page');
  assert.equal(requests(f,'/api/storage/eviction-preview')[1].q.basis,'frozen');
 });

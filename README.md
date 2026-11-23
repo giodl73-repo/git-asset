@@ -112,22 +112,18 @@ The capability table below describes what is implemented.
 
 ## When a working drive is full
 
-Start with the catalogue's **Storage** view. Under **Cache locations**, find
-E: (or the working cache you want to review), then choose **Review this cache
-for eviction**. Follow the [catalogue setup](#catalogue-setup) if you have not enrolled
-any projects yet.
+In the catalogue, open **Storage → Cache locations**, find E: and choose
+**Review this cache for eviction**. See [catalogue setup](#catalogue-setup).
 
-- **Keep: current declared use** means an enrolled project still uses those bytes.
-- **Check archive copy** means a matching copy is listed elsewhere. **Verify bytes
-  at …** reads that specific copy and checks its hash and length. A successful
-  check still leaves retention and removal eligibility to be established.
-- **Unknown: keep for now** means the available records are insufficient. Read
-  the reasons under the object and use **Next review page** to continue.
+- **Keep** means an enrolled project uses those bytes.
+- **Check archive copy** lets you verify the listed copy's hash and length.
+  Retained custody still needs separate evidence.
+- **Unknown** gives reasons to keep the file for now. Use **Next review page**
+  to continue.
 
-File size is different from disk space recovered. For recorded hard links, removing
-one path is estimated to free zero bytes. Where reclaim is unknown, leave it out of
-your free-space budget. Existing caches shared with older tools still need a
-qualified writer handoff before Git-Asset can safely remove their copies.
+One hard-link removal may free zero bytes. Treat unknown reclaim as zero for
+planning. Caches shared with older tools require a qualified writer handoff.
+
 ## Move old versions off the working disk
 
 The current command surfaces are below. `PROFILE`, `REQUEST`, `PLAN` and

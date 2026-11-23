@@ -54,6 +54,10 @@ function cacheReviewControl(cache){
     const entry=section(item.title);
     entry.append(node('strong','',labels[review.state]),node('small','mono',item.sha256),
       node('p','muted',bytes(item.bytes)+' content, '+item.binding_count+' registered bindings'));
+    if(review.state==='unknown'){
+     if(!review.older_copy_proposed)entry.append(node('p','muted','No eligible older copy proposed by the recorded versions and policy.'));
+     if(!review.other_copy_listed)entry.append(node('p','muted','No matching copy listed at another location.'));
+    }
     review.holds.forEach(reason=>entry.append(node('p','muted',reason)));
     if(review.single_path_reclaim_estimate===0)
      entry.append(node('p','muted','Recorded hard links: removing one path is estimated to free no space.'));
