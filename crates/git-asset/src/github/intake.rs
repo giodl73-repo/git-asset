@@ -181,13 +181,14 @@ mod tests {
         thread,
     };
     #[test]
-    fn malformed_or_unauthenticated_http_never_dispatches_private_source_or_provider_work() {
+    fn only_authenticated_http_dispatches_and_stale_returns_conflict() {
         let f = Fixture::new();
         let token = f.token(&f.claims);
         let valid =
             serde_json::json!({"schema":"tig.github-request.design-1","commit":f.commit.as_str()})
                 .to_string();
-        for variant in 0..9 {
+        for variant in 0..11 {
+            let authenticated = variant >= 9;
             let listener = TcpListener::bind("127.0.0.1:0").unwrap();
             let mut client = TcpStream::connect(listener.local_addr().unwrap()).unwrap();
             let (incoming, _) = listener.accept().unwrap();
@@ -217,6 +218,7 @@ mod tests {
                     body = document.to_string();
                     length = body.len();
                 }
+                9 | 10 => (),
                 _ => {
                     length = 2049;
                     body.clear();
@@ -229,9 +231,14 @@ mod tests {
                         &f.trust,
                         &f.keys,
                         || Ok(1001),
-                        |_, _| {
+                        |_, cursor| {
+                            assert!(cursor.is_none());
                             calls.fetch_add(1, Ordering::SeqCst);
-                            Ok(serde_json::json!({"unexpected":true}))
+                            if variant == 10 {
+                                Err(Error::Stale)
+                            } else {
+                                Ok(serde_json::json!({"preview":true}))
+                            }
                         },
                     )
                 });
@@ -239,7 +246,7 @@ mod tests {
                 let mut response = String::new();
                 let read = client.read_to_string(&mut response);
                 task.join().unwrap().unwrap();
-                assert!(!response.starts_with("HTTP/1.1 200"));
+                assert_eq!(response.starts_with("HTTP/1.1 200"), variant == 9);
                 assert!(!response.contains(&token));
                 if let Err(error) = read {
                     // Refusing an ambiguous header before consuming its body
@@ -249,10 +256,16 @@ mod tests {
                 }
                 let value: serde_json::Value =
                     serde_json::from_str(response.split_once("\r\n\r\n").unwrap().1).unwrap();
-                assert_eq!(value["authenticated"], false);
-                assert_eq!(value["ok"], false);
+                assert_eq!(value["authenticated"], authenticated);
+                assert_eq!(value["ok"], variant == 9);
+                if variant == 9 {
+                    assert_eq!(value["result"]["preview"], true);
+                } else if variant == 10 {
+                    assert!(response.starts_with("HTTP/1.1 409"));
+                    assert_eq!(value["code"], "stale");
+                }
             });
-            assert_eq!(calls.load(Ordering::SeqCst), 0);
+            assert_eq!(calls.load(Ordering::SeqCst), usize::from(authenticated));
         }
     }
 }

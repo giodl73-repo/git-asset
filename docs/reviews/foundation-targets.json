@@ -195,7 +195,7 @@
   {"path":"crates/git-asset/src/catalogue/works.rs","bytes":20437,"sha256":"a8e59b6c9c546e89dd8721226e96014139333b9842e20609e41c3c81332dfc55"},
   {"path":"crates/git-asset/src/github.rs","bytes":13287,"sha256":"b5ea7635c1fa09e5288e58dcaabfbc1685d7d08e68e2eb11e3ceaec2dc71aa2d"},
   {"path":"crates/git-asset/src/github/http.rs","bytes":12588,"sha256":"7f9410d7608a18d3d132b07c6eb9a6f4b071d70e9107636bf089b4d7aea9237b"},
-  {"path":"crates/git-asset/src/github/intake.rs","bytes":9938,"sha256":"40e2e762f41ac1f71ae548d3c4561e57dbd896ef4a488eea851836df47ce22e7"},
+  {"path":"crates/git-asset/src/github/intake.rs","bytes":10558,"sha256":"5514810e3f3dd5ad336fb7e6e7395c2fe0d686b4d5a3055ab21c59f6f89c4e06"},
   {"path":"crates/git-asset/src/github/native.rs","bytes":17889,"sha256":"cf4a109139c365fb62db67e02fca6dde67b1133980f6a9ed118f263ce74aac7f"},
   {"path":"crates/git-asset/src/github/native/batch.rs","bytes":22212,"sha256":"b54c1b75ce23c7dc14a765de36579d0614c2756557aff7681e5fdca3be1073b2"},
   {"path":"crates/git-asset/src/github/native/batch/registration.rs","bytes":17114,"sha256":"5fc8a2b4651854c553baad8007b3139e73e9427dce46982b95587b94256fe1a4"},
