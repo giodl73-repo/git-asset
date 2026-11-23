@@ -126,11 +126,16 @@ using v3 keeps it protected. An unavailable backup holds eviction; it does not
 turn an unknown copy into a verified survivor. Removing the last retained copy
 is a separate final-retirement operation, never ordinary cache eviction.
 
-The current command surfaces are below. `PROFILE`, `REQUEST`, `PLAN` and
-`PLACEMENT_PROFILE` stand for explicitly admitted absolute file paths outside the
-repository; discovery does not create them. These are existing **experimental
-local-provider** interfaces. Native publication is currently a separate optional
-Rust SDK; these examples do not enable production annex eviction.
+Start with the cache, separate archive, and projects that use them. In the
+catalogue, **Storage** shows registered copies and **Impact** shows known uses.
+Check coverage. Unknown uses, an unverified archive, and hard links can change
+whether eviction is safe or frees space.
+
+Planning currently requires a known object and enrolled profile. Candidate
+discovery is tracked in [#78](https://github.com/giodl73-repo/git-asset/issues/78).
+Mixed legacy caches need the handoff in [#77](https://github.com/giodl73-repo/git-asset/issues/77).
+Below are experimental local-provider commands. Use admitted absolute profile,
+request and plan paths outside Git. Native publication has a separate Rust SDK.
 
 ```text
 git asset lifecycle describe
