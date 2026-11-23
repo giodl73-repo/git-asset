@@ -174,3 +174,10 @@ enrolled snapshot. It separates directly selected objects, declared previous
 revisions, other direct bindings and explicit retirement. Current selection
 takes precedence when an exact object has multiple bindings. Missing nested
 and job coverage does not imply unused bytes.
+
+`git asset storage archive estimate MANIFEST` accepts a private, bounded JSON
+document with schema `git-asset.cache-archive-estimate.experimental-1`,
+`archive` (root and layout) and an `objects` array of exact SHA-256 and byte
+length pairs. It measures free space on that volume and checks only named
+object paths. Matching length does not prove integrity. Additional logical
+bytes exclude uncertain paths and allocation overhead.

@@ -32,13 +32,16 @@ fn reader(place: Place) -> Result<ReadCache, String> {
 fn run(args: &[OsString]) -> Result<Value, String> {
     if args.len() == 1 && args[0] == "describe" {
         return Ok(
-            json!({"schema":SCHEMA,"operations":["plan REQUEST","apply REQUEST EXPECTED_PLAN","status REQUEST"],"available":cfg!(windows),"removal_authorized":false}),
+            json!({"schema":SCHEMA,"operations":["plan REQUEST","apply REQUEST EXPECTED_PLAN","status REQUEST","estimate MANIFEST"],"available":cfg!(windows),"removal_authorized":false}),
         );
     }
     let op = args.first().and_then(|a| a.to_str()).ok_or("usage")?;
-    if !matches!((op, args.len()), ("plan" | "status", 2) | ("apply", 3)) {
+    if !matches!(
+        (op, args.len()),
+        ("plan" | "status" | "estimate", 2) | ("apply", 3)
+    ) {
         return Err(
-            "usage: git asset storage archive {plan|status} REQUEST or apply REQUEST EXPECTED_PLAN"
+            "usage: git asset storage archive {plan|status|estimate} REQUEST or apply REQUEST EXPECTED_PLAN"
                 .into(),
         );
     }
@@ -46,6 +49,9 @@ fn run(args: &[OsString]) -> Result<Value, String> {
         return Err("unsupported: Windows guarded cache reader required".into());
     }
     let raw = super::profile::raw(Path::new(&args[1]), 65536)?;
+    if op == "estimate" {
+        return estimate(super::profile::parse(&raw)?);
+    }
     let req: Request = super::profile::parse(&raw)?;
     let plan = Digest::blob(&raw);
     if req.schema != SCHEMA || req.object.bytes > Limits::default().object_bytes {
@@ -117,6 +123,97 @@ fn run(args: &[OsString]) -> Result<Value, String> {
     )
 }
 
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct Estimate {
+    schema: String,
+    archive: Place,
+    objects: Vec<Object>,
+}
+
+fn estimate(req: Estimate) -> Result<Value, String> {
+    if req.schema != "git-asset.cache-archive-estimate.experimental-1"
+        || req.objects.is_empty()
+        || req.objects.len() > 1024
+        || !req.archive.root.is_absolute()
+        || req.archive.root.components().any(|c| {
+            matches!(
+                c,
+                std::path::Component::CurDir | std::path::Component::ParentDir
+            )
+        })
+    {
+        return Err("Invalid archive estimate admission".into());
+    }
+    for dir in req.archive.root.ancestors() {
+        if !restore::ordinary(dir)?.is_dir() {
+            return Err("Existing ordinary archive root required".into());
+        }
+    }
+    let mut unique = std::collections::BTreeMap::new();
+    for object in req.objects {
+        if unique
+            .insert(object.sha256.clone(), object.bytes)
+            .is_some_and(|prior| prior != object.bytes)
+        {
+            return Err("Conflicting byte lengths for one object".into());
+        }
+    }
+    let mut totals = std::collections::BTreeMap::<&str, (u64, u64)>::new();
+    for (sha256, bytes) in &unique {
+        let path = req.archive.layout.object_path(&req.archive.root, sha256);
+        let mut state = "unknown";
+        if let Some(parent) = path.parent() {
+            let mut ready = true;
+            for dir in parent.ancestors().take_while(|p| *p != req.archive.root) {
+                match fs::symlink_metadata(dir) {
+                    Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
+                        state = "absent_at_named_path";
+                        ready = false;
+                    }
+                    _ if restore::ordinary(dir).is_ok_and(|m| m.is_dir()) => {}
+                    _ => {
+                        state = "unknown";
+                        ready = false;
+                        break;
+                    }
+                }
+            }
+            if ready {
+                state = match fs::symlink_metadata(&path) {
+                    Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
+                        "absent_at_named_path"
+                    }
+                    Ok(_)
+                        if restore::ordinary(&path)
+                            .is_ok_and(|m| m.is_file() && m.len() == *bytes) =>
+                    {
+                        "length_matches_unverified"
+                    }
+                    Ok(_) => "conflicting_or_unsafe_leaf",
+                    Err(_) => "unknown",
+                };
+            }
+        }
+        let bucket = totals.entry(state).or_default();
+        bucket.0 += 1;
+        bucket.1 = bucket
+            .1
+            .checked_add(*bytes)
+            .ok_or("Archive estimate overflow")?;
+    }
+    let groups: Vec<_> = totals
+        .iter()
+        .map(|(state, (objects, bytes))| json!({"state":state,"objects":objects,"bytes":bytes}))
+        .collect();
+    Ok(
+        json!({"schema":"git-asset.cache-archive-estimate-report.experimental-1",
+        "objects":unique.len(),"groups":groups,"additional_logical_bytes_at_named_paths":totals.get("absent_at_named_path").map_or(0,|v|v.1),
+        "volume_total_bytes":fs2::total_space(&req.archive.root).ok(),"volume_free_bytes":fs2::available_space(&req.archive.root).ok(),
+        "payloads_read":0,"removal_authorized":false}),
+    )
+}
+
 pub(crate) fn main(args: Vec<OsString>) -> ExitCode {
     match run(&args) {
         Ok(report) => {
@@ -136,6 +233,33 @@ pub(crate) fn main(args: Vec<OsString>) -> ExitCode {
 #[cfg(all(test, windows))]
 mod tests {
     use super::*;
+
+    #[test]
+    fn estimate_counts_exact_missing_bytes_once_without_reading_payload() {
+        let root = tempfile::tempdir().unwrap();
+        let objects = root.path().join("objects");
+        fs::create_dir(&objects).unwrap();
+        let listed = Object::from_bytes(b"named");
+        let absent = Object::from_bytes(b"not in archive");
+        // Matching length alone is deliberately not reported as verification.
+        fs::write(objects.join(listed.sha256.as_str()), b"wrong").unwrap();
+        let report = estimate(Estimate {
+            schema: "git-asset.cache-archive-estimate.experimental-1".into(),
+            archive: Place {
+                root: root.path().to_owned(),
+                layout: git_asset_store::existing::Layout::Flat,
+            },
+            objects: vec![listed, absent.clone(), absent.clone()],
+        })
+        .unwrap();
+        assert_eq!(report["objects"], 2);
+        assert_eq!(
+            report["additional_logical_bytes_at_named_paths"],
+            absent.bytes
+        );
+        assert_eq!(report["payloads_read"], 0);
+        assert_eq!(report["removal_authorized"], false);
+    }
 
     #[test]
     fn archive_plan_apply_status_and_exact_retry_preserve_the_source() {
