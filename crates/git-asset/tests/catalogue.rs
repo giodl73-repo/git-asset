@@ -614,6 +614,11 @@ fn named_object_placement_versions_shared_bytes_and_stale_previews() {
         b"old body",
     )
     .unwrap();
+    fs::hard_link(
+        fast.join("objects").join(old.sha256.as_str()),
+        root.join("old-alias"),
+    )
+    .unwrap();
     let repo = root.join("alpha");
     let mut record: Value = serde_json::from_slice(
         &git(&repo, &["show", &format!("{}:records/0.asset", f.first)]).stdout,
@@ -776,6 +781,27 @@ fn named_object_placement_versions_shared_bytes_and_stale_previews() {
     assert_eq!(filtered["stored_file_bytes"], old.bytes);
     assert_eq!(filtered["items"][0]["stored_file_bytes"], old.bytes * 2);
     assert_eq!(filtered["items"][0]["matching_copy_bytes"], old.bytes);
+    let review = c.cache_eviction_preview(observed.observed, 0, "").unwrap();
+    let candidate = review["items"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|row| row["sha256"] == old.sha256.as_str())
+        .unwrap();
+    let evidence = &candidate["eviction_review"];
+    assert_eq!(evidence["state"], "verify_candidate");
+    assert_eq!(evidence["older_copy_proposed"], true);
+    assert_eq!(evidence["archive_bytes_verified"], false);
+    assert!(evidence["reclaimable_bytes"].is_null());
+    #[cfg(any(unix, all(windows, feature = "annex-read")))]
+    assert_eq!(evidence["single_path_reclaim_estimate"], 0);
+    assert_eq!(review["removal_authorized"], false);
+    assert!(
+        c.cache_eviction_preview(observed.observed, 1, "stale")
+            .is_err()
+    );
+    assert!(c.cache_eviction_preview(observed.observed, 1, "").is_err());
+
     let selection = all["items"]
         .as_array()
         .unwrap()
@@ -829,17 +855,30 @@ fn named_object_placement_versions_shared_bytes_and_stale_previews() {
         c.object_batch_preview("alpha", &first.repeat(100), "", "align")
             .is_err()
     );
-    fs::write(fast.join("objects").join(old.sha256.as_str()), b"bad body").unwrap();
+    let keeper = candidate["copies"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|copy| copy["cache_id"] != observed.observed)
+        .unwrap()["cache_id"]
+        .as_str()
+        .unwrap();
+    let archive_path = history.join("objects").join(old.sha256.as_str());
+    fs::write(&archive_path, b"bad body").unwrap();
     let (object, profile) = c
         .object_copy_request(
-            "alpha",
+            "",
             old.sha256.as_str(),
-            cache["cache_id"].as_str().unwrap(),
-            row["basis"].as_str().unwrap(),
+            keeper,
+            candidate["basis"].as_str().unwrap(),
         )
         .unwrap();
     assert!(git_asset::catalogue::verify(object, profile).is_err());
-    fs::write(fast.join("objects").join(old.sha256.as_str()), b"old body").unwrap();
+    assert_eq!(
+        fs::read(fast.join("objects").join(old.sha256.as_str())).unwrap(),
+        b"old body",
+    );
+    fs::write(archive_path, b"old body").unwrap();
     let shared_row = all["items"]
         .as_array()
         .unwrap()
@@ -961,6 +1000,11 @@ fn global_storage_counts_shared_cache_once_and_preserves_cross_project_reference
         .to_owned();
     c.observe_registered("beta", &beta_commit, "").unwrap();
     let all = c.global_storage("", "", true, 0).unwrap();
+    let cache = all["caches"][0]["review_cache"].as_str().unwrap();
+    assert_eq!(
+        c.cache_eviction_preview(cache, 0, "").unwrap()["source_cache"],
+        cache
+    );
     assert_eq!(all["summary"]["file_copies"], 1);
     assert_eq!(all["summary"]["unique_objects"], 1);
     assert_eq!(all["summary"]["recorded_file_bytes"], bytes.len());

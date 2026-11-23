@@ -474,6 +474,26 @@ fn matrix_profile(exits: bool, races: bool, copies: bool, trusted: bool, batch: 
             None
         } else {
             Some(if let (Cut::None, Some(cli)) = (cut, &cli) {
+                let keeper_path = crate::annex::Reader::new(backup.profile.pool.pool.clone())
+                    .unwrap()
+                    .open(&object)
+                    .unwrap()
+                    .with_path(|path| path.to_path_buf())
+                    .unwrap();
+                let offline_path = keeper_path.with_extension("offline-fixture");
+                assert!(!offline_path.exists());
+                fs::rename(&keeper_path, &offline_path).unwrap();
+                let refused = cli.call("apply", false);
+                fs::rename(&offline_path, &keeper_path).unwrap();
+                assert_eq!(refused["code"], "missing", "{refused}");
+                let mut source_bytes = Vec::new();
+                crate::annex::Reader::new(f.profile.pool.pool.clone())
+                    .unwrap()
+                    .open(&object)
+                    .unwrap()
+                    .read_to_end(&mut source_bytes)
+                    .unwrap();
+                assert_eq!(Object::from_bytes(&source_bytes), object);
                 Ok(cli.call("apply", true)["report"].clone())
             } else if cut == Cut::None && trusted {
                 #[cfg(feature = "github")]

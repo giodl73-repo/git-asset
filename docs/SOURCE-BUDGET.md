@@ -1,6 +1,6 @@
 # Source and runtime data budgets
 
-Current ordinary source/documentation ceiling: **8.625 MiB** (9,043,968 bytes),
+Current ordinary source/documentation ceiling: **8.65625 MiB** (9,076,736 bytes),
 with **128 KiB** per file, enforced by tools/validate.ps1. Earlier 1, 2, 3, 3.25, 3.5 and 4 MiB ceilings were historical checkpoints. This covers implemented Rust,
 locked dependencies, synthetic fixtures and docs; it does not allocate cache
 space or allow runtime evidence in Git.
@@ -77,3 +77,9 @@ WP-000/015/016; DOCS/UI/PROVIDER/INTEGRATION. Six producer checks: identity/wire
 unchanged; placement/custody limits intact; original recovery unaffected; no
 private/generated source; explicit source pins; independent acceptance OPEN.
 L0 source/links/pins/branding/diff proves this bounded documentation change only.
+
+The PR74 merge of 4f06386 brings in the qualified cache preview and keeper
+regression. The combined tree measured 9,056,865 bytes. Reserve 32 KiB for
+these integrated source, tests, and review records. The 128 KiB file ceiling,
+file-type restrictions, and runtime limits still apply. WP-000/015, L0 budget,
+review pins and staged diff. No production qualification follows from this check.
