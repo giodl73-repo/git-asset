@@ -121,3 +121,25 @@ Resume starts no cache, census, hydration, transfer, render or deletion.
 Synthetic fixtures only; no production changes, independent or human approval.
 
 [Prior complete startup history](https://github.com/giodl73-repo/git-asset/blob/9427fdf982d65a0383580ce42d603464afae7f4f/context/RESUME.md).
+
+
+P4 source-generation component: feat/source-generation-use, PR73 stacked on
+PR72. Code0ccb137cf5a78416e780f8a3372017f642a5cb71 passed hosted44995031081
+(Windows/Linux full matrix). Six focused Windows fixtures, strict full-workspace
+Clippy, standalone Git check, fmt/branding/L0 pass. The combined local regression
+also passed; its compiled b9f9d84 runtime differs only by the removed unit-expression
+lint fixed in0ccb137. Contract specs/SOURCE-GENERATION-USE.md; producer review
+ docs/reviews/source-generation-use.md. Fresh create_fenced enables exact source
+use; old formats stay readable and are not upgraded. No expiry or byte deletion.
+REEL bridgebe3bec855820a824e53ab2cffdc2756654d380a8 passed hosted44995403521
+(Windows/Linux), 30 default Windows tests and four actual ordinary/bare native
+cases. ProtectedInputs owns actual byte/config/namespace and original-generation
+guards; copied metadata cannot redirect the guard away from the roster root.
+Evidence: source-use-fixed-source.json and reel-public-source-use-source.json in
+the external evidence root above. Existing private route/bindings are untouched.
+Next P4: original task/request/control retention, full ProtectedJob/Lifecycle and
+joined uncertain-publication/crash recovery. Retained verification after explicit
+job settlement must not reactivate the old generation. P2 actor/roster/epoch
+handoff stays OPEN pending the legacy-boundary answer; MixedLegacy Unsupported.
+No production migration, independent or owner acceptance is implied. Derive the
+latest documentation-head CI from GitHub; qualified runtime SDK pin stays0ccb137.
