@@ -82,10 +82,15 @@ fn run() -> Result<(), String> {
             let selection = git_asset::catalogue::storage::inventory::selection_usage(
                 &config, &args[2], &args[3], root,
             )?;
-            let mut catalogue = Catalogue::load(config)?;
-            let eviction = eviction_report(&mut catalogue, &args[2], &args[3], root)?;
+            let (eviction, eviction_error) = match Catalogue::load(config)
+                .and_then(|mut catalogue| eviction_report(&mut catalogue, &args[2], &args[3], root))
+            {
+                Ok(review) => (Some(review), None),
+                Err(error) => (None, Some(error)),
+            };
             let report = serde_json::json!({
                 "schema":"git-asset.drive-report.experimental-1", "eviction_review":eviction,
+                "eviction_review_error":eviction_error,
                 "inventory":inventory,"selection_usage":selection,
                 "observations_overlap":true,"atomic_observation":false,
                 "safe_reclaim_bytes":null,"removal_authorized":false
@@ -96,6 +101,7 @@ fn run() -> Result<(), String> {
                 serde_json::json!({
                     "report":args[5],"allocated_bytes":inventory["counts"]["unique_allocated_bytes"],
                     "all_inventory_entries_accounted_for":inventory["all_entries_accounted_for"],
+                    "eviction_review_available":eviction.is_some(),
                     "safe_reclaim_bytes":null
                 })
             );
