@@ -108,25 +108,27 @@ working cache. Eviction requires current protection checks and verified retained
 custody. Final deletion is a separate explicit retirement decision; losing the
 selected label is insufficient.
 
-These diagrams describe the lifecycle contract and product direction. The current
-native-annex adapter supplies explicit guarded local reads and an optional Rust
-candidate-publication slice on Windows. It retains unselected outputs with exact
-retry/readback. The experimental [native eviction SDK](docs/guides/NATIVE-EVICTION.md)
-assembles guarded plan/apply/recovery for namespace-owned actors. Native CLI,
-executor crash/authority qualification and production acceptance remain open.
-Existing local-provider teaching fixtures demonstrate bounded
-lifecycle slices; consuming workflows own build execution, rerender decisions and
-creative approval. The capability table below defines today's implemented scope.
+The capability table below describes what is implemented.
 
+## When a working drive is full
+
+Start with the catalogue's **Storage** view. Under **Cache locations**, find
+E: (or the working cache you want to review), then choose **Review this cache
+for eviction**. Follow the [catalogue setup](#catalogue-setup) if you have not enrolled
+any projects yet.
+
+- **Keep: current declared use** means an enrolled project still uses those bytes.
+- **Check archive copy** means a matching copy is listed elsewhere. **Verify bytes
+  at …** reads that specific copy and checks its hash and length. A successful
+  check still leaves retention and removal eligibility to be established.
+- **Unknown: keep for now** means the available records are insufficient. Read
+  the reasons under the object and use **Next review page** to continue.
+
+File size is different from disk space recovered. For recorded hard links, removing
+one path is estimated to free zero bytes. Where reclaim is unknown, leave it out of
+your free-space budget. Existing caches shared with older tools still need a
+qualified writer handoff before Git-Asset can safely remove their copies.
 ## Move old versions off the working disk
-
-After image v4 and render v13 are selected, the policy can stop requiring v3 and
-render v12 on F:. Their exact historical references remain. First establish and
-verify the required retained copies on J: and M:, then recheck all projects, jobs
-and retention obligations before evicting the eligible **F: copies**. A job still
-using v3 keeps it protected. An unavailable backup holds eviction; it does not
-turn an unknown copy into a verified survivor. Removing the last retained copy
-is a separate final-retirement operation, never ordinary cache eviction.
 
 The current command surfaces are below. `PROFILE`, `REQUEST`, `PLAN` and
 `PLACEMENT_PROFILE` stand for explicitly admitted absolute file paths outside the
@@ -328,6 +330,8 @@ No crates.io package or prebuilt installer is published by this repository.
 The catalogue tests create synthetic Git repositories and temporary stores.
 They need no personal project, credentials or existing cache. Building/testing
 installs no daemon or Git hooks.
+
+### Catalogue setup
 
 For your project, create a machine-local resolver profile and catalogue enrollment
 using [the catalogue contract](specs/CATALOGUE.md) and
