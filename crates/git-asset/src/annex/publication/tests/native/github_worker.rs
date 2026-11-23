@@ -374,14 +374,58 @@ fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool, 
         );
         return;
     }
-    let mut copied = worker
-        .copy(
-            &plan,
-            &mut source.resources(),
-            &mut target.resources(),
-            || Ok(1000),
-        )
-        .unwrap();
+    use std::{
+        io::Write,
+        net::{TcpListener, TcpStream},
+    };
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let mut client = TcpStream::connect(listener.local_addr().unwrap()).unwrap();
+    let (incoming, _) = listener.accept().unwrap();
+    let body = serde_json::json!({
+        "schema":"tig.github-request.design-1","commit":commit.as_str()
+    })
+    .to_string();
+    let token = signer.token(&signer.claims);
+    write!(client, "POST /v1/reconcile HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/json\r\nAuthorization: Bearer {token}\r\nContent-Length: {}\r\n\r\n{body}", body.len()).unwrap();
+    let mut copy = None;
+    github::intake::handle(
+        incoming,
+        &signer.trust,
+        &signer.keys,
+        || Ok(1000),
+        |proof, cursor| {
+            assert!(cursor.is_none());
+            let copied = Execution {
+                request: &proof,
+                namespace: &mut *worker.namespace,
+                metadata: &mut *worker.metadata,
+                ..worker
+            }
+            .copy(
+                &plan,
+                &mut source.resources(),
+                &mut target.resources(),
+                || Ok(1000),
+            )
+            .unwrap();
+            let report = serde_json::to_value(copied.report()).unwrap();
+            copy = Some(copied);
+            Ok(report)
+        },
+    )
+    .unwrap();
+    let mut response = String::new();
+    client.read_to_string(&mut response).unwrap();
+    assert!(response.starts_with("HTTP/1.1 200"));
+    assert!(!response.contains(&token));
+    let response: serde_json::Value =
+        serde_json::from_str(response.split_once("\r\n\r\n").unwrap().1).unwrap();
+    assert_eq!(response["authenticated"], true);
+    assert_eq!(
+        response["result"]["copy"]["plan"],
+        plan.id().unwrap().as_str()
+    );
+    let mut copied = copy.unwrap();
     let mut actual = vec![];
     copied.retained().read_to_end(&mut actual).unwrap();
     assert_eq!(actual, bytes);

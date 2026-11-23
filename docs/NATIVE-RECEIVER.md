@@ -187,34 +187,12 @@ admit a smaller scope or an explicit sufficient budget rather than skipping a
 prefix. The driver keeps six summaries plus the last bounded backend report;
 older successful effects/receipts remain in their existing asset-side stores.
 
-ordered_passes_complete means those admitted passes ended without a hold. It
-never asserts whole-storage convergence, independent hardware custody, every
-project's readiness, or permission to retire caller scratch. storage_converged
-stays unknown. Full HTTP/account/TLS, new-golden/archive-index orchestration,
-stale ordinary-index replan, scale/lifetime and owner acceptance remain OPEN.
+`ordered_passes_complete` covers admitted passes only. Storage convergence stays unknown.
 
 ## Index archived members before working release
 
-Enable signed actions.archive_index for history_apply; placement_apply requires
-it. Supply the existing retained producer namespace and native pending namespace
-from the fixed private profile. The SDK surface is history::Pass.index with
-history::indexing::Target; no event-supplied records or provider paths are accepted.
+The [archive-index contract](https://github.com/giodl73-repo/git-asset/blob/555f1da6508d3573e7196461209bf1021ab531b4/docs/NATIVE-RECEIVER.md#index-archived-members-before-working-release)
+defines exact registration, saved originals and refusal before working release.
 
-After publishing the exact archive tree, the worker enumerates metadata members
-once, deduplicates Objects, and changes only each registered retained membership.
-Original producer, completed publication and control grant remain unchanged.
-ArchiveIndex originals are saved before expected-baseline index CAS. Missing
-producers, denied writes, stale originals and budget failures preserve the working
-predecessor; only a fully indexed root reaches working release. Retry reuses exact
-current rows and saved originals without a new native import or implicit replan.
-Bounded indexing metrics, last Saved/receipt and explicit holds accompany history
-outcomes. This is metadata linkage, not native availability or eviction authority.
-
-Synthetic qualification includes missing-target holds, a committed renamed
-same-byte definition, ordinary/bare placement retry and surviving-byte reopen.
-Different-byte initial producer admission, retained control handoff, stale ordinary
-index recovery, full HTTP, scale/lifetime and owner acceptance remain separate.
-
-Use private `history_replan` with signed archive indexing enabled to recover
-a stale saved index edit. A changed target row holds. Release still requires
-all archive members to be indexed under the final held generation.
+`history_replan` requires signed indexing and an unchanged target row. Release
+requires all members indexed under the held generation.
