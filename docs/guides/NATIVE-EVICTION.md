@@ -62,6 +62,25 @@ The ordinary/bare synthetic native fixture exercises the SDK preview, fresh
 apply, readonly status, historical resume, cancellation and retained restore.
 No cache operations run on startup, help or construction.
 
+## Qualify one existing cache scope
+
+Start with one enrolled root and one provider-owned area. Review object-store
+eviction and owned job/staging cleanup separately. Record the following in a
+private operational record.
+
+| Evidence | What the owner checks |
+| --- | --- |
+| Scope and identities | Record project, enrolled cache and area, provider/store identity, device, and writer epoch. Include other roots or worktrees that can address the same representation. |
+| Writer coverage | Account for services, scheduled tasks, interactive tools and restarted or paused processes. Record the effect boundary that prevents each former writer from mutating the admitted area. A profile declaration alone does not establish this. |
+| Work and recovery | Reconcile active jobs, reservations and unsettled operations against their authoritative ledger and owner. For scratch, prove that the exact directory belongs to the closed operation and that no retry or outstanding handoff depends on it. Time since modification is inventory evidence only. |
+| Retained data | For working-copy eviction, verify the independent keeper and retention under the current authority. For scratch, trace acknowledged outputs to their retained receipts before considering cleanup. |
+| Qualification evidence | Exercise an old actor resuming, a new claim, an alias, and a replaced object or scratch identity. Save the exact scope and evidence used for the decision. Unresolved rows hold that scope. |
+
+The native controller currently accepts namespace-owned, unshared backing.
+An owner record documents the checks for a future handoff; it cannot enable
+mixed legacy execution. A separately enrolled namespace-owned scope can qualify
+on its own evidence while shared scopes remain under review.
+
 ## From cache review to a saved plan
 
 Start with [the catalogue cache review](CATALOGUE-REVIEW.md#review-a-cache-for-eviction).
