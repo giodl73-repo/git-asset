@@ -65,7 +65,7 @@ function drawGlobalStorage(d){
  const locations=node('section','global-locations');locations.append(node('h2','','Cache locations'));
  d.caches.forEach(c=>{
   const row=node('div','global-cache');row.append(node('strong','mono',c.root),node('p','',c.enrolled_projects.map(projectLabel).join(' · ')),node('p','muted',c.totals?bytes(c.totals.recorded_file_bytes)+' observed file bytes · '+fmt.format(c.totals.file_copies)+' copies':'No matching observed copies; coverage is unknown'));
-  if(c.resolved_root)row.append(node('small','muted','Resolved location: '+c.resolved_root));c.observations.forEach(o=>row.append(node('small','muted',projectLabel(o.project)+' · '+(o.observed_at?new Date(o.observed_at*1000).toLocaleString():'time unknown')+' · '+(o.source.family||o.source.kind))));locations.append(row);
+  if(c.resolved_root)row.append(node('small','muted','Resolved location: '+c.resolved_root));c.observations.forEach(o=>row.append(node('small','muted',projectLabel(o.project)+' · '+(o.observed_at?new Date(o.observed_at*1000).toLocaleString():'time unknown')+' · '+(o.source.family||o.source.kind))));if(c.review_cache)row.append(cacheReviewControl(c.review_cache));locations.append(row);
  });area.append(locations);
  const table=node('table','global-object-table');const head=node('tr');['Object','Drive','File bytes','Referencing projects'].forEach(t=>head.append(node('th','',t)));table.append(head);
  globalDisk.rows.forEach(o=>{const row=node('tr');row.append(node('td','mono',o.sha256.slice(0,16)+'…'),node('td','',d.domains.find(v=>v.id===o.domain)?.label||'Unmapped'),node('td','',bytes(o.bytes)),node('td','',o.referencing_projects.map(projectLabel).join(', ')||'Unattributed'));table.append(row);});area.append(table);
