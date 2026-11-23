@@ -151,3 +151,11 @@ bytes), `source` and `archive` (`root` and `layout` for each), and
 Verified readback proves the named archive copy at the time of the check.
 The report does not establish durable retention, writer handoff or removal
 authority. Keep the original working copies until those checks pass.
+
+For a drive-level inventory, run
+`git asset catalogue eviction-report ENROLLMENT PROJECT COMMIT CACHE_ROOT NEW_REPORT`.
+It refreshes named metadata at the exact enrolled commit, counts all observed
+objects in the selected cache, and writes its largest 100 rows to a new report.
+The single-link allocation bucket is a verification queue. The report keeps
+safe reclaim unknown while current protection and independently retained
+custody remain unverified.

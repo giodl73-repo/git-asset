@@ -589,7 +589,7 @@ impl Catalogue {
                         .into_iter()
                         .flatten()
                     {
-                        expanded.push((&n.object,u.clone(),v.clone(),format!("{s} â†’ {}",n.pointer),"nested-byte-reference".into(),Some(json!({"root":n.root,"document":n.document,"adapter":n.adapter,"pointer":n.pointer}))));
+                        expanded.push((&n.object,u.clone(),v.clone(),format!("{s} Ã¢â€ â€™ {}",n.pointer),"nested-byte-reference".into(),Some(json!({"root":n.root,"document":n.document,"adapter":n.adapter,"pointer":n.pointer}))));
                     }
                 }
                 for (o, usage, version, slot, role, nested) in expanded {
@@ -600,7 +600,7 @@ impl Catalogue {
                     item.bytes = o.bytes;
                     let title = if let Some(n) = &nested {
                         format!(
-                            "{} Â· {}",
+                            "{} Ã‚Â· {}",
                             card.title.chars().take(120).collect::<String>(),
                             n["pointer"]
                                 .as_str()
@@ -890,8 +890,22 @@ impl Catalogue {
         )
         .sha256;
         let mut cache_totals = BTreeMap::<String, (u64, u64)>::new();
+        let mut reclaim = BTreeMap::<&str, (u64, u64, u64)>::new();
         for row in &rows {
-            for copy in row["copies"].as_array().ok_or("Invalid copies")? {
+            let copies = row["copies"].as_array().ok_or("Invalid copies")?;
+            if !q.observed.is_empty()
+                && let Some(copy) = copies.iter().find(|copy| copy["cache_id"] == q.observed)
+            {
+                let (reason, allocated) = reclaim_observation(row, copy, q.observed, copies);
+                let totals = reclaim.entry(reason).or_default();
+                add(&mut totals.0, 1)?;
+                add(
+                    &mut totals.1,
+                    copy["bytes"].as_u64().ok_or("Invalid copy size")?,
+                )?;
+                add(&mut totals.2, allocated)?;
+            }
+            for copy in copies {
                 let id = copy["cache_id"].as_str().ok_or("Invalid cache identity")?;
                 let total = cache_totals.entry(id.to_owned()).or_default();
                 add(&mut total.0, 1)?;
@@ -901,12 +915,14 @@ impl Catalogue {
                 )?;
             }
         }
+        let reclaim_summary: Vec<_> = reclaim.into_iter().map(|(state, (objects, logical_bytes, observed_allocation_bytes))|
+            json!({"state":state,"objects":objects,"logical_bytes":logical_bytes,"observed_allocation_bytes":observed_allocation_bytes})).collect();
         let copy_summary: Vec<_> = cache_totals
             .into_iter()
             .map(|(id, (count, bytes))| json!({"cache_id":id,"objects":count,"file_bytes":bytes}))
             .collect();
         Ok(
-            json!({"page_basis":page_basis,"scope":scope,"copy_summary":copy_summary,"snapshots":index.snapshots,"policy_pins":policy_pins,"total":rows.len(),"unique_content_bytes":total_bytes,"stored_file_bytes":stored_bytes,"items":rows.iter().skip(q.offset).take(100).collect::<Vec<_>>(),"kinds":kinds,"anomaly_counts":anomalies,"caches":caches,"complete_consumer_coverage":false,"removal_authorized":false,"limitations":"Named direct registered bindings, not complete dependency closures or current consumer/ref-count authority. Primary caches are project-owned preferences. Observed copies and timestamps are not verified retained custody; absent observations stay unknown."}),
+            json!({"page_basis":page_basis,"scope":scope,"copy_summary":copy_summary,"reclaim_summary":reclaim_summary,"snapshots":index.snapshots,"policy_pins":policy_pins,"total":rows.len(),"unique_content_bytes":total_bytes,"stored_file_bytes":stored_bytes,"items":rows.iter().skip(q.offset).take(100).collect::<Vec<_>>(),"kinds":kinds,"anomaly_counts":anomalies,"caches":caches,"complete_consumer_coverage":false,"removal_authorized":false,"limitations":"Named direct registered bindings, not complete dependency closures or current consumer/ref-count authority. Primary caches are project-owned preferences. Observed copies and timestamps are not verified retained custody; absent observations stay unknown."}),
         )
     }
     pub fn object_preview(
@@ -995,4 +1011,68 @@ fn preview_row(result: &Value, row: &Value, basis: &str, action: &str) -> Result
     Ok(
         json!({"object":row,"action":action,"proposals":proposals,"caches":result["caches"],"snapshots":result["snapshots"],"policy_pins":result["policy_pins"],"executable":false,"safe_reclaimable_bytes":null,"steps":if action=="align"{vec!["Confirm whether this version should be working, previous or cold","Verify exact source bytes under a protected read","Publish and verify an independently retained destination before considering removal"]}else{vec!["Resolve every current consumer, authorized draft and active job","Verify an independently retained copy of the exact bytes","Revalidate current policy, source generation and scoped protection immediately before removal"]},"holds":holds}),
     )
+}
+
+fn reclaim_observation(
+    row: &Value,
+    copy: &Value,
+    source: &str,
+    copies: &[Value],
+) -> (&'static str, u64) {
+    if row["anomalies"].as_array().is_some_and(|a| {
+        a.iter()
+            .any(|a| a == "policy-conflict" || a == "inconsistent-size")
+    }) {
+        return ("placement_or_size_conflict", 0);
+    }
+    let Some(targets) = row["primary"].as_array().filter(|a| !a.is_empty()) else {
+        return ("no_declared_placement", 0);
+    };
+    if targets.iter().any(|target| target["cache_id"] == source) {
+        return ("keep_on_this_cache", 0);
+    }
+    if !targets.iter().all(|target| {
+        copies
+            .iter()
+            .any(|other| other["cache_id"] == target["cache_id"] && other["bytes"] == row["bytes"])
+    }) {
+        return ("preferred_copy_not_observed", 0);
+    }
+    match (
+        copy["hard_links"].as_u64(),
+        copy["allocated_bytes"].as_u64(),
+    ) {
+        (Some(links), _) if links > 1 => ("linked_zero_single_path_reclaim", 0),
+        (Some(1), Some(bytes)) => ("single_link_verify_keeper_and_holds", bytes),
+        _ => ("allocation_or_links_unknown", 0),
+    }
+}
+
+#[cfg(test)]
+mod reclaim_observation_tests {
+    use super::*;
+
+    #[test]
+    fn compares_preferred_copy_and_physical_links_without_granting_removal() {
+        let row = json!({"bytes":5,"primary":[{"cache_id":"archive"}]});
+        let archive = json!({"cache_id":"archive","bytes":5});
+        let linked = json!({"hard_links":2,"allocated_bytes":4096});
+        let single = json!({"hard_links":1,"allocated_bytes":4096});
+        assert_eq!(
+            reclaim_observation(&row, &single, "archive", &[]),
+            ("keep_on_this_cache", 0)
+        );
+        assert_eq!(
+            reclaim_observation(&row, &single, "working", &[]),
+            ("preferred_copy_not_observed", 0)
+        );
+        assert_eq!(
+            reclaim_observation(&row, &linked, "working", std::slice::from_ref(&archive)),
+            ("linked_zero_single_path_reclaim", 0)
+        );
+        assert_eq!(
+            reclaim_observation(&row, &single, "working", &[archive]),
+            ("single_link_verify_keeper_and_holds", 4096)
+        );
+    }
 }
