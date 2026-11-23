@@ -28,7 +28,7 @@ struct Profile {
     allow_apply: bool,
 }
 
-fn guarded_file(path: &Path, limit: u64) -> Result<(File, Vec<u8>), String> {
+pub(super) fn guarded_file(path: &Path, limit: u64) -> Result<(File, Vec<u8>), String> {
     if !path.is_absolute() {
         return Err("Provider inputs require absolute paths".into());
     }
@@ -103,14 +103,23 @@ pub(super) fn run(
         .as_u64()
         .filter(|n| (1..=3600).contains(n))
         .ok_or("Invalid provider time budget")?;
-    let runtime = tokio::runtime::Builder::new_current_thread()
-        .enable_all()
-        .build()
-        .map_err(|_| "Cannot start provider runtime")?;
-    let result = runtime
-        .block_on(execute(&profile, request, target, apply, seconds))
-        .and_then(|raw| serde_json::from_slice::<Value>(&raw).ok())
-        .filter(|result| matches_receipt(result, &profile.request_sha256, plan, &objects, apply));
+    let result = run_provider(
+        &profile.executable,
+        Duration::from_secs(seconds + 5),
+        |command| {
+            command
+                .current_dir(&profile.project_root)
+                .arg("--root")
+                .arg(&profile.project_root)
+                .arg("tier-demote")
+                .arg(request)
+                .arg(target);
+            if apply {
+                command.arg("--apply");
+            }
+        },
+    )
+    .filter(|result| matches_receipt(result, &profile.request_sha256, plan, &objects, apply));
     result.ok_or_else(|| {
         if apply {
             "Provider outcome uncertain; inspect the original journal before retrying".into()
@@ -206,33 +215,36 @@ async fn capture(reader: impl AsyncRead + Unpin) -> std::io::Result<Vec<u8>> {
     Ok(bytes)
 }
 
+pub(super) fn run_provider(
+    executable: &Path,
+    timeout: Duration,
+    configure: impl FnOnce(&mut tokio::process::Command),
+) -> Option<Value> {
+    let runtime = tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()
+        .ok()?;
+    let raw = runtime.block_on(execute(executable, timeout, configure))?;
+    serde_json::from_slice(&raw).ok()
+}
+
 async fn execute(
-    profile: &Profile,
-    request: &Path,
-    journal: &Path,
-    apply: bool,
-    seconds: u64,
+    executable: &Path,
+    timeout: Duration,
+    configure: impl FnOnce(&mut tokio::process::Command),
 ) -> Option<Vec<u8>> {
-    let mut command = CommandWrap::with_new(&profile.executable, |command| {
+    let mut command = CommandWrap::with_new(executable, |command| {
+        configure(command);
         command
-            .current_dir(&profile.project_root)
-            .arg("--root")
-            .arg(&profile.project_root)
-            .arg("tier-demote")
-            .arg(request)
-            .arg(journal)
             .stdin(Stdio::null())
             .stdout(Stdio::piped())
             .stderr(Stdio::piped());
-        if apply {
-            command.arg("--apply");
-        }
     });
     command.wrap(KillOnDrop).wrap(JobObject);
     let mut child = command.spawn().ok()?;
     let out = child.stdout().take()?;
     let err = child.stderr().take()?;
-    let (out, err, status) = tokio::time::timeout(Duration::from_secs(seconds + 5), async {
+    let (out, err, status) = tokio::time::timeout(timeout, async {
         tokio::try_join!(capture(out), capture(err), child.wait())
     })
     .await

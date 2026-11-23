@@ -6,6 +6,9 @@ mod demotion;
 #[cfg(all(windows, feature = "annex-read"))]
 #[path = "git-asset-catalogue/demotion_provider.rs"]
 mod demotion_provider;
+#[cfg(all(windows, feature = "annex-read"))]
+#[path = "git-asset-catalogue/scratch_provider.rs"]
+mod scratch_provider;
 fn save(report: &serde_json::Value, path: &str) -> Result<(), String> {
     use std::io::Write;
     if !Path::new(path).is_absolute() {
@@ -58,6 +61,19 @@ fn eviction_report(
 }
 fn run() -> Result<(), String> {
     let args: Vec<_> = std::env::args().skip(1).collect();
+    if args.first().is_some_and(|action| action == "scratch-run") {
+        #[cfg(all(windows, feature = "annex-read"))]
+        {
+            let [_, action, profile, request] = args.as_slice() else {
+                return Err("scratch-run requires verify|apply PROFILE JOB_PROFILE".into());
+            };
+            let report = scratch_provider::run(action, Path::new(profile), Path::new(request))?;
+            println!("{report}");
+            return Ok(());
+        }
+        #[cfg(not(all(windows, feature = "annex-read")))]
+        return Err("scratch-run requires Windows provider-process support".into());
+    }
     if args.first().is_some_and(|action| action == "demotion-run") {
         #[cfg(all(windows, feature = "annex-read"))]
         {
