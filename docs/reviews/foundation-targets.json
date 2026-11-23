@@ -10,6 +10,7 @@
   {"path":".github/ISSUE_TEMPLATE/feature_request.yml","bytes":583,"sha256":"5a920f2d67d7e76ee86f014bad097fdb6a191b35c50f7a5ed1342dd6256b7659"},
   {"path":".github/PULL_REQUEST_TEMPLATE.md","bytes":485,"sha256":"abeceb8a2c424dd23494f169a2fd83c78042e70159e26216d1a702966c7bb759"},
   {"path":".github/workflows/qualify-trigger.yml","bytes":2886,"sha256":"26ddc5b4f5283ddefc86ba662509e31e177ff83dba35fd2015db77677b302d35"},
+  {"path":".github/workflows/qualify-windows-bundle.yml","bytes":3780,"sha256":"69e7daad3b14d954e05b081fcabea3b8b5b3a2ac2f31b735befc2aaf0e1bec5c"},
   {"path":".github/workflows/validate.yml","bytes":14111,"sha256":"9d1b1ee3e643e389297f8c4bdd0d7ab14e8d475aabacec82045a8994eed10f90"},
   {"path":".gitignore","bytes":61,"sha256":"c7987297b8313d58d7c0292ac4068982a29757b270eb05fe70a6a7a0a709809e"},
   {"path":".gitleaksignore","bytes":360,"sha256":"f0f17df7c373354f2ead733db94deb424f15f5d3a37b07f4355ad1a86b9f4535"},
