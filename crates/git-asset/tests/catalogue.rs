@@ -796,6 +796,22 @@ fn named_object_placement_versions_shared_bytes_and_stale_previews() {
     #[cfg(any(unix, all(windows, feature = "annex-read")))]
     assert_eq!(evidence["single_path_reclaim_estimate"], 0);
     assert_eq!(review["removal_authorized"], false);
+
+    let keeper = candidate["copies"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|copy| copy["cache_id"].as_str().unwrap())
+        .find(|cache_id| *cache_id != observed.observed)
+        .unwrap();
+    let sha = candidate["sha256"].as_str().unwrap();
+    let basis = candidate["basis"].as_str().unwrap();
+    assert!(c.object_copy_request("", sha, keeper, "stale").is_err());
+    let (reviewed_object, reader) = c.object_copy_request("", sha, keeper, basis).unwrap();
+    assert_eq!(reviewed_object, old);
+    let checked = git_asset::catalogue::verify(reviewed_object, reader).unwrap();
+    assert_eq!(checked["verified"], true);
+    assert_eq!(checked["independent_custody_verified"], false);
     assert!(
         c.cache_eviction_preview(observed.observed, 1, "stale")
             .is_err()
