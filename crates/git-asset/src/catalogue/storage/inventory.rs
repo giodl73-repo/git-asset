@@ -17,6 +17,7 @@ struct Counts {
     logical_path_bytes: u64,
     unique_files: u64,
     unique_allocated_bytes: u64,
+    linked_file_allocated_bytes: u64,
     linked_paths: u64,
     excluded_or_unreadable: u64,
 }
@@ -138,6 +139,12 @@ pub fn run(config: &Config, project: &str, root: &Path) -> Result<Value> {
                         .unique_allocated_bytes
                         .checked_add(allocation)
                         .ok_or("Allocation overflow")?;
+                    if links > 1 {
+                        count.linked_file_allocated_bytes = count
+                            .linked_file_allocated_bytes
+                            .checked_add(allocation)
+                            .ok_or("Linked allocation overflow")?;
+                    }
                 }
             }
         }
@@ -182,6 +189,10 @@ mod tests {
         assert_eq!(measured["counts"]["files"], 2);
         assert_eq!(measured["counts"]["linked_paths"], 2);
         assert_eq!(measured["counts"]["unique_files"], 1);
+        assert_eq!(
+            measured["counts"]["linked_file_allocated_bytes"],
+            measured["counts"]["unique_allocated_bytes"]
+        );
         assert_eq!(measured["payloads_read"], 0);
         assert_eq!(measured["removal_authorized"], false);
     }

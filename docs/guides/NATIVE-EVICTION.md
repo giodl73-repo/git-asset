@@ -188,6 +188,6 @@ Use the full commit ID and a new absolute output path. The JSON includes the
 physical cache inventory by area, allocation by named selection class, and
 the eviction review with candidate states and the largest observed items.
 The three observations overlap and can see concurrent changes. Use the
-inventory for allocation totals and the eviction review to choose which
+inventory for allocation totals, including distinct allocation of files with multiple hard links. A file can have a link outside the scanned root. Use the eviction review to choose which
 candidates to verify. Safe reclaim stays unknown until execution prerequisites
 are established. The report does not open payloads or remove cache files.
