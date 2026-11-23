@@ -855,17 +855,30 @@ fn named_object_placement_versions_shared_bytes_and_stale_previews() {
         c.object_batch_preview("alpha", &first.repeat(100), "", "align")
             .is_err()
     );
-    fs::write(fast.join("objects").join(old.sha256.as_str()), b"bad body").unwrap();
+    let keeper = candidate["copies"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|copy| copy["cache_id"] != observed.observed)
+        .unwrap()["cache_id"]
+        .as_str()
+        .unwrap();
+    let archive_path = history.join("objects").join(old.sha256.as_str());
+    fs::write(&archive_path, b"bad body").unwrap();
     let (object, profile) = c
         .object_copy_request(
-            "alpha",
+            "",
             old.sha256.as_str(),
-            cache["cache_id"].as_str().unwrap(),
-            row["basis"].as_str().unwrap(),
+            keeper,
+            candidate["basis"].as_str().unwrap(),
         )
         .unwrap();
     assert!(git_asset::catalogue::verify(object, profile).is_err());
-    fs::write(fast.join("objects").join(old.sha256.as_str()), b"old body").unwrap();
+    assert_eq!(
+        fs::read(fast.join("objects").join(old.sha256.as_str())).unwrap(),
+        b"old body",
+    );
+    fs::write(archive_path, b"old body").unwrap();
     let shared_row = all["items"]
         .as_array()
         .unwrap()
