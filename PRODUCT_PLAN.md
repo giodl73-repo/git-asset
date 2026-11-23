@@ -14,15 +14,15 @@ Public experimental source; see [release checks](docs/PUBLIC-RELEASE.md).
 Exact identity/trees, bounded metadata, Git snapshots, local publication,
 capacity/recovery, optional typed graphs/proposals, restore, catalogue and agent
 queries exist. Optional Windows annex adapters provide managed local reads and
-retained candidate publication; native copy/pruner execution and consumer adoption
-remain open. Existing flat/CAS/LFS adapters remain supported by their contracts.
+retained candidate publication and bounded native copy; native pruner execution
+and consumer adoption remain open. Existing flat/CAS/LFS adapters remain supported by their contracts.
 See [architecture](docs/ARCHITECTURE.md) and [evidence](docs/vtrace/EVIDENCE.md)
 for component scope; this is not production acceptance.
 
 ## Initial offering: PR finish plan
 
-Input e171da7ebbe181d10b39b8e2a1a4cc78038b971f. PR70 is open; P1-P6 are
-labels, not GitHub numbers. Before code freeze input, controls, scope, L0/L1/L2.
+Input e171da7ebbe181d10b39b8e2a1a4cc78038b971f. PR70 and P1/PR71 merged;
+P2 is draft PR72. P1-P6 are labels, not GitHub numbers. Before code freeze input, controls, scope, L0/L1/L2.
 
 Finish: pinned Windows history, protected jobs/candidates, Git selection,
 merge-driven placement, eviction/restore; per-project acceptance and rollback.

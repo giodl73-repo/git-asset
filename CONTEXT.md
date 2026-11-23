@@ -11,9 +11,9 @@ PR closures are not independent review. Source availability is experimental.
 
 Native candidate ingress/protection/recovery/readback landed in PR68; derive
 its exact source/hosted state from Git. Consumer adoption remains owner-managed.
-Current task: catalogue UX readiness for team review, using only a fresh public
-synthetic sample. Contract: specs/CATALOGUE-REVIEW-UX.md. Preserve read-only
-semantics, exact snapshots, coverage and held-review boundaries.
+Current task: PRODUCT_PLAN.md's initial-offering PR series. Derive current
+branch/PR/evidence from context/RESUME.md and GitHub. Catalogue UX remains a
+qualified synthetic review slice; preserve its exact snapshots/held boundaries.
 No live caches, credentials, production assets, renders or deployments.
 
 Private archive/board and other worktrees are not source donors or migration

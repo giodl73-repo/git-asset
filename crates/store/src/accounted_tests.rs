@@ -74,6 +74,32 @@ impl Read for NoRead {
 }
 
 #[test]
+fn exact_reopen_rejects_changed_context_job_and_plan_without_ledger_mutation() {
+    let f = Fixture::new();
+    let (s, mut l) = f.open();
+    let req = request("reopen", b"original");
+    let p = plan_bound(&s, &req, Digest::blob(b"producer-one")).unwrap();
+    let j = job(&mut l, "job", p.required_peak());
+    assert!(reopen(&mut l, &s, &j, &p).is_err());
+    publish_accounted(&mut l, &s, &j, &p, &mut Cursor::new(b"original")).unwrap();
+    let other_job = job(&mut l, "other-job", p.required_peak());
+    let before = l.checkpoint();
+    let opened = reopen(&mut l, &s, &j, &p).unwrap();
+    assert_eq!(opened.publication().request(), &req);
+    drop(opened);
+    let changed = plan_bound(&s, &req, Digest::blob(b"producer-two")).unwrap();
+    assert!(reopen(&mut l, &s, &j, &changed).is_err());
+    assert!(reopen(&mut l, &s, &other_job, &p).is_err());
+    let mut invalid = p.clone();
+    invalid.limit += 1;
+    assert!(matches!(
+        reopen(&mut l, &s, &j, &invalid),
+        Err(AccountedError::InvalidPlan)
+    ));
+    assert_eq!(l.checkpoint(), before);
+}
+
+#[test]
 fn admitted_publication_settles_a_labelled_measured_file_data_footprint() {
     for bytes in [b"AAA".to_vec(), Vec::new(), vec![0x5a; 150_003]] {
         let f = Fixture::new();

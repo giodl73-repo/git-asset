@@ -211,9 +211,9 @@ impl Host {
         if route == "/api/storage/verify-copy" {
             let (object, profile) = {
                 let c = self.catalogue.lock().map_err(|_| "Catalogue unavailable")?;
-                c.object_copy_request(get("project"), get("sha"), get("cache"), get("basis"))?
+                c.storage_copy_request(get("project"), get("sha"), get("cache"), get("basis"))?
             };
-            let result = super::verify(object, profile)?;
+            let result = profile.verify(object)?;
             return Ok(
                 json!({"result":result,"cache_id":get("cache"),"independent_custody_verified":false,"removal_authorized":false,"scope":"Exact guarded read at verification time; not a durable retention acknowledgment"}),
             );
@@ -262,6 +262,15 @@ impl Host {
                 },
             ),
             "/api/projects" => Ok(c.summaries()),
+            "/api/storage/eviction-preview" => c.cache_eviction_preview(
+                get("cache"),
+                if get("offset").is_empty() {
+                    0
+                } else {
+                    get("offset").parse().map_err(|_| "Invalid offset")?
+                },
+                get("basis"),
+            ),
             "/api/storage/batch-preview" => c.object_batch_preview(
                 get("project"),
                 get("selection"),

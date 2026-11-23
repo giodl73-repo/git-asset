@@ -1860,3 +1860,5 @@ fn baseline_cli_replays_atomic_pairs_without_format_migration() {
         assert_eq!(value["replayed"], true);
     }
 }
+
+mod source_use_tests;

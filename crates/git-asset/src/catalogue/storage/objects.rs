@@ -98,11 +98,34 @@ pub struct Query<'a> {
     pub offset: usize,
     pub sha: &'a str,
 }
-fn cache_id(key: &str) -> String {
+pub(super) fn cache_id(key: &str) -> String {
     Object::from_bytes(key.as_bytes())
         .sha256
         .as_str()
         .to_owned()
+}
+pub enum CopyReader {
+    Existing(ByteProfile),
+    #[cfg(feature = "annex-read")]
+    Annex(Box<crate::annex::Profile>),
+}
+impl CopyReader {
+    pub fn verify(self, object: Object) -> Result<Value> {
+        match self {
+            Self::Existing(profile) => super::super::verify(object, profile),
+            #[cfg(feature = "annex-read")]
+            Self::Annex(profile) => {
+                let mut reader = crate::annex::Reader::new(*profile)
+                    .map_err(|error| format!("Native reader enrollment: {error}"))?;
+                let held = reader
+                    .open(&object)
+                    .map_err(|error| format!("Native byte check: {error}"))?;
+                Ok(
+                    json!({"object":held.object(),"verified":true,"place_index":held.place_index(),"protection":held.protection(),"independent_custody_verified":false,"authorizes_eviction":false}),
+                )
+            }
+        }
+    }
 }
 impl Catalogue {
     pub fn object_copy_request(
@@ -112,6 +135,21 @@ impl Catalogue {
         cache: &str,
         basis: &str,
     ) -> Result<(Object, ByteProfile)> {
+        let (object, reader) = self.storage_copy_request(project, sha, cache, basis)?;
+        match reader {
+            CopyReader::Existing(profile) => Ok((object, profile)),
+            #[cfg(feature = "annex-read")]
+            CopyReader::Annex(_) => Err("Native cache requires storage_copy_request".into()),
+        }
+    }
+
+    pub fn storage_copy_request(
+        &self,
+        project: &str,
+        sha: &str,
+        cache: &str,
+        basis: &str,
+    ) -> Result<(Object, CopyReader)> {
         let d = self.object_inventory(&Query {
             project,
             kind: "",
@@ -137,17 +175,35 @@ impl Catalogue {
         }
         let index = self.capture_storage_index(true)?;
         for ((id, place), key) in index.locators {
-            if cache_id(&key) != cache {
+            if (!project.is_empty() && id != project) || cache_id(&key) != cache {
                 continue;
             }
             let p = &self.projects[&id];
-            if !p.enrollment.storage.as_ref().is_some_and(|s| {
-                s.places
-                    .iter()
-                    .any(|p| p.place_index == place && p.live_probe)
-            }) {
+            let Some(enrolled) = p
+                .enrollment
+                .storage
+                .iter()
+                .flat_map(|s| &s.places)
+                .find(|enrolled| enrolled.place_index == place && enrolled.live_probe)
+            else {
                 continue;
+            };
+            let object: Object = serde_json::from_value(json!({"sha256":sha,"bytes":row["bytes"]}))
+                .map_err(|_| "Invalid object")?;
+            #[cfg(feature = "annex-read")]
+            if let Some(native) = &enrolled.annex {
+                if !row["copies"].as_array().is_some_and(|copies| {
+                    copies
+                        .iter()
+                        .any(|copy| copy["cache_id"] == cache && copy["bytes"] == row["bytes"])
+                }) {
+                    return Err(
+                        "No matching native copy in the review; refresh observed copies".into(),
+                    );
+                }
+                return Ok((object, CopyReader::Annex(Box::new(native.clone()))));
             }
+            let place = enrolled.place_index;
             if let Some(reader) = &p.profile.byte_source {
                 let mut reader = reader.clone();
                 let place = reader
@@ -156,16 +212,85 @@ impl Catalogue {
                     .ok_or("Unknown byte location")?
                     .clone();
                 reader.places = vec![place];
-                let object: Object =
-                    serde_json::from_value(json!({"sha256":sha,"bytes":row["bytes"]}))
-                        .map_err(|_| "Invalid object")?;
-                return Ok((object, reader));
+                return Ok((object, CopyReader::Existing(reader)));
             }
         }
         Err("Cache is not enrolled for explicit live verification".into())
     }
     pub fn object_inventory(&self, q: &Query) -> Result<Value> {
         self.object_inventory_selected(q, None)
+    }
+    pub fn cache_eviction_preview(&self, cache: &str, offset: usize, basis: &str) -> Result<Value> {
+        if cache.is_empty() || (offset != 0 && basis.is_empty()) {
+            return Err("Cache and page basis required".into());
+        }
+        let mut view = self.object_inventory(&Query {
+            project: "",
+            kind: "",
+            usage: "",
+            anomaly: "",
+            primary: "",
+            observed: cache,
+            q: "",
+            sort: "bytes",
+            offset,
+            sha: "",
+        })?;
+        if !view["caches"]
+            .as_array()
+            .is_some_and(|caches| caches.iter().any(|entry| entry["id"] == cache))
+        {
+            return Err("Unknown observed cache".into());
+        }
+        if !basis.is_empty() && view["page_basis"].as_str() != Some(basis) {
+            return Err("Cache observations changed; restart the review".into());
+        }
+        let rows = view["items"]
+            .as_array_mut()
+            .ok_or("Invalid inventory page")?;
+        for row in rows.iter_mut() {
+            let review = preview_row(
+                &Value::Null,
+                row,
+                row["basis"].as_str().ok_or("Missing row basis")?,
+                "evict-review",
+            )?;
+            let older = review["proposals"]
+                .as_array()
+                .is_some_and(|items| items.iter().any(|item| item["cache"] == cache));
+            let overlap = row["copies"].as_array().is_some_and(|copies| {
+                copies
+                    .iter()
+                    .any(|copy| copy["cache_id"] != cache && copy["bytes"] == row["bytes"])
+            });
+            let state = if row["has_current_revision"] == true {
+                "keep"
+            } else if older && overlap {
+                "verify_candidate"
+            } else {
+                "unknown"
+            };
+            let linked = row["copies"].as_array().is_some_and(|copies| {
+                copies.iter().any(|copy| {
+                    copy["cache_id"] == cache
+                        && copy["hard_links"].as_u64().is_some_and(|links| links > 1)
+                })
+            });
+            let reviewed_object = json!({"sha256":row["sha256"],"bytes":row["bytes"]});
+            row["eviction_review"] = json!({
+                "state":state,"older_copy_proposed":older,
+                "reviewed_object":reviewed_object,
+                "reviewed_object_json":reviewed_object.to_string(),
+                "holds":review["holds"],"other_copy_listed":overlap,
+                "archive_bytes_verified":false,"reclaimable_bytes":null,
+                "single_path_reclaim_estimate":linked.then_some(0)
+            });
+        }
+        let end = offset.saturating_add(rows.len());
+        let next = (end < view["total"].as_u64().unwrap_or(0) as usize).then_some(end);
+        view["next_offset"] = json!(next);
+        view["source_cache"] = json!(cache);
+        Ok(view)
     }
     pub fn object_batch_preview(
         &self,
@@ -464,7 +589,7 @@ impl Catalogue {
                         .into_iter()
                         .flatten()
                     {
-                        expanded.push((&n.object,u.clone(),v.clone(),format!("{s} → {}",n.pointer),"nested-byte-reference".into(),Some(json!({"root":n.root,"document":n.document,"adapter":n.adapter,"pointer":n.pointer}))));
+                        expanded.push((&n.object,u.clone(),v.clone(),format!("{s} â†’ {}",n.pointer),"nested-byte-reference".into(),Some(json!({"root":n.root,"document":n.document,"adapter":n.adapter,"pointer":n.pointer}))));
                     }
                 }
                 for (o, usage, version, slot, role, nested) in expanded {
@@ -475,7 +600,7 @@ impl Catalogue {
                     item.bytes = o.bytes;
                     let title = if let Some(n) = &nested {
                         format!(
-                            "{} · {}",
+                            "{} Â· {}",
                             card.title.chars().take(120).collect::<String>(),
                             n["pointer"]
                                 .as_str()
@@ -562,7 +687,7 @@ impl Catalogue {
                 item.bytes = s.bytes;
             }
             item.conflict |= s.conflict;
-            item.copies.push(json!({"cache_id":cache_id(&s.cache),"domain":s.domain,"bytes":s.bytes,"allocated_bytes":s.allocated,"observed_at":s.time,"hash_verified":false}));
+            item.copies.push(json!({"cache_id":cache_id(&s.cache),"domain":s.domain,"bytes":s.bytes,"allocated_bytes":s.allocated,"hard_links":s.hard_links,"observed_at":s.time,"hash_verified":false}));
         }
         let mut rows = vec![];
         let mut kinds = BTreeSet::new();
@@ -753,6 +878,17 @@ impl Catalogue {
             )
             .then_with(|| a["sha256"].as_str().cmp(&b["sha256"].as_str())),
         });
+        let page_basis = Object::from_bytes(
+            &serde_json::to_vec(&json!([
+                q.observed,
+                index.snapshots,
+                policy_pins,
+                caches,
+                rows.iter().map(|row| &row["basis"]).collect::<Vec<_>>()
+            ]))
+            .map_err(|_| "Page basis encoding refused")?,
+        )
+        .sha256;
         let mut cache_totals = BTreeMap::<String, (u64, u64)>::new();
         for row in &rows {
             for copy in row["copies"].as_array().ok_or("Invalid copies")? {
@@ -770,7 +906,7 @@ impl Catalogue {
             .map(|(id, (count, bytes))| json!({"cache_id":id,"objects":count,"file_bytes":bytes}))
             .collect();
         Ok(
-            json!({"scope":scope,"copy_summary":copy_summary,"snapshots":index.snapshots,"policy_pins":policy_pins,"total":rows.len(),"unique_content_bytes":total_bytes,"stored_file_bytes":stored_bytes,"items":rows.iter().skip(q.offset).take(100).collect::<Vec<_>>(),"kinds":kinds,"anomaly_counts":anomalies,"caches":caches,"complete_consumer_coverage":false,"removal_authorized":false,"limitations":"Named direct registered bindings, not complete dependency closures or current consumer/ref-count authority. Primary caches are project-owned preferences. Observed copies and timestamps are not verified retained custody; absent observations stay unknown."}),
+            json!({"page_basis":page_basis,"scope":scope,"copy_summary":copy_summary,"snapshots":index.snapshots,"policy_pins":policy_pins,"total":rows.len(),"unique_content_bytes":total_bytes,"stored_file_bytes":stored_bytes,"items":rows.iter().skip(q.offset).take(100).collect::<Vec<_>>(),"kinds":kinds,"anomaly_counts":anomalies,"caches":caches,"complete_consumer_coverage":false,"removal_authorized":false,"limitations":"Named direct registered bindings, not complete dependency closures or current consumer/ref-count authority. Primary caches are project-owned preferences. Observed copies and timestamps are not verified retained custody; absent observations stay unknown."}),
         )
     }
     pub fn object_preview(

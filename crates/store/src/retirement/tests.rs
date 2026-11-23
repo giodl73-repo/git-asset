@@ -312,6 +312,13 @@ impl Fixture {
             .join(self.publication.object.sha256.as_str())
     }
     fn cancel(&mut self, plan: &Plan) -> Result<Receipt> {
+        self.cancel_guard(plan, |_| Ok(()))
+    }
+    fn cancel_guard(
+        &mut self,
+        plan: &Plan,
+        guard: impl FnMut(&Plan) -> Result<()>,
+    ) -> Result<Receipt> {
         let mut backups = self
             .keepers
             .iter_mut()
@@ -332,7 +339,7 @@ impl Fixture {
             admitted_context: &self.context,
             source_enrollment: &self.enrollment,
         }
-        .cancel(plan, &plan.authorize()?)
+        .cancel_with_guard(plan, &plan.authorize()?, guard)
     }
     fn restored_plan(&self, retired: &Plan, operation: &str) -> ReacquisitionPlan {
         let mut request = self.publication.clone();
@@ -1487,4 +1494,197 @@ fn known_missing_managed_anchors_are_not_recreated_by_reads_or_new_publications(
     assert!(!dir.exists());
     assert!(!anchor.exists());
     assert!(f.object_path().exists());
+}
+
+#[test]
+fn exact_publication_guard_refuses_pending_after_reopen_and_old_birth_after_restore() {
+    let mut f = Fixture::new();
+    let mut wrong = f.publication.clone();
+    wrong.object = Object::from_bytes(b"never-seen conflicting identity");
+    assert!(matches!(
+        f.store.read_published(&wrong),
+        Err(crate::Error::OperationConflict)
+    ));
+    let mut unknown = f.publication.clone();
+    unknown.operation = key("never-started");
+    assert!(matches!(
+        f.store.read_published(&unknown),
+        Err(crate::Error::NeedsRecovery)
+    ));
+    let p = f.plan();
+    let (receipt, mut read) = f.store.read_published(&f.publication).unwrap();
+    assert_eq!(receipt.request(), &f.publication);
+    let mut bytes = vec![];
+    read.read_to_end(&mut bytes).unwrap();
+    assert_eq!(bytes, b"target");
+    assert!(matches!(
+        f.apply(&p),
+        Err(Error::Protection(store_protection::Error::Busy))
+    ));
+    drop(read);
+    assert!(matches!(
+        f.apply_hook(&p, |s| if s == Stage::Intent {
+            Err(Error::Injected)
+        } else {
+            Ok(())
+        }),
+        Err(Error::Injected)
+    ));
+    let reopened = LocalStore::open(&f.root.path().join("working")).unwrap();
+    // Read-only recovery can inspect surviving bytes; new writes must stay gated.
+    reopened.read_object(&f.publication.object).unwrap();
+    assert!(matches!(
+        reopened.read_published(&f.publication),
+        Err(crate::Error::NeedsRecovery)
+    ));
+    let before = f.ledger.checkpoint();
+    assert!(f.cancel(&p).unwrap().cancelled);
+    let (receipt, read) = reopened.read_published(&f.publication).unwrap();
+    assert_eq!(receipt.request(), &f.publication);
+    drop(read);
+    assert_ne!(f.ledger.checkpoint(), before);
+    let next = plan(&f.store, f.request("later-retirement")).unwrap();
+    f.apply(&next).unwrap();
+    assert!(matches!(
+        reopened.read_published(&f.publication),
+        Err(crate::Error::AuthorizedAbsence)
+    ));
+    let restore = f.restored_plan(&next, "fresh-restoration");
+    f.restore(&restore).unwrap();
+    assert!(matches!(
+        reopened.read_published(&f.publication),
+        Err(crate::Error::AuthorizedAbsence)
+    ));
+    let (receipt, mut read) = reopened.read_published(restore.publication()).unwrap();
+    assert_eq!(receipt.request(), restore.publication());
+    let mut actual = vec![];
+    read.read_to_end(&mut actual).unwrap();
+    assert_eq!(actual, b"target");
+}
+
+#[test]
+fn adapter_effect_failure_stays_pending_and_historical_replay_never_repeats_effect() {
+    let mut f = Fixture::new();
+    let plan = f.plan();
+    let mut calls = 0;
+    let auth = plan.authorize().unwrap();
+    {
+        let mut backups = f
+            .keepers
+            .iter_mut()
+            .map(|k| Backup {
+                store: &k.store,
+                ledger: &mut k.ledger,
+                enrollment: &k.enrollment,
+            })
+            .collect::<Vec<_>>();
+        let mut execution = Execution {
+            store: &f.store,
+            ledger: &mut f.ledger,
+            job: &f.job,
+            namespaces: &mut f.namespaces,
+            nodes: &f.nodes,
+            limits: &limits(),
+            backups: &mut backups,
+            admitted_context: &f.context,
+            source_enrollment: &f.enrollment,
+        };
+        assert!(matches!(
+            execution.apply_with_effect(&plan, &auth, |_| {
+                calls += 1;
+                Err(Error::Injected)
+            }),
+            Err(Error::Injected)
+        ));
+    }
+    assert_eq!(calls, 1);
+    assert!(f.object_path().exists());
+    assert!(matches!(
+        f.store.read_published(&f.publication),
+        Err(crate::Error::NeedsRecovery)
+    ));
+    for expected in 2..=3 {
+        let mut backups = f
+            .keepers
+            .iter_mut()
+            .map(|k| Backup {
+                store: &k.store,
+                ledger: &mut k.ledger,
+                enrollment: &k.enrollment,
+            })
+            .collect::<Vec<_>>();
+        let mut execution = Execution {
+            store: &f.store,
+            ledger: &mut f.ledger,
+            job: &f.job,
+            namespaces: &mut f.namespaces,
+            nodes: &f.nodes,
+            limits: &limits(),
+            backups: &mut backups,
+            admitted_context: &f.context,
+            source_enrollment: &f.enrollment,
+        };
+        let receipt = execution
+            .apply_with_effect(&plan, &auth, |_| {
+                calls += 1;
+                Ok(())
+            })
+            .unwrap();
+        assert_eq!(calls, 2);
+        assert_eq!(receipt.historical_replay, expected == 3);
+    }
+    assert!(!f.object_path().exists());
+}
+
+#[test]
+fn cancellation_adapter_guard_is_inside_original_operation_fence_and_failure_keeps_pending() {
+    let mut f = Fixture::new();
+    let plan = f.plan();
+    assert!(matches!(
+        f.apply_hook(&plan, |stage| if stage == Stage::Intent {
+            Err(Error::Injected)
+        } else {
+            Ok(())
+        }),
+        Err(Error::Injected)
+    ));
+    let peer = LocalStore::open(&f.root.path().join("working")).unwrap();
+    let (operation, _) = keys(&peer, &plan.request.operation, "evict").unwrap();
+    let scope = Publication {
+        operation,
+        owner: plan.request.owner.clone(),
+        object: plan.publication.object.clone(),
+        required: AckLevel::ProcessRestart,
+    };
+    let mut checks = 0;
+    assert!(matches!(
+        f.cancel_guard(&plan, |_| {
+            checks += 1;
+            assert!(matches!(peer.attempt(&scope), Err(crate::Error::Busy)));
+            let mut other = scope.clone();
+            other.operation = key("unrelated-guard-peer");
+            let _other = peer.attempt(&other).unwrap();
+            Err(Error::Injected)
+        }),
+        Err(Error::Injected)
+    ));
+    assert_eq!(checks, 1);
+    assert!(f.object_path().exists());
+    assert!(matches!(
+        f.store.read_published(&f.publication),
+        Err(crate::Error::NeedsRecovery)
+    ));
+    let receipt = f
+        .cancel_guard(&plan, |_| {
+            checks += 1;
+            Ok(())
+        })
+        .unwrap();
+    assert!(receipt.cancelled);
+    assert_eq!(checks, 2);
+    let (_, mut bytes) = f.store.read_published(&f.publication).unwrap();
+    let mut actual = Vec::new();
+    bytes.read_to_end(&mut actual).unwrap();
+    assert_eq!(actual, b"target");
+    assert!(f.apply(&plan).unwrap().cancelled);
 }

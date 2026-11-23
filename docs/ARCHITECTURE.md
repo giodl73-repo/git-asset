@@ -16,8 +16,10 @@ The public native adapter supplies exact local reads and pool-bound namespace
 use. Optional `annex-publish` composes existing metadata, Retention claims,
 capacity and accounted witnesses for unselected native ingress, original-operation
 recovery and guarded retained readback; see its [consumer contract](../specs/ANNEX-CANDIDATE-PUBLICATION.md).
-Participating native pruner execution and downstream production adoption remain
-open integration work. Generic local publication,
+The experimental [native eviction SDK](guides/NATIVE-EVICTION.md) assembles
+protected plan/apply/status/resume/cancel over existing engines for namespace-owned
+actors. Native CLI, executor crash/authority qualification and downstream
+production adoption remain open integration work. Generic local publication,
 capacity, journaling and LFS providers remain existing compatibility components
 and qualification witnesses; they are not a reason to build another bespoke
 asset-content engine. Low-level byte interfaces remain usable without schemas.

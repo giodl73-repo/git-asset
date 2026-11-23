@@ -2,20 +2,8 @@ use super::*;
 use crate::annex::replication as copy;
 fn pair(bytes: &[u8]) -> (Fixture, Fixture, copy::Profile, copy::Plan) {
     let mut source = Fixture::new(bytes);
-    let mut target = Fixture::new(bytes);
-    target.profile.pool.pool.uuid = "00000000-0000-0000-0000-000000000002".into();
-    fs::write(
-        target.profile.pool.pool.repository.join("uuid"),
-        &target.profile.pool.pool.uuid,
-    )
-    .unwrap();
-    target.plan = Plan::new(
-        &target.profile,
-        target.plan.request.clone(),
-        target.plan.selection.selection.clone(),
-        target.plan.admission.clone(),
-    )
-    .unwrap();
+    let target = Fixture::new(bytes);
+    assert_ne!(source.profile.pool.pool.uuid, target.profile.pool.pool.uuid);
     source.refresh();
     let source_plan = source.plan.clone();
     let mut input = source.input();
@@ -99,7 +87,7 @@ fn retained_copy_preserves_source_and_reopens_without_it_after_restart() {
     assert_eq!(actual, bytes);
 }
 #[test]
-fn retained_copy_import_uncertainty_recovers_original_without_source() {
+fn retained_copy_import_uncertainty_preserves_bytes_without_claiming_completion() {
     let bytes = vec![91; 128 * 1024];
     let (mut source, mut target, profile, plan) = pair(&bytes);
     target.refresh();
@@ -123,9 +111,15 @@ fn retained_copy_import_uncertainty_recovers_original_without_source() {
         source.root.join("offline-pool"),
     )
     .unwrap();
-    let mut ready = copy::Copier::new(profile)
+    assert!(matches!(
+        copy::Copier::new(profile)
+            .unwrap()
+            .resume(&plan, &mut target.resources()),
+        Err(Error::Uncertain)
+    ));
+    let mut ready = crate::annex::managed::Reader::new(target.profile.pool.clone())
         .unwrap()
-        .resume(&plan, &mut target.resources())
+        .open(&plan.source().candidate().object)
         .unwrap();
     let mut actual = vec![];
     ready.read_to_end(&mut actual).unwrap();
@@ -301,6 +295,13 @@ fn retained_copy_crash_worker() {
         serde_json::from_slice(&fs::read(target.root.join("copy-plan.json")).unwrap()).unwrap();
     let mode = std::env::var("GIT_ASSET_COPY_MODE").unwrap();
     let mut copier = copy::Copier::new(profile).unwrap();
+    if mode == "uncertain" {
+        assert!(matches!(
+            copier.resume(&plan, &mut target.resources()),
+            Err(Error::Uncertain)
+        ));
+        return;
+    }
     let mut ready = if mode == "resume" {
         copier.resume(&plan, &mut target.resources()).unwrap()
     } else if mode == "apply" {
@@ -369,6 +370,14 @@ fn actual_copy_child_exits_preserve_retention_and_original_operation() {
             .unwrap();
             "resume"
         };
+        if stage == Stage::Imported {
+            for _ in 0..2 {
+                let out = run("uncertain");
+                assert!(out.status.success(), "{out:?}");
+            }
+            assert!(!target.root.join("copy-recovered.json").exists());
+            continue;
+        }
         let out = run(recover);
         assert!(out.status.success(), "{out:?}");
         let receipt: copy::Receipt =

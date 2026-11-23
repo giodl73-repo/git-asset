@@ -977,3 +977,5 @@ EVID-144: actual sample/front-door creation, shared-object and fresh-root refusa
 old teaching/native/browser and hosted qualification remain distinct gates.
 
 EVID-145: copy focused/native/crash and strict Clippy pass; broad/hosted pending.
+
+EVID-146: four point-proof/fence fixtures pass; native P2 not implemented.

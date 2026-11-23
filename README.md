@@ -108,34 +108,31 @@ working cache. Eviction requires current protection checks and verified retained
 custody. Final deletion is a separate explicit retirement decision; losing the
 selected label is insufficient.
 
-These diagrams describe the lifecycle contract and product direction. The current
-native-annex adapter supplies explicit guarded local reads and an optional Rust
-candidate-publication slice on Windows. It retains unselected outputs with exact
-retry/readback; participating native pruner execution remains integration work.
-Existing local-provider teaching fixtures demonstrate bounded
-lifecycle slices; consuming workflows own build execution, rerender decisions and
-creative approval. The capability table below defines today's implemented scope.
+The capability table below describes what is implemented.
+
+## When a working drive is full
+
+In the catalogue, open **Storage → Cache locations**, find E: and choose
+**Review this cache for eviction**. See [catalogue setup](#catalogue-setup).
+
+- **Keep** means an enrolled project uses those bytes.
+- **Check archive copy** lets you verify the listed copy's hash and length.
+  Retained custody still needs separate evidence.
+- **Unknown** gives reasons to keep the file for now. Use **Next review page**
+  to continue.
+
+One hard-link removal may free zero bytes. Treat unknown reclaim as zero for
+planning. Caches shared with older tools require a qualified writer handoff.
 
 ## Move old versions off the working disk
 
-After image v4 and render v13 are selected, the policy can stop requiring v3 and
-render v12 on F:. Their exact historical references remain. First establish and
-verify the required retained copies on J: and M:, then recheck all projects, jobs
-and retention obligations before evicting the eligible **F: copies**. A job still
-using v3 keeps it protected. An unavailable backup holds eviction; it does not
-turn an unknown copy into a verified survivor. Removing the last retained copy
-is a separate final-retirement operation, never ordinary cache eviction.
+Verify the required copies on J: and M: and recheck project and job demands before removing an F: copy. See the [candidate discovery workflow](https://github.com/giodl73-repo/git-asset/issues/78) and [legacy cache handoff](https://github.com/giodl73-repo/git-asset/issues/77).
 
-Start with the cache, separate archive, and projects that use them. In the
-catalogue, **Storage** shows registered copies and **Impact** shows known uses.
-Check coverage. Unknown uses, an unverified archive, and hard links can change
-whether eviction is safe or frees space.
-
-Planning currently requires a known object and enrolled profile. Candidate
-discovery is tracked in [#78](https://github.com/giodl73-repo/git-asset/issues/78).
-Mixed legacy caches need the handoff in [#77](https://github.com/giodl73-repo/git-asset/issues/77).
-Below are experimental local-provider commands. Use admitted absolute profile,
-request and plan paths outside Git. Native publication has a separate Rust SDK.
+The current command surfaces are below. `PROFILE`, `REQUEST`, `PLAN` and
+`PLACEMENT_PROFILE` stand for explicitly admitted absolute file paths outside the
+repository; discovery does not create them. These are existing **experimental
+local-provider** interfaces. Native publication is currently a separate optional
+Rust SDK; these examples do not enable production annex eviction.
 
 ```text
 git asset lifecycle describe
@@ -209,18 +206,27 @@ checks; a sizing worksheet grants no deletion authority.
 
 ## Try the public sample
 
-Create a two-project review workspace, then check and serve its catalogue:
+Start with a synthetic catalogue and two projects. You can try it without
+enrolling your storage or touching your project's assets.
+
+- **Windows preview:** Open a successful [Windows bundle workflow run](https://github.com/giodl73-repo/git-asset/actions/workflows/qualify-windows-bundle.yml).
+  Download and extract its `git-asset-windows-preflight` artifact, then extract
+  the ZIP inside. Put the directory containing `git-asset.exe` and its companion
+  executables on PATH alongside Git. The preview commands below need Git and
+  the bundle. This sample uses no git-annex repository.
+- **Build from source:** Use the [development setup](docs/DEVELOPMENT.md), then
+  run `cargo build --locked -p git-asset --features schema --bins` and put the
+  resulting binaries on PATH.
+
+In a new terminal, replace `NEW_SAMPLE` with a new absolute directory whose
+parent exists. Quote the path if it contains spaces.
 
 ```text
-cargo run -p git-asset --features schema --bin git-asset-sample --locked -- rehearse-review NEW_SAMPLE
-cargo run -p git-asset --features schema --bin git-asset-catalogue --locked -- check NEW_SAMPLE/catalogue.json
-cargo run -p git-asset --features schema --bin git-asset-catalogue --locked -- serve NEW_SAMPLE/catalogue.json 8801
+git asset describe
+git asset sample rehearse-review NEW_SAMPLE
+git asset catalogue check NEW_SAMPLE/catalogue.json
+git asset catalogue serve NEW_SAMPLE/catalogue.json 8801
 ```
-
-Use the [development setup](docs/DEVELOPMENT.md) for external build/temp roots.
-Replace `NEW_SAMPLE` with a new absolute path outside Git checkouts; its parent
-must exist. With service binaries on PATH, generation is also
-`git asset sample rehearse-review NEW_SAMPLE`.
 
 Open `http://127.0.0.1:8801`. Compare intro-v2 and recovery-v1 projects, find their
 shared 25-byte asset, and step through eleven recovery lessons. These use tiny
@@ -331,6 +337,8 @@ No crates.io package or prebuilt installer is published by this repository.
 The catalogue tests create synthetic Git repositories and temporary stores.
 They need no personal project, credentials or existing cache. Building/testing
 installs no daemon or Git hooks.
+
+### Catalogue setup
 
 For your project, create a machine-local resolver profile and catalogue enrollment
 using [the catalogue contract](specs/CATALOGUE.md) and

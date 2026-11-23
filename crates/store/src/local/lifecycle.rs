@@ -3,23 +3,10 @@ use super::*;
 use crate::retirement::{Completion, Intent};
 use std::collections::BTreeSet;
 
+pub(crate) use crate::lifecycle::{Incarnation as Birth, MAX_BIRTHS, digest, encode};
 pub(crate) const SCHEMA: &str = "tig.local-lifecycle.design-1";
-pub(crate) const MAX_BIRTHS: usize = 16;
 pub(crate) const MAX_FILES: usize = MAX_BIRTHS * 4 + 1;
 pub(crate) const MAX_FINAL_FILES: usize = MAX_BIRTHS * 7 + 1;
-#[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub(crate) struct Birth {
-    pub(super) schema: String,
-    pub(crate) store: Digest,
-    pub(crate) object: Object,
-    pub index: usize,
-    pub(super) previous: Option<Digest>,
-    pub reacquire: Option<Request>,
-    pub placement: Digest,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub(crate) final_context: Option<Digest>,
-}
 #[derive(Clone)]
 pub(crate) struct Head {
     pub birth: Birth,
@@ -32,18 +19,6 @@ impl Head {
     pub(crate) fn retired(&self) -> bool {
         self.done.is_some() || self.final_state.as_ref().is_some_and(|s| s.retired())
     }
-}
-pub(crate) fn digest(value: &impl Serialize) -> Result<Digest> {
-    Ok(Digest::blob(&encode(value)?))
-}
-pub(crate) fn encode(value: &impl Serialize) -> Result<Vec<u8>> {
-    let raw =
-        identity::canonical_json(&serde_json::to_value(value).map_err(|_| Error::CorruptRecord)?)
-            .map_err(|_| Error::CorruptRecord)?;
-    if raw.len() > 65536 {
-        return Err(Error::Budget);
-    }
-    Ok(raw)
 }
 struct MetadataLock(File);
 impl Drop for MetadataLock {
@@ -144,68 +119,33 @@ impl LocalStore {
                 break;
             }
             let birth: Birth = read_record(&path)?;
-            let (expected_previous, expected_placement, expected_reacquire) = match &last {
+            let expected = match &last {
+                None => Birth::initial(self.instance.clone(), object.clone()),
                 Some(head) => {
                     if let Some(final_state) = &head.final_state {
-                        let terminal = final_state.terminal.as_ref().ok_or(Error::CorruptRecord)?;
+                        let terminal =
+                            digest(final_state.terminal.as_ref().ok_or(Error::CorruptRecord)?)?;
                         if final_state.cancelled() {
-                            (Some(digest(terminal)?), head.birth.placement.clone(), false)
+                            head.birth.cancelled(terminal)
                         } else {
-                            let previous = digest(terminal)?;
-                            let request = birth.reacquire.as_ref().ok_or(Error::CorruptRecord)?;
-                            (
-                                Some(previous.clone()),
-                                digest(&(
-                                    "final-reacquired-placement",
-                                    &self.instance,
-                                    object,
-                                    &previous,
-                                    request,
-                                    birth.final_context.as_ref().ok_or(Error::CorruptRecord)?,
-                                ))?,
-                                true,
+                            head.birth.final_reacquired(
+                                terminal,
+                                birth.reacquire.clone().ok_or(Error::CorruptRecord)?,
+                                birth.final_context.clone().ok_or(Error::CorruptRecord)?,
                             )
                         }
                     } else if let Some(aborted) = &head.aborted {
-                        (Some(digest(aborted)?), head.birth.placement.clone(), false)
+                        head.birth.cancelled(digest(aborted)?)
                     } else {
-                        let previous = digest(head.done.as_ref().ok_or(Error::CorruptRecord)?)?;
-                        let request = birth.reacquire.as_ref().ok_or(Error::CorruptRecord)?;
-                        (
-                            Some(previous.clone()),
-                            digest(&(
-                                "reacquired-placement",
-                                &self.instance,
-                                object,
-                                &previous,
-                                request,
-                            ))?,
-                            true,
+                        head.birth.reacquired(
+                            digest(head.done.as_ref().ok_or(Error::CorruptRecord)?)?,
+                            birth.reacquire.clone().ok_or(Error::CorruptRecord)?,
                         )
                     }
                 }
-                None => (
-                    None,
-                    digest(&("initial-placement", &self.instance, object))?,
-                    false,
-                ),
-            };
-            if birth.schema != SCHEMA
-                || birth.final_context.is_some()
-                    != last
-                        .as_ref()
-                        .is_some_and(|h| h.final_state.as_ref().is_some_and(|s| s.retired()))
-                || birth.store != self.instance
-                || birth.object != *object
-                || birth.index != index
-                || birth.previous != expected_previous
-                || birth.reacquire.is_some() != expected_reacquire
-                || birth.placement != expected_placement
-                || birth
-                    .reacquire
-                    .as_ref()
-                    .is_some_and(|r| r.object != *object || r.required > AckLevel::ProcessRestart)
-            {
+            }
+            .map_err(|_| Error::CorruptRecord)?;
+            if birth != expected || birth.index != index {
                 return Err(Error::CorruptRecord);
             }
             let intent_path = self.life_path(object, index, "intent");
@@ -395,16 +335,7 @@ impl LocalStore {
             }
             return Ok(Some(head.birth.placement));
         }
-        let birth = Birth {
-            schema: SCHEMA.into(),
-            store: self.instance.clone(),
-            object: request.object.clone(),
-            index: 0,
-            previous: None,
-            reacquire: None,
-            placement: digest(&("initial-placement", &self.instance, &request.object))?,
-            final_context: None,
-        };
+        let birth = Birth::initial(self.instance.clone(), request.object.clone())?;
         self.install_birth(&birth)?;
         Ok(Some(birth.placement))
     }
@@ -511,16 +442,7 @@ impl LocalStore {
         if head.birth.index + 1 >= MAX_BIRTHS {
             return Err(Error::Budget);
         }
-        let birth = Birth {
-            schema: SCHEMA.into(),
-            store: self.instance.clone(),
-            object: object.clone(),
-            index: head.birth.index + 1,
-            previous: Some(digest(&aborted)?),
-            reacquire: None,
-            placement: head.birth.placement,
-            final_context: None,
-        };
+        let birth = head.birth.cancelled(digest(&aborted)?)?;
         self.install_birth(&birth)
     }
     pub(crate) fn verify_retirement_source(
@@ -653,23 +575,9 @@ impl LocalStore {
         {
             return Err(Error::OperationConflict);
         }
-        Ok(Birth {
-            schema: SCHEMA.into(),
-            store: self.instance.clone(),
-            object: object.clone(),
-            index: head.birth.index + 1,
-            previous: Some(digest(previous)?),
-            reacquire: Some(request.clone()),
-            placement: digest(&(
-                "reacquired-placement",
-                &self.instance,
-                object,
-                digest(previous)?,
-                request,
-            ))?,
-            final_context: None,
-        })
+        head.birth.reacquired(digest(previous)?, request.clone())
     }
+
     pub(crate) fn begin_reacquisition(&self, birth: &Birth, fence: &ExclusiveObject) -> Result<()> {
         if birth.index == 0 {
             return Err(Error::InvalidRequest);

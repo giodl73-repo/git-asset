@@ -5,6 +5,7 @@ pub mod clock;
 pub mod existing;
 pub mod final_retirement;
 pub mod ledger;
+pub mod lifecycle;
 pub mod local;
 pub mod local_capacity;
 pub mod metadata;

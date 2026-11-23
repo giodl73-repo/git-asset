@@ -44,6 +44,48 @@ impl ReadCache {
             false,
         )
     }
+    /// Observe the logical length of a provider file through the existing path guards.
+    pub fn observe_provider_file(
+        &mut self,
+        root: &Path,
+        path: &ProviderPath,
+        object: &Object,
+    ) -> Result<u64> {
+        self.with_provider_metadata(root, path, object, |_, length| length)
+    }
+
+    /// Inspect metadata while the provider path and regular file guards are held.
+    /// This method consumes request admission without verifying payload bytes.
+    pub fn with_provider_metadata<T>(
+        &mut self,
+        root: &Path,
+        path: &ProviderPath,
+        object: &Object,
+        inspect: impl FnOnce(&File, u64) -> T,
+    ) -> Result<T> {
+        if !self.profile.places.is_empty() {
+            return Err(Error::Unsupported);
+        }
+        root_spelling(root)?;
+        let _permit = self.admit(object)?;
+        let path = root.join(path.as_str());
+        let strict = self.profile.required == RequiredProtection::PreventMutation;
+        let _directories = directories(&path, strict)?.ok_or(Error::Missing)?;
+        let before = match fs::symlink_metadata(&path) {
+            Ok(metadata) => metadata,
+            Err(error) if error.kind() == io::ErrorKind::NotFound => return Err(Error::Missing),
+            Err(error) => return Err(map_io(error)),
+        };
+        regular(&before)?;
+        let file = open_file(&path, strict)?;
+        let metadata = file.metadata().map_err(map_io)?;
+        regular(&metadata)?;
+        if metadata.len() != object.bytes {
+            return Err(Error::Integrity);
+        }
+        Ok(inspect(&file, metadata.len()))
+    }
+
     /// Open exactly one provider location, without layout guessing or fallback.
     /// Only provider-only instances accept this call; place_index is zero.
     pub fn open_provider_file(

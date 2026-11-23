@@ -288,6 +288,7 @@ pub enum Stage {
 struct State {
     guarded: bool,
     sources: BTreeMap<String, Source>,
+    source_slots: BTreeMap<String, usize>,
     outcomes: BTreeMap<String, u64>,
     head: Checkpoint,
     bytes: u64,
@@ -313,6 +314,8 @@ impl State {
             if self.sources.len() >= MAX_SOURCES {
                 return Err(Error::Budget);
             }
+            self.source_slots
+                .insert(source.as_str().into(), self.sources.len());
             self.sources.insert(
                 source.as_str().into(),
                 Source {
@@ -474,11 +477,22 @@ impl SourceJournal {
         epoch: Key,
         admission: Option<admission::Policy>,
     ) -> Result<Self> {
+        Self::create_scoped(root, project, epoch, admission, false)
+    }
+    fn create_scoped(
+        root: &Path,
+        project: Key,
+        epoch: Key,
+        admission: Option<admission::Policy>,
+        fenced: bool,
+    ) -> Result<Self> {
         local::check_root_spelling(root)?;
         let mut nonce = [0; 32];
         getrandom::fill(&mut nonce).map_err(|_| Error::Io)?;
         let config = Config {
-            schema: if admission.is_some() {
+            schema: if fenced {
+                "git-asset.source-claims.design-3"
+            } else if admission.is_some() {
                 "tig.source-claims.design-2"
             } else {
                 "tig.source-claims.design-1"
@@ -494,6 +508,9 @@ impl SourceJournal {
         fs::create_dir(root)?;
         if config.admission.is_some() {
             admission::create_anchors(root)?;
+            if fenced {
+                admission::source_use::create_anchors(root)?;
+            }
         }
         let mut marker = OpenOptions::new()
             .write(true)
@@ -591,7 +608,8 @@ impl SourceJournal {
         let config: Config = local::read_record(&root.join("claims.json"))?;
         match (&config.schema[..], &config.admission) {
             ("tig.source-claims.design-1", None) => (),
-            ("tig.source-claims.design-2", Some(policy)) if policy.valid() => (),
+            ("tig.source-claims.design-2" | "git-asset.source-claims.design-3", Some(policy))
+                if policy.valid() => {}
             _ => return Err(Error::Corrupt),
         }
         let genesis = Digest::blob(&encode(&config)?);
@@ -611,6 +629,7 @@ impl SourceJournal {
             state: State {
                 guarded: config.admission.is_some(),
                 sources: BTreeMap::new(),
+                source_slots: BTreeMap::new(),
                 outcomes: BTreeMap::new(),
                 head: Checkpoint {
                     genesis: genesis.clone(),
@@ -917,6 +936,11 @@ impl SourceJournal {
         if recorded_only {
             return Err(Error::Missing);
         }
+        let _source_generations = if self.config.schema == admission::source_use::SCHEMA {
+            admission::source_use::mutations(&self.root, &state, requests)?
+        } else {
+            Vec::new()
+        };
         if conditions.iter().any(|c| {
             state
                 .sources

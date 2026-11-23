@@ -15,6 +15,7 @@ struct Fixture {
     witness: LocalStore,
     ledger: CapacityLedger,
     _temp: Option<tempfile::TempDir>,
+    control_profile: Option<crate::annex::control::Profile>,
 }
 #[derive(Deserialize)]
 struct Saved {
@@ -23,6 +24,8 @@ struct Saved {
     metadata: git_asset_store::metadata::Checkpoint,
     namespaces: Vec<Checkpoint>,
     capacity: git_asset_store::ledger::Checkpoint,
+    #[serde(default)]
+    control_profile: Option<crate::annex::control::Profile>,
 }
 impl Fixture {
     fn save(&self) {
@@ -42,7 +45,7 @@ impl Fixture {
             "retained_place":self.profile.retained_place,"staging":self.profile.staging,"staging_marker":self.profile.staging_marker,
             "budget":self.profile.budget,"allow_publish":self.profile.allow_publish});
         let saved = serde_json::json!({"profile":profile,"plan":self.plan,"metadata":self.metadata.checkpoint(),
-            "namespaces":self.namespaces.iter().map(|n|n.checkpoint()).collect::<Vec<_>>(),"capacity":self.ledger.checkpoint()});
+            "control_profile":self.control_profile,"namespaces":self.namespaces.iter().map(|n|n.checkpoint()).collect::<Vec<_>>(),"capacity":self.ledger.checkpoint()});
         fs::write(
             self.root.join("fixture.json"),
             serde_json::to_vec(&saved).unwrap(),
@@ -70,13 +73,28 @@ impl Fixture {
             witness,
             ledger,
             _temp: None,
+            control_profile: s.control_profile,
         }
     }
     fn new(bytes: &[u8]) -> Self {
         Self::build(bytes, None, false)
     }
     fn build(bytes: &[u8], tools: Option<(PathBuf, PathBuf, Vec<PathBuf>)>, bare: bool) -> Self {
-        let temp = tempfile::tempdir().unwrap();
+        Self::build_in(bytes, tools, bare, None)
+    }
+    fn build_in(
+        bytes: &[u8],
+        tools: Option<(PathBuf, PathBuf, Vec<PathBuf>)>,
+        bare: bool,
+        base: Option<&Path>,
+    ) -> Self {
+        let temp = match base {
+            Some(base) => tempfile::Builder::new()
+                .prefix("git-asset-native-fixture-")
+                .tempdir_in(base)
+                .unwrap(),
+            None => tempfile::tempdir().unwrap(),
+        };
         let root = temp.path().to_path_buf();
         let mut p = profile(&root);
         p.pool.pool.repository = root.join("pool");
@@ -126,6 +144,17 @@ impl Fixture {
             .unwrap();
             p.pool.pool.uuid = super::super::super::line(&uuid.stdout).unwrap().into();
         } else {
+            let identity = Digest::blob(root.to_string_lossy().as_bytes());
+            let id = identity.as_str();
+            p.pool.pool.uuid = format!(
+                "{}-{}-{}-{}-{}",
+                &id[..8],
+                &id[8..12],
+                &id[12..16],
+                &id[16..20],
+                &id[20..32]
+            );
+            fs::write(pool.join("uuid"), &p.pool.pool.uuid).unwrap();
             fs::create_dir_all(pool.join(if bare {
                 "annex/objects"
             } else {
@@ -275,6 +304,7 @@ impl Fixture {
         .unwrap();
         Self {
             _temp: Some(temp),
+            control_profile: None,
             root,
             profile: p,
             plan,
@@ -321,7 +351,10 @@ impl Fixture {
         .unwrap()
     }
     fn publisher(&self) -> Publisher {
-        Publisher::new(self.profile.clone()).unwrap()
+        match &self.control_profile {
+            Some(control) => Publisher::controlled(self.profile.clone(), control.clone()).unwrap(),
+            None => Publisher::new(self.profile.clone()).unwrap(),
+        }
     }
     fn refresh(&mut self) {
         if self
@@ -375,6 +408,14 @@ fn publication_crash_worker() {
     let p = f.plan.clone();
     let mut input = f.input();
     let mode = std::env::var("GIT_ASSET_CANDIDATE_FIXTURE_MODE").unwrap();
+    if mode == "recover-uncertain" {
+        f.refresh();
+        assert!(matches!(
+            f.publisher().resume(&p, &mut f.resources()),
+            Err(Error::Uncertain)
+        ));
+        return;
+    }
     if mode == "recover" {
         f.refresh();
         let mut ready = f
@@ -450,6 +491,18 @@ fn crash_and_recover(f: &mut Fixture, stage: Stage) {
         Stage::Staged | Stage::Imported | Stage::Completed | Stage::Settled
     ) {
         fs::rename(f.root.join("input"), f.root.join("input-offline")).unwrap();
+    }
+    if matches!(stage, Stage::Intent | Stage::Imported) {
+        for _ in 0..2 {
+            let output = worker(f, "recover-uncertain");
+            assert!(output.status.success(), "{output:?}");
+        }
+        assert!(!f.root.join("recovered-receipt.json").exists());
+        let plan = f.plan.clone();
+        let status = f.publisher().status(&plan, &mut f.resources()).unwrap();
+        assert!(status.intent_recorded && !status.historical_completion && status.protected);
+        assert_eq!(status.bytes_verified, stage == Stage::Imported);
+        return;
     }
     let output = worker(f, "recover");
     assert!(
@@ -607,7 +660,7 @@ fn native_candidate_roundtrip_preserves_source_and_reopens_after_scratch_retirem
     );
 }
 #[test]
-fn unknown_native_outcome_recovers_original_operation_without_source_or_duplicate_registration() {
+fn unknown_native_outcome_holds_original_operation_despite_visible_bytes() {
     let mut f = Fixture::new(b"original result");
     let p = f.plan.clone();
     let mut input = f.input();
@@ -623,8 +676,18 @@ fn unknown_native_outcome_recovers_original_operation_without_source_or_duplicat
         .unwrap()
         .revision;
     fs::rename(f.root.join("input"), f.root.join("input-offline")).unwrap();
-    let ready = f.publisher().resume(&p, &mut f.resources()).unwrap();
-    drop(ready);
+    fs::rename(&f.profile.staging, f.root.join("staging-offline")).unwrap();
+    assert!(matches!(
+        f.publisher().resume(&p, &mut f.resources()),
+        Err(Error::Uncertain)
+    ));
+    let status = f.publisher().status(&p, &mut f.resources()).unwrap();
+    assert!(
+        status.bytes_verified
+            && status.intent_recorded
+            && !status.historical_completion
+            && status.protected
+    );
     assert_eq!(
         f.namespaces[0]
             .source(&k("asset"))
@@ -994,3 +1057,112 @@ fn previous_candidate_version_reopens_without_retargeting_current_registration()
 }
 
 mod replication;
+
+#[test]
+fn native_retirement_assessment_holds_configuration_and_all_subjects() {
+    use crate::annex::retirement::{Assessor, Error as RetirementError};
+    let mut f = Fixture::new(b"native source under exclusive namespace fences");
+    let plan = f.plan.clone();
+    let mut input = f.input();
+    f.refresh();
+    f.publisher()
+        .apply(&plan, &mut f.resources(), &mut input)
+        .unwrap();
+    assert!(matches!(
+        Assessor::new(f.profile.pool.clone()).unwrap().assess(
+            &plan.candidate().object,
+            &f.metadata,
+            &Fixture::limits()
+        ),
+        Err(RetirementError::Protected)
+    ));
+    let source = f.namespaces[0].source(&k("asset")).unwrap().unwrap();
+    let version = source.current.unwrap();
+    f.namespaces[0]
+        .apply(
+            k("withdraw-source"),
+            Command::Withdraw {
+                source: k("asset"),
+                owner: k("owner"),
+                expected_revision: source.revision,
+            },
+            &f.metadata,
+            &Fixture::limits(),
+        )
+        .unwrap();
+    let revision = f.namespaces[0]
+        .source(&k("asset"))
+        .unwrap()
+        .unwrap()
+        .revision;
+    f.namespaces[0]
+        .apply(
+            k("retire-source"),
+            Command::Retire {
+                source: k("asset"),
+                owner: k("owner"),
+                expected_revision: revision,
+                predecessor_revision: version.revision,
+            },
+            &f.metadata,
+            &Fixture::limits(),
+        )
+        .unwrap();
+    let mut held = Assessor::new(f.profile.pool.clone())
+        .unwrap()
+        .assess(&plan.candidate().object, &f.metadata, &Fixture::limits())
+        .unwrap();
+    assert_eq!(held.facts().checked().len(), 2);
+    assert!(matches!(
+        f.namespaces[0].hold(&plan.candidate().object),
+        Err(admission::Error::Busy)
+    ));
+    let config = f.profile.pool.pool.repository.join(".git/config");
+    assert!(
+        std::fs::OpenOptions::new()
+            .write(true)
+            .open(&config)
+            .is_err()
+    );
+    let mut read = held.read_source().unwrap();
+    let mut bytes = vec![];
+    read.read_to_end(&mut bytes).unwrap();
+    assert_eq!(Object::from_bytes(&bytes), plan.candidate().object);
+    drop(read);
+    held.check_current().unwrap();
+    drop(held);
+    f.namespaces[0].hold(&plan.candidate().object).unwrap();
+}
+
+mod retirement;
+
+mod control;
+
+#[test]
+fn legacy_plan_encoding_and_retained_bytes_remain_readable_without_closure_qualification() {
+    let mut f = Fixture::new(b"legacy readable candidate");
+    assert!(f.plan.has_guarded_effect());
+    f.plan.effect_protocol = None;
+    let plan = f.plan.clone();
+    let encoded = serde_json::to_vec(&plan).unwrap();
+    assert!(
+        serde_json::from_slice::<serde_json::Value>(&encoded)
+            .unwrap()
+            .get("effect_protocol")
+            .is_none()
+    );
+    let old: Plan = serde_json::from_slice(&encoded).unwrap();
+    assert_eq!(old, plan);
+    assert!(!old.has_guarded_effect());
+    let mut input = f.input();
+    f.refresh();
+    let ready = f
+        .publisher()
+        .apply(&old, &mut f.resources(), &mut input)
+        .unwrap();
+    drop(ready);
+    let mut reopened = f.publisher().reopen(&old, &mut f.resources()).unwrap();
+    let mut bytes = Vec::new();
+    reopened.read_to_end(&mut bytes).unwrap();
+    assert_eq!(bytes, b"legacy readable candidate");
+}

@@ -7,15 +7,18 @@ use std::{
 
 #[cfg(windows)]
 fn physical(path: &Path) -> std::io::Result<(Option<String>, u64, Option<u64>)> {
-    // Safe standard-library metadata does not expose stable Windows file identity.
-    // Keep identity/link coverage unknown instead of treating paths as physical IDs.
     use std::os::windows::fs::OpenOptionsExt;
     // FILE_READ_ATTRIBUTES only; never request payload read access for accounting.
     let file = std::fs::OpenOptions::new()
         .access_mode(0x80)
         .share_mode(0x1 | 0x2 | 0x4)
+        .custom_flags(0x0020_0000) // FILE_FLAG_OPEN_REPARSE_POINT
         .open(path)?;
-    Ok((None, fs2::FileExt::allocated_size(&file)?, None))
+    #[cfg(feature = "annex-read")]
+    let links = git_asset_windows_process::storage::hard_links(&file).ok();
+    #[cfg(not(feature = "annex-read"))]
+    let links = None;
+    Ok((None, fs2::FileExt::allocated_size(&file)?, links))
 }
 #[cfg(unix)]
 fn physical(path: &Path) -> std::io::Result<(Option<String>, u64, Option<u64>)> {
@@ -70,7 +73,7 @@ impl Catalogue {
             return Err("Family budget exceeded".into());
         }
         let profile = p.enrollment.storage.as_ref().ok_or("No storage profile")?;
-        let reader = p.profile.byte_source.as_ref().ok_or("No byte locations")?;
+        let reader = p.profile.byte_source.as_ref();
         let probe_budget = Duration::from_millis(profile.probe_millis);
         let started = Instant::now();
         let now = SystemTime::now()
@@ -208,9 +211,54 @@ impl Catalogue {
         }
         let mut tiers = vec![];
         for place in profile.places.iter().filter(|place| place.live_probe) {
+            #[cfg(feature = "annex-read")]
+            if let Some(native) = &place.annex {
+                let mut reader = crate::annex::Reader::new(native.clone())
+                    .map_err(|_| "Native cache reader refused")?;
+                tiers.push(Tier {
+                    tier: place.place_index,
+                    total_bytes: None,
+                    free_bytes: None,
+                });
+                for entry in objects.values_mut() {
+                    if started.elapsed() >= probe_budget {
+                        return Err(
+                            "Named-object refresh time budget exceeded; old view preserved".into(),
+                        );
+                    }
+                    let object = Object {
+                        sha256: git_asset_core::Digest::parse(&entry.row.sha256)
+                            .map_err(|_| "Invalid digest")?,
+                        bytes: entry.row.bytes.unwrap(),
+                    };
+                    let observation = reader.observe_copy(&object);
+                    if started.elapsed() >= probe_budget {
+                        return Err(
+                            "Named-object refresh time budget exceeded; old view preserved".into(),
+                        );
+                    }
+                    match observation {
+                        Ok(copy) => entry.row.copies.push(Copy {
+                            tier: place.place_index,
+                            bytes: copy.bytes,
+                            allocated_bytes: copy.allocated_bytes,
+                            physical_id: None,
+                            hard_links: copy.hard_links,
+                            other_hard_links: None,
+                            descriptor_size_matches: Some(true),
+                        }),
+                        Err(crate::annex::Error::Missing) => {}
+                        Err(error) => {
+                            return Err(format!(
+                                "Native cache observation failed: {error}; old view preserved"
+                            ));
+                        }
+                    }
+                }
+                continue;
+            }
             let location = reader
-                .places
-                .get(place.place_index)
+                .and_then(|reader| reader.places.get(place.place_index))
                 .ok_or("Unknown byte location")?;
             let Ok(root) = fs::canonicalize(&location.root) else {
                 continue;

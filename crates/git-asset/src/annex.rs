@@ -1,16 +1,22 @@
-//! Explicit annex reads and optional retained publication/copy. No initialization or removal.
+//! Explicit annex reads, retained publication/copy and experimental guarded eviction.
 use git_asset_core::{Digest, Object};
 use git_asset_store::existing::{
     self, ByteSource, Limits, ProviderPath, ReadCache, RequiredProtection, VerifiedRead,
 };
 use serde::Deserialize;
 use std::path::{Component, Path, PathBuf};
+#[cfg(feature = "annex-publish")]
+pub mod control;
 pub mod managed;
 mod process;
 #[cfg(feature = "annex-publish")]
 pub mod publication;
 #[cfg(feature = "annex-publish")]
 pub mod replication;
+#[cfg(feature = "annex-publish")]
+pub mod retirement;
+#[cfg(feature = "annex-publish")]
+pub mod snapshot;
 #[cfg(test)]
 mod tests;
 
@@ -52,6 +58,13 @@ impl std::fmt::Display for Error {
 }
 impl std::error::Error for Error {}
 pub type Result<T> = std::result::Result<T, Error>;
+
+/// Local metadata from one exact copy. This does not verify or retain it.
+pub struct CopyObservation {
+    pub bytes: u64,
+    pub allocated_bytes: Option<u64>,
+    pub hard_links: Option<u64>,
+}
 
 pub struct Reader {
     profile: Profile,
@@ -114,6 +127,33 @@ impl Reader {
         self.preflight(object)?;
         let _configuration = self.admit_repository()?;
         self.open_local(object)
+    }
+    /// Observe one exact native object without reading its payload.
+    /// The observed length is not byte integrity or retention evidence.
+    pub fn observe(&mut self, object: &Object) -> Result<u64> {
+        Ok(self.observe_copy(object)?.bytes)
+    }
+    /// Observe metadata for one admitted local copy without reading its payload.
+    pub fn observe_copy(&mut self, object: &Object) -> Result<CopyObservation> {
+        self.preflight(object)?;
+        let _configuration = self.admit_repository()?;
+        let path = self.content_location(object)?;
+        self.data
+            .with_provider_metadata(&self.profile.repository, &path, object, |file, bytes| {
+                #[cfg(windows)]
+                let hard_links = git_asset_windows_process::storage::hard_links(file).ok();
+                #[cfg(not(windows))]
+                let hard_links = None;
+                CopyObservation {
+                    bytes,
+                    allocated_bytes: fs2::FileExt::allocated_size(file).ok(),
+                    hard_links,
+                }
+            })
+            .map_err(|error| match error {
+                existing::Error::Missing => Error::Missing,
+                other => Error::Bytes(other),
+            })
     }
     fn preflight(&self, object: &Object) -> Result<()> {
         if !process::supported() {
@@ -250,19 +290,18 @@ impl Reader {
             Err(Error::Unsupported)
         }
     }
-    fn open_local(&mut self, object: &Object) -> Result<VerifiedRead> {
+    fn content_location(&self, object: &Object) -> Result<ProviderPath> {
         let prefix = if self.profile.bare {
             "annex/objects/"
         } else {
             ".git/annex/objects/"
         };
         let key = format!("SHA256-s{}--{}", object.bytes, object.sha256.as_str());
-        let location = process::run(&self.profile, true, &["contentlocation", &key]);
-        let location = match location {
-            Err(Error::Missing) => return Err(Error::Missing),
-            other => other?,
-        };
-        let path = location_path(&location.stdout, prefix, &key)?;
+        let location = process::run(&self.profile, true, &["contentlocation", &key])?;
+        location_path(&location.stdout, prefix, &key)
+    }
+    fn open_local(&mut self, object: &Object) -> Result<VerifiedRead> {
+        let path = self.content_location(object)?;
         // Caller keeps the configuration guard live while acquiring this data guard.
         // Config edits after return cannot mutate/replace the held payload namespace.
         self.data

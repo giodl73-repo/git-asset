@@ -22,6 +22,27 @@ impl std::fmt::Display for Error {
 }
 impl std::error::Error for Error {}
 pub type Result<T> = std::result::Result<T, Error>;
+/// Separate from the existing enum so old exhaustive witness-error matches stay valid.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum OnceError {
+    Witness(Error),
+    Uncertain,
+}
+impl From<Error> for OnceError {
+    fn from(e: Error) -> Self {
+        Self::Witness(e)
+    }
+}
+impl std::fmt::Display for OnceError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Witness(e) => std::fmt::Display::fmt(e, f),
+            Self::Uncertain => f.write_str("uncertain"),
+        }
+    }
+}
+impl std::error::Error for OnceError {}
+pub type OnceResult<T> = std::result::Result<T, OnceError>;
 impl From<crate::Error> for Error {
     fn from(e: crate::Error) -> Self {
         match e {
@@ -68,6 +89,16 @@ pub struct Packet {
     store: Digest,
     entries: [Entry; 2],
 }
+/// Exact settled witness bytes held open; not custody of an external effect's bytes.
+pub struct Completed {
+    _intent: accounted::Published,
+    completion: accounted::Published,
+}
+impl Completed {
+    pub fn completion(&self) -> &crate::Receipt {
+        self.completion.publication()
+    }
+}
 #[derive(Clone, Copy, Debug)]
 pub struct State {
     pub intent: bool,
@@ -107,6 +138,70 @@ fn evidence(
     Ok((recorded, settled))
 }
 impl Packet {
+    /// Read-only exact original context/job; no admission, repair or effect.
+    pub fn reopen(
+        &self,
+        store: &LocalStore,
+        ledger: &mut CapacityLedger,
+        job: &JournalRef,
+    ) -> Result<Completed> {
+        let state = self.inspect(store, ledger, job)?;
+        if !state.completion || !state.settled {
+            return Err(Error::NeedsRecovery);
+        }
+        let completion = accounted::reopen(ledger, store, job, &self.entries[1].plan)?;
+        let intent = accounted::reopen(ledger, store, job, &self.entries[0].plan)?;
+        Ok(Completed {
+            _intent: intent,
+            completion,
+        })
+    }
+    /// Persist intent before one fresh callback. An earlier incomplete intent is
+    /// uncertain: never rerun the effect, even if an external object looks absent.
+    /// Caller supplies external authority/custody/quiescence. The callback's
+    /// returned guard stays live through settlement and exact reopen. This API
+    /// cannot prove external facts merely because a callback returned success.
+    pub fn apply_once<G>(
+        &self,
+        store: &LocalStore,
+        ledger: &mut CapacityLedger,
+        job: &JournalRef,
+        effect: impl FnOnce() -> Result<G>,
+    ) -> OnceResult<Completed> {
+        self.apply_once_prepared(store, ledger, job, || Ok(()), |()| effect())
+            .map(|(completed, _guard)| completed)
+    }
+    /// Preparation is retryable and must not perform the external effect. It runs
+    /// under this operation's fence before durable effect intent. Earlier unknown
+    /// intent skips both callbacks. A fresh returned guard survives completion and
+    /// settlement and is returned to the caller; historical replay returns None.
+    pub fn apply_once_prepared<P, G>(
+        &self,
+        store: &LocalStore,
+        ledger: &mut CapacityLedger,
+        job: &JournalRef,
+        prepare: impl FnOnce() -> Result<P>,
+        effect: impl FnOnce(P) -> Result<G>,
+    ) -> OnceResult<(Completed, Option<G>)> {
+        let state = self.inspect(store, ledger, job)?;
+        if state.completion && state.settled {
+            return Ok((self.reopen(store, ledger, job)?, None));
+        }
+        let mut pending = self.prepare(store, ledger, job)?;
+        let effect_guard = if !pending.state.completion {
+            if pending.state.intent {
+                return Err(OnceError::Uncertain);
+            }
+            let prepared = prepare()?;
+            pending.record_intent()?;
+            Some(effect(prepared).map_err(|_| OnceError::Uncertain)?)
+        } else {
+            None
+        };
+        pending.complete()?;
+        let completed = self.reopen(store, ledger, job)?;
+        Ok((completed, effect_guard))
+    }
     pub fn new(
         store: &LocalStore,
         context: &Digest,
@@ -176,6 +271,16 @@ impl Packet {
         ledger: &'a mut CapacityLedger,
         job: &'a JournalRef,
     ) -> Result<Pending<'a>> {
+        let mut pending = self.prepare(store, ledger, job)?;
+        pending.record_intent()?;
+        Ok(pending)
+    }
+    fn prepare<'a>(
+        &'a self,
+        store: &'a LocalStore,
+        ledger: &'a mut CapacityLedger,
+        job: &'a JournalRef,
+    ) -> Result<Pending<'a>> {
         self.inspect(store, ledger, job)?;
         let a = accounted::admit(ledger, store, job, &self.entries[0].plan)?;
         let b = accounted::admit(ledger, store, job, &self.entries[1].plan)?;
@@ -190,13 +295,6 @@ impl Packet {
             }
         }
         let state = self.inspect(store, ledger, job)?;
-        accounted::publish_accounted(
-            ledger,
-            store,
-            job,
-            &self.entries[0].plan,
-            &mut Cursor::new(&self.entries[0].bytes),
-        )?;
         Ok(Pending {
             packet: self,
             store,
@@ -216,6 +314,17 @@ pub struct Pending<'a> {
     pub state: State,
 }
 impl Pending<'_> {
+    fn record_intent(&mut self) -> Result<()> {
+        let intent = &self.packet.entries[0];
+        accounted::publish_accounted(
+            self.ledger,
+            self.store,
+            self.job,
+            &intent.plan,
+            &mut Cursor::new(&intent.bytes),
+        )?;
+        Ok(())
+    }
     pub fn complete(self) -> Result<()> {
         drop(self.guard);
         let done = &self.packet.entries[1];
@@ -229,3 +338,6 @@ impl Pending<'_> {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests;

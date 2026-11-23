@@ -614,6 +614,11 @@ fn named_object_placement_versions_shared_bytes_and_stale_previews() {
         b"old body",
     )
     .unwrap();
+    fs::hard_link(
+        fast.join("objects").join(old.sha256.as_str()),
+        root.join("old-alias"),
+    )
+    .unwrap();
     let repo = root.join("alpha");
     let mut record: Value = serde_json::from_slice(
         &git(&repo, &["show", &format!("{}:records/0.asset", f.first)]).stdout,
@@ -776,6 +781,43 @@ fn named_object_placement_versions_shared_bytes_and_stale_previews() {
     assert_eq!(filtered["stored_file_bytes"], old.bytes);
     assert_eq!(filtered["items"][0]["stored_file_bytes"], old.bytes * 2);
     assert_eq!(filtered["items"][0]["matching_copy_bytes"], old.bytes);
+    let review = c.cache_eviction_preview(observed.observed, 0, "").unwrap();
+    let candidate = review["items"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|row| row["sha256"] == old.sha256.as_str())
+        .unwrap();
+    let evidence = &candidate["eviction_review"];
+    assert_eq!(evidence["state"], "verify_candidate");
+    assert_eq!(evidence["older_copy_proposed"], true);
+    assert_eq!(evidence["archive_bytes_verified"], false);
+    assert!(evidence["reclaimable_bytes"].is_null());
+    #[cfg(any(unix, all(windows, feature = "annex-read")))]
+    assert_eq!(evidence["single_path_reclaim_estimate"], 0);
+    assert_eq!(review["removal_authorized"], false);
+
+    let keeper = candidate["copies"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|copy| copy["cache_id"].as_str().unwrap())
+        .find(|cache_id| *cache_id != observed.observed)
+        .unwrap();
+    let sha = candidate["sha256"].as_str().unwrap();
+    let basis = candidate["basis"].as_str().unwrap();
+    assert!(c.object_copy_request("", sha, keeper, "stale").is_err());
+    let (reviewed_object, reader) = c.object_copy_request("", sha, keeper, basis).unwrap();
+    assert_eq!(reviewed_object, old);
+    let checked = git_asset::catalogue::verify(reviewed_object, reader).unwrap();
+    assert_eq!(checked["verified"], true);
+    assert_eq!(checked["independent_custody_verified"], false);
+    assert!(
+        c.cache_eviction_preview(observed.observed, 1, "stale")
+            .is_err()
+    );
+    assert!(c.cache_eviction_preview(observed.observed, 1, "").is_err());
+
     let selection = all["items"]
         .as_array()
         .unwrap()
@@ -829,17 +871,30 @@ fn named_object_placement_versions_shared_bytes_and_stale_previews() {
         c.object_batch_preview("alpha", &first.repeat(100), "", "align")
             .is_err()
     );
-    fs::write(fast.join("objects").join(old.sha256.as_str()), b"bad body").unwrap();
+    let keeper = candidate["copies"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|copy| copy["cache_id"] != observed.observed)
+        .unwrap()["cache_id"]
+        .as_str()
+        .unwrap();
+    let archive_path = history.join("objects").join(old.sha256.as_str());
+    fs::write(&archive_path, b"bad body").unwrap();
     let (object, profile) = c
         .object_copy_request(
-            "alpha",
+            "",
             old.sha256.as_str(),
-            cache["cache_id"].as_str().unwrap(),
-            row["basis"].as_str().unwrap(),
+            keeper,
+            candidate["basis"].as_str().unwrap(),
         )
         .unwrap();
     assert!(git_asset::catalogue::verify(object, profile).is_err());
-    fs::write(fast.join("objects").join(old.sha256.as_str()), b"old body").unwrap();
+    assert_eq!(
+        fs::read(fast.join("objects").join(old.sha256.as_str())).unwrap(),
+        b"old body",
+    );
+    fs::write(archive_path, b"old body").unwrap();
     let shared_row = all["items"]
         .as_array()
         .unwrap()
@@ -961,6 +1016,11 @@ fn global_storage_counts_shared_cache_once_and_preserves_cross_project_reference
         .to_owned();
     c.observe_registered("beta", &beta_commit, "").unwrap();
     let all = c.global_storage("", "", true, 0).unwrap();
+    let cache = all["caches"][0]["review_cache"].as_str().unwrap();
+    assert_eq!(
+        c.cache_eviction_preview(cache, 0, "").unwrap()["source_cache"],
+        cache
+    );
     assert_eq!(all["summary"]["file_copies"], 1);
     assert_eq!(all["summary"]["unique_objects"], 1);
     assert_eq!(all["summary"]["recorded_file_bytes"], bytes.len());
@@ -990,6 +1050,35 @@ fn global_storage_counts_shared_cache_once_and_preserves_cross_project_reference
         c.global_storage("", "", false, 0).unwrap()["summary"]["file_copies"],
         1
     );
+    config["projects"][0]["storage"]["places"][0]["live_probe"] = json!(false);
+    fs::write(&f.config, serde_json::to_vec(&config).unwrap()).unwrap();
+    let c = f.load();
+    let basis = |project| {
+        let result = c
+            .object_inventory(&git_asset::catalogue::storage::objects::Query {
+                project,
+                kind: "",
+                usage: "",
+                anomaly: "",
+                primary: "",
+                observed: "",
+                q: "",
+                sort: "bytes",
+                offset: 0,
+                sha: object.sha256.as_str(),
+            })
+            .unwrap();
+        result["items"][0]["basis"].as_str().unwrap().to_owned()
+    };
+    assert!(
+        c.object_copy_request("alpha", object.sha256.as_str(), cache, &basis("alpha"))
+            .is_err()
+    );
+    assert!(
+        c.object_copy_request("", object.sha256.as_str(), cache, &basis(""))
+            .is_ok()
+    );
+
     config["storage_domains"][0]["root"] = json!("relative");
     fs::write(&f.config, serde_json::to_vec(&config).unwrap()).unwrap();
     assert!(Config::load(&f.config).is_err());
@@ -1321,4 +1410,98 @@ fn nested_navigation_and_cross_project_search_preserve_work_counts_and_scope() {
     );
     assert!(c.search("all", "", "", 0).is_err());
     assert!(c.search("missing", "", "asset", 0).is_err());
+}
+
+#[cfg(all(windows, feature = "annex-read"))]
+#[test]
+#[ignore = "requires explicitly enrolled synthetic git-annex runtime"]
+fn native_catalogue_refresh_review_and_verify() {
+    let f = Fixture::new();
+    let root = f.temp.path();
+    let store = root.join("native-store");
+    fs::create_dir(&store).unwrap();
+    let git_tool = std::env::var_os("GIT_ASSET_TEST_GIT").unwrap();
+    let annex_tool = std::env::var_os("GIT_ASSET_TEST_GIT_ANNEX").unwrap();
+    let path = std::env::var_os("GIT_ASSET_TEST_ANNEX_PATH").unwrap();
+    let empty_config = root.join("empty-config");
+    let empty_hooks = root.join("empty-hooks");
+    let temporary = root.join("temporary");
+    fs::write(&empty_config, b"").unwrap();
+    fs::create_dir(&empty_hooks).unwrap();
+    fs::create_dir(&temporary).unwrap();
+    let run = |tool: &std::ffi::OsStr, args: &[&str]| {
+        let result = std::process::Command::new(tool)
+            .current_dir(&store)
+            .env("PATH", &path)
+            .env("GIT_CONFIG_NOSYSTEM", "1")
+            .env("GIT_CONFIG_GLOBAL", &empty_config)
+            .args(args)
+            .output()
+            .unwrap();
+        assert!(result.status.success(), "{result:?}");
+        String::from_utf8(result.stdout).unwrap().trim().to_owned()
+    };
+    run(&git_tool, &["init", "--bare", "--quiet"]);
+    run(&git_tool, &["config", "user.name", "Synthetic Fixture"]);
+    run(
+        &git_tool,
+        &["config", "user.email", "fixture@example.invalid"],
+    );
+    run(&annex_tool, &["init", "synthetic catalogue store"]);
+    let bytes = b"deliberately not stored anywhere";
+    let object = Object::from_bytes(bytes);
+    let source = root.join("source");
+    fs::write(&source, bytes).unwrap();
+    let key = format!("SHA256-s{}--{}", object.bytes, object.sha256.as_str());
+    run(&annex_tool, &["setkey", &key, source.to_str().unwrap()]);
+    let content = run(&annex_tool, &["contentlocation", &key]);
+    fs::hard_link(store.join(content), root.join("alias")).unwrap();
+    let uuid = run(&git_tool, &["config", "--local", "--get", "annex.uuid"]);
+    let configuration = Object::from_bytes(&fs::read(store.join("config")).unwrap());
+    let tools = std::env::split_paths(&path).collect::<Vec<_>>();
+    let mut config: Value = serde_json::from_slice(&fs::read(&f.config).unwrap()).unwrap();
+    config["projects"][0]["storage"] = json!({
+        "schema":"tig.catalogue-storage.experimental-1","encoding":"json","max_decoded_bytes":1024,
+        "probe_millis":120000,"places":[{
+            "label":"Native archive","place_index":0,"live_probe":true,
+            "annex":{
+                "git":Path::new(&git_tool),"annex":Path::new(&annex_tool),"repository":store,"bare":true,"uuid":uuid,
+                "configuration":configuration,"tools":tools,"empty_config":empty_config,
+                "empty_hooks":empty_hooks,"temporary":temporary,"command_millis":5000,"output_bytes":4096
+            }
+        }]
+    });
+    fs::write(&f.config, serde_json::to_vec(&config).unwrap()).unwrap();
+    let mut c = f.load();
+    let before = c.global_storage("", "", false, 0).unwrap();
+    assert_eq!(before["caches"][0]["totals"], Value::Null);
+    let refreshed = c.observe_registered("alpha", &f.first, "").unwrap();
+    assert_eq!(refreshed["payloads_read"], 0);
+    assert_eq!(refreshed["objects_not_observed"], 0);
+    let view = c.global_storage("", "", false, 0).unwrap();
+    let cache = view["caches"][0]["review_cache"].as_str().unwrap();
+    let review = c.cache_eviction_preview(cache, 0, "").unwrap();
+    let row = &review["items"][0];
+    assert_eq!(row["sha256"], object.sha256.as_str());
+    assert_eq!(row["copies"][0]["hard_links"], 2);
+    assert_eq!(row["eviction_review"]["reviewed_object"], json!(object));
+    let handoff = row["eviction_review"]["reviewed_object_json"]
+        .as_str()
+        .unwrap();
+    assert_eq!(serde_json::from_str::<Object>(handoff).unwrap(), object);
+    assert_eq!(row["eviction_review"]["single_path_reclaim_estimate"], 0);
+    assert_eq!(review["removal_authorized"], false);
+    let (selected, reader) = c
+        .storage_copy_request(
+            "",
+            object.sha256.as_str(),
+            cache,
+            row["basis"].as_str().unwrap(),
+        )
+        .unwrap();
+    assert_eq!(selected, object);
+    let verified = reader.verify(selected).unwrap();
+    assert_eq!(verified["verified"], true);
+    assert_eq!(verified["independent_custody_verified"], false);
+    assert_eq!(verified["authorizes_eviction"], false);
 }

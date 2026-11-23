@@ -1530,3 +1530,5 @@ EVID-143: [catalogue review readiness](../reviews/2026-11-20-catalogue-review-ux
 EVID-144: [reproducible review workspace](../reviews/2026-11-21-review-sample.md).
 
 EVID-145: [native retained copy](../../specs/ANNEX-RETAINED-COPY.md#evid-145-producer-checkpoint).
+
+EVID-146: [P2 metadata seam](../../specs/ANNEX-PROTECTED-EVICTION.md#evid-146-metadata-seam-checkpoint); native execution open.

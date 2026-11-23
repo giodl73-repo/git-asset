@@ -248,6 +248,86 @@ pub fn assess<'a>(
     let mut work = Work::new(nodes, limits, Instant::now())?;
     enrollment.check(store)?;
     let binding = store.protection().ok_or(Error::WrongEnrollment)?;
+    let (order, subjects) = namespace_fences(binding, object, namespaces)?;
+    let provider = store.existing_exclusive_object(object)?;
+    let checked = namespace_absence(binding, namespaces, order, &subjects, &mut work)?;
+    work.timed()?;
+    let assessment = Assessment {
+        store,
+        namespaces,
+        enrollment: enrollment.clone(),
+        object: object.clone(),
+        checked,
+        _subjects: subjects,
+        _provider: provider,
+    };
+    assessment.check_current()?;
+    work.timed()?;
+    Ok(assessment)
+}
+
+/// Namespace predicates only; no provider, custody or deletion grant.
+pub struct NamespaceAssessment {
+    binding: Digest,
+    object: Object,
+    checked: Vec<Checked>,
+    subjects: Vec<SubjectFence>,
+}
+impl NamespaceAssessment {
+    pub fn binding(&self) -> &Digest {
+        &self.binding
+    }
+    pub fn object(&self) -> &Object {
+        &self.object
+    }
+    pub fn checked(&self) -> &[Checked] {
+        &self.checked
+    }
+    pub fn fence(&self, namespace: &Digest) -> Option<&SubjectFence> {
+        self.subjects.iter().find(|f| f.authority() == namespace)
+    }
+    /// Existing subject fences keep predicates stable while unrelated heads advance.
+    pub fn check_current(&self, binding: &Binding, namespaces: &[Namespace]) -> Result<()> {
+        if binding.id()? != self.binding || namespaces.len() != self.checked.len() {
+            return Err(Error::WrongEnrollment);
+        }
+        let mut seen = BTreeSet::new();
+        for namespace in namespaces {
+            if !seen.insert(namespace.identity()) || self.fence(namespace.identity()).is_none() {
+                return Err(Error::IncompleteRoster);
+            }
+            namespace.check_marker()?;
+        }
+        Ok(())
+    }
+}
+/// No provider/byte IO. Native adapters must separately pin their real enrollment.
+pub fn assess_namespaces(
+    binding: &Binding,
+    object: &Object,
+    namespaces: &mut [Namespace],
+    nodes: &impl NodeStore,
+    limits: &Limits,
+) -> Result<NamespaceAssessment> {
+    let mut work = Work::new(nodes, limits, Instant::now())?;
+    let id = binding.id()?;
+    let (order, subjects) = namespace_fences(binding, object, namespaces)?;
+    let checked = namespace_absence(binding, namespaces, order, &subjects, &mut work)?;
+    let assessment = NamespaceAssessment {
+        binding: id,
+        object: object.clone(),
+        checked,
+        subjects,
+    };
+    assessment.check_current(binding, namespaces)?;
+    work.timed()?;
+    Ok(assessment)
+}
+fn namespace_fences(
+    binding: &Binding,
+    object: &Object,
+    namespaces: &[Namespace],
+) -> Result<(Vec<usize>, Vec<SubjectFence>)> {
     if namespaces.len() != binding.members.len() {
         return Err(Error::IncompleteRoster);
     }
@@ -269,20 +349,28 @@ pub fn assess<'a>(
     for index in &order {
         subjects.push(namespaces[*index].fence(object)?);
     }
-    let provider = store.existing_exclusive_object(object)?;
+    Ok((order, subjects))
+}
+fn namespace_absence(
+    binding: &Binding,
+    namespaces: &mut [Namespace],
+    order: Vec<usize>,
+    subjects: &[SubjectFence],
+    work: &mut Work<'_, impl NodeStore>,
+) -> Result<Vec<Checked>> {
     let mut checked = Vec::with_capacity(order.len());
     let roster_checkpoints = if binding.history_scope == HistoryScope::Roster {
         Some(
             admission::roster::absent(
                 namespaces,
                 &order,
-                &subjects,
+                subjects,
                 &binding
                     .members
                     .iter()
                     .map(|m| m.places.clone())
                     .collect::<Vec<_>>(),
-                &mut work,
+                work,
             )?
             .ok_or(Error::Required)?,
         )
@@ -290,14 +378,14 @@ pub fn assess<'a>(
         None
     };
     for (position, ((member, index), fence)) in
-        binding.members.iter().zip(order).zip(&subjects).enumerate()
+        binding.members.iter().zip(order).zip(subjects).enumerate()
     {
         let namespace = &mut namespaces[index];
         let checkpoint = if let Some(checkpoints) = &roster_checkpoints {
             checkpoints[position].clone()
         } else {
             namespace
-                .absent_places(fence, &member.places, &mut work)?
+                .absent_places(fence, &member.places, work)?
                 .ok_or(Error::Required)?
         };
         checked.push(Checked {
@@ -306,18 +394,7 @@ pub fn assess<'a>(
         });
     }
     work.timed()?;
-    let assessment = Assessment {
-        store,
-        namespaces,
-        enrollment: enrollment.clone(),
-        object: object.clone(),
-        checked,
-        _subjects: subjects,
-        _provider: provider,
-    };
-    assessment.check_current()?;
-    work.timed()?;
-    Ok(assessment)
+    Ok(checked)
 }
 
 #[cfg(test)]

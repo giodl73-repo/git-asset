@@ -70,6 +70,56 @@ fn front_door_creates_independent_review_projects_and_preserves_original_receipt
         book["lessons"][10]["restoration"]["phase"],
         "working_restored"
     );
+    let resolver: Value =
+        serde_json::from_slice(&fs::read(root.join("intro-review-resolver.json")).unwrap())
+            .unwrap();
+    let commit = resolver["commit"].as_str().unwrap();
+    let (code, observed) = server.json(&format!(
+        "/api/storage/observe?project=intro&snapshot={commit}"
+    ));
+    assert_eq!(code, 200, "{observed}");
+    assert_eq!(observed["payloads_read"], 0);
+    let (code, storage) = server.json("/api/storage/global");
+    assert_eq!(code, 200);
+    let cache = |name: &str| {
+        storage["caches"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|entry| Path::new(entry["root"].as_str().unwrap()).ends_with(name))
+            .unwrap()["review_cache"]
+            .as_str()
+            .unwrap()
+    };
+    let source = cache("review-working");
+    let (code, page) = server.json(&format!("/api/storage/eviction-preview?cache={source}"));
+    assert_eq!(code, 200, "{page}");
+    let items = page["items"].as_array().unwrap();
+    assert_eq!(items.len(), 1);
+    let item = &items[0];
+    let review = &item["eviction_review"];
+    assert_eq!(review["state"], "verify_candidate");
+    assert_eq!(review["archive_bytes_verified"], false);
+    let descriptor: Object =
+        serde_json::from_str(review["reviewed_object_json"].as_str().unwrap()).unwrap();
+    let basis = item["basis"].as_str().unwrap();
+    let archive = storage["caches"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|entry| Path::new(entry["root"].as_str().unwrap()).ends_with("intro/history"))
+        .unwrap()["review_cache"]
+        .as_str()
+        .unwrap();
+    let (code, verified) = server.json(&format!(
+        "/api/storage/verify-copy?sha={}&cache={archive}&basis={basis}",
+        descriptor.sha256.as_str()
+    ));
+    assert_eq!(code, 200, "{verified}");
+    assert_eq!(verified["result"]["verified"], true);
+    assert_eq!(verified["result"]["object"], review["reviewed_object"]);
+    assert_eq!(verified["independent_custody_verified"], false);
+    assert_eq!(verified["removal_authorized"], false);
     drop(server);
     let before = fs::read(root.join("review.json")).unwrap();
     assert!(!run("rehearse-review", &root).status.success());

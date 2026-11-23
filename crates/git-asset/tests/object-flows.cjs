@@ -108,3 +108,36 @@ test('an observed object without registered declaring records remains explicitly
  await references(f);assert.match(f.text(),/No declaring record is registered in this view/);assert.match(f.text(),/Unindexed or opaque consumers may still exist/);
  assert.equal(f.nodes().some(e=>e.textContent==='Compare owner record'),false);
 });
+
+test('cache review carries its evidence basis to the next page',async()=>{
+ const f=catalogueFixture({objectMode:true});await objects(f);
+ f.override('/api/storage/eviction-preview',q=>{
+  const item=f.reply('/api/storage/objects',{}).items[0];
+  return {items:[{...item,eviction_review:{state:'unknown',holds:[]}}],next_offset:q.basis?null:100,page_basis:'frozen'};
+ });
+ vm.runInContext("const panel=cacheReviewControl('hot');panel.isConnected=true;$('assets').append(panel)",f.context);
+ await f.click('Review this cache for eviction');assert.match(f.get('assets').textContent,/No matching copy listed/);await f.click('Next review page');
+ assert.equal(requests(f,'/api/storage/eviction-preview')[1].q.basis,'frozen');
+ assert.match(f.document.activeElement.textContent,/Across enrolled projects/);
+ await f.click('Inspect references');
+ assert.equal(requests(f,'/api/storage/objects').at(-1).q.project,'');
+ assert.equal(f.state().tab,'References & versions');
+ assert.match(f.text(),/Atlas .*Boreal/);
+});
+
+test('candidate review exposes the verbatim planning descriptor without reading bytes',async()=>{
+ const f=catalogueFixture({objectMode:true});await objects(f);
+ const item=f.reply('/api/storage/objects',{}).items[0];
+ const descriptor='{"bytes":9007199254740993,"sha256":"'+item.sha256+'"}';
+ f.override('/api/storage/eviction-preview',()=>({
+  items:[{...item,eviction_review:{state:'verify_candidate',holds:[],reviewed_object_json:descriptor}}],
+  caches:[],next_offset:null,
+ }));
+ vm.runInContext("const panel=cacheReviewControl('hot');panel.isConnected=true;$('assets').append(panel)",f.context);
+ await f.click('Review this cache for eviction');
+ const field=f.nodes().find(e=>e.getAttribute('aria-label')==='Reviewed object JSON');
+ assert.ok(field);
+ assert.equal(field.readOnly,true);
+ assert.equal(field.value,descriptor);
+ assert.equal(requests(f,'/api/storage/verify-copy').length,0);
+});

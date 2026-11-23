@@ -1,6 +1,6 @@
 //! Unselected candidate registration, native ingress and retained readback.
 //! Uses existing namespace/metadata/ledger/witness engines; never selects Git.
-use super::{managed, process};
+use super::{control, managed, process};
 use git_asset_core::{
     Digest, LogicalPath, Object, identity,
     tree::{NodeStore, Tree, TreeLimits},
@@ -140,6 +140,14 @@ impl From<upload_witness::Error> for Error {
         }
     }
 }
+impl From<upload_witness::OnceError> for Error {
+    fn from(e: upload_witness::OnceError) -> Self {
+        match e {
+            upload_witness::OnceError::Witness(e) => e.into(),
+            upload_witness::OnceError::Uncertain => Self::Uncertain,
+        }
+    }
+}
 impl From<std::io::Error> for Error {
     fn from(_: std::io::Error) -> Self {
         Self::NeedsRecovery
@@ -243,6 +251,21 @@ pub struct Plan {
     budget: Budget,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     context: Option<Digest>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    control: Option<ControlAdmission>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    effect_protocol: Option<EffectProtocol>,
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+enum EffectProtocol {
+    #[serde(rename = "one_shot_guarded_v1")]
+    GuardedV1,
+}
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct ControlAdmission {
+    binding: Digest,
+    plan: control::Plan,
 }
 fn descriptor(request: &Request) -> Result<Vec<u8>> {
     if request.candidate.logical_id.is_empty()
@@ -334,6 +357,31 @@ impl Plan {
         frozen: Selection,
         admission: Admission,
     ) -> Result<Self> {
+        Self::build(profile, request, frozen, admission, None)
+    }
+    pub fn controlled(
+        profile: &Profile,
+        request: Request,
+        frozen: Selection,
+        admission: Admission,
+        control_profile: &control::Profile,
+        control: control::Plan,
+    ) -> Result<Self> {
+        let native = super::Reader::new(profile.pool.pool.clone())?.store();
+        control_profile.check(&native, &request.candidate.object, &control)?;
+        let control = ControlAdmission {
+            binding: control_profile.binding(&native)?,
+            plan: control,
+        };
+        Self::build(profile, request, frozen, admission, Some(control))
+    }
+    fn build(
+        profile: &Profile,
+        request: Request,
+        frozen: Selection,
+        admission: Admission,
+        control: Option<ControlAdmission>,
+    ) -> Result<Self> {
         profile.budget.validate()?;
         descriptor(&request)?;
         if request.candidate.object.bytes > profile.budget.object_bytes
@@ -363,6 +411,8 @@ impl Plan {
             staging_location: digest(&profile.staging)?,
             budget: profile.budget,
             context: None,
+            control,
+            effect_protocol: Some(EffectProtocol::GuardedV1),
         })
     }
     pub(super) fn with_context(mut self, context: Option<Digest>) -> Self {
@@ -370,13 +420,15 @@ impl Plan {
         self
     }
     pub(super) fn check_profile(&self, profile: &Profile) -> Result<()> {
-        let rebuilt = Self::new(
+        let mut rebuilt = Self::build(
             profile,
             self.request.clone(),
             self.selection.selection.clone(),
             self.admission.clone(),
+            self.control.clone(),
         )?
         .with_context(self.context.clone());
+        rebuilt.effect_protocol = self.effect_protocol;
         if &rebuilt != self {
             return Err(Error::Stale);
         }
@@ -384,6 +436,11 @@ impl Plan {
     }
     pub fn id(&self) -> Result<Digest> {
         digest(self)
+    }
+    /// Legacy plans remain readable; their earlier completion is not proof of
+    /// the guarded one-shot process protocol needed for native eviction.
+    pub fn has_guarded_effect(&self) -> bool {
+        self.effect_protocol == Some(EffectProtocol::GuardedV1)
     }
     pub fn candidate(&self) -> &Candidate {
         &self.request.candidate
@@ -436,6 +493,72 @@ pub struct Resources<'a> {
     pub witness: &'a LocalStore,
     pub ledger: &'a mut CapacityLedger,
 }
+/// Guarded original producer evidence, not native byte custody or removal authority.
+/// Keeps the current physical control origin and both exact witness records open.
+pub struct ProducerCompletion {
+    pub(super) pool: Digest,
+    pub(super) configuration: Object,
+    pub(super) object: Object,
+    pub(super) plan: Digest,
+    pub(super) control_binding: Digest,
+    pub(super) control: control::Plan,
+    _control: control::Use,
+    _completion: upload_witness::Completed,
+}
+impl ProducerCompletion {
+    pub(crate) fn release_control(self) -> upload_witness::Completed {
+        self._completion
+    }
+}
+impl Plan {
+    /// Metadata-only exact reopen. Caller separately pins actual native configuration,
+    /// bytes, complete protection scope and custody. Aliases and legacy plans refuse.
+    pub fn producer_completion(
+        &self,
+        profile: &Profile,
+        control: &control::Profile,
+        witness: &LocalStore,
+        ledger: &mut CapacityLedger,
+    ) -> Result<ProducerCompletion> {
+        if !self.has_guarded_effect() {
+            return Err(Error::Unsupported);
+        }
+        self.check_profile(profile)?;
+        let admission = self.control.as_ref().ok_or(Error::Denied)?;
+        if witness.identity() != &self.admission.witness
+            || ledger.identity() != &self.admission.capacity
+            || control.binding(&self.pool)? != admission.binding
+        {
+            return Err(Error::Stale);
+        }
+        let held = control.open(&self.pool, &self.candidate().object, &admission.plan)?;
+        if !held.allows_missing(profile, control, &self.request, &admission.plan)? {
+            return Err(Error::Denied);
+        }
+        let packet = self.packet(witness)?;
+        let state = packet.inspect(witness, ledger, &self.admission.job)?;
+        if state.intent && !state.completion {
+            return Err(Error::Uncertain);
+        }
+        let completion = packet.reopen(witness, ledger, &self.admission.job)?;
+        let allocation = ledger
+            .allocation_observation(&key(&self.scope()?, "payload")?)?
+            .ok_or(Error::NeedsRecovery)?;
+        if allocation.charged_bytes.is_none() {
+            return Err(Error::NeedsRecovery);
+        }
+        Ok(ProducerCompletion {
+            pool: self.pool.clone(),
+            configuration: self.configuration.clone(),
+            object: self.candidate().object.clone(),
+            plan: self.id()?,
+            control_binding: admission.binding.clone(),
+            control: admission.plan.clone(),
+            _control: held,
+            _completion: completion,
+        })
+    }
+}
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Receipt {
@@ -456,6 +579,7 @@ pub struct Ready {
     receipt: Receipt,
     read: managed::Read,
     recovery: Recovery,
+    _control: Option<control::Use>,
 }
 impl Ready {
     pub fn receipt(&self) -> &Receipt {
@@ -517,8 +641,20 @@ impl Work {
         Ok(())
     }
 }
+fn native_footprint(profile: &Profile, plan: &Plan, read: &existing::VerifiedRead) -> Result<u64> {
+    let bytes =
+        read.with_path(|path| File::open(path).and_then(|f| fs2::FileExt::allocated_size(&f)))??;
+    let footprint = bytes
+        .checked_add(staging::footprint(profile, plan)?)
+        .ok_or(Error::Budget)?;
+    if footprint > plan.payload_peak()? {
+        return Err(Error::Budget);
+    }
+    Ok(footprint)
+}
 pub struct Publisher {
     profile: Profile,
+    control: Option<control::Profile>,
     reader: managed::Reader,
     staging: ReadCache,
 }
@@ -538,15 +674,25 @@ struct Observed {
     hold: managed::HeldUse,
     read: Option<existing::VerifiedRead>,
     charged: Option<u64>,
+    control: Option<control::Use>,
 }
 impl Publisher {
     pub fn new(profile: Profile) -> Result<Self> {
+        Self::build(profile, None)
+    }
+    pub fn controlled(profile: Profile, control: control::Profile) -> Result<Self> {
+        Self::build(profile, Some(control))
+    }
+    fn build(profile: Profile, control: Option<control::Profile>) -> Result<Self> {
         profile.budget.validate()?;
         if !super::absolute(&profile.staging)
             || profile.staging_marker.bytes == 0
             || profile.staging_marker.bytes > 65536
         {
             return Err(Error::Invalid);
+        }
+        if let Some(control) = &control {
+            control.binding(&super::Reader::new(profile.pool.pool.clone())?.store())?;
         }
         let staging = ReadCache::provider(
             RequiredProtection::PreventMutation,
@@ -561,12 +707,24 @@ impl Publisher {
         let reader = managed::Reader::new(profile.pool.clone())?;
         Ok(Self {
             profile,
+            control,
             reader,
             staging,
         })
     }
     fn check(&self, p: &Plan, r: &mut Resources<'_>) -> Result<()> {
         p.check_profile(&self.profile)?;
+        match (&self.control, &p.control) {
+            (Some(profile), Some(admission)) => {
+                if profile.binding(&self.reader.store())? != admission.binding {
+                    return Err(Error::Stale);
+                }
+                profile.check(&self.reader.store(), &p.candidate().object, &admission.plan)?;
+            }
+            (None, None) => (),
+            _ => return Err(Error::Stale),
+        }
+
         if self.reader.store() != p.pool
             || self.reader.binding() != &p.binding
             || r.namespace.identity() != &p.admission.namespace
@@ -627,6 +785,23 @@ impl Publisher {
         }
         self.check(p, r)?;
         let hold = self.reader.hold_for_publication(&p.candidate().object)?;
+        let expected = self
+            .control
+            .as_ref()
+            .map(|c| c.binding(&self.reader.store()))
+            .transpose()?;
+        control::configuration(
+            &self.profile.pool.pool,
+            &self.profile.pool.binding.id().map_err(|_| Error::Invalid)?,
+            expected.as_ref(),
+        )?;
+        let control = match (&self.control, &p.control) {
+            (Some(profile), Some(plan)) => {
+                Some(profile.open(&self.reader.store(), &p.candidate().object, &plan.plan)?)
+            }
+            (None, None) => None,
+            _ => return Err(Error::Invalid),
+        };
         let registration = r
             .namespace
             .selection_status(&p.selection)?
@@ -656,6 +831,18 @@ impl Publisher {
         if state.completion && read.is_none() {
             return Err(Error::MissingAcknowledged);
         }
+        if read.is_none()
+            && let (Some(held), Some(plan)) = (&control, &p.control)
+            && !held.allows_missing(
+                &self.profile,
+                self.control.as_ref().ok_or(Error::Invalid)?,
+                &p.request,
+                &plan.plan,
+            )?
+        {
+            // Another producer may still be unfinished; absence is not evidence of its acknowledgement.
+            return Err(Error::NeedsRecovery);
+        }
         Ok(Observed {
             status: Status {
                 plan: p.id()?,
@@ -670,6 +857,7 @@ impl Publisher {
             hold,
             read,
             charged,
+            control,
         })
     }
     /// Exact read-only state and fresh bytes; never reconstructs missing evidence.
@@ -699,6 +887,7 @@ impl Publisher {
         Ok(Ready {
             receipt,
             recovery,
+            _control: observed.control,
             read: managed::Reader::finish_read(
                 observed.hold,
                 observed.read.ok_or(Error::MissingAcknowledged)?,
@@ -796,16 +985,6 @@ impl Publisher {
         Self::protected(p, r.namespace)?;
         hook(Stage::Registered)?;
         work.check()?;
-        let _marker = self.staging.open_provider_file(
-            &self.profile.staging,
-            &ProviderPath::parse(".git-asset-staging")?,
-            &p.staging_marker,
-        )?;
-        if fs2::available_space(&self.profile.staging)? < p.payload_peak()?
-            || fs2::available_space(&self.profile.pool.pool.repository)? < p.payload_peak()?
-        {
-            return Err(Error::Budget);
-        }
         let payload = r.ledger.begin_allocation(
             key(&p.scope()?, "payload")?,
             &p.admission.job,
@@ -813,57 +992,120 @@ impl Publisher {
             p.payload_peak()?,
         )?;
         let packet = p.packet(r.witness)?;
-        let pending = packet.begin(r.witness, r.ledger, &p.admission.job)?;
-        hook(Stage::Intent)?;
-        work.check()?;
-        let read = match observed.read.take() {
-            Some(read) => read,
+        let mut prior_read = observed.read.take();
+        let mut preparation_error = None;
+        let result = packet.apply_once_prepared(
+            r.witness,
+            r.ledger,
+            &p.admission.job,
+            || {
+                let marker = match (|| -> Result<_> {
+                    let marker = self.staging.open_provider_file(
+                        &self.profile.staging,
+                        &ProviderPath::parse(".git-asset-staging")?,
+                        &p.staging_marker,
+                    )?;
+                    if fs2::available_space(&self.profile.staging)? < p.payload_peak()?
+                        || fs2::available_space(&self.profile.pool.pool.repository)?
+                            < p.payload_peak()?
+                    {
+                        return Err(Error::Budget);
+                    }
+                    Ok(marker)
+                })() {
+                    Ok(marker) => marker,
+                    Err(e) => {
+                        preparation_error = Some(e);
+                        return Err(upload_witness::Error::NeedsRecovery);
+                    }
+                };
+                let path = if prior_read.is_none() {
+                    let prepared = staging::prepare(&self.profile, p, &mut work, source, hook)
+                        .and_then(|path| {
+                            hook(Stage::Staged)?;
+                            work.check()?;
+                            Ok(path)
+                        });
+                    match prepared {
+                        Ok(path) => Some(path),
+                        Err(e) => {
+                            preparation_error = Some(e);
+                            return Err(upload_witness::Error::NeedsRecovery);
+                        }
+                    }
+                } else {
+                    None
+                };
+                Ok((prior_read.take(), path, &mut work, &mut *hook, marker))
+            },
+            |(read, path, work, hook, marker)| {
+                let effect = || -> Result<_> {
+                    hook(Stage::Intent)?;
+                    work.check()?;
+                    let output = if let Some(path) = path {
+                        let output = process::run_for_object(
+                            &self.profile.pool.pool,
+                            &p.candidate().object,
+                            true,
+                            &[
+                                "reinject",
+                                "--guesskeys",
+                                "--json",
+                                "--json-error-messages",
+                                "--",
+                                path.to_str().ok_or(Error::Invalid)?,
+                            ],
+                        )
+                        .map_err(|_| Error::Uncertain)?;
+                        let line = super::line(&output.stdout).map_err(|_| Error::Uncertain)?;
+                        let response =
+                            identity::parse_json(line.as_bytes()).map_err(|_| Error::Uncertain)?;
+                        let native_key = format!(
+                            "SHA256-s{}--{}",
+                            p.candidate().object.bytes,
+                            p.candidate().object.sha256.as_str()
+                        );
+                        if response.get("success") != Some(&serde_json::Value::Bool(true))
+                            || response.get("key").and_then(|v| v.as_str())
+                                != Some(native_key.as_str())
+                        {
+                            return Err(Error::Uncertain);
+                        }
+                        hook(Stage::Imported)?;
+                        work.consume(p.candidate().object.bytes)?;
+                        Some(output)
+                    } else {
+                        None
+                    };
+                    let read = match read {
+                        Some(read) => read,
+                        None => self.reader.lookup(&p.candidate().object, &observed.hold)?,
+                    };
+                    work.check()?;
+                    Self::protected(p, r.namespace)?;
+                    let footprint = native_footprint(&self.profile, p, &read)?;
+                    Ok((read, output, footprint, marker))
+                };
+                effect().map_err(|_| upload_witness::Error::NeedsRecovery)
+            },
+        );
+        let (_completed, effect) =
+            result.map_err(|e| preparation_error.unwrap_or_else(|| e.into()))?;
+        let (read, _original_group, footprint, _marker) = match effect {
+            Some(effect) => effect,
             None => {
-                let path = staging::prepare(&self.profile, p, &mut work, source, hook)?;
-                hook(Stage::Staged)?;
-                work.check()?;
-                let output = process::run(
-                    &self.profile.pool.pool,
-                    true,
-                    &[
-                        "reinject",
-                        "--guesskeys",
-                        "--json",
-                        "--json-error-messages",
-                        "--",
-                        path.to_str().ok_or(Error::Invalid)?,
-                    ],
-                )
-                .map_err(|_| Error::Uncertain)?;
-                let line = super::line(&output.stdout).map_err(|_| Error::Uncertain)?;
-                let response =
-                    identity::parse_json(line.as_bytes()).map_err(|_| Error::Uncertain)?;
-                let native_key = format!(
-                    "SHA256-s{}--{}",
-                    p.candidate().object.bytes,
-                    p.candidate().object.sha256.as_str()
-                );
-                if response.get("success") != Some(&serde_json::Value::Bool(true))
-                    || response.get("key").and_then(|v| v.as_str()) != Some(native_key.as_str())
-                {
-                    return Err(Error::Uncertain);
-                }
-                hook(Stage::Imported)?;
-                work.consume(p.candidate().object.bytes)?;
-                self.reader.lookup(&p.candidate().object, &observed.hold)?
+                let read = prior_read.ok_or(Error::MissingAcknowledged)?;
+                let marker = self.staging.open_provider_file(
+                    &self.profile.staging,
+                    &ProviderPath::parse(".git-asset-staging")?,
+                    &p.staging_marker,
+                )?;
+                let footprint = native_footprint(&self.profile, p, &read)?;
+                (read, None, footprint, marker)
             }
         };
         work.check()?;
         Self::protected(p, r.namespace)?;
-        let final_bytes = read
-            .with_path(|path| File::open(path).and_then(|f| fs2::FileExt::allocated_size(&f)))??;
-        let footprint = final_bytes
-            .checked_add(staging::footprint(&self.profile, p)?)
-            .ok_or(Error::Budget)?;
-        if footprint > p.payload_peak()? {
-            return Err(Error::Budget);
-        }
-        pending.complete().map_err(|_| Error::Uncertain)?;
         hook(Stage::Completed)?;
         r.ledger
             .complete_allocation(key(&p.scope()?, "settled")?, payload.reference(), footprint)

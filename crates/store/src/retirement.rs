@@ -313,6 +313,7 @@ enum Stage {
     Bound,
     Assessed,
     KeepersVerified,
+    BeforeUnlink,
     Intent,
     Unlinked,
     Completed,
@@ -331,6 +332,23 @@ fn keys(store: &LocalStore, operation: &Key, prefix: &str) -> crate::Result<(Key
 impl<S: NodeStore> Execution<'_, '_, S> {
     pub fn cancel(&mut self, plan: &Plan, authorization: &Authorization) -> Result<Receipt> {
         self.cancel_hook(plan, authorization, |_| Ok(()))
+    }
+    /// Adapter check under the original operation fence, before any abort or
+    /// continuation birth. Must not perform an external effect; retries may recheck.
+    /// Caller separately holds external scope/authority and denies unknown effects.
+    pub fn cancel_with_guard(
+        &mut self,
+        plan: &Plan,
+        authorization: &Authorization,
+        mut guard: impl FnMut(&Plan) -> Result<()>,
+    ) -> Result<Receipt> {
+        self.cancel_hook(plan, authorization, |stage| {
+            if stage == Stage::Bound {
+                guard(plan)
+            } else {
+                Ok(())
+            }
+        })
     }
     fn cancel_hook(
         &mut self,
@@ -384,6 +402,7 @@ impl<S: NodeStore> Execution<'_, '_, S> {
         {
             return Err(Error::InvalidPlan);
         }
+        hook(Stage::Bound)?;
         let already_settled = self
             .ledger
             .retention_status(&allocation, &binding)?
@@ -433,6 +452,25 @@ impl<S: NodeStore> Execution<'_, '_, S> {
     pub fn apply(&mut self, plan: &Plan, authorization: &Authorization) -> Result<Receipt> {
         self.apply_hook(plan, authorization, |_| Ok(()))
     }
+    /// Adapter effect under live metadata fences after intent and fresh keeper checks.
+    /// Caller must separately qualify external authority/custody/incarnation/quiescence.
+    /// Interrupted attempts may call it again: reconcile the original effect, never
+    /// blindly repeat it. Failure preserves pending intent; completed replay skips it.
+    pub fn apply_with_effect(
+        &mut self,
+        plan: &Plan,
+        authorization: &Authorization,
+        mut effect: impl FnMut(&Plan) -> Result<()>,
+    ) -> Result<Receipt> {
+        self.apply_hook(plan, authorization, |stage| {
+            if stage == Stage::BeforeUnlink {
+                effect(plan)
+            } else {
+                Ok(())
+            }
+        })
+    }
+
     #[cfg(test)]
     pub(crate) fn fixture_pending_intent(&mut self, plan: &Plan) -> Result<Receipt> {
         self.apply_hook(plan, &plan.authorize()?, |stage| {
@@ -674,6 +712,16 @@ impl<S: NodeStore> Execution<'_, '_, S> {
         )? {
             return Err(Error::MissingCustody);
         }
+        hook(Stage::BeforeUnlink)?;
+        assessment.check_current()?;
+        for (keeper, live) in plan.request.keepers.iter().zip(&mut retained) {
+            let backup = self
+                .backups
+                .iter_mut()
+                .find(|b| b.store.identity() == keeper.grant.store())
+                .ok_or(Error::MissingCustody)?;
+            live.revalidate(backup.ledger, backup.store)?;
+        }
         self.store
             .unlink_retirement(&intent, assessment.provider())?;
         hook(Stage::Unlinked)?;
@@ -750,7 +798,9 @@ pub struct ReacquisitionPlan {
     capacity: Digest,
 }
 impl ReacquisitionPlan {
-    pub(crate) fn payload_plan(&self) -> &PublicationPlan {
+    /// Exact incarnation-bound publication for adapters reopening this reacquisition.
+    /// This accessor grants no permission to restore external provider bytes.
+    pub fn payload_plan(&self) -> &PublicationPlan {
         &self.payload
     }
     pub fn publication(&self) -> &Publication {

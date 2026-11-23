@@ -56,3 +56,7 @@ Initial offering: [six-role plan review](../../PRODUCT_PLAN.md#six-role-review-o
 R1-R6 plan corrections only; runtime/adoption proof remains OPEN.
 
 EVID-145: [copy producer lenses](../../specs/ANNEX-RETAINED-COPY.md#evid-145-producer-checkpoint); P2/production open.
+
+EVID-146: snapshot/fence seam only; full P2 six-role native/provider review OPEN.
+Native writer connection: [producer dispositions](../../specs/ANNEX-PROTECTED-EVICTION.md#native-control-sdk-checkpoint).
+No native deletion, independent review or production acceptance is claimed.

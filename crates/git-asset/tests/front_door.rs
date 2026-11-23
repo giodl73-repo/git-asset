@@ -44,3 +44,40 @@ fn front_door_dispatches_only_its_named_sibling_service() {
     assert_eq!(direct.stdout, through.stdout);
     assert_eq!(direct.stderr, through.stderr);
 }
+
+#[test]
+fn native_storage_discovery_and_arity_never_initialize_a_provider() {
+    let root = tempfile::tempdir().unwrap();
+    for op in ["describe", "help"] {
+        let out = Command::new(env!("CARGO_BIN_EXE_git-asset"))
+            .args(["storage", "native", op])
+            .current_dir(root.path())
+            .output()
+            .unwrap();
+        assert!(out.status.success());
+        assert!(out.stderr.is_empty());
+        let value: serde_json::Value = serde_json::from_slice(&out.stdout).unwrap();
+        if op == "describe" {
+            assert_eq!(value["available"], cfg!(feature = "annex-publish"));
+            assert_eq!(value["initializes_providers"], false);
+            assert_eq!(value["production_qualified"], false);
+        }
+    }
+    let out = Command::new(env!("CARGO_BIN_EXE_git-asset"))
+        .args(["storage", "native", "apply", "too", "many", "arguments"])
+        .current_dir(root.path())
+        .output()
+        .unwrap();
+    assert_eq!(out.status.code(), Some(2));
+    assert!(out.stderr.is_empty());
+    let value: serde_json::Value = serde_json::from_slice(&out.stdout).unwrap();
+    assert_eq!(
+        value["code"],
+        if cfg!(feature = "annex-publish") {
+            "usage"
+        } else {
+            "unsupported"
+        }
+    );
+    assert_eq!(std::fs::read_dir(root.path()).unwrap().count(), 0);
+}
