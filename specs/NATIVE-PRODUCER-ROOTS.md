@@ -293,3 +293,7 @@ Golden backup fixture, input48753f1. Same owner, archive and bounded receiver
 controls. Enter with registered working publication and an admitted retained
 recipe. Exit after authenticated backup and exact retained readback. L0 pins,
 L1 worker/strict checks, L2 synthetic native backup and historical reopen.
+
+Golden handoff fixture, input7e6bbcd. Same controls and synthetic scope.
+Qualify saved custody handoff after authenticated backup, and exact retry
+with original receipt. L0 pins/diff, L1 locked/strict, L2 native byte reopen.

@@ -166,7 +166,6 @@ pub(super) fn exercise(
             )
             .unwrap(),
         );
-        policy.actions.as_mut().unwrap().handoff = false;
         indexed_target = Some(Namespace::open(&retained.root, &retained.minimum).unwrap());
         policy.producer_heads = Some(github::native::producers::Heads {
             source: retained,
@@ -195,9 +194,10 @@ pub(super) fn exercise(
             ..budget
         };
         let report = batch::configured(worker, &policy, &trust, &request)
-            .reconcile(
+            .reconcile_with_actions(
                 None,
                 &copy_budget,
+                actions.as_mut(),
                 &mut m.resources(),
                 &mut f.resources(),
                 || Ok(1000),
@@ -209,6 +209,31 @@ pub(super) fn exercise(
             "{}",
             serde_json::to_string(&report).unwrap()
         );
+        let handoff = report.outcomes[0].handoff.as_ref().unwrap();
+        assert!(handoff.failure.is_none(), "{:?}", handoff.failure);
+        assert!(
+            handoff
+                .mutation
+                .as_ref()
+                .unwrap()
+                .result
+                .status
+                .retire
+                .is_some()
+        );
+        let retry = batch::configured(worker, &policy, &trust, &request)
+            .reconcile_with_actions(
+                None,
+                &copy_budget,
+                actions.as_mut(),
+                &mut m.resources(),
+                &mut f.resources(),
+                || Ok(1000),
+            )
+            .unwrap();
+        let replay = retry.outcomes[0].handoff.as_ref().unwrap();
+        assert_eq!(replay.saved, handoff.saved);
+        assert!(replay.mutation.as_ref().unwrap().result.historical);
         let mut read = m
             .publisher()
             .reopen(recipe.destination(), &mut m.resources())
