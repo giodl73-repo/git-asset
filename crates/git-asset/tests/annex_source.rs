@@ -137,10 +137,15 @@ fn commit(root: &Path) -> GitId {
 #[test]
 fn exact_native_capture_ignores_head_worktree_and_excluded_payloads_in_ordinary_and_bare_git() {
     let t = init();
-    let old = Object::from_bytes(b"old content");
+    let old = Object::from_bytes(&vec![45; 256 * 1024]);
     let new = Object::from_bytes(b"new content");
     stage(t.path(), "assets/locked", "120000", &locked(&old));
-    stage(t.path(), "assets/unlocked", "100644", &unlocked(&old));
+    stage(
+        t.path(),
+        "assets/unlocked",
+        "100644",
+        include_bytes!("../../../examples/github/native-copy/clip"),
+    );
     // The excluded ordinary Git blob is deliberately far above the metadata cap.
     stage(
         t.path(),
