@@ -327,7 +327,23 @@ impl State {
                 .unwrap()
                 .0
                 .unwrap();
-            assert_eq!(retained_row.retained.unwrap().path.as_str(), "assets/next");
+            let archived = retained_row.retained.as_ref().unwrap();
+            assert_eq!(archived.path.as_str(), "assets/next");
+            let mut retained = keeper
+                .publisher()
+                .open_retained(
+                    retained_row
+                        .publication
+                        .as_ref()
+                        .unwrap_or(&retained_row.producer),
+                    archived,
+                    &mut keeper.resources(),
+                )
+                .unwrap();
+            let mut bytes = Vec::new();
+            retained.read_to_end(&mut bytes).unwrap();
+            assert_eq!(Object::from_bytes(&bytes), archived.object);
+            drop(retained);
             let current = target
                 .namespace
                 .source(&working.profile.scope.prefix)

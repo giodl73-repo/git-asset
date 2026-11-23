@@ -273,3 +273,8 @@ Same controls and synthetic scope as initial owner registration. Verify a later
 protected publication adds its exact Object to the same index while retaining
 the earlier index root and producer row. L0 pins/diff, L1 focused/strict, L2 synthetic
 publication, replay and exact readback. Merge-driven placement is separate.
+
+Historical byte reopen fixture, input8137cb6. Same archive-index controls,
+RUST/PROVIDER/INTEGRATION and synthetic scope. After indexed working release,
+reopen the exact archived member with its retained publisher and verify content.
+L0 pins/diff, L1 strict checks, L2 ordinary and bare native retained reads.
