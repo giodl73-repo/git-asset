@@ -278,3 +278,8 @@ Historical byte reopen fixture, input8137cb6. Same archive-index controls,
 RUST/PROVIDER/INTEGRATION and synthetic scope. After indexed working release,
 reopen the exact archived member with its retained publisher and verify content.
 L0 pins/diff, L1 strict checks, L2 ordinary and bare native retained reads.
+
+Distinct Git selection fixture, input b0418b0. Existing archive-index controls
+apply. With distinct later Git Objects, recover the registered predecessor from
+the retained pool while the working repository is offline. Missing producers
+still hold. L0 pins/diff, L1 focused/strict, L2 synthetic native historical read.

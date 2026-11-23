@@ -647,3 +647,9 @@ fn actual_registered_backup_recipe_reopens_archive_after_both_ingests_retire() {
 fn archived_members_index_before_release_and_missing_producers_hold() {
     matrix(false, true, false, false, 9);
 }
+
+#[test]
+#[ignore = "explicit native tools; owned synthetic pools only"]
+fn actual_distinct_git_selection_reopens_indexed_predecessor_offline() {
+    matrix(true, true, false, false, 9);
+}

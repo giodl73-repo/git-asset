@@ -73,56 +73,8 @@ Checkpoint3d024fa passed hosted45079293252; later source needs its own run.
 Index-only saved-body recovery preserves historical receipts with a stale hold;
 it neither prepares another native operation nor retargets a newer selection.
 
-Explicit stale-index composition now uses restore::prepare_replan, a sealed
-proposal, pending::save_restore_index_successor and authenticated
-replan_restore_index_saved. restore_replan is a separate fixed private phase;
-normal apply never replans. Original receipt first; strictly later fenced head,
-unchanged native recipe and verified reopen are mandatory. Prior four-blob Saved
-versions remain retained through source predecessors. Qualification is recorded
-in restore-replan-*. Final native ordinary/bare passes with stale/unchanged-head,
-denied save, identical retry, parent mismatch and competing successor refusal,
-no native namespace change during replan and four fresh-process old/new reopens.
-Eight interface/twelve worker tests passed before argument-bundle-only cleanup.
-Native and final two pending/eight index tests pass, preceding only field-shorthand
-lint cleanup. Strict workspace/all-feature/all-target Clippy, standalone
-annex-publish and fmt pass. Final L0/pins/branding/diff and exact source/log hashes
-are external restore-replan-source.json. No lint or runtime-limit waiver.
-Parent3d024fa passed hosted45079293252; derive the new head's own run.
-
-Current refinement: authenticated completed-publication registration. New
-registration_preview/apply with fixed registration_side and default-denied signed
-actions.registration store original RegisterWorking/Retained index actions before
-CAS. Only completion changes, no media IO/custody grant. Original receipts remain
-historical; matching current producer/completion survives later membership edits.
-Qualification: publication-registration-*. Joined inert and actual native
-retained backup -> registration -> archive/ingest retirement -> historical read
-with working repository offline pass. Working copy -> registration -> history
-rebind/reuse passes in inert and actual native cases. Preview, denied writer,
-stale cursor, duplicate and cold retained-action reopen are covered. Eight
-interface, twelve worker, two pending and eight index regressions pass; the
-working-fixture-only replacement has focused/native qualification. Final strict
-workspace/all-feature/all-target Clippy, standalone annex-publish, fmt, L0,
-branding and diff pass; exact source/log/binary pins stay external. Frontdoor
-is compiled/discovery-qualified; full HTTP is OPEN. Parent7bd82ba passed
-hosted45081602257; derive the new head's own run.
-
-Current refinement: fixed ordered placement driver over existing stages. Explicit
-placement_apply/actions.orchestration requires every stage permission and rejects
-client cursors. Shared page/object-visit/prospective-byte/deadline limits preserve
-the last report on holds; each retry starts from Restore, using durable originals.
-Individual phase previews remain the planning entry. Qualification: ordered-placement-*.
-Eight driver, eight interface, twelve worker, two pending and eight index tests
-pass. The actual native enrolled-revert cycle runs all six SDK stages twice for
-ordinary and bare pools; current bytes survive and repeated native allocation
-and stale eviction replay are fenced. History has no remaining predecessors and
-eviction sees the current required object; this is not new-golden/archive-index
-qualification. The first native attempt correctly refused a legacy keeper; only
-the owned cycle fixture explicitly admits its generation fencing. No runtime
-fence is bypassed or production namespace upgraded. Native/regressions precede
-only a fixture range-pattern lint cleanup. Final strict all-target/all-feature
-workspace Clippy, standalone annex-publish, fmt, L0/pins/branding/diff pass; exact
-source/log/test-binary pins stay external. Parent6da98cf passed hosted45084189472;
-derive the new head's own run.
+Prior restore successor, registration and ordered driver qualification is preserved
+in the [previous checkpoint](https://github.com/giodl73-repo/git-asset/blob/b0418b07db655813e47e24a6aa9d086c95902c7a/context/RESUME.md).
 
 Current refinement: opt-in archive membership indexing before working release.
 Signed actions.archive_index connects exact retained-tree enumeration to original

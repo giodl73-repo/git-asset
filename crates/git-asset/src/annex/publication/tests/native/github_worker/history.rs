@@ -9,6 +9,9 @@ pub(super) fn exercise(
     signer: &github::fixture::Fixture,
     indexed: bool,
 ) {
+    if indexed {
+        retirement::publish(m);
+    }
     let mut records = batch::pending_namespace(m);
     let mut metadata =
         MetadataStore::open(&m.root.join("metadata"), m.metadata.checkpoint()).unwrap();
@@ -204,9 +207,41 @@ pub(super) fn exercise(
             .unwrap();
         assert_eq!(state.current, before.current);
         assert_eq!(state.predecessors.len(), 1);
-        for (path, offline) in configs {
-            fs::rename(offline, path).unwrap();
-        }
+        let [
+            (retained_config, retained_offline),
+            (working_config, working_offline),
+        ] = configs.try_into().unwrap();
+        fs::rename(retained_offline, retained_config).unwrap();
+        let head = &policy.producer_heads.as_ref().unwrap().source;
+        let version = indexed_target
+            .as_mut()
+            .unwrap()
+            .source(&head.profile.scope.prefix)
+            .unwrap()
+            .unwrap()
+            .current
+            .unwrap();
+        let row = crate::annex::producer_index::Index::from_root(version.selection.root)
+            .get(
+                &m.plan.candidate().object,
+                &mut metadata,
+                TreeLimits::default(),
+            )
+            .unwrap()
+            .0
+            .unwrap();
+        let snapshot = row.retained.as_ref().unwrap();
+        m.metadata = metadata.finished_reader().unwrap();
+        assert!(!working_config.exists());
+        let mut retained = m
+            .publisher()
+            .open_retained(&row.producer, snapshot, &mut m.resources())
+            .unwrap();
+        let mut bytes = Vec::new();
+        retained.read_to_end(&mut bytes).unwrap();
+        assert_eq!(Object::from_bytes(&bytes), snapshot.object);
+        drop(retained);
+        fs::rename(working_offline, working_config).unwrap();
         return;
     }
     let checkpoint = records.checkpoint();
