@@ -2,6 +2,10 @@
 
 Issue #78 / PR80, based on PR72. See [prior checkpoint](https://github.com/giodl73-repo/git-asset/blob/8e5d79d/context/RESUME.md).
 Synthetic fixtures only. Mixed legacy execution remains #77.
+Issue #77. Existing P2 checkpoint and operating constraints are recorded in
+[upstream resume](https://github.com/giodl73-repo/git-asset/blob/94865c07928275bb130cf3e002dc48ac82d9cfce/context/RESUME.md).
+Use synthetic Windows fixtures. Keeper read guarding across a hard link does
+not qualify legacy source-writer handoff or grant removal authority.
 
 Issue75 review lane: docs/issue75-tool-preview, input main
 f12a1634a8833f822edf2a78b4df75a2b3851538. TOOL-PREVIEW-HANDOFF-PLAN maps the
