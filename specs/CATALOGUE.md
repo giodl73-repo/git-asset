@@ -454,3 +454,10 @@ It reads hash-pinned sample reports through an existing privately enrolled byte
 reader outside the catalogue mutex. The lesson view separates before, desired
 and recorded after copies. It grants no current custody or storage authority;
 missing observations are unknown. Without enrollment no lesson IO is performed.
+
+Cache-first review (issue #78), input 94865c0. WP-015, REQ-006/007/010,
+SPEC-014, IF-010/011/013, PKG-004/006/008. RUST/UI/INTEGRATION.
+Entry: observed cache ID and enrolled catalogue. Exit: bounded review page,
+or stale basis refusal. Reports known current use, observed archive overlap,
+and unresolved coverage. No cache scan or byte verification. L0 pins/links,
+L1 locked catalogue and strict checks, L2 synthetic review.

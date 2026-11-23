@@ -35,6 +35,58 @@ async function previewObjectSelection(action){
   area.append(node('p','muted','This review moved or removed no bytes. File-copy totals are not measured physical reclaim.'));
  }catch(e){if(generation===state.generation)notice('The selected block was not reviewed: '+e.message);}
 }
+function cacheReviewControl(cache){
+ const panel=node('section','work-object-scope');
+ const start=node('button','button secondary','Review this cache for eviction');
+ const results=node('div');
+ panel.append(start,results);
+ async function load(offset=0,basis=''){
+  const generation=state.generation;
+  start.disabled=true;
+  results.replaceChildren(node('p','muted','Checking recorded cache observations...'));
+  try{
+   const page=await api('/api/storage/eviction-preview',{cache,offset,basis});
+   if(generation!==state.generation||!panel.isConnected)return;
+   results.replaceChildren(node('p','muted','Across enrolled projects. Reclaimable space is unknown.'));
+   const labels={keep:'Keep: current declared use',verify_candidate:'Check archive copy',unknown:'Unknown: keep for now'};
+   for(const item of page.items){
+    const review=item.eviction_review;
+    const entry=section(item.title);
+    entry.append(node('strong','',labels[review.state]),node('small','mono',item.sha256),
+      node('p','muted',bytes(item.bytes)+' content, '+item.binding_count+' registered bindings'));
+    review.holds.forEach(reason=>entry.append(node('p','muted',reason)));
+    if(review.state==='verify_candidate'){
+     for(const copy of item.copies.filter(copy=>copy.cache_id!==cache&&copy.bytes===item.bytes)){
+      const location=objectCache(copy.cache_id,page);
+      const verify=node('button','button secondary','Verify bytes at '+(location?.label||'listed cache'));
+      const status=node('p','muted');
+      verify.onclick=async()=>{
+       verify.disabled=true;
+       status.textContent='Reading the exact listed copy...';
+       try{
+        await api('/api/storage/verify-copy',{project:'',sha:item.sha256,cache:copy.cache_id,basis:item.basis});
+        status.textContent='Hash and length verified at this check. Retained custody and reclaimable space still need evidence.';
+       }catch(error){status.textContent=error.message;}
+       finally{verify.disabled=false;}
+      };
+      entry.append(verify,status);
+     }
+    }
+    results.append(entry);
+   }
+   if(!page.items.length)results.append(node('p','muted','No recorded copies for this cache. Coverage remains unknown.'));
+   if(page.next_offset!==null){
+    const next=node('button','button secondary','Next review page');
+    next.onclick=()=>load(page.next_offset,page.page_basis);
+    results.append(next);
+   }
+  }catch(error){
+   if(generation===state.generation&&panel.isConnected)results.replaceChildren(node('p','callout',error.message));
+  }finally{start.disabled=false;}
+ }
+ start.onclick=()=>load();
+ return panel;
+}
 function drawManagedObjects(d){
  function nestedPanel(){const panel=node('section','nested-summary');panel.append(node('strong','','Nested metadata coverage'));const n=d.scope.nested;if(n){panel.append(node('p','',n.successful_roots+' / '+n.roots+' root manifests expanded · '+n.unique_nested_objects+' unique nested objects · '+bytes(n.metadata_bytes)+' metadata read'));for(const f of n.failures.slice(0,12))panel.append(node('p','callout',f.asset+' · '+f.slot+' · '+f.reason));if(n.failures.length>12)panel.append(node('p','muted',(n.failures.length-12)+' more root failures.'));}else panel.append(node('p','muted',(d.scope.nested_roots??0)+' matched root manifests; nested references are not loaded.'));panel.append(node('p','muted','Only enrolled descriptor paths and child schemas are expanded. Other documents, dependencies and active jobs remain unknown; this does not authorize eviction.'));if(d.scope.nested_available){const expand=node('button','button secondary',n?'Refresh nested metadata (reads JSON)':'Expand nested metadata (reads JSON)');expand.onclick=async()=>{const gen=state.generation;expand.disabled=true;notice('Reading explicitly named JSON metadata; media payloads are not read.');try{const p=state.projects.find(p=>p.id===managedObjects.project);const summary=await api('/api/storage/expand',{project:p.id,snapshot:p.commit,collection:managedObjects.work.collection,work:managedObjects.work.id});if(gen!==state.generation)return;managedObjects.selection.clear();let failure='';try{await api('/api/storage/observe',{project:p.id,snapshot:p.commit,family:''});}catch(e){failure=' Named-copy metadata refresh failed: '+e.message;}if(gen!==state.generation)return;await loadManagedObjects();notice('Expanded '+summary.successful_roots+' / '+summary.roots+' root manifests. Selections cleared because the reference basis changed.'+failure);}catch(e){if(gen===state.generation){notice(e.message);expand.disabled=false;}}};panel.append(expand);}else panel.append(node('p','muted',d.scope.nested_roots===null?'No nested metadata adapters are enrolled.':'No adapter roots match this work. Other undeclared or opaque dependencies remain unknown.'));return panel;}
  if(d.scope){const scope=node('section','work-object-scope');scope.append(node('strong','',d.scope.title+' · registered related records'),node('p','muted',d.scope.registered_records+' records in the project catalog rule. Totals include direct records and explicitly loaded nested references. Registration and adapter coverage can differ between works; this is not a complete production footprint.'));const back=node('button','button secondary','Back to work');back.onclick=()=>inspectWork(managedObjects.work);const all=node('button','button secondary','All project objects');all.onclick=()=>{managedObjects.work=null;managedObjects.selection.clear();drawNavigation();loadManagedObjects();};scope.append(back,all);managedObjects.scopePanel=scope;}else managedObjects.scopePanel=null;
@@ -46,6 +98,7 @@ function drawManagedObjects(d){
  const refresh=node('button','button secondary','Refresh observed copies');refresh.onclick=async()=>{const gen=state.generation;refresh.disabled=true;const failures=[];for(const p of state.projects.filter(p=>p.storage_available&&(!managedObjects.project||p.id===managedObjects.project))){if(gen!==state.generation)return;notice('Checking named registered files for '+p.label+'; no media reads…');try{await api('/api/storage/observe',{project:p.id,snapshot:p.commit,family:''});}catch(e){failures.push(p.label+': '+e.message);}}if(gen!==state.generation)return;await loadManagedObjects();if(failures.length)notice(failures.join('; '));};controls.append(refresh);
  if(managedObjects.returnCoverage){const back=node('button','button secondary','Back to coverage');back.onclick=()=>openCoverage();controls.append(back);}const capacity=node('button','button secondary','Capacity & cache locations');capacity.onclick=()=>{globalDisk.project=managedObjects.project;openStorage();};controls.append(capacity);if(managedObjects.project){const compare=node('button','button secondary','Compare works');compare.onclick=()=>openProjectStorage(managedObjects.project);controls.append(compare);}area.append(controls,node('p','muted','Scope: registered byte objects and loaded observations. Unregistered files, opaque dependencies and active jobs are not fully covered.'));
  if(managedObjects.scopePanel){area.append(managedObjects.scopePanel,nestedPanel());const copies=node('div','work-cache-summary');copies.append(node('strong','','All observed copies of matching objects: '));for(const c of d.copy_summary){const cache=objectCache(c.cache_id,d);const chip=node('span','copy-chip',(cache?.label||'Cache')+' · '+bytes(c.file_bytes)+' · '+c.objects+' objects');chip.title=cache?.root||c.cache_id;copies.append(chip);}if(!d.copy_summary.length)copies.append(node('span','muted','No observations loaded; locations remain unknown.'));area.append(copies);}
+ if(managedObjects.cache)area.append(cacheReviewControl(managedObjects.cache));
  const selection=node('div','object-selection');selection.id='object-selection';area.append(selection);drawObjectSelection();const table=node('table','object-manager-table');const head=node('tr');const selectCell=node('th');const selectPage=node('input');selectPage.type='checkbox';selectPage.setAttribute('aria-label','Select displayed objects, up to 50');selectPage.checked=managedObjects.rows.slice(0,50).length>0&&managedObjects.rows.slice(0,50).every(o=>managedObjects.selection.has(o.sha256));selectPage.onchange=()=>{for(const o of managedObjects.rows.slice(0,50)){if(selectPage.checked){if(managedObjects.selection.size<50||managedObjects.selection.has(o.sha256))managedObjects.selection.set(o.sha256,{sha:o.sha256,basis:o.basis,title:o.title});}else managedObjects.selection.delete(o.sha256);}drawManagedObjects(d);if(selectPage.checked&&managedObjects.rows.length>50)notice('Review blocks contain at most 50 objects. Retained selections count toward this limit.');};selectCell.append(selectPage);head.append(selectCell);['Object','Version / use','Content / copies','Primary cache policy','Observed copies','Review'].forEach(t=>head.append(node('th','',t)));table.append(head);
  for(const o of managedObjects.rows){
   const tr=node('tr');const choice=node('td');const checkbox=node('input');checkbox.type='checkbox';checkbox.setAttribute('aria-label','Select '+o.title+' '+o.sha256.slice(0,8));checkbox.dataset.objectSelection=o.sha256;checkbox.checked=managedObjects.selection.has(o.sha256);checkbox.onchange=()=>{if(checkbox.checked){if(managedObjects.selection.size>=50){checkbox.checked=false;notice('Select up to 50 objects per review block.');return;}managedObjects.selection.set(o.sha256,{sha:o.sha256,basis:o.basis,title:o.title});}else managedObjects.selection.delete(o.sha256);drawObjectSelection();};choice.append(checkbox);tr.append(choice);const name=node('td');const open=node('button','object-title',o.title);open.onclick=()=>openManagedObject(o);name.append(open,node('small','muted',o.bindings[0]?.category||'Unattributed'),node('small','mono',o.bindings[0]?.id||o.sha256.slice(0,12)+'…'));

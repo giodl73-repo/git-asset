@@ -108,3 +108,11 @@ test('an observed object without registered declaring records remains explicitly
  await references(f);assert.match(f.text(),/No declaring record is registered in this view/);assert.match(f.text(),/Unindexed or opaque consumers may still exist/);
  assert.equal(f.nodes().some(e=>e.textContent==='Compare owner record'),false);
 });
+
+test('cache review carries its evidence basis to the next page',async()=>{
+ const f=catalogueFixture({objectMode:true});await objects(f);
+ f.override('/api/storage/eviction-preview',q=>({items:[],next_offset:q.basis?null:100,page_basis:'frozen'}));
+ vm.runInContext("const panel=cacheReviewControl('hot');panel.isConnected=true;$('assets').append(panel)",f.context);
+ await f.click('Review this cache for eviction');await f.click('Next review page');
+ assert.equal(requests(f,'/api/storage/eviction-preview')[1].q.basis,'frozen');
+});

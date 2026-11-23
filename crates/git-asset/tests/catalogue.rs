@@ -776,6 +776,24 @@ fn named_object_placement_versions_shared_bytes_and_stale_previews() {
     assert_eq!(filtered["stored_file_bytes"], old.bytes);
     assert_eq!(filtered["items"][0]["stored_file_bytes"], old.bytes * 2);
     assert_eq!(filtered["items"][0]["matching_copy_bytes"], old.bytes);
+    let review = c.cache_eviction_preview(observed.observed, 0, "").unwrap();
+    let candidate = review["items"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|row| row["sha256"] == old.sha256.as_str())
+        .unwrap();
+    let evidence = &candidate["eviction_review"];
+    assert_eq!(evidence["state"], "verify_candidate");
+    assert_eq!(evidence["archive_bytes_verified"], false);
+    assert!(evidence["reclaimable_bytes"].is_null());
+    assert_eq!(review["removal_authorized"], false);
+    assert!(
+        c.cache_eviction_preview(observed.observed, 1, "stale")
+            .is_err()
+    );
+    assert!(c.cache_eviction_preview(observed.observed, 1, "").is_err());
+
     let selection = all["items"]
         .as_array()
         .unwrap()
