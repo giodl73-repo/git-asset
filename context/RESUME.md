@@ -8,6 +8,11 @@ P4 consumer acceptance, P5 Windows RC, and P6 private rollout stay open.
 The independent issue #75/U4 plan merged in PR76.
 [Upstream qualification notes](https://github.com/giodl73-repo/git-asset/blob/2a6c157/context/RESUME.md).
 
+P4 consumer branch `b3babf6cc5f6daad60b46ca3db4a8c6510dca172` passed its
+[Windows and Ubuntu adapter jobs](https://github.com/giodl73-repo/REEL/actions/runs/45003799082).
+This covers the isolated adapter checkpoint. Consumer integration and owner
+acceptance remain open.
+
 ## Current P3 mechanisms and next work
 
 [Previous checkpoint](https://github.com/giodl73-repo/git-asset/blob/48753f10a412b6d538c8c30804c7c80842c10e0a/context/RESUME.md)

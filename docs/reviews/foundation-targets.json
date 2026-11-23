@@ -30,7 +30,7 @@
   {"path":"NOTICE.md","bytes":3139,"sha256":"3fd83ee0ce1d5dc82c50f1a6deb9bb992afd513501b74eec57ed6ac1ada89e86"},
   {"path":"PRODUCT_PLAN.md","bytes":9573,"sha256":"c90ef3d403a50dc74239a5c13cba75fddc66c55523ec22d7588bff73e46dfecc"},
   {"path":"SECURITY.md","bytes":1229,"sha256":"0d6efe90bb6ef3e5fc1c4d44155e6265529578dd4a61fb326ec1a73411f1590f"},
-  {"path":"context/RESUME.md","bytes":1139,"sha256":"fdf3c1ae9e4d95a46ffd5b3594cf35069eb7c67a5ed0dac3416ae68b649b9044"},
+  {"path":"context/RESUME.md","bytes":1411,"sha256":"35d6416594f02b25fe13bcef6eb59b68a11ede0e6a84ea4277d02eba8649e02a"},
   {"path":"context/waves/2026-10-25-placement-foundation/WAVE.md","bytes":914,"sha256":"b3afedc1c9c8a62a4b3bddf6332dac5653e5c8e555ba0d3f73f0b537d264c8f3"},
   {"path":"context/waves/2026-10-25-placement-foundation/pulses/pulse-01.md","bytes":535,"sha256":"2d31820bd91cbca78769fd996fbe28601737345bbfd5b64f8945efd0eabe7f3f"},
   {"path":"context/waves/2026-10-25-placement-foundation/pulses/pulse-02.md","bytes":1792,"sha256":"774ba3bfcccb304503053b3839d015d013439cb4c26b5fc43a22a62cd8265ab8"},
