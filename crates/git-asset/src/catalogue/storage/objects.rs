@@ -137,7 +137,7 @@ impl Catalogue {
         }
         let index = self.capture_storage_index(true)?;
         for ((id, place), key) in index.locators {
-            if cache_id(&key) != cache {
+            if (!project.is_empty() && id != project) || cache_id(&key) != cache {
                 continue;
             }
             let p = &self.projects[&id];
@@ -533,7 +533,7 @@ impl Catalogue {
                         .into_iter()
                         .flatten()
                     {
-                        expanded.push((&n.object,u.clone(),v.clone(),format!("{s} → {}",n.pointer),"nested-byte-reference".into(),Some(json!({"root":n.root,"document":n.document,"adapter":n.adapter,"pointer":n.pointer}))));
+                        expanded.push((&n.object,u.clone(),v.clone(),format!("{s} â†’ {}",n.pointer),"nested-byte-reference".into(),Some(json!({"root":n.root,"document":n.document,"adapter":n.adapter,"pointer":n.pointer}))));
                     }
                 }
                 for (o, usage, version, slot, role, nested) in expanded {
@@ -544,7 +544,7 @@ impl Catalogue {
                     item.bytes = o.bytes;
                     let title = if let Some(n) = &nested {
                         format!(
-                            "{} · {}",
+                            "{} Â· {}",
                             card.title.chars().take(120).collect::<String>(),
                             n["pointer"]
                                 .as_str()

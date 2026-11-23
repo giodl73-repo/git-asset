@@ -1050,6 +1050,35 @@ fn global_storage_counts_shared_cache_once_and_preserves_cross_project_reference
         c.global_storage("", "", false, 0).unwrap()["summary"]["file_copies"],
         1
     );
+    config["projects"][0]["storage"]["places"][0]["live_probe"] = json!(false);
+    fs::write(&f.config, serde_json::to_vec(&config).unwrap()).unwrap();
+    let c = f.load();
+    let basis = |project| {
+        let result = c
+            .object_inventory(&git_asset::catalogue::storage::objects::Query {
+                project,
+                kind: "",
+                usage: "",
+                anomaly: "",
+                primary: "",
+                observed: "",
+                q: "",
+                sort: "bytes",
+                offset: 0,
+                sha: object.sha256.as_str(),
+            })
+            .unwrap();
+        result["items"][0]["basis"].as_str().unwrap().to_owned()
+    };
+    assert!(
+        c.object_copy_request("alpha", object.sha256.as_str(), cache, &basis("alpha"))
+            .is_err()
+    );
+    assert!(
+        c.object_copy_request("", object.sha256.as_str(), cache, &basis(""))
+            .is_ok()
+    );
+
     config["storage_domains"][0]["root"] = json!("relative");
     fs::write(&f.config, serde_json::to_vec(&config).unwrap()).unwrap();
     assert!(Config::load(&f.config).is_err());

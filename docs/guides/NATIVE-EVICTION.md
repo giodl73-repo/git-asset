@@ -70,6 +70,11 @@ verified keeper location, and reviewed project snapshots. These identify the
 candidate and the evidence used to review it. An archive byte check alone
 does not establish retained custody.
 
+The catalogue's direct byte checks use explicitly enrolled Flat, Git LFS, or
+REEL CAS layouts. For an ordinary or bare Git-annex repository, use the native
+provider's verification. Do not enroll its internal annex object directory as
+a Flat cache or treat a legacy alias as a second retained copy.
+
 The native planner takes a private profile with the original source and keeper
 publication plans. Use the candidate hash and length to match both originals,
 then supply the keeper's exact retained snapshot and retention grant. The
