@@ -17,6 +17,7 @@ pub struct Pass<'a> {
     pub pending: &'a mut Namespace,
     pub target: Target<'a>,
     pub apply: bool,
+    pub replan: bool,
 }
 #[derive(Serialize)]
 pub struct Registered {
@@ -197,6 +198,10 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
                     }
                     original.saved.clone()
                 } else {
+                    if pass.replan {
+                        out.state = "not_applicable";
+                        return Ok(());
+                    }
                     let mut diagnostic = super::Outcome {
                         object: object.clone(),
                         plan: None,
@@ -313,10 +318,35 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
                 }
                 self.revalidate(&selected, &mut now)?;
                 drop(resolved.take());
+                let mut index = body.index.clone();
+                drop(loaded);
+                if pass.replan && index.expected() != Some(&pin.version) {
+                    let successor = roots::prepare_successor(
+                        &head.profile,
+                        &index,
+                        pass.target.namespace,
+                        pass.target.nodes,
+                    )?
+                    .ok_or(publication::Error::Stale)?;
+                    index = successor.plan().clone();
+                    self.revalidate(&selected, &mut now)?;
+                    out.saved = Some(pending::save_ordinary_index_successor(
+                        &scope,
+                        selected.policy.clone(),
+                        self.request.commit().as_str(),
+                        pending::OrdinaryIndexSuccessor {
+                            expected: &saved,
+                            proposal: successor,
+                        },
+                        pass.pending,
+                        self.metadata,
+                        self.limits,
+                    )?);
+                }
                 let mut refused = None;
                 let receipt = roots::apply(
                     &head.profile,
-                    &body.index,
+                    &index,
                     pass.target.namespace,
                     pass.target.nodes,
                     || {

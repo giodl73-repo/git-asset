@@ -369,13 +369,22 @@ pub fn status(
     let receipt = ns.selection_status(&selection)?;
     Ok(receipt.map(|r| report(p, plan, &selection, ns, r, None)))
 }
+pub struct Successor {
+    pub(crate) original: Digest,
+    pub(crate) replacement: Plan,
+}
+impl Successor {
+    pub fn plan(&self) -> &Plan {
+        &self.replacement
+    }
+}
 /// Prepare a successor for a stale, unfinished one-row ordinary edit.
 pub fn prepare_successor(
     p: &Profile,
     original: &Plan,
     ns: &mut Namespace,
     nodes: &mut MetadataStore,
-) -> Result<Option<Plan>> {
+) -> Result<Option<Successor>> {
     if original.schema != "git-asset.producer-root-update.experimental-1" {
         return Err(Error::Unsupported);
     }
@@ -431,7 +440,14 @@ pub fn prepare_successor(
         }],
         ns,
         meter.nodes,
-    )
+    )?
+    .map(|replacement| {
+        Ok(Successor {
+            original: Digest::blob(&original.to_json()?),
+            replacement,
+        })
+    })
+    .transpose()
 }
 /// Persist the original Plan in caller-owned durable evidence before invoking.
 pub fn apply(

@@ -79,6 +79,7 @@ pub(super) fn exercise(
                     nodes: &mut source.nodes,
                 },
                 apply: $apply,
+                replan: false,
             }
         };
     }

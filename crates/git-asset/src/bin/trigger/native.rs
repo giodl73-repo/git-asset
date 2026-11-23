@@ -21,6 +21,7 @@ enum Phase {
     RestoreReplan,
     RegistrationPreview,
     RegistrationApply,
+    RegistrationReplan,
     PlacementApply,
 }
 #[derive(Deserialize)]
@@ -178,6 +179,7 @@ fn dispatch_storage(
                     | Phase::RestoreReplan
                     | Phase::RegistrationPreview
                     | Phase::RegistrationApply
+                    | Phase::RegistrationReplan
             ))
             && scope.is_none()
     {
@@ -200,7 +202,7 @@ fn dispatch_storage(
     }
     if matches!(
         storage.phase,
-        Phase::RegistrationPreview | Phase::RegistrationApply
+        Phase::RegistrationPreview | Phase::RegistrationApply | Phase::RegistrationReplan
     ) {
         return registration_dispatch(profile, client, proof, cursor, storage, budget);
     }
@@ -358,7 +360,7 @@ fn dispatch_storage(
             .and_then(|r| serde_json::to_value(r).map_err(|_| publication::Error::Invalid.into())),
         Phase::PlacementApply => unreachable!("placement is expanded above"),
         Phase::HistoryPreview | Phase::HistoryApply => unreachable!("history dispatched above"),
-        Phase::RegistrationPreview | Phase::RegistrationApply => {
+        Phase::RegistrationPreview | Phase::RegistrationApply | Phase::RegistrationReplan => {
             unreachable!("registration dispatched above")
         }
         Phase::RestorePreview | Phase::RestoreApply | Phase::RestoreReplan => {
@@ -545,7 +547,8 @@ fn registration_dispatch(
                 namespace: &mut target,
                 nodes: &mut target_nodes,
             },
-            apply: matches!(storage.phase, Phase::RegistrationApply),
+            apply: !matches!(storage.phase, Phase::RegistrationPreview),
+            replan: matches!(storage.phase, Phase::RegistrationReplan),
         },
         &mut source.resources(&storage.limits),
         &mut destination.resources(&storage.limits),

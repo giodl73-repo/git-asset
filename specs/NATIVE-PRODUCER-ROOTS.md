@@ -306,3 +306,11 @@ Exit with a caller-persisted successor proposal or refusal. Check completion
 first, require a strictly later quiescent head, and preserve the unchanged
 baseline record and exact proposed row. No media IO or implicit replan.
 L0 reviewed pins/diff, L1 stale/conflict/receipt checks, L2 synthetic only.
+
+Saved ordinary successor, input2a19956. Same controls and synthetic scope.
+Seal the original digest and replacement, retain predecessor evidence and
+compare the exact current pending record before save. L0 pins, L1 Rust checks.
+Explicit private registration_replan uses the same signed registration permission
+and exact saved row. It checks completion and current source before saving a
+successor and applying the index CAS. Normal registration apply keeps its
+original baseline. This phase adds no native byte action.

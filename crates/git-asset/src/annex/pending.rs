@@ -544,13 +544,76 @@ pub fn save_restore_index_successor(
         return Err(Error::Integrity);
     }
     body.index = proposal.replacement;
-    let raw = action.body()?;
     drop(old);
+    save_successor(
+        scope,
+        policy,
+        commit,
+        StoreAction {
+            action: &action,
+            expected: Some(expected),
+        },
+        ns,
+        nodes,
+        limits,
+    )
+}
+pub struct OrdinaryIndexSuccessor<'a> {
+    pub expected: &'a Saved,
+    pub proposal: super::producer_index::update::Successor,
+}
+pub fn save_ordinary_index_successor(
+    scope: &Scope,
+    policy: Digest,
+    commit: &str,
+    successor: OrdinaryIndexSuccessor<'_>,
+    ns: &mut Namespace,
+    nodes: &mut MetadataStore,
+    limits: &Limits,
+) -> Result<Saved> {
+    let OrdinaryIndexSuccessor { expected, proposal } = successor;
+    let old = reopen(scope, expected, ns, nodes, limits)?;
+    let mut action = old.action.clone();
+    let index = match &mut action.operation {
+        Operation::Registration(body) => &mut body.index,
+        Operation::ArchiveIndex(body) => &mut body.index,
+        _ => return Err(Error::Invalid),
+    };
+    if Digest::blob(&index.to_json()?) != proposal.original {
+        return Err(Error::Integrity);
+    }
+    *index = proposal.replacement;
+    drop(old);
+    save_successor(
+        scope,
+        policy,
+        commit,
+        StoreAction {
+            action: &action,
+            expected: Some(expected),
+        },
+        ns,
+        nodes,
+        limits,
+    )
+}
+fn save_successor(
+    scope: &Scope,
+    policy: Digest,
+    commit: &str,
+    input: StoreAction<'_>,
+    ns: &mut Namespace,
+    nodes: &mut MetadataStore,
+    limits: &Limits,
+) -> Result<Saved> {
+    let action = input.action;
+    let expected = input.expected.ok_or(Error::Invalid)?;
+    let raw = action.body()?;
     let current = find(
         scope,
-        Phase::RestoreIndex,
+        action.phase(),
         action.object(),
-        &action.working.id()?,
+        &action.slot()?,
         ns,
         nodes,
         limits,
@@ -567,18 +630,7 @@ pub fn save_restore_index_successor(
     if !scope.allow_store {
         return Err(Error::Denied);
     }
-    store(
-        scope,
-        policy,
-        commit,
-        StoreAction {
-            action: &action,
-            expected: Some(expected),
-        },
-        ns,
-        nodes,
-        limits,
-    )
+    store(scope, policy, commit, input, ns, nodes, limits)
 }
 struct StoreAction<'a> {
     action: &'a Action,

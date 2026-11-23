@@ -151,34 +151,8 @@ authorizes removal of a restored same-hash incarnation. Storage convergence,
 stale-plan replacement and root publication remain separate. See the
 [eviction-pass contract](../specs/NATIVE-EVICTION-PASS.md).
 
-## Historical Main obligations
-
-Private phases `history_preview` and `history_apply` compose the existing exact
-archive SDK through `github::native::Execution::reconcile_history`. Bind optional
-`policy.actions.history` and the separate `history_records` namespace locator;
-these phases do not require producer roots. They open working/retained metadata
-and record namespaces only, before the ordinary native payload resource dispatch.
-See [configuration, recovery and bounds](HISTORICAL-ROOTS.md#run-a-bounded-history-pass).
-The signed history profile separately permits archival and predecessor release;
-copy/backup permissions do not grant either. No physical byte removal occurs.
-
-## Enrolled producer heads
-
-Instead of fixed policy.producers roots, explicitly enroll policy.producer_heads
-with the two existing metadata-only namespace/profile bindings in the
-[producer guide](NATIVE-PRODUCER-ROOTS.md#let-a-worker-follow-an-enrolled-index).
-The modes are mutually exclusive. Compiled describe reports
-native_producer_head_resolution. Copy/eviction passes hold both exact generations,
-return bounded producer_heads pins and invalidate continuation after either head
-advances. Events cannot change these bindings or register producers. Missing heads
-refuse; asset selection still resolves the exact authenticated Git commit.
-
-Producer records may carry one recorded copy/backup publication in addition to
-the original. Worker lookup verifies original status across the bounded recipe
-set, then freshly checks bytes; metadata never selects an arbitrary current recipe
-or hides uncertainty. Owners can record completed work through the
-[producer SDK sequence](NATIVE-PRODUCER-ROOTS.md#record-the-recipe-that-actually-completed).
-The receiver does not accept arbitrary recipe registration in event bodies.
+Historical obligations and enrolled heads are covered in
+[the producer index guide](NATIVE-PRODUCER-ROOTS.md).
 
 ## Restore preview and apply
 
@@ -246,6 +220,11 @@ This phase reads bounded metadata/witness/accounting, streams zero media bytes
 and grants no custody, availability or eviction authority. Missing original
 registrations remain unknown. Full HTTP, stage orchestration, scale and owner
 adoption stay separate from synthetic component qualification.
+
+Use private phase `registration_replan` when a saved registration is stale.
+Keep the same `registration_side` and signed policy. The worker checks the
+original receipt, then saves a successor only if the target row still matches
+the old baseline. A changed row holds. The original handle stays readable.
 
 ## Run bounded ordered placement
 

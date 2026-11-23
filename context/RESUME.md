@@ -17,5 +17,4 @@ Git-selected working bytes to the retained pool before historical release.
 Next: integrate ordinary index successor recovery into the receiver. Full HTTP,
 scale, mixed-authority handoff, consumer acceptance and rollout remain open.
 
-Full prior checkpoint history: [immutable resume](https://github.com/giodl73-repo/git-asset/blob/af878de168aea7c980d7bde1cf6e59b657a4a3e3/context/RESUME.md).
 Before committing, run repository validation and the applicable Rust checks.

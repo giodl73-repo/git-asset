@@ -362,6 +362,54 @@ pub(super) fn exercise(
     );
     use crate::annex::pending::RegistrationSide;
     use crate::github::native::batch::registration;
+    let scope = policy.actions.as_ref().unwrap().pending.as_ref().unwrap();
+    let frozen = roots::prepare(
+        &destination.profile,
+        Some(&destination.version),
+        &[roots::Change {
+            expected_record: Some(destination.row.metadata_object().unwrap()),
+            record: published.clone(),
+        }],
+        &mut destination.namespace,
+        &mut destination.nodes,
+    )
+    .unwrap()
+    .unwrap();
+    let original = crate::annex::pending::save(
+        scope,
+        policy.id().unwrap(),
+        request.commit().as_str(),
+        &crate::annex::pending::Action {
+            working: destination.row.producer.clone(),
+            retained: source.row.producer.clone(),
+            operation: crate::annex::pending::Operation::Registration(Box::new(
+                crate::annex::pending::Registration {
+                    side: RegistrationSide::Working,
+                    index: frozen,
+                    record: published.clone(),
+                },
+            )),
+        },
+        &mut pending,
+        worker.metadata,
+        &Fixture::limits(),
+    )
+    .unwrap();
+    destination
+        .namespace
+        .select(
+            &admission::Select {
+                prepare: k("advance-working-index-prepare"),
+                adopt: k("advance-working-index-adopt"),
+                source: destination.profile.scope.prefix.clone(),
+                owner: destination.profile.scope.owner.clone(),
+                expected_revision: destination.version.revision,
+                selection: destination.version.selection.clone(),
+            },
+            &destination.nodes,
+            &Fixture::limits(),
+        )
+        .unwrap();
     let registered = batch::configured(worker, &policy, &trust, &request)
         .reconcile_registrations(
             registration::Pass {
@@ -374,6 +422,7 @@ pub(super) fn exercise(
                     nodes: &mut destination.nodes,
                 },
                 apply: true,
+                replan: true,
             },
             &mut m.resources(),
             &mut f.resources(),
@@ -386,7 +435,17 @@ pub(super) fn exercise(
         serde_json::to_string(&registered).unwrap()
     );
     assert_eq!(registered.outcomes[0].state, "recorded");
-    assert!(registered.outcomes[0].saved.is_some());
+    assert_ne!(registered.outcomes[0].saved.as_ref(), Some(&original));
+    assert!(
+        crate::annex::pending::reopen(
+            scope,
+            &original,
+            &mut pending,
+            worker.metadata,
+            &Fixture::limits(),
+        )
+        .is_ok()
+    );
     let result = registered
         .outcomes
         .into_iter()

@@ -609,10 +609,10 @@ fn stale_single_row_plan_can_be_rebased_after_an_unrelated_insert() {
     let successor = roots::prepare_successor(&f.profile, &original, &mut f.namespace, &mut f.nodes)
         .unwrap()
         .unwrap();
-    assert_eq!(successor.expected(), Some(&advanced.version));
+    assert_eq!(successor.plan().expected(), Some(&advanced.version));
     let applied = roots::apply(
         &f.profile,
-        &successor,
+        successor.plan(),
         &mut f.namespace,
         &mut f.nodes,
         || Ok(()),

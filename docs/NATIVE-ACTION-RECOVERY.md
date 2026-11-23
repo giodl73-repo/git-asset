@@ -65,34 +65,11 @@ substituting a new plan. The keeper's backend metadata may still be required.
 See [registered eviction](../specs/NATIVE-EVICTION-PASS.md) for fixed profile phases,
 bounds, grant admission and remaining repair/replacement obligations.
 
-After completed authorized eviction, the additive Rust
-`annex::publication::restore` SDK prepares an exact saved restore Plan, reuses
-metadata reacquisition, and delegates native import/reopen to the controlled
-Publisher. Save before apply; retry the same Plan after an interrupted metadata
-birth or uncertain reply. A managed retained reader supplies the old bytes.
-Completed replay returns retained readback without another registration. This
-does not retarget creative selection, repair unexplained loss, or add a receiver
-restore phase. See [controlled restoration](../specs/NATIVE-RESTORE.md) for
-permissions, crash boundaries, limits and remaining qualification gates.
+Saved restore and index recovery share this pending mechanism. Use the
+[restore contract](../specs/NATIVE-RESTORE.md) for admission, recovery and
+scope, and the [receiver guide](NATIVE-RECEIVER.md) for the current phases.
 
-The same four-blob pending mechanism now retains `Restore` and `RestoreIndex`
-actions. Native bodies preserve the exact eviction plus restore Plan; index bodies
-also preserve the qualified index Plan and require the same native restore recipe.
-Both original producer publications remain retained separately. Save/read back
-before execution, then execute the loaded body rather than a later preview.
-Existing phase/object/original-producer slots win on retry, including when new
-storage is disabled. A stale index Plan is not overwritten; use its original
-status and explicit SDK replan. These metadata records alone prove no media
-custody and do not add a receiver restore phase. The [saved-action contract](../specs/NATIVE-RESTORE.md#saved-restore-actions)
-defines bounds and the remaining authenticated orchestration gate.
-
-Rust package `git-asset` with `github` and `annex-publish` also exposes
-`github::native::Execution::{restore_saved,register_restore_saved}`. Pass an
-existing Saved handle and fixed enrolled resources. The worker loads its original
-body, checks the signed policy, exact current committed-source guard and working
-demand before new effects. Restore returns owned Ready bytes plus its receipt;
-index execution requires the signed destination head and preserves completed
-receipts with index writes disabled and native storage offline. Renew expired
-credentials/key snapshots and retry the same handle. Post-effect holds do not
-erase success. These SDK operations do not create a receiver restore phase or
-replace a stale plan; see the [execution contract](../specs/NATIVE-RESTORE.md#authenticated-saved-execution).
+An ordinary index successor keeps the same registration or archive action
+and preserves the older Saved version. Save through
+`save_ordinary_index_successor` with the exact original handle and sealed
+proposal before applying the replacement. A competing successor conflicts.
