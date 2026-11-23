@@ -176,6 +176,16 @@ The command evaluates supplied assertions, holds unknown fields and emits no
 decision usable by the executor. It does not read Git, resolve the evidence
 digest, or open any cache. Use an independently trusted producer for the request.
 
+`git asset storage render-retirement verify-inputs REQUEST` checks a supplied
+list of exact retained objects through the local retention engine. Provide
+schema `git-asset.render-input-verification-request.experimental-1`,
+`store_root`, `store_identity`, `ledger_root`, `minimum`, `max_bytes` and
+`inputs` containing `object` and `grant` pairs. Use existing absolute roots
+and the trusted ledger minimum. The command verifies up to 32 distinct
+objects under the requested byte budget, capped at 1 TiB. Results identify
+the exact grants observed. The caller must establish that the list covers
+the complete rebuild closure and separately prove the accepted rebuild standard.
+
 The project adapter must supply the exact old release and replacement commit,
 a trusted classification of the old asset as a derived render, the supersession
 age, and the retained rebuild evidence. The evidence should bind the exact input,

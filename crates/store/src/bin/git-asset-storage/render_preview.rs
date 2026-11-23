@@ -1,14 +1,96 @@
 use super::{Result, document, report};
 use git_asset_core::{Digest, LogicalPath, Object};
+use git_asset_store::{
+    ledger::{CapacityLedger, Checkpoint},
+    local::LocalStore,
+    retention::{self, RetentionGrant},
+};
 use serde::Deserialize;
 use serde_json::json;
 use std::{
     collections::{BTreeMap, BTreeSet},
-    path::Path,
+    path::{Path, PathBuf},
 };
 
 const REQUEST: &str = "git-asset.render-retirement-preview-request.experimental-1";
 const MAX_VERSIONS: usize = 128;
+const INPUT_REQUEST: &str = "git-asset.render-input-verification-request.experimental-1";
+const MAX_INPUTS: usize = 32;
+const MAX_INPUT_BYTES: u64 = 1 << 40;
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct InputRequest {
+    schema: String,
+    store_root: PathBuf,
+    store_identity: Digest,
+    ledger_root: PathBuf,
+    minimum: Checkpoint,
+    max_bytes: u64,
+    inputs: Vec<RetainedInput>,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct RetainedInput {
+    object: Object,
+    grant: RetentionGrant,
+}
+
+impl InputRequest {
+    fn validate(&self) -> Result<()> {
+        if self.schema != INPUT_REQUEST
+            || !self.store_root.is_absolute()
+            || !self.ledger_root.is_absolute()
+            || self.max_bytes > MAX_INPUT_BYTES
+            || self.inputs.is_empty()
+            || self.inputs.len() > MAX_INPUTS
+        {
+            return Err("invalid_input_request");
+        }
+        let mut digests = BTreeSet::new();
+        let mut bytes = 0u64;
+        for input in &self.inputs {
+            if !digests.insert(&input.object.sha256)
+                || input.grant.store() != &self.store_identity
+                || input.grant.request().publication.object != input.object
+            {
+                return Err("input_grant_mismatch");
+            }
+            bytes = bytes
+                .checked_add(input.object.bytes)
+                .ok_or("input_budget")?;
+            if bytes > self.max_bytes {
+                return Err("input_budget");
+            }
+        }
+        Ok(())
+    }
+}
+
+fn verify_inputs(request: InputRequest) -> Result<Vec<u8>> {
+    request.validate()?;
+    let store = LocalStore::open(&request.store_root).map_err(|_| "store_unavailable")?;
+    if store.identity() != &request.store_identity {
+        return Err("wrong_store");
+    }
+    let mut ledger = CapacityLedger::open(&request.ledger_root, &request.minimum)
+        .map_err(|_| "ledger_unavailable")?;
+    let mut verified = Vec::new();
+    let mut rows = Vec::new();
+    for input in request.inputs {
+        let grant = input.grant.to_json().map_err(|_| "invalid_grant")?;
+        let replica = retention::verify(&mut ledger, &store, &input.grant)
+            .map_err(|_| "retained_input_unverified")?;
+        verified.push(replica);
+        rows.push(json!({"object":input.object,"grant_digest":Digest::blob(&grant)}));
+    }
+    report(json!({
+        "schema":"git-asset.render-input-verification.experimental-1",
+        "store":request.store_identity,"verified_inputs":rows,
+        "closure_complete":false,"removal_authority":false
+    }))
+}
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -119,11 +201,13 @@ fn preview(request: Request) -> Result<Vec<u8>> {
 pub(super) fn run(args: &[String]) -> Result<Vec<u8>> {
     match args {
         [action] if action == "describe" => report(json!({
-            "operations":["preview REQUEST"],"request_schema":REQUEST,
+            "operations":["preview REQUEST","verify-inputs REQUEST"],"request_schema":REQUEST,
+            "input_request_schema":INPUT_REQUEST,"max_inputs":MAX_INPUTS,"max_input_bytes":MAX_INPUT_BYTES,
             "max_document_bytes":65536,"max_versions":MAX_VERSIONS,
             "removal_authority":false
         })),
         [action, path] if action == "preview" => preview(document(Path::new(path))?),
+        [action, path] if action == "verify-inputs" => verify_inputs(document(Path::new(path))?),
         _ => Err("usage"),
     }
 }
