@@ -314,3 +314,9 @@ Explicit private registration_replan uses the same signed registration permissio
 and exact saved row. It checks completion and current source before saving a
 successor and applying the index CAS. Normal registration apply keeps its
 original baseline. This phase adds no native byte action.
+
+Archive successor input8240bdc. Existing P3 archive controls and profiles.
+Private history_replan permits a saved archive-index successor under the
+same signed archive permissions. Preserve original membership/recipe and
+release only with the final index held. L0 pins/diff, L1 worker/strict,
+L2 synthetic archive recovery. No new custody or removal grant.

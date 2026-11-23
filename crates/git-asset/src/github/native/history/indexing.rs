@@ -19,6 +19,7 @@ pub(super) struct Pass<'a> {
     pub observer: &'a mut Namespace,
     pub current: &'a Version,
     pub started: Instant,
+    pub replan: bool,
     pub budget: &'a crate::github::placement::Budget,
 }
 #[derive(Serialize)]
@@ -192,20 +193,43 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
                 }
                 gate(self, pass.observer, now)?;
                 drop(held);
+                let mut index = body.index.clone();
+                drop(loaded);
+                if pass.replan && index.expected() != Some(&version) {
+                    let successor = roots::prepare_successor(
+                        &head.profile,
+                        &index,
+                        pass.namespace,
+                        pass.nodes,
+                    )?
+                    .ok_or(publication::Error::Stale)?;
+                    if successor.plan().expected() != Some(&version) {
+                        return Err(publication::Error::Stale.into());
+                    }
+                    index = successor.plan().clone();
+                    gate(self, pass.observer, now)?;
+                    out.saved = Some(pending::save_ordinary_index_successor(
+                        &scope,
+                        self.policy.id()?,
+                        self.request.commit().as_str(),
+                        pending::OrdinaryIndexSuccessor {
+                            expected: &saved,
+                            proposal: successor,
+                        },
+                        pass.actions,
+                        self.metadata,
+                        self.limits,
+                    )?);
+                }
                 let mut refused = None;
-                let receipt = roots::apply(
-                    &head.profile,
-                    &body.index,
-                    pass.namespace,
-                    pass.nodes,
-                    || {
+                let receipt =
+                    roots::apply(&head.profile, &index, pass.namespace, pass.nodes, || {
                         gate(self, pass.observer, now).map_err(|e| {
                             refused = Some(e);
                             publication::Error::Denied
                         })
-                    },
-                )
-                .map_err(|e| refused.take().unwrap_or(Error::Native(e)))?;
+                    })
+                    .map_err(|e| refused.take().unwrap_or(Error::Native(e)))?;
                 let current = receipt.current;
                 expected_head = Some(receipt.version.clone());
                 out.registration = Some(receipt);

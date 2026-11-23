@@ -16,6 +16,7 @@ enum Phase {
     EvictionApply,
     HistoryPreview,
     HistoryApply,
+    HistoryReplan,
     RestorePreview,
     RestoreApply,
     RestoreReplan,
@@ -143,7 +144,10 @@ fn dispatch_storage(
     storage: &Storage,
     budget: &github::placement::Budget,
 ) -> github::Result<Value> {
-    let history_phase = matches!(storage.phase, Phase::HistoryPreview | Phase::HistoryApply);
+    let history_phase = matches!(
+        storage.phase,
+        Phase::HistoryPreview | Phase::HistoryApply | Phase::HistoryReplan
+    );
     if storage.schema != SCHEMA
         || (!history_phase
             && storage.policy.producers.is_none()
@@ -288,7 +292,8 @@ fn dispatch_storage(
                 budget,
                 records: &mut records,
                 metadata: &mut retained,
-                apply: matches!(storage.phase, Phase::HistoryApply),
+                apply: !matches!(storage.phase, Phase::HistoryPreview),
+                replan: matches!(storage.phase, Phase::HistoryReplan),
             },
             now,
         );
@@ -359,7 +364,9 @@ fn dispatch_storage(
             )
             .and_then(|r| serde_json::to_value(r).map_err(|_| publication::Error::Invalid.into())),
         Phase::PlacementApply => unreachable!("placement is expanded above"),
-        Phase::HistoryPreview | Phase::HistoryApply => unreachable!("history dispatched above"),
+        Phase::HistoryPreview | Phase::HistoryApply | Phase::HistoryReplan => {
+            unreachable!("history dispatched above")
+        }
         Phase::RegistrationPreview | Phase::RegistrationApply | Phase::RegistrationReplan => {
             unreachable!("registration dispatched above")
         }

@@ -154,77 +154,14 @@ stale-plan replacement and root publication remain separate. See the
 Historical obligations and enrolled heads are covered in
 [the producer index guide](NATIVE-PRODUCER-ROOTS.md).
 
-## Restore preview and apply
+Restore preview, apply and replan are documented in the
+[restore contract](../specs/NATIVE-RESTORE.md) and
+[previous receiver guide](https://github.com/giodl73-repo/git-asset/blob/8240bdc/docs/NATIVE-RECEIVER.md).
 
-Set the fixed private storage phase to `restore_preview` or `restore_apply`.
-These require the pending namespace, enrolled producer heads, fenced committed
-source, copy permission and destination-control reacquire permission. Apply also
-requires write permission in the signed destination head profile. Events still
-supply commit IDs/cursors only. No new cache or source is enrolled by this phase.
-
-The pass intersects exact current definitions with working-place demand, reads
-registered recipes and finds their saved retirement/restore/index originals.
-Preview reports eligibility/holds without saving plans or changing native/index
-state. Apply saves/readbacks deterministic originals before effect, restores from
-the fixed retained managed pool and adopts the new producer under expected-baseline
-CAS. It does not open the retained location's metadata/witness merely to recover
-a working-side saved index action. Missing retirement/registration never grants
-repair authority. `not_applicable` is not evidence that bytes are present.
-
-An apply pass attempts at most one eligible object. After an index write, use a
-fresh pass: `fresh_pass_required` is true and no old-head cursor is returned.
-Old-basis cursors refuse. Other lookup/stream/time bounds stay explicit, and
-`storage_converged` remains unknown. Preserve `native_saved`/`index_saved` and
-any completed receipts on a held outcome. Stale saved index plans need original
-status and explicit SDK replan; this phase does not overwrite them. Index-only
-saved bodies can recover an original receipt without a native-phase slot. A
-historical receipt carries a stale hold rather than claiming current indexing.
-Native support
-is Windows-qualified; unsupported hosts refuse before opening native resources.
-Full HTTP/account/TLS, multi-object scale and project-owner acceptance remain
-separate from the synthetic scheduler/native fixtures.
-
-### Explicit stale-index replan
-
-Set private phase `restore_replan` to attempt a successor for an unfinished stale
-index action. It uses the same current-demand, destination-head and write gates.
-The original index receipt is checked first: completed/historical work is
-reconciled, never replanned. A later fenced head must make the original CAS
-unexecutable; pending/uncertain state holds. The current row must still admit the
-same original producer and the restored bytes must freshly reopen. No native
-restore/import is repeated. The exact saved successor precedes index execution;
-prior Saved handles remain retained and reopenable through source predecessors.
-A failed/expired save or apply returns its handles and requires a fresh pass.
-Ordinary restore_apply still executes the saved action without implicit replan.
-This does not repair missing producers, infer byte presence or activate production.
-
-## Record completed copy/backup recipes
-
-Enable actions.registration in the signed private policy and explicitly select
-registration_preview or registration_apply. Private registration_side chooses
-retained (default) or working. Dynamic producer heads and the original pending
-namespace are required; the target head must admit writes for a new update.
-Events still supply only commit IDs and cursors, never records or launch paths.
-
-Run copy/backup, then register its completed context-specific recipe before
-archival changes retained membership. Registration preserves producer, snapshot
-and control grant; it only adds the actual completed publication. Native intent
-without settled completion holds. Preview writes no pending/index state. Apply
-saves the exact one-record index plan before CAS, changes at most one object and
-requires a fresh pass after a write. Preserve returned Saved handles/receipts on
-all later holds. Original receipt recovery neither reselects a historical root
-nor repeats a native effect. A newer index containing the same producer and
-completion remains recorded even when retained membership has advanced.
-
-This phase reads bounded metadata/witness/accounting, streams zero media bytes
-and grants no custody, availability or eviction authority. Missing original
-registrations remain unknown. Full HTTP, stage orchestration, scale and owner
-adoption stay separate from synthetic component qualification.
-
-Use private phase `registration_replan` when a saved registration is stale.
-Keep the same `registration_side` and signed policy. The worker checks the
-original receipt, then saves a successor only if the target row still matches
-the old baseline. A changed row holds. The original handle stays readable.
+Completed recipes use `registration_preview`, `registration_apply` and
+`registration_replan` with the signed registration permission and fixed side.
+See the [producer index guide](NATIVE-PRODUCER-ROOTS.md). A stale saved plan can
+advance only when its target row is unchanged. Original handles stay readable.
 
 ## Run bounded ordered placement
 
@@ -277,3 +214,7 @@ Synthetic qualification includes missing-target holds, a committed renamed
 same-byte definition, ordinary/bare placement retry and surviving-byte reopen.
 Different-byte initial producer admission, retained control handoff, stale ordinary
 index recovery, full HTTP, scale/lifetime and owner acceptance remain separate.
+
+Use private `history_replan` with signed archive indexing enabled to recover
+a stale saved index edit. A changed target row holds. Release still requires
+all archive members to be indexed under the final held generation.

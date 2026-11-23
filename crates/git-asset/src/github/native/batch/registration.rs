@@ -328,6 +328,9 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
                         pass.target.nodes,
                     )?
                     .ok_or(publication::Error::Stale)?;
+                    if successor.plan().expected() != Some(&pin.version) {
+                        return Err(publication::Error::Stale.into());
+                    }
                     index = successor.plan().clone();
                     self.revalidate(&selected, &mut now)?;
                     out.saved = Some(pending::save_ordinary_index_successor(

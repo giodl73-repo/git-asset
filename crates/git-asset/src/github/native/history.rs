@@ -12,6 +12,7 @@ pub struct Pass<'a> {
     pub records: &'a mut Namespace,
     pub metadata: &'a mut MetadataStore,
     pub apply: bool,
+    pub replan: bool,
     pub index: Option<indexing::Target<'a>>,
 }
 #[derive(Serialize)]
@@ -74,6 +75,15 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
         mut pass: Pass<'_>,
         mut now: impl FnMut() -> Result<u64, AdmissionError>,
     ) -> Result<Report, Error> {
+        if pass.replan
+            && !self
+                .policy
+                .actions
+                .as_ref()
+                .is_some_and(|a| a.archive_index)
+        {
+            return Err(publication::Error::Unsupported.into());
+        }
         pass.budget.validate().map_err(Error::Admission)?;
         let start = Instant::now();
         let p = self
@@ -307,6 +317,7 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
                             current: &current,
                             started: start,
                             budget: pass.budget,
+                            replan: pass.replan,
                         },
                         &mut now,
                     );

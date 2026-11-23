@@ -280,8 +280,10 @@ pub(super) fn exercise(
         let mut execution = batch::configured(worker, &policy, &trust, &request);
         let mut indexed = 0;
         let mut held_missing = 0;
-        // One registered predecessor and one absent producer, independent of ordering.
-        for _ in 0..2 {
+        let action_root = f.root.join("archive-actions");
+        let checkpoint = actions.as_ref().unwrap().checkpoint();
+        let mut interrupted = None;
+        for step in 0..3 {
             let r = execution
                 .reconcile_history(
                     github::native::history::Pass {
@@ -293,15 +295,48 @@ pub(super) fn exercise(
                         budget: &budget,
                         records: &mut records,
                         metadata: &mut metadata,
+                        replan: step == 1,
                         apply: true,
                     },
-                    || Ok(1000),
+                    || {
+                        if step == 0
+                            && Namespace::open(&action_root, &checkpoint)
+                                .unwrap()
+                                .checkpoint()
+                                != checkpoint
+                        {
+                            return Err(github::Error::Budget);
+                        }
+                        Ok(1000)
+                    },
                 )
                 .unwrap();
             let outcome = &r.outcomes[0];
             let row = outcome.indexing.as_ref().unwrap();
+            if step == 0 {
+                assert!(outcome.release.is_none());
+                interrupted = Some(row.saved.clone().unwrap());
+                let head = &policy.producer_heads.as_ref().unwrap().source;
+                let ns = indexed_target.as_mut().unwrap();
+                let state = ns.source(&head.profile.scope.prefix).unwrap().unwrap();
+                ns.select(
+                    &admission::Select {
+                        prepare: k("archive-race-prepare"),
+                        adopt: k("archive-race-adopt"),
+                        source: head.profile.scope.prefix.clone(),
+                        owner: head.profile.scope.owner.clone(),
+                        expected_revision: state.revision,
+                        selection: state.current.unwrap().selection,
+                    },
+                    &metadata,
+                    &Fixture::limits(),
+                )
+                .unwrap();
+                continue;
+            }
             if row.indexed == 1 {
                 indexed += 1;
+                assert_ne!(row.saved, interrupted);
                 assert!(row.saved.is_some());
                 assert!(outcome.release.is_some());
                 let saved = row.saved.as_ref().unwrap();
@@ -412,6 +447,7 @@ pub(super) fn exercise(
                     budget: &budget,
                     records: &mut records,
                     metadata: &mut metadata,
+                    replan: false,
                     apply: true,
                 },
                 || Ok(1000)
@@ -456,6 +492,7 @@ pub(super) fn exercise(
                     budget: &budget,
                     records: &mut records,
                     metadata: &mut metadata,
+                    replan: false,
                     apply: true,
                 },
                 || Ok(1000)
@@ -479,6 +516,7 @@ pub(super) fn exercise(
                 budget: &budget,
                 records: &mut records,
                 metadata: &mut metadata,
+                replan: false,
                 apply: false,
             },
             || Ok(1000),
@@ -512,6 +550,7 @@ pub(super) fn exercise(
                     budget: &budget,
                     records: &mut records,
                     metadata: &mut metadata,
+                    replan: false,
                     apply: true,
                 },
                 || Ok(1000)
@@ -527,6 +566,7 @@ pub(super) fn exercise(
                 budget: &budget,
                 records: &mut records,
                 metadata: &mut metadata,
+                replan: false,
                 apply: true,
             },
             || {
@@ -583,6 +623,7 @@ pub(super) fn exercise(
                 budget: &budget,
                 records: &mut records,
                 metadata: &mut metadata,
+                replan: false,
                 apply: true,
             },
             || Ok(1300),
@@ -615,6 +656,7 @@ pub(super) fn exercise(
                 budget: &budget,
                 records: &mut records,
                 metadata: &mut metadata,
+                replan: false,
                 apply: true,
             },
             || Ok(1300),
@@ -650,6 +692,7 @@ pub(super) fn exercise(
                     budget: &budget,
                     records: &mut records,
                     metadata: &mut metadata,
+                    replan: false,
                     apply: true,
                 },
                 || Ok(1300)

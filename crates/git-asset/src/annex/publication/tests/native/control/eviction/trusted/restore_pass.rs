@@ -259,6 +259,7 @@ impl State {
                         budget: &limits,
                         records: history_records.as_mut().unwrap(),
                         metadata: history_nodes.as_mut().unwrap(),
+                        replan: false,
                         apply: true,
                     },
                     || Ok(1000),
@@ -287,7 +288,7 @@ impl State {
                         pipeline::Stage::Copy=>worker.reconcile_with_actions(cursor,budget,Some(&mut self.pending),&mut keeper.resources(),&mut f.resources(),||Ok(1000)).map(|r|serde_json::to_value(r).unwrap()),
                         pipeline::Stage::RegisterWorking=>worker.reconcile_registrations(registration::Pass {cursor,budget,pending:&mut self.pending,target:registration::Target {side:pending::RegistrationSide::Working,namespace:target.namespace,nodes:target.nodes},apply:true,replan:false},&mut keeper.resources(),&mut f.resources(),||Ok(1000)).map(|r|serde_json::to_value(r).unwrap()),
                         pipeline::Stage::RegisterRetained=>worker.reconcile_registrations(registration::Pass {cursor,budget,pending:&mut self.pending,target:registration::Target {side:pending::RegistrationSide::Retained,namespace:&mut source_index,nodes:&mut source_nodes},apply:true,replan:false},&mut keeper.resources(),&mut f.resources(),||Ok(1000)).map(|r|serde_json::to_value(r).unwrap()),
-                        pipeline::Stage::History=>worker.reconcile_history(history::Pass {index:Some(history::indexing::Target {namespace:&mut source_index,actions:&mut self.pending}),cursor,budget,records:history_records.as_mut().unwrap(),metadata:history_nodes.as_mut().unwrap(),apply:true},||Ok(1000)).map(|r|serde_json::to_value(r).unwrap()),
+                        pipeline::Stage::History=>worker.reconcile_history(history::Pass {index:Some(history::indexing::Target {namespace:&mut source_index,actions:&mut self.pending}),cursor,budget,records:history_records.as_mut().unwrap(),metadata:history_nodes.as_mut().unwrap(),replan: false,apply:true},||Ok(1000)).map(|r|serde_json::to_value(r).unwrap()),
                         pipeline::Stage::Eviction=>worker.reconcile_evictions(eviction::Pass {cursor,budget,pending:&mut self.pending,apply:true},&mut keeper.resources(),&mut f.resources(),||Ok(1000)).map(|r|serde_json::to_value(r).unwrap()),
                     };
                     Ok(value.unwrap_or_else(|error|serde_json::json!({"failure":crate::github::native::batch::Failure::from(&error)})))
