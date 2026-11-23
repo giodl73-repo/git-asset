@@ -64,6 +64,10 @@ fn main() -> ExitCode {
             );
             ExitCode::SUCCESS
         }
+        Some("storage") if arguments.peek().is_some_and(|a| a == "archive") => {
+            arguments.next();
+            native_storage::archive(arguments.take(4).collect())
+        }
         Some("storage") if arguments.peek().is_some_and(|a| a == "native") => {
             arguments.next();
             native_storage::main(arguments.take(4).collect())

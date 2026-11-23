@@ -131,3 +131,23 @@ fails after an operation, inspect the original saved plan; do not assume rollbac
 Status opens no metadata writer or keeper payload. Cancellation needs surviving
 source bytes, not an online keeper. Historical resume uses existing lifecycle
 requirements; unavailable required metadata/custody still holds reconciliation.
+
+## Archive one existing cache object
+
+`git asset storage archive describe` discovers the Windows command. Prepare an
+absolute private JSON request with schema
+`git-asset.cache-archive-request.experimental-1`, exact `object` (SHA-256 and
+bytes), `source` and `archive` (`root` and `layout` for each), and
+`minimum_free_bytes`. Use existing, distinct cache roots.
+
+1. `git asset storage archive plan REQUEST` verifies the source and reports a
+   plan digest. It creates no directories or files.
+2. `git asset storage archive apply REQUEST EXPECTED_PLAN` rechecks the exact
+   request, checks available capacity, and publishes without overwriting.
+3. `git asset storage archive status REQUEST` verifies the exact archive copy
+   without rereading the source. Keep the JSON report with the original request.
+   Retry with the same request and plan after checking an uncertain outcome.
+
+Verified readback proves the named archive copy at the time of the check.
+The report does not establish durable retention, writer handoff or removal
+authority. Keep the original working copies until those checks pass.

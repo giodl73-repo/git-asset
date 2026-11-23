@@ -70,3 +70,13 @@ fn run(args: &[OsString]) -> Result<Value, &'static str> {
 fn run(_: &[OsString]) -> Result<Value, &'static str> {
     Err("unsupported")
 }
+
+#[cfg(feature = "annex-publish")]
+mod archive;
+#[cfg(feature = "annex-publish")]
+pub(super) use archive::main as archive;
+#[cfg(not(feature = "annex-publish"))]
+pub(super) fn archive(_: Vec<OsString>) -> ExitCode {
+    println!("{}", json!({"ok":false,"code":"unsupported"}));
+    ExitCode::from(2)
+}
