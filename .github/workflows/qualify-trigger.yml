@@ -71,6 +71,7 @@ jobs:
     timeout-minutes: 25
     permissions:
       contents: read
+      id-token: write
     env:
       CARGO_INCREMENTAL: '0'
       CARGO_PROFILE_TEST_DEBUG: '0'
@@ -109,4 +110,20 @@ jobs:
           $env:TEMP = $root
           $env:TMP = $root
           cargo test --locked -p git-asset --all-features --lib actual_authenticated_native_copy_reopens_original_after_head_advance -- --ignored --nocapture
-          exit $LASTEXITCODE
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          try {
+            $separator = if ($env:ACTIONS_ID_TOKEN_REQUEST_URL.Contains('?')) { '&' } else { '?' }
+            $uri = $env:ACTIONS_ID_TOKEN_REQUEST_URL + $separator + 'audience=' + [Uri]::EscapeDataString('git-asset:hosted-native-copy')
+            $response = Invoke-RestMethod -Uri $uri -Headers @{Authorization=('Bearer ' + $env:ACTIONS_ID_TOKEN_REQUEST_TOKEN)}
+            $env:GIT_ASSET_REAL_GITHUB_OIDC = $response.value
+          } catch {
+            Write-Error 'OIDC fixture admission unavailable'
+            exit 1
+          }
+          try {
+            cargo test --locked -p git-asset --all-features --lib actual_hosted_oidc_copies_committed_native_fixture -- --ignored --nocapture
+            $result = $LASTEXITCODE
+          } finally {
+            Remove-Item Env:GIT_ASSET_REAL_GITHUB_OIDC
+          }
+          exit $result

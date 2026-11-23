@@ -20,7 +20,68 @@ pub(super) fn git(root: &Path, args: &[&str]) -> Vec<u8> {
 pub(super) mod batch;
 pub(super) mod heads;
 mod history;
+fn loopback_request(
+    trust: &github::Trust,
+    keys: &github::KeySnapshot,
+    token: &str,
+    commit: &source::GitId,
+    now: impl FnMut() -> github::Result<u64>,
+    dispatch: impl FnOnce(
+        github::Verified,
+        Option<git_asset_store::placement::Cursor>,
+    ) -> github::Result<serde_json::Value>,
+) -> serde_json::Value {
+    use std::{
+        io::Write,
+        net::{TcpListener, TcpStream},
+    };
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let mut client = TcpStream::connect(listener.local_addr().unwrap()).unwrap();
+    let (incoming, _) = listener.accept().unwrap();
+    let body = serde_json::json!({
+        "schema":"tig.github-request.design-1","commit":commit.as_str()
+    })
+    .to_string();
+    write!(client, "POST /v1/reconcile HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/json\r\nAuthorization: Bearer {token}\r\nContent-Length: {}\r\n\r\n{body}", body.len()).unwrap();
+    github::intake::handle(incoming, trust, keys, now, dispatch).unwrap();
+    let mut response = String::new();
+    client.read_to_string(&mut response).unwrap();
+    assert!(response.starts_with("HTTP/1.1 200"));
+    assert!(!response.contains(token));
+    serde_json::from_str(response.split_once("\r\n\r\n").unwrap().1).unwrap()
+}
+
 fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool, batch_mode: u8) {
+    run_matrix(
+        native,
+        demanded,
+        snapshot_mode,
+        action_mode,
+        batch_mode,
+        None,
+    );
+}
+
+struct HostedIdentity {
+    token: String,
+    trust: github::Trust,
+}
+
+fn hosted_now() -> github::Result<u64> {
+    std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|time| time.as_secs())
+        .map_err(|_| github::Error::Unavailable)
+}
+
+fn run_matrix(
+    native: bool,
+    demanded: bool,
+    snapshot_mode: bool,
+    action_mode: bool,
+    batch_mode: u8,
+    hosted: Option<HostedIdentity>,
+) {
     let bytes = vec![45; 256 * 1024];
     let tools = native.then(|| {
         (
@@ -128,37 +189,45 @@ fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool, 
         );
         assert_eq!(policy.id().unwrap(), expected);
     }
-    let project = target.root.join("selected-project");
-    fs::create_dir_all(project.join("assets")).unwrap();
-    git(&project, &["init", "-b", "main"]);
-    git(&project, &["config", "user.name", "Synthetic"]);
-    git(
-        &project,
-        &["config", "user.email", "fixture@example.invalid"],
-    );
     let object = source.plan.candidate().object.clone();
-    let selected_object = if demanded {
-        object.clone()
+    let (project, commit) = if hosted.is_some() {
+        (
+            std::env::var_os("GITHUB_WORKSPACE").unwrap().into(),
+            source::GitId::parse(&std::env::var("GITHUB_SHA").unwrap()).unwrap(),
+        )
     } else {
-        Object::from_bytes(b"different selected content")
+        let project = target.root.join("selected-project");
+        fs::create_dir_all(project.join("assets")).unwrap();
+        git(&project, &["init", "-b", "main"]);
+        git(&project, &["config", "user.name", "Synthetic"]);
+        git(
+            &project,
+            &["config", "user.email", "fixture@example.invalid"],
+        );
+        let selected_object = if demanded {
+            object.clone()
+        } else {
+            Object::from_bytes(b"different selected content")
+        };
+        fs::write(
+            project.join("assets/clip"),
+            format!(
+                "/annex/objects/SHA256-s{}--{}\n",
+                selected_object.bytes,
+                selected_object.sha256.as_str()
+            ),
+        )
+        .unwrap();
+        git(&project, &["add", "assets"]);
+        git(&project, &["commit", "-m", "selected native asset"]);
+        let commit = source::GitId::parse(
+            String::from_utf8(git(&project, &["rev-parse", "HEAD"]))
+                .unwrap()
+                .trim(),
+        )
+        .unwrap();
+        (project, commit)
     };
-    fs::write(
-        project.join("assets/clip"),
-        format!(
-            "/annex/objects/SHA256-s{}--{}\n",
-            selected_object.bytes,
-            selected_object.sha256.as_str()
-        ),
-    )
-    .unwrap();
-    git(&project, &["add", "assets"]);
-    git(&project, &["commit", "-m", "selected native asset"]);
-    let commit = source::GitId::parse(
-        String::from_utf8(git(&project, &["rev-parse", "HEAD"]))
-            .unwrap()
-            .trim(),
-    )
-    .unwrap();
     let executable = std::env::var_os("GIT_ASSET_TEST_GIT_EXE")
         .map(PathBuf::from)
         .unwrap_or_else(|| {
@@ -173,7 +242,10 @@ fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool, 
         repository: &repository,
     };
     let enrollment = lifecycle::Enrollment {
-        repository: Digest::blob(b"synthetic project"),
+        repository: hosted.as_ref().map_or_else(
+            || Digest::blob(b"synthetic project"),
+            |identity| Digest::blob(identity.trust.repository_id.as_bytes()),
+        ),
         authority: Digest::blob(b"worker authority"),
         namespace: policy.namespace.clone(),
         policy: Digest::blob(
@@ -185,8 +257,18 @@ fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool, 
         source: k("creative"),
         owner: k("owner"),
         class: Kind::Branch,
-        ref_name: "refs/heads/main".into(),
-        scope: vec![LogicalPath::parse("assets").unwrap()],
+        ref_name: hosted.as_ref().map_or_else(
+            || "refs/heads/main".into(),
+            |identity| identity.trust.ref_name.clone(),
+        ),
+        scope: vec![
+            LogicalPath::parse(if hosted.is_some() {
+                "examples/github/native-copy"
+            } else {
+                "assets"
+            })
+            .unwrap(),
+        ],
         budget: lifecycle::Budget {
             entries: 128,
             nodes: 1024,
@@ -194,12 +276,6 @@ fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool, 
             millis: 60000,
         },
     };
-    let mut signer = github::fixture::Fixture::new();
-    signer.commit = commit.clone();
-    signer.claims["sha"] = serde_json::json!(commit.as_str());
-    signer.trust.selection_enrollment = enrollment.id().unwrap();
-    signer.trust.placement_enrollment = policy.id().unwrap();
-    let request = signer.verify(&signer.claims, 1000).unwrap();
     let mut namespace = Namespace::open(
         &target.root.join("namespace-0"),
         &target.namespaces[0].checkpoint(),
@@ -208,6 +284,59 @@ fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool, 
     let mut metadata =
         MetadataStore::open(&target.root.join("metadata"), target.metadata.checkpoint()).unwrap();
     let limits = Fixture::limits();
+    if let Some(HostedIdentity { token, mut trust }) = hosted {
+        trust.selection_enrollment = enrollment.id().unwrap();
+        trust.placement_enrollment = policy.id().unwrap();
+        let keys = github::http::Client::new(None, 30000)
+            .unwrap()
+            .keys(hosted_now().unwrap(), 300)
+            .unwrap();
+        let response = loopback_request(
+            &trust,
+            &keys,
+            &token,
+            &commit,
+            hosted_now,
+            |proof, cursor| {
+                assert!(cursor.is_none());
+                let mut copied = Execution {
+                    trust: &trust,
+                    request: &proof,
+                    policy: &policy,
+                    enrollment: &enrollment,
+                    repository: &native_source,
+                    namespace: &mut namespace,
+                    metadata: &mut metadata,
+                    limits: &limits,
+                }
+                .copy(
+                    &plan,
+                    &mut source.resources(),
+                    &mut target.resources(),
+                    hosted_now,
+                )
+                .unwrap();
+                let mut actual = Vec::new();
+                copied.retained().read_to_end(&mut actual).unwrap();
+                assert_eq!(actual, bytes);
+                assert!(copied.report().selection.desired_current);
+                assert!(copied.report().post_copy_hold.is_none());
+                Ok(serde_json::to_value(copied.report()).unwrap())
+            },
+        );
+        assert_eq!(response["authenticated"], true);
+        assert_eq!(
+            response["result"]["copy"]["plan"],
+            plan.id().unwrap().as_str()
+        );
+        return;
+    }
+    let mut signer = github::fixture::Fixture::new();
+    signer.commit = commit.clone();
+    signer.claims["sha"] = serde_json::json!(commit.as_str());
+    signer.trust.selection_enrollment = enrollment.id().unwrap();
+    signer.trust.placement_enrollment = policy.id().unwrap();
+    let request = signer.verify(&signer.claims, 1000).unwrap();
     let mut worker = Execution {
         trust: &signer.trust,
         request: &request,
@@ -374,24 +503,12 @@ fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool, 
         );
         return;
     }
-    use std::{
-        io::Write,
-        net::{TcpListener, TcpStream},
-    };
-    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
-    let mut client = TcpStream::connect(listener.local_addr().unwrap()).unwrap();
-    let (incoming, _) = listener.accept().unwrap();
-    let body = serde_json::json!({
-        "schema":"tig.github-request.design-1","commit":commit.as_str()
-    })
-    .to_string();
-    let token = signer.token(&signer.claims);
-    write!(client, "POST /v1/reconcile HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/json\r\nAuthorization: Bearer {token}\r\nContent-Length: {}\r\n\r\n{body}", body.len()).unwrap();
     let mut copy = None;
-    github::intake::handle(
-        incoming,
+    let response = loopback_request(
         &signer.trust,
         &signer.keys,
+        &signer.token(&signer.claims),
+        &commit,
         || Ok(1000),
         |proof, cursor| {
             assert!(cursor.is_none());
@@ -412,14 +529,7 @@ fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool, 
             copy = Some(copied);
             Ok(report)
         },
-    )
-    .unwrap();
-    let mut response = String::new();
-    client.read_to_string(&mut response).unwrap();
-    assert!(response.starts_with("HTTP/1.1 200"));
-    assert!(!response.contains(&token));
-    let response: serde_json::Value =
-        serde_json::from_str(response.split_once("\r\n\r\n").unwrap().1).unwrap();
+    );
     assert_eq!(response["authenticated"], true);
     assert_eq!(
         response["result"]["copy"]["plan"],
@@ -627,6 +737,55 @@ fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool, 
     retained.read_to_end(&mut actual).unwrap();
     assert_eq!(actual, bytes);
 }
+#[test]
+#[ignore = "requires GitHub-hosted OIDC and pinned native tools; owned synthetic pools only"]
+fn actual_hosted_oidc_copies_committed_native_fixture() {
+    use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
+
+    let env = |name| std::env::var(name).unwrap();
+    let token = env("GIT_ASSET_REAL_GITHUB_OIDC");
+    assert!(token.len() <= github::MAX_TOKEN);
+    let claim_body = token.split('.').nth(1).unwrap();
+    let claims: serde_json::Value =
+        serde_json::from_slice(&URL_SAFE_NO_PAD.decode(claim_body).unwrap()).unwrap();
+    let repository = env("GITHUB_REPOSITORY");
+    let repository_id = env("GITHUB_REPOSITORY_ID");
+    let owner_id = env("GITHUB_REPOSITORY_OWNER_ID");
+    let reference = env("GITHUB_REF");
+    let (owner, name) = repository.split_once('/').unwrap();
+    let subject = [
+        format!("repo:{repository}:ref:{reference}"),
+        format!("repo:{owner}@{owner_id}/{name}@{repository_id}:ref:{reference}"),
+    ]
+    .into_iter()
+    .find(|value| claims["sub"].as_str() == Some(value.as_str()))
+    .expect("expected a GitHub default subject");
+    let trust = github::Trust {
+        schema: "tig.github-trust.design-1".into(),
+        audience: "git-asset:hosted-native-copy".into(),
+        subject,
+        repository,
+        repository_id,
+        owner_id,
+        ref_name: reference,
+        workflow_ref: env("GITHUB_WORKFLOW_REF"),
+        reusable: None,
+        events: vec!["workflow_dispatch".into()],
+        max_token_seconds: 600,
+        clock_skew_seconds: 30,
+        selection_enrollment: Digest::blob(b"unset selection enrollment"),
+        placement_enrollment: Digest::blob(b"unset placement enrollment"),
+    };
+    run_matrix(
+        true,
+        true,
+        false,
+        false,
+        0,
+        Some(HostedIdentity { token, trust }),
+    );
+}
+
 #[test]
 fn authenticated_native_copy_uses_exact_selected_demand_and_original_retry() {
     matrix(false, true, false, false, 0);
