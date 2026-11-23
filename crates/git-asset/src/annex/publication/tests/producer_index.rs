@@ -1,4 +1,4 @@
-mod update;
+pub(super) mod update;
 use super::*;
 use crate::annex::producer_index::{Index, Record};
 

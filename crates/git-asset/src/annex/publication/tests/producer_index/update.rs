@@ -9,14 +9,14 @@ use git_asset_store::{
     },
 };
 
-struct Fixture {
+pub(in super::super) struct Fixture {
     temp: tempfile::TempDir,
     namespace: Namespace,
     nodes: MetadataStore,
     profile: roots::Profile,
 }
 impl Fixture {
-    fn new() -> Self {
+    pub(in super::super) fn new() -> Self {
         let temp = tempfile::tempdir().unwrap();
         let places = Places {
             current: vec![k("metadata")],
@@ -81,6 +81,14 @@ impl Fixture {
             namespace,
             nodes,
             profile,
+        }
+    }
+    #[cfg(windows)]
+    pub(in super::super) fn target(&mut self) -> roots::initial::Target<'_> {
+        roots::initial::Target {
+            profile: &self.profile,
+            namespace: &mut self.namespace,
+            nodes: &mut self.nodes,
         }
     }
     fn row(&mut self, name: &str) -> Record {

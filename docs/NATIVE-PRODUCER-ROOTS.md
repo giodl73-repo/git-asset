@@ -36,6 +36,18 @@ The API has no removal, expiry cleanup or metadata-forgetting operation. Root
 history and protection traversal remain subject to existing namespace bounds;
 passing one bounded edit is not episode-scale/lifetime qualification.
 
+## Register a newly published producer
+
+For owner-managed admission, use `annex::producer_index::update::initial`.
+After publication, pass the original producer Plan, its enrolled Publisher and
+resources, and the expected index Version to `initial::prepare`. It reopens
+the exact protected bytes and prepares an insert for an absent row. Save both
+original plans before `initial::apply`. Apply checks their binding and recovers
+a completed receipt first. Otherwise it reopens the publication and holds its
+verified bytes through the index update. A competing advance requires a fresh
+baseline after checking the original receipt. Keep the ingest claim active
+until a separate retained custody handoff has completed.
+
 ## Connect archived history to its original producer
 
 Resolve an existing archive with `annex::history::find`/`load`, then call

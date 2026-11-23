@@ -256,3 +256,14 @@ Enter with enrolled retained head and exact archive. Exit with a contiguous
 sequence of verified index versions and its final generation held through
 working release, or a stale hold. L0 pins/diff, L1 focused worker/strict checks,
 L2 synthetic archive and release. Scope is metadata fencing only.
+
+Initial owner registration, input687d5e89077a7b30c9b20097a0f1e87260825144.
+Existing WP-004/005/006/007/009, REQ-001/002/004/006/007/008/010,
+SPEC-002/003/004/005/007/008/010/011, IF-002/004/005/008/010/012,
+PKG-001/003/004/006. RUST/PROVIDER/INTEGRATION. Entry is an explicitly
+admitted publisher and owned producer index. Prepare only an absent-row insert
+for an exact reopened producer. Save the plan before apply. Apply recovers past
+receipts first, otherwise holds original protected bytes through index CAS.
+Exit is the original receipt or an explicit hold. L0 pins/diff, L1 locked and
+strict checks, L2 synthetic guarded publication and registration. No selection
+of creative assets, native import, deletion or control-retention grant.

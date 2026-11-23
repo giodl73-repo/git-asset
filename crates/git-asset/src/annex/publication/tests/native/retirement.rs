@@ -507,3 +507,54 @@ fn actual_native_keeper_device_views_on_declared_distinct_volumes() {
         keeper_checks(source, keeper, true);
     }
 }
+
+#[test]
+fn initial_producer_registration_requires_publication_and_recovers_receipt() {
+    use crate::annex::producer_index::update::{Plan as IndexPlan, initial};
+    let mut native = Fixture::build_setup(b"new owner asset", None, false, None, true);
+    let mut index = super::super::producer_index::update::Fixture::new();
+    let producer = native.plan.clone();
+    let mut publisher = native.publisher();
+    assert!(
+        initial::prepare(
+            &mut index.target(),
+            None,
+            &producer,
+            &mut publisher,
+            &mut native.resources(),
+        )
+        .is_err()
+    );
+    publish(&mut native);
+    let plan = initial::prepare(
+        &mut index.target(),
+        None,
+        &producer,
+        &mut publisher,
+        &mut native.resources(),
+    )
+    .unwrap()
+    .unwrap();
+    let plan = IndexPlan::from_json(&plan.to_json().unwrap()).unwrap();
+    let first = initial::apply(
+        &mut index.target(),
+        &plan,
+        &producer,
+        &mut publisher,
+        &mut native.resources(),
+        || Ok(()),
+    )
+    .unwrap();
+    let retry = initial::apply(
+        &mut index.target(),
+        &plan,
+        &producer,
+        &mut publisher,
+        &mut native.resources(),
+        || panic!("completed registration must not execute again"),
+    )
+    .unwrap();
+    assert_eq!(first.version, retry.version);
+    assert_eq!(retry.current, Some(true));
+    assert!(!retry.authorizes_eviction);
+}

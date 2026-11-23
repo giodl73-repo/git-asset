@@ -142,8 +142,13 @@ It does not qualify initial different-byte producer admission or control handoff
 Archive release now holds the final verified retained index generation through
 working release. Unexpected index generations between rows stop with a stale hold.
 
-Next: initial owner producer admission, retained control handoff and stale
-ordinary-index recovery; do not mistake recorded completion for custody. Remaining full gates:
+Owner SDK update::initial prepares an absent-row insert from an exact protected
+publication and reopens it through CAS. Save both plans before apply. The focused
+Windows synthetic fixture passes unpublished refusal, insertion and original
+receipt recovery. Qualification logs are external initial-producer-*.
+
+Next: connect admission to the different-byte golden workflow, qualify retained
+control handoff and recover stale ordinary-index updates. Remaining full gates:
 owner publication/archival orchestration, unexplained-loss/deprecated backup
 repair, full HTTP/account/TLS, measured workload/journal lifetime, P2 mixed-authority
 handoff, P4 consumer acceptance, P5 RC and P6 private owner cutover. No final

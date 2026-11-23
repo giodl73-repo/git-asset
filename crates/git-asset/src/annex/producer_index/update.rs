@@ -18,6 +18,7 @@ use std::{
     time::{Duration, Instant},
 };
 
+pub mod initial;
 pub mod restore;
 const RESTORE_SCHEMA: &str = "git-asset.producer-restore-root.experimental-1";
 
