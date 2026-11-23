@@ -21,6 +21,7 @@ enum Phase {
     RestoreReplan,
     RegistrationPreview,
     RegistrationApply,
+    PlacementApply,
 }
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -83,11 +84,64 @@ impl Opened {
 pub(super) fn dispatch(
     profile: &Profile,
     client: &Client,
-    proof: github::Verified,
+    proof: &github::Verified,
     cursor: Option<Cursor>,
     document: Value,
 ) -> github::Result<Value> {
-    let storage: Storage = serde_json::from_value(document).map_err(|_| github::Error::Invalid)?;
+    let storage: Storage =
+        serde_json::from_value(document.clone()).map_err(|_| github::Error::Invalid)?;
+    if matches!(storage.phase, Phase::PlacementApply) {
+        use native::pipeline::{self, Stage};
+        if cursor.is_some() {
+            return Err(github::Error::Invalid);
+        }
+        if storage.schema != SCHEMA || !profile.allow_selection {
+            return Err(github::Error::Disabled);
+        }
+        let policy = storage.policy.id().map_err(|_| github::Error::Trust)?;
+        proof.admit(
+            now()?,
+            &profile.enrollment.id().map_err(|_| github::Error::Trust)?,
+            &policy,
+        )?;
+        pipeline::validate(&storage.policy)?;
+        if !cfg!(windows) {
+            return Ok(
+                json!({"schema":"git-asset.native-ordered-placement-refusal.experimental-1","ok":false,"failure":{"layer":"native","code":"unsupported"},"storage_converged":null}),
+            );
+        }
+        let binding = pipeline::Binding {
+            policy,
+            provenance: proof.provenance().clone(),
+        };
+        let report = pipeline::run(&binding, &profile.budget, |stage, cursor, budget| {
+            let mut local: Storage =
+                serde_json::from_value(document.clone()).map_err(|_| github::Error::Invalid)?;
+            local.phase = match stage {
+                Stage::Restore => Phase::RestoreApply,
+                Stage::Copy => Phase::Copy,
+                Stage::RegisterWorking | Stage::RegisterRetained => Phase::RegistrationApply,
+                Stage::History => Phase::HistoryApply,
+                Stage::Eviction => Phase::EvictionApply,
+            };
+            local.registration_side = match stage {
+                Stage::RegisterWorking => git_asset::annex::pending::RegistrationSide::Working,
+                _ => git_asset::annex::pending::RegistrationSide::Retained,
+            };
+            dispatch_storage(profile, client, proof, cursor.cloned(), &local, budget)
+        })?;
+        return serde_json::to_value(report).map_err(|_| github::Error::Invalid);
+    }
+    dispatch_storage(profile, client, proof, cursor, &storage, &profile.budget)
+}
+fn dispatch_storage(
+    profile: &Profile,
+    client: &Client,
+    proof: &github::Verified,
+    cursor: Option<Cursor>,
+    storage: &Storage,
+    budget: &github::placement::Budget,
+) -> github::Result<Value> {
     let history_phase = matches!(storage.phase, Phase::HistoryPreview | Phase::HistoryApply);
     if storage.schema != SCHEMA
         || (!history_phase
@@ -100,7 +154,7 @@ pub(super) fn dispatch(
         .limits
         .validate()
         .map_err(|_| github::Error::Budget)?;
-    profile.budget.validate()?;
+    budget.validate()?;
     let policy = storage.policy.id().map_err(|_| github::Error::Trust)?;
     proof.admit(
         now()?,
@@ -148,13 +202,13 @@ pub(super) fn dispatch(
         storage.phase,
         Phase::RegistrationPreview | Phase::RegistrationApply
     ) {
-        return registration_dispatch(profile, client, proof, cursor, &storage);
+        return registration_dispatch(profile, client, proof, cursor, storage, budget);
     }
     if matches!(
         storage.phase,
         Phase::RestorePreview | Phase::RestoreApply | Phase::RestoreReplan
     ) {
-        return restore_dispatch(profile, client, proof, cursor, &storage);
+        return restore_dispatch(profile, client, proof, cursor, storage, budget);
     }
     if history_phase {
         let h = history.ok_or(github::Error::Trust)?;
@@ -184,7 +238,7 @@ pub(super) fn dispatch(
         };
         let result = native::Execution {
             trust: &profile.trust,
-            request: &proof,
+            request: proof,
             policy: &storage.policy,
             enrollment: &profile.enrollment,
             repository: &repository,
@@ -195,7 +249,7 @@ pub(super) fn dispatch(
         .reconcile_history(
             native::history::Pass {
                 cursor: cursor.as_ref(),
-                budget: &profile.budget,
+                budget,
                 records: &mut records,
                 metadata: &mut retained,
                 apply: matches!(storage.phase, Phase::HistoryApply),
@@ -234,7 +288,7 @@ pub(super) fn dispatch(
     };
     let mut worker = native::Execution {
         trust: &profile.trust,
-        request: &proof,
+        request: proof,
         policy: &storage.policy,
         enrollment: &profile.enrollment,
         repository: &repository,
@@ -248,7 +302,7 @@ pub(super) fn dispatch(
         Phase::Copy => worker
             .reconcile_with_actions(
                 cursor.as_ref(),
-                &profile.budget,
+                budget,
                 pending.as_mut(),
                 &mut source,
                 &mut destination,
@@ -259,7 +313,7 @@ pub(super) fn dispatch(
             .reconcile_evictions(
                 native::eviction::Pass {
                     cursor: cursor.as_ref(),
-                    budget: &profile.budget,
+                    budget,
                     pending: pending.as_mut().ok_or(github::Error::Trust)?,
                     apply: matches!(storage.phase, Phase::EvictionApply),
                 },
@@ -268,6 +322,7 @@ pub(super) fn dispatch(
                 now,
             )
             .and_then(|r| serde_json::to_value(r).map_err(|_| publication::Error::Invalid.into())),
+        Phase::PlacementApply => unreachable!("placement is expanded above"),
         Phase::HistoryPreview | Phase::HistoryApply => unreachable!("history dispatched above"),
         Phase::RegistrationPreview | Phase::RegistrationApply => {
             unreachable!("registration dispatched above")
@@ -287,9 +342,10 @@ pub(super) fn dispatch(
 fn restore_dispatch(
     profile: &Profile,
     client: &Client,
-    proof: github::Verified,
+    proof: &github::Verified,
     cursor: Option<Cursor>,
     storage: &Storage,
+    budget: &github::placement::Budget,
 ) -> github::Result<Value> {
     if !cfg!(windows) {
         return Ok(
@@ -345,7 +401,7 @@ fn restore_dispatch(
     };
     let result = native::Execution {
         trust: &profile.trust,
-        request: &proof,
+        request: proof,
         policy: &storage.policy,
         enrollment: &profile.enrollment,
         repository: &repository,
@@ -356,7 +412,7 @@ fn restore_dispatch(
     .reconcile_restores(
         native::restore::pass::Pass {
             cursor: cursor.as_ref(),
-            budget: &profile.budget,
+            budget,
             pending: &mut records,
             context: &mut publication::restore::Context {
                 profile: &storage.policy.copy.destination,
@@ -389,9 +445,10 @@ fn restore_dispatch(
 fn registration_dispatch(
     profile: &Profile,
     client: &Client,
-    proof: github::Verified,
+    proof: &github::Verified,
     cursor: Option<Cursor>,
     storage: &Storage,
+    budget: &github::placement::Budget,
 ) -> github::Result<Value> {
     use git_asset::annex::pending::RegistrationSide;
     use native::batch::registration;
@@ -436,7 +493,7 @@ fn registration_dispatch(
     };
     let result = native::Execution {
         trust: &profile.trust,
-        request: &proof,
+        request: proof,
         policy: &storage.policy,
         enrollment: &profile.enrollment,
         repository: &repository,
@@ -447,7 +504,7 @@ fn registration_dispatch(
     .reconcile_registrations(
         registration::Pass {
             cursor: cursor.as_ref(),
-            budget: &profile.budget,
+            budget,
             pending: &mut records,
             target: registration::Target {
                 side: storage.registration_side,

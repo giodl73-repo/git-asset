@@ -128,7 +128,7 @@ fn dispatch(
     let document: Value = parse(&bytes)?;
     #[cfg(feature = "annex-publish")]
     if document["schema"] == native::SCHEMA {
-        return native::dispatch(profile, client, proof, cursor, document);
+        return native::dispatch(profile, client, &proof, cursor, document);
     }
     let storage: profiles::Storage =
         serde_json::from_value(document).map_err(|_| github::Error::Invalid)?;
@@ -240,7 +240,7 @@ fn run() -> github::Result<()> {
     let args = std::env::args_os().skip(1).collect::<Vec<_>>();
     if args.len() == 1 && args[0] == "describe" {
         return output(
-            &json!({"schema":"tig.github-receiver-interface.design-1","operations":["describe","serve PROFILE"],"profile_schema":"tig.github-receiver.design-1","path":"/v1/reconcile","method":"POST","request_schema":"tig.github-request.design-1","loopback_only":true,"default_receive":false,"default_selection":false,"installs_service":false,"executes_repository_code":false,"request_authority":"signed_oidc_plus_private_enrollment","convergence":"complete_same_basis_pass","native_copy_reconciliation":cfg!(feature="annex-publish"),"native_producer_head_resolution":cfg!(feature="annex-publish"),"native_storage_schema":"git-asset.native-receiver-placement.experimental-1","native_storage_convergence":null,"native_storage_phases":if cfg!(feature="annex-publish") { json!(["copy","history_preview","history_apply","eviction_preview","eviction_apply","restore_preview","restore_apply","restore_replan","registration_preview","registration_apply"]) } else { json!([]) },"native_payload_supported":cfg!(all(feature="annex-publish",windows))}),
+            &json!({"schema":"tig.github-receiver-interface.design-1","operations":["describe","serve PROFILE"],"profile_schema":"tig.github-receiver.design-1","path":"/v1/reconcile","method":"POST","request_schema":"tig.github-request.design-1","loopback_only":true,"default_receive":false,"default_selection":false,"installs_service":false,"executes_repository_code":false,"request_authority":"signed_oidc_plus_private_enrollment","convergence":"complete_same_basis_pass","native_copy_reconciliation":cfg!(feature="annex-publish"),"native_producer_head_resolution":cfg!(feature="annex-publish"),"native_storage_schema":"git-asset.native-receiver-placement.experimental-1","native_storage_convergence":null,"native_storage_phases":if cfg!(feature="annex-publish") { json!(["copy","history_preview","history_apply","eviction_preview","eviction_apply","restore_preview","restore_apply","restore_replan","registration_preview","registration_apply","placement_apply"]) } else { json!([]) },"native_payload_supported":cfg!(all(feature="annex-publish",windows))}),
         );
     }
     if args.len() != 2 || args[0] != "serve" {

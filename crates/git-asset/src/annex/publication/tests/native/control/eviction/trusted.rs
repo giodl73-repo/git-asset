@@ -138,6 +138,7 @@ impl State {
                 eviction: Some(owner.clone()),
                 backup: false,
                 registration: false,
+                orchestration: false,
                 history: None,
                 pending: Some(pending_scope),
             }),

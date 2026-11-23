@@ -34,15 +34,77 @@ impl State {
         owner: &OwnerProfile,
         evicted: &NativePlan,
         old: &Plan,
-        replan: bool,
+        modes: (bool, bool),
     ) -> Plan {
+        let (replan, cycle) = modes;
         let working = head(f, old.clone(), "scheduled-working", true);
-        let retained = head(keeper, keeper.plan.clone(), "scheduled-retained", false);
+        let retained = head(keeper, keeper.plan.clone(), "scheduled-retained", cycle);
         self.policy.producer_heads = Some(Heads {
             source: retained,
             destination: working.clone(),
         });
         self.policy.allow_copy = true;
+        let mut history_records = cycle.then(|| {
+            let places = Places {
+                current: vec![k("metadata")],
+                pending: vec![k("metadata")],
+                predecessor: vec![k("metadata")],
+            };
+            Namespace::create_fenced(
+                &f.root.join("cycle-history-records"),
+                k("cycle-history-records"),
+                k("epoch"),
+                admission::Policy {
+                    prefer_active: true,
+                    classes: [Kind::Branch, Kind::Draft, Kind::Job, Kind::Retention]
+                        .into_iter()
+                        .map(|kind| (kind, places.clone()))
+                        .collect(),
+                },
+            )
+            .unwrap()
+        });
+        let mut history_nodes = cycle.then(|| {
+            MetadataStore::open(&keeper.root.join("metadata"), keeper.metadata.checkpoint())
+                .unwrap()
+        });
+        if cycle {
+            let actions = self.policy.actions.as_mut().unwrap();
+            actions.orchestration = true;
+            actions.registration = true;
+            actions.backup = true;
+            actions.handoff = true;
+            actions.history = Some(crate::annex::history::Profile {
+                working: crate::annex::history::Working {
+                    namespace: self.enrollment.namespace.clone(),
+                    source: self.enrollment.source.clone(),
+                    owner: self.enrollment.owner.clone(),
+                    class: self.enrollment.class.clone(),
+                },
+                target: crate::annex::history::Target {
+                    namespace: keeper.namespaces[1].identity().clone(),
+                    owner: k("owner"),
+                    place: k("pool"),
+                    prefix: k("cycle-history"),
+                },
+                records: pending::Scope {
+                    namespace: history_records.as_ref().unwrap().identity().clone(),
+                    metadata: history_nodes
+                        .as_ref()
+                        .unwrap()
+                        .checkpoint()
+                        .identity()
+                        .clone(),
+                    owner: k("owner"),
+                    prefix: k("cycle-records"),
+                    place: k("metadata"),
+                    allow_store: true,
+                },
+                limits: Fixture::limits(),
+                allow_publish: true,
+                allow_release: true,
+            });
+        }
         self.signer.trust.placement_enrollment = self.policy.id().unwrap();
         let scope = self
             .policy
@@ -138,6 +200,76 @@ impl State {
         assert_eq!(checkpoint, f.namespaces[0].checkpoint());
         assert_eq!(records, self.pending.checkpoint());
         assert_eq!(index, target.namespace.checkpoint());
+        if cycle {
+            use crate::github::native::{batch::registration, eviction, history, pipeline};
+            pipeline::validate(worker.policy).unwrap();
+            let source_head = worker
+                .policy
+                .producer_heads
+                .as_ref()
+                .unwrap()
+                .source
+                .clone();
+            let mut source_index =
+                Namespace::open(&source_head.root, &source_head.minimum).unwrap();
+            let mut source_nodes =
+                MetadataStore::open(&keeper.root.join("metadata"), keeper.metadata.checkpoint())
+                    .unwrap();
+            let binding = pipeline::Binding {
+                policy: worker.policy.id().unwrap(),
+                provenance: worker.request.provenance().clone(),
+            };
+            let limits = github::placement::Budget {
+                pages: 32,
+                objects: 128,
+                stream_bytes: 16 * 1024 * 1024,
+                millis: 300000,
+            };
+            for round in 0..2 {
+                let checkpoint = f.ledger.checkpoint();
+                let report=pipeline::run(&binding,&limits,|stage,cursor,budget|{
+                    let value=match stage {
+                        pipeline::Stage::Restore=>worker.reconcile_restores(Pass {cursor,budget,pending:&mut self.pending,context:&mut context,target:&mut target,apply:true,replan:false},&mut f.resources(),||Ok(1000)).map(|r|serde_json::to_value(r).unwrap()),
+                        pipeline::Stage::Copy=>worker.reconcile_with_actions(cursor,budget,Some(&mut self.pending),&mut keeper.resources(),&mut f.resources(),||Ok(1000)).map(|r|serde_json::to_value(r).unwrap()),
+                        pipeline::Stage::RegisterWorking=>worker.reconcile_registrations(registration::Pass {cursor,budget,pending:&mut self.pending,target:registration::Target {side:pending::RegistrationSide::Working,namespace:target.namespace,nodes:target.nodes},apply:true},&mut keeper.resources(),&mut f.resources(),||Ok(1000)).map(|r|serde_json::to_value(r).unwrap()),
+                        pipeline::Stage::RegisterRetained=>worker.reconcile_registrations(registration::Pass {cursor,budget,pending:&mut self.pending,target:registration::Target {side:pending::RegistrationSide::Retained,namespace:&mut source_index,nodes:&mut source_nodes},apply:true},&mut keeper.resources(),&mut f.resources(),||Ok(1000)).map(|r|serde_json::to_value(r).unwrap()),
+                        pipeline::Stage::History=>worker.reconcile_history(history::Pass {cursor,budget,records:history_records.as_mut().unwrap(),metadata:history_nodes.as_mut().unwrap(),apply:true},||Ok(1000)).map(|r|serde_json::to_value(r).unwrap()),
+                        pipeline::Stage::Eviction=>worker.reconcile_evictions(eviction::Pass {cursor,budget,pending:&mut self.pending,apply:true},&mut keeper.resources(),&mut f.resources(),||Ok(1000)).map(|r|serde_json::to_value(r).unwrap()),
+                    };
+                    Ok(value.unwrap_or_else(|error|serde_json::json!({"failure":crate::github::native::batch::Failure::from(&error)})))
+                }).unwrap();
+                assert!(
+                    report.ordered_passes_complete,
+                    "{}",
+                    serde_json::to_string(&report).unwrap()
+                );
+                assert!(report.storage_converged.is_none());
+                assert_eq!(report.stages.len(), 6);
+                if round == 1 {
+                    assert_eq!(checkpoint, f.ledger.checkpoint());
+                }
+            }
+            let current = target
+                .namespace
+                .source(&working.profile.scope.prefix)
+                .unwrap()
+                .unwrap()
+                .current
+                .unwrap();
+            let row = Index::from_root(current.selection.root)
+                .get(&old.candidate().object, target.nodes, TreeLimits::default())
+                .unwrap()
+                .0
+                .unwrap();
+            let mut read = crate::annex::managed::Reader::new(f.profile.pool.clone())
+                .unwrap()
+                .open(&old.candidate().object)
+                .unwrap();
+            let mut bytes = Vec::new();
+            read.read_to_end(&mut bytes).unwrap();
+            assert_eq!(Object::from_bytes(&bytes), old.candidate().object);
+            return row.producer;
+        }
         use crate::annex::producer_index::update::restore as index_restore;
         let prior = if replan {
             let restore = native::prepare(

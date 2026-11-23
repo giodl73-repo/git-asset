@@ -47,6 +47,8 @@ pub struct Actions {
     pub backup: bool,
     #[serde(skip_serializing_if = "disabled")]
     pub registration: bool,
+    #[serde(skip_serializing_if = "disabled")]
+    pub orchestration: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub pending: Option<crate::annex::pending::Scope>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -475,5 +477,6 @@ pub use durable::{Durable, HandoffRequest};
 pub mod eviction;
 pub mod history;
 
+pub mod pipeline;
 pub mod producers;
 pub mod restore;

@@ -54,8 +54,9 @@ fn matrix_mode(exits: bool, races: bool, copies: bool, trusted: bool) {
     matrix_profile(exits, races, copies, trusted, 0);
 }
 fn matrix_profile(exits: bool, races: bool, copies: bool, trusted: bool, batch: u8) {
-    let scheduled_restore = matches!(batch, 4 | 5);
+    let scheduled_restore = matches!(batch, 4..=6);
     let scheduled_replan = batch == 5;
+    let scheduled_cycle = batch == 6;
     let batch = if scheduled_restore { 0 } else { batch };
     let git: PathBuf = std::env::var_os("GIT_ASSET_TEST_GIT_EXE").unwrap().into();
     let annex: PathBuf = std::env::var_os("GIT_ASSET_TEST_ANNEX_EXE").unwrap().into();
@@ -103,11 +104,12 @@ fn matrix_profile(exits: bool, races: bool, copies: bool, trusted: bool, batch: 
             Some(&source_root),
             trusted || copies,
         );
-        let mut backup = Fixture::build_in(
+        let mut backup = Fixture::build_setup(
             &bytes,
             Some((git.clone(), annex.clone(), path.clone())),
             !bare,
             Some(&keeper_root),
+            scheduled_cycle,
         );
         let keeper_control = Control::build(&mut backup, true);
         let source_native = crate::annex::Reader::new(f.profile.pool.pool.clone())
@@ -763,7 +765,7 @@ fn matrix_profile(exits: bool, races: bool, copies: bool, trusted: bool, batch: 
                     &policy,
                     &planned,
                     &old_native,
-                    scheduled_replan,
+                    (scheduled_replan, scheduled_cycle),
                 );
             }
             #[cfg(not(feature = "github"))]
@@ -930,4 +932,11 @@ fn actual_named_producer_heads_eviction_protection_expiry_and_saved_replay() {
 #[ignore = "explicit native tools and distinct owned volumes; retained stale index successor"]
 fn actual_restore_replan_preserves_original_and_never_reimports() {
     matrix_profile(false, false, true, false, 5);
+}
+
+#[cfg(feature = "github")]
+#[test]
+#[ignore = "explicit native tools and distinct owned volumes; ordered enrolled revert flow"]
+fn actual_ordered_placement_restores_revert_before_copy_history_and_eviction() {
+    matrix_profile(false, false, true, false, 6);
 }

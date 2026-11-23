@@ -92,3 +92,48 @@ They use optional signed Actions.history plus the private history_records locato
 without producer-index or payload resource opens. Their cursor binds current
 Version rather than the source revision changed by predecessor release. These
 phases grant no native copy/removal authority and report custody as unknown.
+
+## Bounded ordered placement driver
+
+Input6da98cf7ecc381b0a057e3addb3771cbd31860ab; P3 WP-004/005/006/007/009;
+REQ-001/002/004/006/007/008/010; SPEC-002/003/004/005/007/008/010/011;
+IF-002/004/005/008/010/012; PKG-001/003/004/006. RUST/PROVIDER/INTEGRATION.
+Allowed: fixed stage coordination over existing authenticated restore, copy,
+publication registration, history and eviction; synthetic fixtures. No new journal,
+cache, provider authority, automatic enrollment or production activation. Entry:
+explicit signed orchestration permission and all existing stage permissions,
+fixed enrolled heads/records and exact current source. Exit: bounded ordered stage
+passes, held original report, or budget refusal; never whole-storage convergence.
+L0 pins/links/budgets; L1 ordering, shared limits, late holds, malformed reports,
+restart/cursor/fencing and strict checks; L2 synthetic actual native composition.
+
+The order is restore, copy/backup/handoff, working registration, retained
+registration, history, eviction. Each stage retains its own independent admission,
+original recovery and custody checks. Missing producer registration, archive
+membership, control retention, coverage or survivor bytes holds; the driver may
+not manufacture prerequisites. In particular it does not repair unexplained loss.
+No event-supplied stage cursor or plan is accepted. Each retry starts at the first
+stage and reuses durable backend state; no client suffix proves a completed prefix.
+Individual phase previews remain the prerequisite planning surface.
+
+Pages, object visits, prospective bytes and wall time are shared across all stage
+calls. A fresh-root flag restarts that stage within the remaining budget; normal
+cursors remain confined to their originating stage. Reports retain at most six
+stage summaries and the last bounded native report, especially every held/uncertain
+outcome. Growing originals/receipts stay in existing asset-side stores. Completed
+prior effects are recoverable there, not inferred from client memory. Ordered-pass
+completion is not current availability, full-system acceptance or storage convergence.
+Large closures outside declared aggregate limits safely refuse and need a smaller
+admitted scope or explicit bound change; there is no hidden background continuation.
+
+Producer review: identity binds each returned frame to the same policy, verified
+provenance and current selection; no caller suffix can stand in for prior work.
+Recovery retains the last raw held report and leaves originals in existing stores;
+no private namespace is upgraded to avoid Unsupported. Placement/custody keeps
+all stage gates and unknown coverage conservative. Privacy reuses fixed private
+profiles, exposing no launch/data paths or credentials. Adoption distinguishes
+ordered-pass completion from convergence and limits native qualification to the
+enrolled revert scope (empty remaining history, current-required eviction).
+The new flag is omitted when false, preserving old policy hashes. Workload,
+new-golden/archive-index, HTTP and owner gates remain OPEN. These are producer
+checklists, not independent review or human acceptance.

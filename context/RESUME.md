@@ -7,7 +7,7 @@ renders or deployment on resume. Foundation qualification uses synthetic fixture
 
 Owned lane: feat/trusted-native-placement, draft PR74, based on
 feat/source-generation-use/PR73. Current refinement input is
-7bd82ba90b1d9ba7c66a2ace5da8027ebfb6eb8e. Derive later committed source and its
+6da98cf7ecc381b0a057e3addb3771cbd31860ab. Derive later committed source and its
 hosted run; a prior pending run is not qualification of the next head.
 
 ## Series state
@@ -106,7 +106,25 @@ branding and diff pass; exact source/log/binary pins stay external. Frontdoor
 is compiled/discovery-qualified; full HTTP is OPEN. Parent7bd82ba passed
 hosted45081602257; derive the new head's own run.
 
-Next: complete merge placement orchestration, initial owner producer admission
+Current refinement: fixed ordered placement driver over existing stages. Explicit
+placement_apply/actions.orchestration requires every stage permission and rejects
+client cursors. Shared page/object-visit/prospective-byte/deadline limits preserve
+the last report on holds; each retry starts from Restore, using durable originals.
+Individual phase previews remain the planning entry. Qualification: ordered-placement-*.
+Eight driver, eight interface, twelve worker, two pending and eight index tests
+pass. The actual native enrolled-revert cycle runs all six SDK stages twice for
+ordinary and bare pools; current bytes survive and repeated native allocation
+and stale eviction replay are fenced. History has no remaining predecessors and
+eviction sees the current required object; this is not new-golden/archive-index
+qualification. The first native attempt correctly refused a legacy keeper; only
+the owned cycle fixture explicitly admits its generation fencing. No runtime
+fence is bypassed or production namespace upgraded. Native/regressions precede
+only a fixture range-pattern lint cleanup. Final strict all-target/all-feature
+workspace Clippy, standalone annex-publish, fmt, L0/pins/branding/diff pass; exact
+source/log/test-binary pins stay external. Parent6da98cf passed hosted45084189472;
+derive the new head's own run.
+
+Next: new-golden/archive-index and initial owner producer admission
 and stale ordinary-index recovery; do not mistake recorded completion for custody. Remaining full gates:
 owner publication/archival orchestration, unexplained-loss/deprecated backup
 repair, full HTTP/account/TLS, measured workload/journal lifetime, P2 mixed-authority

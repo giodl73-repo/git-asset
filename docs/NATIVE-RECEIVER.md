@@ -246,3 +246,33 @@ This phase reads bounded metadata/witness/accounting, streams zero media bytes
 and grants no custody, availability or eviction authority. Missing original
 registrations remain unknown. Full HTTP, stage orchestration, scale and owner
 adoption stay separate from synthetic component qualification.
+
+## Run bounded ordered placement
+
+Use placement_apply only after individual phase previews and explicit admission
+of actions.orchestration plus every stage's existing permissions. Both producer
+heads must admit writes; pending/history namespaces, history publish/release,
+copy/backup/handoff, registration, reacquisition and eviction must already be
+enrolled. Missing prerequisites refuse before execution. No service is installed.
+
+One authenticated request runs restore -> copy/backup/handoff -> working recipe
+registration -> retained recipe registration -> history -> eviction. The same
+verified request and private profiles are reused; events cannot supply a stage,
+new authority or a pipeline cursor. Any incoming cursor for this mode is invalid.
+Every stage still freshly checks source, protection, original status and custody.
+Missing archive membership or control grants remains a hold, never synthesized.
+A retry starts at Restore and reuses saved native/index/archive originals.
+
+budget.pages is the total stage-call budget; objects is total object visits,
+including rechecks, with at most128 per native page. Prospective byte credit and
+millis are shared across the whole request. New index roots restart their stage
+within remaining credit. Budget exhaustion preserves the last report and stops;
+admit a smaller scope or an explicit sufficient budget rather than skipping a
+prefix. The driver keeps six summaries plus the last bounded backend report;
+older successful effects/receipts remain in their existing asset-side stores.
+
+ordered_passes_complete means those admitted passes ended without a hold. It
+never asserts whole-storage convergence, independent hardware custody, every
+project's readiness, or permission to retire caller scratch. storage_converged
+stays unknown. Full HTTP/account/TLS, new-golden/archive-index orchestration,
+stale ordinary-index replan, scale/lifetime and owner acceptance remain OPEN.

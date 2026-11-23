@@ -128,3 +128,17 @@ diff pass. Exact source/log/test-binary evidence remains external in
 publication-registration-source.json. Full merge-stage orchestration, stale
 ordinary-index replan, initial producer admission, HTTP/scale and owner acceptance
 remain OPEN.
+
+
+Ordered native coordination -> pipeline fixed stages plus placement_apply ->
+default-denied signed orchestration, all original stage gates, shared aggregate
+work/time limits and last-report preservation. Callback frames must match exact
+policy/provenance/current selection; nonadvancing/fresh-root cursors stop. There
+is no client prefix proof or new durable engine. [Controls](../../specs/NATIVE-RECEIVER.md#bounded-ordered-placement-driver).
+Eight coordinator cases and actual ordinary/bare enrolled-revert composition
+pass, with two rounds and old-eviction replay; history has no remaining
+predecessors and eviction sees current-required bytes. Eight interface/twelve
+worker/two pending/eight index regressions pass before fixture range-pattern-only
+cleanup. Final strict/source qualification remains external ordered-placement-*.
+Ordered-pass completion is not storage convergence. Full HTTP, new-golden
+archive/index admission, scale/lifetime and owner gates remain OPEN.
