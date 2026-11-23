@@ -1,11 +1,6 @@
 use git_asset_core::{Digest, Object};
 use serde_json::{Value, json};
-use std::{
-    collections::{BTreeMap, BTreeSet},
-    fs::File,
-    io::Read,
-    path::Path,
-};
+use std::{collections::BTreeMap, fs::File, io::Read, path::Path};
 
 fn read(path: &Path, limit: u64) -> Result<(Value, Digest), String> {
     if !path.is_absolute() {
@@ -38,14 +33,17 @@ pub(super) fn prepare(drive: &Path, request_path: &Path) -> Result<Value, String
     Ok(request)
 }
 
-pub(super) fn validate_prepared(drive: &Path, request: &Value) -> Result<(), String> {
+pub(super) fn validate_prepared(
+    drive: &Path,
+    request: &Value,
+) -> Result<BTreeMap<String, u64>, String> {
     let policy = request["policy"].as_str().ok_or("Missing request policy")?;
     let plan = request["plan"].as_str().ok_or("Missing request plan")?;
     let matched = compare(drive, Path::new(policy), Path::new(plan))?;
     check_request(request, &matched)
 }
 
-fn check_request(request: &Value, matched: &Value) -> Result<(), String> {
+fn check_request(request: &Value, matched: &Value) -> Result<BTreeMap<String, u64>, String> {
     if request["schema"] != "reel.asset-demotion-request.v1"
         || request["plan_sha256"] != matched["provider_plan_sha256"]
         || request["consumer_scope"] != "all-managed-cache-consumers"
@@ -89,14 +87,14 @@ fn check_request(request: &Value, matched: &Value) -> Result<(), String> {
     if requested.is_empty() || requested.len() > 100 {
         return Err("Choose 1 to 100 matched objects".into());
     }
-    let mut seen = BTreeSet::new();
+    let mut objects = BTreeMap::new();
     let mut bytes = 0u64;
     for hash in requested {
         let hash = hash.as_str().ok_or("Invalid requested digest")?;
         let length = candidates
             .get(hash)
             .ok_or("Requested object is outside the matching evidence")?;
-        if !seen.insert(hash) {
+        if objects.insert(hash.to_owned(), *length).is_some() {
             return Err("Duplicate requested object".into());
         }
         bytes = length
@@ -113,7 +111,7 @@ fn check_request(request: &Value, matched: &Value) -> Result<(), String> {
     {
         return Err("Invalid verification budget".into());
     }
-    Ok(())
+    Ok(objects)
 }
 
 fn match_candidates(

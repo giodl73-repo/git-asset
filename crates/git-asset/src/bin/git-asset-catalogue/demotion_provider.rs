@@ -3,6 +3,7 @@ use process_wrap::tokio::{CommandWrap, JobObject, KillOnDrop};
 use serde::Deserialize;
 use serde_json::Value;
 use std::{
+    collections::BTreeMap,
     fs::{File, OpenOptions},
     io::Read,
     os::windows::fs::{MetadataExt, OpenOptionsExt},
@@ -92,7 +93,7 @@ pub(super) fn run(
         return Err("Drive report pin mismatch".into());
     }
     drop(drive_raw);
-    super::demotion::validate_prepared(&profile.drive_report, &document)?;
+    let objects = super::demotion::validate_prepared(&profile.drive_report, &document)?;
     let seconds = document["max_seconds"]
         .as_u64()
         .filter(|n| (1..=3600).contains(n))
@@ -110,6 +111,8 @@ pub(super) fn run(
                 && result["request_sha256"] == profile.request_sha256.as_str()
                 && result["plan_sha256"] == document["plan_sha256"]
                 && result["last_copy_retired"] == false
+                && result["archive_probed"] == false
+                && exact_results(result, &objects, apply)
         });
     result.ok_or_else(|| {
         if apply {
@@ -118,6 +121,26 @@ pub(super) fn run(
             "Provider verification did not complete; inspect the original journal".into()
         }
     })
+}
+
+fn exact_results(report: &Value, expected: &BTreeMap<String, u64>, apply: bool) -> bool {
+    let Some(rows) = report["objects"].as_array() else {
+        return false;
+    };
+    if rows.len() != expected.len() {
+        return false;
+    }
+    let received: Option<BTreeMap<_, _>> = rows
+        .iter()
+        .map(|row| {
+            let removed = row["hot_links_removed"].as_u64()?;
+            if !apply && removed != 0 {
+                return None;
+            }
+            Some((row["sha256"].as_str()?.to_owned(), row["bytes"].as_u64()?))
+        })
+        .collect();
+    received.as_ref() == Some(expected)
 }
 
 async fn capture(reader: impl AsyncRead + Unpin) -> std::io::Result<Vec<u8>> {
@@ -169,4 +192,26 @@ async fn execute(
     .ok()?
     .ok()?;
     (status.success() && err.is_empty()).then_some(out)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::json;
+
+    #[test]
+    fn checks_exact_receipt_and_refuses_a_verify_removal() {
+        let expected = BTreeMap::from([("first".to_owned(), 10), ("second".to_owned(), 20)]);
+        let first = json!({"sha256":"first","bytes":10,"hot_links_removed":0});
+        let second = json!({"sha256":"second","bytes":20,"hot_links_removed":0});
+        let mut receipt = json!({"objects":[first, second]});
+        assert!(exact_results(&receipt, &expected, false));
+        receipt["objects"][1]["hot_links_removed"] = json!(1);
+        assert!(!exact_results(&receipt, &expected, false));
+        assert!(exact_results(&receipt, &expected, true));
+        receipt["objects"][1]["bytes"] = json!(21);
+        assert!(!exact_results(&receipt, &expected, true));
+        receipt["objects"][1] = first;
+        assert!(!exact_results(&receipt, &expected, true));
+    }
 }
