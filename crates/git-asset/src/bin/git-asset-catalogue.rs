@@ -1,6 +1,8 @@
 //! Explicit local application launch; no setup, hydration or automatic deletion.
 use git_asset::catalogue::{Catalogue, Config};
 use std::{path::Path, process::ExitCode};
+#[path = "git-asset-catalogue/demotion.rs"]
+mod demotion;
 fn save(report: &serde_json::Value, path: &str) -> Result<(), String> {
     use std::io::Write;
     if !Path::new(path).is_absolute() {
@@ -53,6 +55,24 @@ fn eviction_report(
 }
 fn run() -> Result<(), String> {
     let args: Vec<_> = std::env::args().skip(1).collect();
+    if args
+        .first()
+        .is_some_and(|action| action == "demotion-match")
+    {
+        let [_, drive, policy, plan, output] = args.as_slice() else {
+            return Err(
+                "demotion-match requires DRIVE_REPORT PROVIDER_POLICY PROVIDER_PLAN NEW_REPORT"
+                    .into(),
+            );
+        };
+        let report = demotion::compare(Path::new(drive), Path::new(policy), Path::new(plan))?;
+        save(&report, output)?;
+        println!(
+            "{}",
+            serde_json::json!({"report":output,"matched":report["matched"],"removal_authorized":false})
+        );
+        return Ok(());
+    }
     if args.len() < 2
         || !matches!(
             args[0].as_str(),

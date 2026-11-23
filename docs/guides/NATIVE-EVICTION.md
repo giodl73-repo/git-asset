@@ -102,6 +102,12 @@ separately from changes in total volume free space.
 Before enabling the handoff, test the pinned Windows executable on a synthetic
 cache with changed scope, a new job, a corrupt keeper, an unknown hard link
 and a process interruption. Then qualify one owner-scoped production batch.
+Run `git asset catalogue demotion-match DRIVE_REPORT PROVIDER_POLICY PROVIDER_PLAN NEW_REPORT`
+with absolute paths to saved evidence. It compares the bounded drive-report
+page against the provider's ordinary demotion proposals and records input digests.
+The provider plan is limited to 32 MiB for this matcher. Use provider verification
+with current controls before relying on any match.
+
 The ordinary demotion provider requires a keeper. Final retirement of a
 rebuildable render has its own execution and approval path.
 
