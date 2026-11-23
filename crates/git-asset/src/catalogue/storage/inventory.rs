@@ -31,13 +31,17 @@ pub fn run(config: &Config, project: &str, root: &Path) -> Result<Value> {
     let profile: ResolverProfile = read(&project.profile, 65536)?;
     let places = profile.byte_source.ok_or("No cache locations")?.places;
     let storage = project.storage.as_ref().ok_or("No storage admission")?;
-    if !storage.places.iter().any(|entry| {
-        entry.live_probe
-            && places
-                .get(entry.place_index)
-                .is_some_and(|place| place.root == root)
-    }) {
-        return Err("Root is not enrolled for live observation".into());
+    let mut enrolled = storage
+        .places
+        .iter()
+        .filter(|entry| entry.live_probe)
+        .filter_map(|entry| places.get(entry.place_index))
+        .filter(|place| place.root == root);
+    let place = enrolled
+        .next()
+        .ok_or("Root is not enrolled for live observation")?;
+    if enrolled.next().is_some() {
+        return Err("Root names more than one enrolled cache place".into());
     }
     if !root.is_absolute()
         || root.components().any(|part| {
@@ -151,6 +155,7 @@ pub fn run(config: &Config, project: &str, root: &Path) -> Result<Value> {
     }
     Ok(
         json!({"schema":"git-asset.cache-inventory.experimental-1","project":project.id,"cache_root":root,
+        "layout":place.layout,"native_eviction_supported_for_layout":false,
         "entries_examined":entries,"budget_exhausted":budget_exhausted,
         "all_entries_accounted_for":!budget_exhausted && total.excluded_or_unreadable==0,
         "elapsed_seconds":started.elapsed().as_secs(),"counts":total,"areas":areas,
@@ -334,6 +339,8 @@ mod tests {
         assert_eq!(measured["counts"]["files"], 2);
         assert_eq!(measured["counts"]["linked_paths"], 2);
         assert_eq!(measured["counts"]["unique_files"], 1);
+        assert_eq!(measured["layout"], "flat");
+        assert_eq!(measured["native_eviction_supported_for_layout"], false);
         assert_eq!(
             measured["counts"]["linked_file_allocated_bytes"],
             measured["counts"]["unique_allocated_bytes"]
