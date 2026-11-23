@@ -501,3 +501,9 @@ Issue77 alias test, input94865c0. Existing P2 WP-004/007, REQ-004/006/007,
 SPEC-004/007/008, IF-004/008, PKG-003/004. PROVIDER/INTEGRATION.
 L0 pins/diff, L1 locked tests and strict Rust checks, L2 Windows synthetic
 hard-link access in both directions. Keeper guard only, no source handoff.
+
+The Windows synthetic hard-link fixture permits renaming and unlinking the
+alternate name during the keeper hold. A write through the renamed link still
+refuses and the original keeper bytes remain readable. The guard covers the
+selected path and bytes. Alias rosters and legacy writer retirement require
+separate evidence.

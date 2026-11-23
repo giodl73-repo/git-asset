@@ -243,13 +243,19 @@ fn protected_path_blocks_object_mutation_and_parent_rename_but_other_objects_pro
     assert!(fs::OpenOptions::new().write(true).open(&source).is_err());
     let error = fs::OpenOptions::new().write(true).open(&alias).unwrap_err();
     assert_eq!(error.raw_os_error(), Some(32));
+    let moved_alias = t.path().join("moved-alias");
+    // The held handle protects the selected path and file bytes, not every name.
+    fs::rename(&alias, &moved_alias).unwrap();
+    let writer = fs::OpenOptions::new().write(true).open(&moved_alias);
+    assert!(writer.is_err());
+    fs::remove_file(moved_alias).unwrap();
     assert!(fs::remove_file(&source).is_err());
     assert!(fs::rename(&root, t.path().join("moved-cache")).is_err());
     let other = write(&root, &Layout::Flat, b"unrelated");
     fs::remove_file(Layout::Flat.object_path(&root, &other.sha256)).unwrap();
     assert_eq!(held.with_path(|p| fs::read(p).unwrap()).unwrap(), b"data");
     drop(held);
-    fs::OpenOptions::new().write(true).open(&alias).unwrap();
+    fs::OpenOptions::new().write(true).open(&source).unwrap();
     fs::remove_file(source).unwrap();
 }
 
