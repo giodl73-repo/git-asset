@@ -997,6 +997,33 @@ fn global_storage_counts_shared_cache_once_and_preserves_cross_project_reference
         fs::write(path, serde_json::to_vec(&profile).unwrap()).unwrap();
     }
     fs::write(&f.config, serde_json::to_vec(&config).unwrap()).unwrap();
+    #[cfg(all(windows, feature = "annex-read"))]
+    {
+        let report_path = root.join("drive-report.json");
+        let result = std::process::Command::new(env!("CARGO_BIN_EXE_git-asset-catalogue"))
+            .arg("drive-report")
+            .arg(&f.config)
+            .args(["alpha", &f.first])
+            .arg(&store)
+            .arg(&report_path)
+            .output()
+            .unwrap();
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        let report: Value = serde_json::from_slice(&fs::read(report_path).unwrap()).unwrap();
+        assert_eq!(report["inventory"]["counts"]["unique_files"], 1);
+        assert_eq!(report["selection_usage"]["snapshot"], f.first);
+        assert_eq!(report["eviction_review"]["summary"]["observed_objects"], 1);
+        assert_eq!(report["safe_reclaim_bytes"], Value::Null);
+        assert_eq!(report["removal_authorized"], false);
+        assert_eq!(
+            fs::read(store.join("objects").join(object.sha256.as_str())).unwrap(),
+            bytes
+        );
+    }
     let mut c = f.load();
     let before = c.global_storage("", "", false, 0).unwrap();
     assert_eq!(before["caches"].as_array().unwrap().len(), 1);

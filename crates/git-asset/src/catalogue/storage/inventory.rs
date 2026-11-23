@@ -21,7 +21,7 @@ struct Counts {
     excluded_or_unreadable: u64,
 }
 
-pub fn run(config: Config, project: &str, root: &Path) -> Result<Value> {
+pub fn run(config: &Config, project: &str, root: &Path) -> Result<Value> {
     let project = config
         .projects
         .iter()
@@ -177,7 +177,7 @@ mod tests {
                 "storage":{"schema":"tig.catalogue-storage.experimental-1","encoding":"json","max_decoded_bytes":1024,
                     "places":[{"label":"Working","place_index":0,"live_probe":true}]}}]
         })).unwrap();
-        let measured = run(config, "sample", &root).unwrap();
+        let measured = run(&config, "sample", &root).unwrap();
         assert_eq!(measured["all_entries_accounted_for"], true);
         assert_eq!(measured["counts"]["files"], 2);
         assert_eq!(measured["counts"]["linked_paths"], 2);
@@ -188,11 +188,12 @@ mod tests {
 }
 
 /// Named bindings in one exact snapshot. Allocation is assigned once per file.
-pub fn selection_usage(config: Config, project: &str, commit: &str, root: &Path) -> Result<Value> {
+pub fn selection_usage(config: &Config, project: &str, commit: &str, root: &Path) -> Result<Value> {
     let enrollment = config
         .projects
-        .into_iter()
+        .iter()
         .find(|entry| entry.id == project)
+        .cloned()
         .ok_or("Project not enrolled")?;
     // Use the same named, bounded refresh as the ordinary catalogue.
     let config = Config {

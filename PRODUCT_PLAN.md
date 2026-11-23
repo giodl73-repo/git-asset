@@ -39,6 +39,26 @@ merge-driven placement, eviction/restore; per-project acceptance and rollback.
 
 Dependencies: PR70 -> P1 -> P2 -> P3; PR70 -> P4; P3/P4 -> P5 -> P6.
 
+## E: and F: cache reclaim PRs
+
+Producer review against the six [.roles](.roles/ROLE.md) checklists, input
+`73993e447ce1b4186ba4f6a6a5d47484e1e5c30d` and the local render preview.
+This sequence specializes P2/P3 above for shared Windows caches. The labels
+below are sequence numbers. Each cache scope needs its own owner acceptance.
+
+| PR | Owner and scope | Required exit evidence |
+| --- | --- | --- |
+| **1. Drive report** | Catalogue. Combine bounded physical inventory, exact selection evidence, and placement/eviction observations. Count jobs and staging from the start. | For each enrolled root, show current placement, history, job/staging allocation, shared links, incomplete coverage and the next verification action. Distinguish drive usage, enrolled cache allocation, logical asset size, possible reclaim and projected archive intake. Test changed bindings and shared content. |
+| **2. Writer and scratch qualification** | Storage and project owners. Admit writers, job ledger, ownership and provider capabilities per root and scope. Give abandoned jobs and staging a supported git-asset cleanup path. | New claims and writer changes block affected stale plans. Test hard links, junctions, inaccessible paths, concurrent replacement, expired reservations with active obligations, and crash recovery. Keep private paths and receipts asset-side. |
+| **3. Evict and restore** | Storage. Expose bounded plan/apply/status/resume for working copies with independently retained custody and for qualified scratch cleanup. | Pilot small batches on E: and F: as each scope qualifies. Verify hash and length and successfully restore an exact evicted historical asset. Measure reclaimed allocation separately from unrelated volume changes. |
+| **4. Retire rebuildable renders** | Project adapter and storage. Resolve exact before/after commits, verify age and retained rebuild evidence, then pass exact approved scope to the retirement executor. | Retire a superseded render without a copy to M: and demonstrate equivalent rebuild. Hold versioned primary assets, exact-delivery releases, unresolved dependencies and shared/active claims. |
+| **5. Post-merge worker** | Release and project operators. Preview first. Enable bounded execution only for qualified roots and admitted policies. | Duplicate and missed events, reverts, M: offline, restart and stop/resume exercise through the installed entry point. Git events supply exact commits and a separately authorized worker owns apply. |
+
+PR 1 can ship independently. PR 3 can pilot a scope as soon as PR 2 qualifies
+it. PR 4 and PR 5 have separate acceptance gates. M: retains primary inputs,
+rebuild dependencies and explicitly retained outputs. Initial execution stays
+opt-in. Scope with incomplete ownership or evidence remains held.
+
 The separate [issue75 tool/preview sequence](docs/TOOL-PREVIEW-HANDOFF-PLAN.md)
 maps U4's proposed registry, exact launch, guarded media, candidate/observation
 bridge and browser acceptance. REEL owns its production board and can ship a

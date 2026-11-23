@@ -181,3 +181,13 @@ document with schema `git-asset.cache-archive-estimate.experimental-1`,
 length pairs. It measures free space on that volume and checks only named
 object paths. Matching length does not prove integrity. Additional logical
 bytes exclude uncertain paths and allocation overhead.
+
+For one report per enrolled Windows cache root, run
+`git asset catalogue drive-report ENROLLMENT PROJECT COMMIT CACHE_ROOT NEW_REPORT`.
+Use the full commit ID and a new absolute output path. The JSON includes the
+physical cache inventory by area, allocation by named selection class, and
+the eviction review with candidate states and the largest observed items.
+The three observations overlap and can see concurrent changes. Use the
+inventory for allocation totals and the eviction review to choose which
+candidates to verify. Safe reclaim stays unknown until execution prerequisites
+are established. The report does not open payloads or remove cache files.
