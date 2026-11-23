@@ -159,3 +159,11 @@ objects in the selected cache, and writes its largest 100 rows to a new report.
 The single-link allocation bucket is a verification queue. The report keeps
 safe reclaim unknown while current protection and independently retained
 custody remain unverified.
+
+`git asset catalogue cache-inventory ENROLLMENT PROJECT CACHE_ROOT NEW_REPORT`
+explicitly walks one existing live-probe cache on Windows. It reads file
+metadata only, reports physical allocation once per hard-linked file and
+stops at two million entries or fifteen minutes. Excluded/unreadable
+entries and exhausted budgets mark the observation incomplete. The walk
+does not check Git selection, retention, current jobs or reclamation
+authorization and does not run on catalogue startup.

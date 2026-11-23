@@ -24,12 +24,33 @@ fn run() -> Result<(), String> {
     if args.len() < 2
         || !matches!(
             args[0].as_str(),
-            "check" | "serve" | "shared" | "references" | "eviction-report"
+            "check" | "serve" | "shared" | "references" | "eviction-report" | "cache-inventory"
         )
     {
-        return Err("usage: git-asset-catalogue check ENROLLMENT | serve ENROLLMENT [PORT] | shared ENROLLMENT LEFT RIGHT NEW_REPORT [CATEGORY] | references ENROLLMENT SHA256 NEW_REPORT [PROJECT] [OFFSET] | eviction-report ENROLLMENT PROJECT COMMIT CACHE_ROOT NEW_REPORT".into());
+        return Err("usage: git-asset-catalogue check ENROLLMENT | serve ENROLLMENT [PORT] | shared ENROLLMENT LEFT RIGHT NEW_REPORT [CATEGORY] | references ENROLLMENT SHA256 NEW_REPORT [PROJECT] [OFFSET] | eviction-report ENROLLMENT PROJECT COMMIT CACHE_ROOT NEW_REPORT | cache-inventory ENROLLMENT PROJECT CACHE_ROOT NEW_REPORT".into());
     }
     let config = Config::load(Path::new(&args[1]))?;
+    if args[0] == "cache-inventory" {
+        #[cfg(all(windows, feature = "annex-read"))]
+        {
+            if args.len() != 5 {
+                return Err(
+                    "cache-inventory requires project, absolute cache root and new report path"
+                        .into(),
+                );
+            }
+            let report = git_asset::catalogue::storage::inventory::run(
+                config,
+                &args[2],
+                Path::new(&args[3]),
+            )?;
+            save(&report, &args[4])?;
+            println!("{report}");
+            return Ok(());
+        }
+        #[cfg(not(all(windows, feature = "annex-read")))]
+        return Err("cache-inventory requires Windows file identity support".into());
+    }
     if args[0] == "shared" {
         if !(5..=6).contains(&args.len()) || !Path::new(&args[4]).is_absolute() {
             return Err("shared requires enrollment, two project IDs and an absolute new report path; category is optional".into());

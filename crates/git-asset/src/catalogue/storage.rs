@@ -2,6 +2,8 @@
 use super::*;
 use regex::Regex;
 pub mod global;
+#[cfg(all(windows, feature = "annex-read"))]
+pub mod inventory;
 pub mod nested;
 pub mod objects;
 mod probe;
