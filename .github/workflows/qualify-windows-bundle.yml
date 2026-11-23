@@ -1,0 +1,81 @@
+name: Qualify Windows bundle
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/qualify-windows-bundle.yml'
+      - 'tools/stage-windows-bundle.ps1'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: qualify-windows-bundle-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 35
+    outputs:
+      sha256: ${{ steps.bundle.outputs.sha256 }}
+      source: ${{ steps.bundle.outputs.source }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec
+      - name: Stage pinned release build
+        id: bundle
+        shell: pwsh
+        run: |
+          $archive = Join-Path $env:RUNNER_TEMP 'git-asset-preflight.zip'
+          $head = git rev-parse HEAD
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          ./tools/stage-windows-bundle.ps1 -Commit $head `
+            -TargetDirectory (Join-Path $env:RUNNER_TEMP 'git-asset-build') `
+            -Stage (Join-Path $env:RUNNER_TEMP 'git-asset-stage') -Archive $archive
+          "sha256=$((Get-FileHash -LiteralPath $archive).Hash)" >> $env:GITHUB_OUTPUT
+          "source=$head" >> $env:GITHUB_OUTPUT
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: git-asset-windows-preflight
+          path: ${{ runner.temp }}/git-asset-preflight.zip
+          compression-level: 0
+          retention-days: 1
+          if-no-files-found: error
+
+  exercise:
+    needs: build
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          name: git-asset-windows-preflight
+          path: ${{ runner.temp }}/git-asset-download
+      - name: Verify and exercise the unpacked bundle
+        shell: pwsh
+        env:
+          EXPECTED_ARCHIVE: ${{ needs.build.outputs.sha256 }}
+          EXPECTED_SOURCE: ${{ needs.build.outputs.source }}
+        run: |
+          $archive = Join-Path $env:RUNNER_TEMP 'git-asset-download/git-asset-preflight.zip'
+          if ((Get-FileHash -LiteralPath $archive).Hash -ne $env:EXPECTED_ARCHIVE) { throw 'ZIP checksum mismatch.' }
+          $bundle = Join-Path $env:RUNNER_TEMP 'git-asset-unpacked'
+          Expand-Archive -LiteralPath $archive -DestinationPath $bundle
+          $manifest = Get-Content -LiteralPath (Join-Path $bundle 'preflight-manifest.json') -Raw | ConvertFrom-Json
+          if ($manifest.source_commit -ne $env:EXPECTED_SOURCE) { throw 'Source commit mismatch.' }
+          foreach ($entry in $manifest.files) {
+            $file = Join-Path $bundle $entry.path
+            if ((Get-Item -LiteralPath $file).Length -ne $entry.bytes -or (Get-FileHash -LiteralPath $file).Hash -ne $entry.sha256) {
+              throw "Staged file differs: $($entry.path)"
+            }
+          }
+          $git = (Get-Command git.exe).Source
+          $env:Path = @($bundle, (Split-Path $git), (Join-Path $env:SystemRoot 'System32'), $env:SystemRoot) -join ';'
+          if (Get-Command cargo.exe -ErrorAction SilentlyContinue) { throw 'Unexpected build tooling on PATH.' }
+          $sample = Join-Path $env:RUNNER_TEMP 'git-asset-synthetic-sample'
+          & $git asset sample rehearse-review $sample
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $check = & $git asset catalogue check (Join-Path $sample 'catalogue.json') | ConvertFrom-Json
+          if ($LASTEXITCODE -ne 0 -or $check.projects -ne 2 -or $check.payloads_opened -ne 0 -or !$check.read_only) {
+            throw 'Synthetic catalogue check failed.'
+          }
