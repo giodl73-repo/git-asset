@@ -145,7 +145,11 @@ working release. Unexpected index generations between rows stop with a stale hol
 Owner SDK update::initial prepares an absent-row insert from an exact protected
 publication and reopens it through CAS. Save both plans before apply. The focused
 Windows synthetic fixture passes unpublished refusal, insertion and original
-receipt recovery. Qualification logs are external initial-producer-*.
+receipt recovery. The expanded synthetic fixture publishes a second Object in
+the same pool, adds it against the first index Version, and verifies both exact
+rows in the current root plus the original historical root. It reads back the
+revised bytes. Qualification logs are external initial-producer-* and
+different-producer-*.
 
 Next: connect admission to the different-byte golden workflow, qualify retained
 control handoff and recover stale ordinary-index updates. Remaining full gates:

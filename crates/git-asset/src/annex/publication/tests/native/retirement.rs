@@ -557,4 +557,66 @@ fn initial_producer_registration_requires_publication_and_recovers_receipt() {
     assert_eq!(first.version, retry.version);
     assert_eq!(retry.current, Some(true));
     assert!(!retry.authorizes_eviction);
+
+    let bytes = b"revised owner asset";
+    let mut request = producer.request.clone();
+    request.operation = k("revised-owner-publication");
+    request.candidate.object = Object::from_bytes(bytes);
+    request.expected_revision = native.namespaces[0]
+        .source(&request.source)
+        .unwrap()
+        .unwrap()
+        .revision;
+    fs::write(
+        native
+            .root
+            .join("input/objects")
+            .join(request.candidate.object.sha256.as_str()),
+        bytes,
+    )
+    .unwrap();
+    let mut metadata =
+        MetadataStore::open(&native.root.join("metadata"), native.metadata.checkpoint()).unwrap();
+    let frozen = freeze(&request, &mut metadata, TreeLimits::default()).unwrap();
+    metadata.finish().unwrap();
+    native.metadata = metadata.finished_reader().unwrap();
+    native.plan = Plan::new(&native.profile, request, frozen, producer.admission.clone()).unwrap();
+    publish(&mut native);
+    let revised = native.plan.clone();
+    let plan = initial::prepare(
+        &mut index.target(),
+        Some(&first.version),
+        &revised,
+        &mut publisher,
+        &mut native.resources(),
+    )
+    .unwrap()
+    .unwrap();
+    let second = initial::apply(
+        &mut index.target(),
+        &plan,
+        &revised,
+        &mut publisher,
+        &mut native.resources(),
+        || Ok(()),
+    )
+    .unwrap();
+    use crate::annex::producer_index::Index;
+    for (root, expected) in [
+        (first.root, &producer),
+        (second.root.clone(), &producer),
+        (second.root, &revised),
+    ] {
+        let row = Index::from_root(root)
+            .get(
+                &expected.candidate().object,
+                index.target().nodes,
+                TreeLimits::default(),
+            )
+            .unwrap()
+            .0
+            .unwrap();
+        assert_eq!(&row.producer, expected);
+    }
+    assert_eq!(fs::read(native.output_path()).unwrap(), bytes);
 }

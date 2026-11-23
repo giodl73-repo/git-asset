@@ -267,3 +267,9 @@ receipts first, otherwise holds original protected bytes through index CAS.
 Exit is the original receipt or an explicit hold. L0 pins/diff, L1 locked and
 strict checks, L2 synthetic guarded publication and registration. No selection
 of creative assets, native import, deletion or control-retention grant.
+
+Different-byte registration fixture, input bff913f89dbaf409300f5336d23b99a4c9bb2597.
+Same controls and synthetic scope as initial owner registration. Verify a later
+protected publication adds its exact Object to the same index while retaining
+the earlier index root and producer row. L0 pins/diff, L1 focused/strict, L2 synthetic
+publication, replay and exact readback. Merge-driven placement is separate.
