@@ -479,7 +479,7 @@
   {"path":"docs/guides/BRANCHES.md","bytes":3338,"sha256":"15c764424e911a902f5dd234fe2b567aa0bd775dbf838c2b06259336e8813a11"},
   {"path":"docs/guides/BULK-RETIREMENT.md","bytes":5935,"sha256":"fc4e01077de230c20abb2f88a8df8450c5debf143ff200b8541c89a363d59594"},
   {"path":"docs/guides/BYTE-WORKTREE.md","bytes":3892,"sha256":"3d7c1c3a16c6334241c2b1ccb6ababeb02d632c6a4a41bde52df435290e727bd"},
-  {"path":"docs/guides/CATALOGUE-REVIEW.md","bytes":6520,"sha256":"cdee4f7ff9579dddfcd1ad182c034f1caecb6da862760bc76a4e1321305b4205"},
+  {"path":"docs/guides/CATALOGUE-REVIEW.md","bytes":7872,"sha256":"94eb25318add2c7c9ab8d751d7c08e4bf551132cb61fe8c36feaaa2c6898b9fe"},
   {"path":"docs/guides/GIT-LIFECYCLE.md","bytes":7695,"sha256":"b59e951313aa9d7dfed2297648622c24ef936f0bf10efa4611d9fa910c8e0b2d"},
   {"path":"docs/guides/GIT-TO-GIT-ASSET.md","bytes":12307,"sha256":"5b154090a9e146a02167bf9379fc3edcf11076d26fc79ebfaf86231a119e20c6"},
   {"path":"docs/guides/GRAPH-INSPECTION.md","bytes":7896,"sha256":"0bd6e9662e3fa705bbab60a034439554f60601c97a21a25f1123df4e41318ba3"},
