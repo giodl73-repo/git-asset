@@ -118,7 +118,9 @@ On Windows with provider-process support, invoke the fixed REEL command through
 `git asset catalogue demotion-run verify PROFILE REQUEST JOURNAL`. The private
 profile schema is `git-asset.reel-demotion-provider.experimental-1`. It pins
 `executable`, `executable_sha256`, `project_root`, `journal` and
-`request_sha256`. Use absolute paths in owner-controlled directories.
+`request_sha256`, plus `drive_report` and `drive_report_sha256`. Use absolute
+paths in owner-controlled directories. The launcher rechecks the prepared
+request against the pinned drive report before starting the provider.
 `allow_apply` defaults to false. An explicitly admitted `apply` uses the pinned
 request and its original apply journal. An uncertain outcome requires inspection
 of that journal before retry. The provider still performs live checks and writes

@@ -34,11 +34,15 @@ pub(super) fn compare(drive: &Path, policy: &Path, plan: &Path) -> Result<Value,
 
 pub(super) fn prepare(drive: &Path, request_path: &Path) -> Result<Value, String> {
     let (request, _) = read(request_path, 256 * 1024)?;
+    validate_prepared(drive, &request)?;
+    Ok(request)
+}
+
+pub(super) fn validate_prepared(drive: &Path, request: &Value) -> Result<(), String> {
     let policy = request["policy"].as_str().ok_or("Missing request policy")?;
     let plan = request["plan"].as_str().ok_or("Missing request plan")?;
     let matched = compare(drive, Path::new(policy), Path::new(plan))?;
-    check_request(&request, &matched)?;
-    Ok(request)
+    check_request(request, &matched)
 }
 
 fn check_request(request: &Value, matched: &Value) -> Result<(), String> {

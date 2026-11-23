@@ -21,6 +21,8 @@ struct Profile {
     project_root: PathBuf,
     journal: PathBuf,
     request_sha256: Digest,
+    drive_report: PathBuf,
+    drive_report_sha256: Digest,
     #[serde(default)]
     allow_apply: bool,
 }
@@ -85,9 +87,12 @@ pub(super) fn run(
     }
     let document: Value =
         serde_json::from_slice(&request_raw).map_err(|_| "Invalid provider request")?;
-    if document["schema"] != "reel.asset-demotion-request.v1" {
-        return Err("Unexpected provider request schema".into());
+    let (_drive_hold, drive_raw) = guarded_file(&profile.drive_report, 16 * 1024 * 1024)?;
+    if Digest::blob(&drive_raw) != profile.drive_report_sha256 {
+        return Err("Drive report pin mismatch".into());
     }
+    drop(drive_raw);
+    super::demotion::validate_prepared(&profile.drive_report, &document)?;
     let seconds = document["max_seconds"]
         .as_u64()
         .filter(|n| (1..=3600).contains(n))
