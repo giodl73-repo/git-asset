@@ -44,6 +44,27 @@ loss, remote provider, renderer, automatic activation or production migration.
   denied without qualified owner-side handoff. Preserve originals, active jobs,
   minima and pending outcomes. No private implementation enters public ancestry.
 
+## Existing-cache handoff requirements
+
+A handoff binds the old writer roster and its last admitted generation, the
+exact source and keeper copies, and the successor namespace roster. Capture
+active demands and unsettled operations under the old authority. Unknown
+actors, aliases that can bypass the identified authority, or a pending
+operation with an unknown outcome hold the transition.
+
+Drain admitted old operations and fence new ones before committing the successor
+generation. The owner must enforce the fence at the old actors' effect
+boundary, including when a paused process resumes or a service restarts. A
+metadata lock held only by Git-Asset cannot fence a raw legacy command.
+
+Verify the original keeper under an independent live read guard. Record the
+source incarnation and retained original provenance without issuing a
+publication completion for a copy that was never made by that publisher.
+Carry the handoff identity into preview and fresh execution. Under the execution
+fences, recheck the generation, newly active demand, custody and source
+incarnation before allowing removal. Recovery must reopen the original handoff
+and any original removal intent. An ambiguous retirement or handoff stays held.
+
 ## Exit and named proof families
 
 L0: controls/roles/format/source hash/link/budget checks; old identifiers frozen.
@@ -496,3 +517,14 @@ creative selection unchanged. L0 pins/docs/limits; L1 strict compilation/annex;
 L2 actual bounded publication/readback followed by original exit/cancel recovery.
 This does not prove legacy actor or epoch migration. No production behavior,
 new journal/cache engine or live enrollment is permitted.
+
+Issue77 alias test, input94865c0. Existing P2 WP-004/007, REQ-004/006/007,
+SPEC-004/007/008, IF-004/008, PKG-003/004. PROVIDER/INTEGRATION.
+L0 pins/diff, L1 locked tests and strict Rust checks, L2 Windows synthetic
+hard-link access in both directions. Keeper guard only, no source handoff.
+
+The Windows synthetic hard-link fixture permits renaming and unlinking the
+alternate name during the keeper hold. A write through the renamed link still
+refuses and the original keeper bytes remain readable. The guard covers the
+selected path and bytes. Alias rosters and legacy writer retirement require
+separate evidence.
