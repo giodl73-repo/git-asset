@@ -98,7 +98,7 @@ pub struct Query<'a> {
     pub offset: usize,
     pub sha: &'a str,
 }
-fn cache_id(key: &str) -> String {
+pub(super) fn cache_id(key: &str) -> String {
     Object::from_bytes(key.as_bytes())
         .sha256
         .as_str()

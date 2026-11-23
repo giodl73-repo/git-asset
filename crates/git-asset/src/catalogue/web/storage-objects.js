@@ -47,7 +47,7 @@ function cacheReviewControl(cache){
   try{
    const page=await api('/api/storage/eviction-preview',{cache,offset,basis});
    if(generation!==state.generation||!panel.isConnected)return;
-   results.replaceChildren(node('p','muted','Across enrolled projects. Reclaimable space is unknown.'));
+   results.replaceChildren(node('p','muted','Across enrolled projects. Reclaim is unknown. Older writers must be fenced before removal.'));
    const labels={keep:'Keep: current declared use',verify_candidate:'Check archive copy',unknown:'Unknown: keep for now'};
    for(const item of page.items){
     const review=item.eviction_review;

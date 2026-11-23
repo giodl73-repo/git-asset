@@ -289,7 +289,7 @@ impl Catalogue {
             }
             count += 1;
         }
-        let cache_rows:Vec<_>=caches.iter().filter(|(_,c)|domain.is_empty()||c.domain.as_deref()==Some(domain)).map(|(id,c)|json!({"id":id,"root":c.root,"resolved_root":c.resolved_root,"domain":c.domain,"enrolled_projects":c.projects,"observations":c.observations,"totals":by_cache.get(id).map(Totals::value)})).collect();
+        let cache_rows:Vec<_>=caches.iter().filter(|(_,c)|domain.is_empty()||c.domain.as_deref()==Some(domain)).map(|(id,c)|json!({"id":id,"review_cache":super::objects::cache_id(id),"root":c.root,"resolved_root":c.resolved_root,"domain":c.domain,"enrolled_projects":c.projects,"observations":c.observations,"totals":by_cache.get(id).map(Totals::value)})).collect();
         let drives:Vec<_>=self.storage_domains.iter().map(|d|{
             let capacity=if measure&&d.live_probe{fs2::total_space(&d.root).ok().zip(fs2::available_space(&d.root).ok())}else{None};
             json!({"id":d.id,"label":d.label,"root":d.root,"live_probe_allowed":d.live_probe,"capacity_measured":capacity.is_some(),"total":capacity.map(|v|v.0),"free":capacity.map(|v|v.1),"totals":domains.get(&d.id).map(Totals::value),"cache_count":caches.values().filter(|c|c.domain.as_deref()==Some(&d.id)).count()})

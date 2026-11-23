@@ -986,6 +986,11 @@ fn global_storage_counts_shared_cache_once_and_preserves_cross_project_reference
         .to_owned();
     c.observe_registered("beta", &beta_commit, "").unwrap();
     let all = c.global_storage("", "", true, 0).unwrap();
+    let cache = all["caches"][0]["review_cache"].as_str().unwrap();
+    assert_eq!(
+        c.cache_eviction_preview(cache, 0, "").unwrap()["source_cache"],
+        cache
+    );
     assert_eq!(all["summary"]["file_copies"], 1);
     assert_eq!(all["summary"]["unique_objects"], 1);
     assert_eq!(all["summary"]["recorded_file_bytes"], bytes.len());
