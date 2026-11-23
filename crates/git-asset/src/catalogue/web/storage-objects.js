@@ -57,6 +57,9 @@ function cacheReviewControl(cache){
     const entry=section(item.title);
     entry.append(node('strong','',labels[review.state]),node('small','mono',item.sha256),
       node('p','muted',bytes(item.bytes)+' content, '+item.binding_count+' registered bindings'));
+    const references=node('button','button secondary','Inspect references');
+    references.onclick=()=>openManagedObject(item,'References & versions','');
+    entry.append(references);
     if(review.state==='unknown'){
      if(!review.older_copy_proposed)entry.append(node('p','muted','No eligible older copy proposed by the recorded versions and policy.'));
      if(!review.other_copy_listed)entry.append(node('p','muted','No matching copy listed at another location.'));
