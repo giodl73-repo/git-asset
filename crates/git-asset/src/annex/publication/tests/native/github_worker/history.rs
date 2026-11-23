@@ -7,6 +7,7 @@ pub(super) fn exercise(
     f: &mut Fixture,
     project: &Path,
     signer: &github::fixture::Fixture,
+    indexed: bool,
 ) {
     let mut records = batch::pending_namespace(m);
     let mut metadata =
@@ -69,6 +70,23 @@ pub(super) fn exercise(
     .unwrap();
     let mut policy = worker.policy.clone();
     policy.actions.as_mut().unwrap().history = Some(profile.clone());
+    let mut indexed_target = None;
+    let mut actions = indexed.then(|| batch::pending_namespace_at(&f.root.join("archive-actions")));
+    if indexed {
+        let old = policy.producers.take().unwrap();
+        let mut retained = heads::register(m, old.source, "archive-retained").head;
+        let working = heads::register(f, old.destination, "archive-working").head;
+        retained.profile.scope.allow_store = true;
+        indexed_target = Some(Namespace::open(&retained.root, &retained.minimum).unwrap());
+        policy.producer_heads = Some(github::native::producers::Heads {
+            source: retained,
+            destination: working,
+        });
+        let admitted = policy.actions.as_mut().unwrap();
+        admitted.archive_index = true;
+        admitted.pending = Some(batch::pending_scope(f, actions.as_ref().unwrap()));
+        metadata = MetadataStore::open(&m.root.join("metadata"), m.metadata.checkpoint()).unwrap();
+    }
     let mut trust = worker.trust.clone();
     trust.placement_enrollment = policy.id().unwrap();
     let mut claims = signer.claims.clone();
@@ -109,6 +127,88 @@ pub(super) fn exercise(
         (path, offline)
     })
     .collect();
+    if indexed {
+        let mut execution = batch::configured(worker, &policy, &trust, &request);
+        let mut indexed = 0;
+        let mut held_missing = 0;
+        // One registered predecessor and one absent producer, independent of ordering.
+        for _ in 0..2 {
+            let r = execution
+                .reconcile_history(
+                    github::native::history::Pass {
+                        index: Some(github::native::history::indexing::Target {
+                            namespace: indexed_target.as_mut().unwrap(),
+                            actions: actions.as_mut().unwrap(),
+                        }),
+                        cursor: None,
+                        budget: &budget,
+                        records: &mut records,
+                        metadata: &mut metadata,
+                        apply: true,
+                    },
+                    || Ok(1000),
+                )
+                .unwrap();
+            let outcome = &r.outcomes[0];
+            let row = outcome.indexing.as_ref().unwrap();
+            if row.indexed == 1 {
+                indexed += 1;
+                assert!(row.saved.is_some());
+                assert!(outcome.release.is_some());
+                let saved = row.saved.as_ref().unwrap();
+                let scope = policy.actions.as_ref().unwrap().pending.as_ref().unwrap();
+                let loaded = crate::annex::pending::reopen(
+                    scope,
+                    saved,
+                    actions.as_mut().unwrap(),
+                    execution.metadata,
+                    &Fixture::limits(),
+                )
+                .unwrap();
+                let crate::annex::pending::Operation::ArchiveIndex(body) = &loaded.action.operation
+                else {
+                    panic!("wrong archive index body")
+                };
+                let config = f.root.join("archive-index-reopen.json");
+                fs::write(&config, serde_json::to_vec(&serde_json::json!({
+                    "scope":scope,"saved":saved,"namespace":f.root.join("archive-actions"),
+                    "minimum":actions.as_ref().unwrap().checkpoint(),
+                    "metadata":f.root.join("metadata"),"metadata_minimum":execution.metadata.checkpoint(),
+                    "plan":Digest::blob(&body.index.to_json().unwrap())
+                })).unwrap()).unwrap();
+                drop(loaded);
+                assert!(
+                    std::process::Command::new(std::env::current_exe().unwrap())
+                        .args([
+                            "--exact",
+                            "annex::publication::tests::native::pending::reopen_worker"
+                        ])
+                        .env("GIT_ASSET_PENDING_REOPEN_FIXTURE", config)
+                        .status()
+                        .unwrap()
+                        .success()
+                );
+            } else {
+                held_missing += 1;
+                assert_eq!(row.hold.as_ref().unwrap().code, "missing");
+                assert!(outcome.release.is_none());
+                assert!(outcome.saved.is_some());
+            }
+        }
+        assert_eq!(indexed, 1);
+        assert_eq!(held_missing, 1);
+        let state = execution
+            .namespace
+            .source(&execution.enrollment.source)
+            .unwrap()
+            .unwrap();
+        assert_eq!(state.current, before.current);
+        assert_eq!(state.predecessors.len(), 1);
+        for (path, offline) in configs {
+            fs::rename(offline, path).unwrap();
+        }
+        return;
+    }
     let checkpoint = records.checkpoint();
     let media_checkpoint = m.namespaces[0].checkpoint();
     let metadata_checkpoint = metadata.checkpoint();
@@ -126,6 +226,7 @@ pub(super) fn exercise(
         batch::configured(worker, &unsigned, &trust, &request)
             .reconcile_history(
                 github::native::history::Pass {
+                    index: None,
                     cursor: None,
                     budget: &budget,
                     records: &mut records,
@@ -169,6 +270,7 @@ pub(super) fn exercise(
         batch::configured(worker, &mismatched, &mismatched_trust, &mismatched_request)
             .reconcile_history(
                 github::native::history::Pass {
+                    index: None,
                     cursor: None,
                     budget: &budget,
                     records: &mut records,
@@ -191,6 +293,7 @@ pub(super) fn exercise(
     let preview = execution
         .reconcile_history(
             github::native::history::Pass {
+                index: None,
                 cursor: None,
                 budget: &budget,
                 records: &mut records,
@@ -223,6 +326,7 @@ pub(super) fn exercise(
         execution
             .reconcile_history(
                 github::native::history::Pass {
+                    index: None,
                     cursor: Some(&unknown),
                     budget: &budget,
                     records: &mut records,
@@ -237,6 +341,7 @@ pub(super) fn exercise(
     let first = execution
         .reconcile_history(
             github::native::history::Pass {
+                index: None,
                 cursor: None,
                 budget: &budget,
                 records: &mut records,
@@ -292,6 +397,7 @@ pub(super) fn exercise(
     let second = execution
         .reconcile_history(
             github::native::history::Pass {
+                index: None,
                 cursor: Some(cursor),
                 budget: &budget,
                 records: &mut records,
@@ -323,6 +429,7 @@ pub(super) fn exercise(
     let repeated = execution
         .reconcile_history(
             github::native::history::Pass {
+                index: None,
                 cursor: Some(cursor),
                 budget: &budget,
                 records: &mut records,
@@ -357,6 +464,7 @@ pub(super) fn exercise(
         execution
             .reconcile_history(
                 github::native::history::Pass {
+                    index: None,
                     cursor: Some(cursor),
                     budget: &budget,
                     records: &mut records,

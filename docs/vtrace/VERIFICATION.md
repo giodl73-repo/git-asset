@@ -979,3 +979,12 @@ old teaching/native/browser and hosted qualification remain distinct gates.
 EVID-145: copy focused/native/crash and strict Clippy pass; broad/hosted pending.
 
 EVID-146: four point-proof/fence fixtures pass; native P2 not implemented.
+
+Archive-index slice (input6503813): exact native ordinary/bare placement cycle,
+missing-target hold, preserved bytes and repeated stages pass. The additional
+inert missing-producer case and fresh-process ArchiveIndex reopen pass; current
+focused/strict/source results and final pins are external archive-index-*.
+Hosted current-head qualification remains separate.
+Final focused qualification:8 driver,8 interface,13 worker,2 pending and8 index
+tests pass, with strict workspace/all-feature/all-target Clippy, standalone
+annex-publish and fmt. Native preceded only additional inert fixture coverage.

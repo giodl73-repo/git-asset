@@ -71,6 +71,7 @@ impl State {
         if cycle {
             let actions = self.policy.actions.as_mut().unwrap();
             actions.orchestration = true;
+            actions.archive_index = true;
             actions.registration = true;
             actions.backup = true;
             actions.handoff = true;
@@ -104,6 +105,23 @@ impl State {
                 allow_publish: true,
                 allow_release: true,
             });
+        }
+        if cycle {
+            // A new committed definition shares bytes, but leaves an exact old root.
+            let project = f.root.join("restore-pass-project");
+            fs::rename(project.join("assets/next"), project.join("assets/released")).unwrap();
+            git(&project, &["add", "-A"]);
+            git(
+                &project,
+                &["commit", "-m", "release renamed synthetic asset"],
+            );
+            self.signer.commit = source::GitId::parse(
+                String::from_utf8(git(&project, &["rev-parse", "HEAD"]))
+                    .unwrap()
+                    .trim(),
+            )
+            .unwrap();
+            self.signer.claims["sha"] = serde_json::json!(self.signer.commit.as_str());
         }
         self.signer.trust.placement_enrollment = self.policy.id().unwrap();
         let scope = self
@@ -225,6 +243,42 @@ impl State {
                 stream_bytes: 16 * 1024 * 1024,
                 millis: 300000,
             };
+            let predecessors = worker
+                .namespace
+                .source(&worker.enrollment.source)
+                .unwrap()
+                .unwrap()
+                .predecessors;
+            assert!(!predecessors.is_empty());
+            // Missing index target must leave the archived working claim intact.
+            let held = worker
+                .reconcile_history(
+                    history::Pass {
+                        index: None,
+                        cursor: None,
+                        budget: &limits,
+                        records: history_records.as_mut().unwrap(),
+                        metadata: history_nodes.as_mut().unwrap(),
+                        apply: true,
+                    },
+                    || Ok(1000),
+                )
+                .unwrap();
+            assert!(held.outcomes.iter().any(|o| o.saved.is_some()));
+            assert!(
+                held.outcomes
+                    .iter()
+                    .all(|o| o.hold.is_some() && o.release.is_none())
+            );
+            assert_eq!(
+                worker
+                    .namespace
+                    .source(&worker.enrollment.source)
+                    .unwrap()
+                    .unwrap()
+                    .predecessors,
+                predecessors
+            );
             for round in 0..2 {
                 let checkpoint = f.ledger.checkpoint();
                 let report=pipeline::run(&binding,&limits,|stage,cursor,budget|{
@@ -233,7 +287,7 @@ impl State {
                         pipeline::Stage::Copy=>worker.reconcile_with_actions(cursor,budget,Some(&mut self.pending),&mut keeper.resources(),&mut f.resources(),||Ok(1000)).map(|r|serde_json::to_value(r).unwrap()),
                         pipeline::Stage::RegisterWorking=>worker.reconcile_registrations(registration::Pass {cursor,budget,pending:&mut self.pending,target:registration::Target {side:pending::RegistrationSide::Working,namespace:target.namespace,nodes:target.nodes},apply:true},&mut keeper.resources(),&mut f.resources(),||Ok(1000)).map(|r|serde_json::to_value(r).unwrap()),
                         pipeline::Stage::RegisterRetained=>worker.reconcile_registrations(registration::Pass {cursor,budget,pending:&mut self.pending,target:registration::Target {side:pending::RegistrationSide::Retained,namespace:&mut source_index,nodes:&mut source_nodes},apply:true},&mut keeper.resources(),&mut f.resources(),||Ok(1000)).map(|r|serde_json::to_value(r).unwrap()),
-                        pipeline::Stage::History=>worker.reconcile_history(history::Pass {cursor,budget,records:history_records.as_mut().unwrap(),metadata:history_nodes.as_mut().unwrap(),apply:true},||Ok(1000)).map(|r|serde_json::to_value(r).unwrap()),
+                        pipeline::Stage::History=>worker.reconcile_history(history::Pass {index:Some(history::indexing::Target {namespace:&mut source_index,actions:&mut self.pending}),cursor,budget,records:history_records.as_mut().unwrap(),metadata:history_nodes.as_mut().unwrap(),apply:true},||Ok(1000)).map(|r|serde_json::to_value(r).unwrap()),
                         pipeline::Stage::Eviction=>worker.reconcile_evictions(eviction::Pass {cursor,budget,pending:&mut self.pending,apply:true},&mut keeper.resources(),&mut f.resources(),||Ok(1000)).map(|r|serde_json::to_value(r).unwrap()),
                     };
                     Ok(value.unwrap_or_else(|error|serde_json::json!({"failure":crate::github::native::batch::Failure::from(&error)})))
@@ -249,6 +303,31 @@ impl State {
                     assert_eq!(checkpoint, f.ledger.checkpoint());
                 }
             }
+            assert!(
+                worker
+                    .namespace
+                    .source(&worker.enrollment.source)
+                    .unwrap()
+                    .unwrap()
+                    .predecessors
+                    .is_empty()
+            );
+            let retained_version = source_index
+                .source(&source_head.profile.scope.prefix)
+                .unwrap()
+                .unwrap()
+                .current
+                .unwrap();
+            let retained_row = Index::from_root(retained_version.selection.root)
+                .get(
+                    &old.candidate().object,
+                    history_nodes.as_mut().unwrap(),
+                    TreeLimits::default(),
+                )
+                .unwrap()
+                .0
+                .unwrap();
+            assert_eq!(retained_row.retained.unwrap().path.as_str(), "assets/next");
             let current = target
                 .namespace
                 .source(&working.profile.scope.prefix)

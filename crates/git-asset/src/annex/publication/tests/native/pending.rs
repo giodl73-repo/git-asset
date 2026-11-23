@@ -34,6 +34,9 @@ fn reopen_worker() {
         Operation::RestoreIndex(ref p) => {
             assert_eq!(Digest::blob(&p.index.to_json().unwrap()), data.plan)
         }
+        Operation::ArchiveIndex(ref p) => {
+            assert_eq!(Digest::blob(&p.index.to_json().unwrap()), data.plan)
+        }
         Operation::Registration(ref p) => {
             assert_eq!(Digest::blob(&p.index.to_json().unwrap()), data.plan)
         }

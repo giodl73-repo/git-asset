@@ -49,6 +49,8 @@ pub struct Actions {
     pub registration: bool,
     #[serde(skip_serializing_if = "disabled")]
     pub orchestration: bool,
+    #[serde(skip_serializing_if = "disabled")]
+    pub archive_index: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub pending: Option<crate::annex::pending::Scope>,
     #[serde(skip_serializing_if = "Option::is_none")]

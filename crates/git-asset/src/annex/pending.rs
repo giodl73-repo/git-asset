@@ -87,6 +87,7 @@ pub enum Phase {
     RestoreIndex,
     RegisterWorking,
     RegisterRetained,
+    ArchiveIndex,
 }
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -99,6 +100,14 @@ pub enum RegistrationSide {
 #[serde(deny_unknown_fields)]
 pub struct Registration {
     pub side: RegistrationSide,
+    pub index: super::producer_index::update::Plan,
+    pub record: super::producer_index::Record,
+}
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ArchiveIndex {
+    pub archive: Saved,
+    pub path: LogicalPath,
     pub index: super::producer_index::update::Plan,
     pub record: super::producer_index::Record,
 }
@@ -121,6 +130,7 @@ pub enum Operation {
     Restore(Box<RestoreAction>),
     RestoreIndex(Box<RestoreIndexAction>),
     Registration(Box<Registration>),
+    ArchiveIndex(Box<ArchiveIndex>),
 }
 #[derive(Clone, Debug)]
 pub struct Action {
@@ -139,6 +149,7 @@ impl Action {
                 RegistrationSide::Working => Phase::RegisterWorking,
                 RegistrationSide::Retained => Phase::RegisterRetained,
             },
+            Operation::ArchiveIndex(_) => Phase::ArchiveIndex,
         }
     }
     pub fn object(&self) -> &Object {
@@ -148,6 +159,14 @@ impl Action {
             Operation::Restore(p) => &p.restore.publication().candidate().object,
             Operation::RestoreIndex(p) => &p.original.restore.publication().candidate().object,
             Operation::Registration(p) => &p.record.object,
+            Operation::ArchiveIndex(p) => &p.record.object,
+        }
+    }
+    /// Metadata slot identity; legacy operations retain their original producer key.
+    pub fn slot(&self) -> Result<Digest> {
+        match &self.operation {
+            Operation::ArchiveIndex(p) => archive_slot(&self.working.id()?, &p.archive),
+            _ => self.working.id(),
         }
     }
     fn body(&self) -> Result<Vec<u8>> {
@@ -197,6 +216,15 @@ impl Action {
                 }
                 encode(p)
             }
+            Operation::ArchiveIndex(p) => {
+                p.index.check_record(&p.record)?;
+                if p.record.producer != self.retained
+                    || p.record.retained.as_ref().is_none_or(|s| s.path != p.path)
+                {
+                    return Err(Error::Integrity);
+                }
+                encode(p)
+            }
         }
     }
     fn restore_binding(&self, p: &RestoreAction) -> Result<()> {
@@ -212,6 +240,14 @@ impl Action {
         p.restore.to_json()?;
         Ok(())
     }
+}
+pub fn archive_slot(working: &Digest, archive: &Saved) -> Result<Digest> {
+    Ok(Digest::blob(&encode(&(
+        "git-asset.archive-index-slot.experimental-1",
+        working,
+        &archive.namespace,
+        &archive.source,
+    ))?))
 }
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -361,6 +397,9 @@ pub fn reopen(
         Phase::RegisterWorking | Phase::RegisterRetained => Operation::Registration(Box::new(
             serde_json::from_slice(&body).map_err(|_| Error::Integrity)?,
         )),
+        Phase::ArchiveIndex => Operation::ArchiveIndex(Box::new(
+            serde_json::from_slice(&body).map_err(|_| Error::Integrity)?,
+        )),
     };
     let action = Action {
         operation,
@@ -370,7 +409,7 @@ pub fn reopen(
     if action.phase() != env.phase
         || action.body()? != body
         || action.object() != &env.object
-        || action.working.id() != Ok(env.producer)
+        || action.slot() != Ok(env.producer)
     {
         return Err(Error::Integrity);
     }
@@ -453,7 +492,7 @@ pub fn save(
 ) -> Result<Saved> {
     limits.validate().map_err(|_| Error::Budget)?;
     scope.check(ns, nodes)?;
-    let producer = action.working.id()?;
+    let producer = action.slot()?;
     if let Some(old) = find(
         scope,
         action.phase(),
@@ -555,7 +594,7 @@ fn store(
     limits: &Limits,
 ) -> Result<Saved> {
     let StoreAction { action, expected } = input;
-    let producer = action.working.id()?;
+    let producer = action.slot()?;
     if crate::source::GitId::parse(commit).is_err() {
         return Err(Error::Invalid);
     }

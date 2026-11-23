@@ -142,3 +142,15 @@ worker/two pending/eight index regressions pass before fixture range-pattern-onl
 cleanup. Final strict/source qualification remains external ordered-placement-*.
 Ordered-pass completion is not storage convergence. Full HTTP, new-golden
 archive/index admission, scale/lifetime and owner gates remain OPEN.
+
+
+Exact archive membership -> Loaded::members -> history::indexing -> saved
+ArchiveIndex sole-row plan -> expected-baseline retained index CAS -> working
+release only after every distinct Object is indexed. Signed archive_index is
+required by ordered placement. Missing producers/targets and partial failures
+preserve the working predecessor and original handles; metadata is not custody.
+[Controls/review](../../specs/NATIVE-PRODUCER-ROOTS.md#archive-membership-indexing-before-working-release).
+Ordinary/bare synthetic renamed-definition (same bytes) native cycle/retry/read
+passes. Initial different-byte producer admission, control handoff, stale ordinary
+index recovery, HTTP, scale/lifetime and owner acceptance remain OPEN. Final
+focused/source checks and exact evidence pins are external archive-index-*.

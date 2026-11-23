@@ -791,6 +791,37 @@ impl Loaded {
             object: object.ok_or(Error::Missing)?,
         })
     }
+    /// Enumerate exact retained metadata members without observing payload bytes.
+    pub fn members(
+        &self,
+        p: &Profile,
+        nodes: &mut impl NodeStore,
+    ) -> Result<(BTreeMap<LogicalPath, Snapshot>, TreeMetrics)> {
+        self.plan.bound(p)?;
+        let (entries, metrics) = Tree::from_root(self.media.selection.root.clone())
+            .entries(nodes, tree_limits(&p.limits, &TreeMetrics::default())?)?;
+        let source = self.plan.select_media(p)?.source;
+        Ok((
+            entries
+                .into_iter()
+                .map(|(path, object)| {
+                    (
+                        path.clone(),
+                        Snapshot {
+                            namespace: p.target.namespace.clone(),
+                            source: source.clone(),
+                            owner: p.target.owner.clone(),
+                            version: self.media.clone(),
+                            place: p.target.place.clone(),
+                            path,
+                            object,
+                        },
+                    )
+                })
+                .collect(),
+            metrics,
+        ))
+    }
     /// Rebind only retained membership; preserve the exact original producer/control grant.
     pub fn producer_record(
         &self,

@@ -98,6 +98,7 @@ pub fn validate(policy: &Policy) -> Result<(), AdmissionError> {
         || !a.backup
         || !a.handoff
         || !a.registration
+        || !a.archive_index
         || a.pending.is_none()
         || !a
             .history

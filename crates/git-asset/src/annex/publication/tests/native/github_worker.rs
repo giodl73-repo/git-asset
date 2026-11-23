@@ -91,6 +91,7 @@ fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool, 
                 backup: true,
                 registration: false,
                 orchestration: false,
+                archive_index: false,
                 history: None,
                 pending: pending.as_ref().map(|ns| batch::pending_scope(&target, ns)),
                 handoff: true,
@@ -103,6 +104,7 @@ fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool, 
                 backup: false,
                 registration: false,
                 orchestration: false,
+                archive_index: false,
                 history: None,
                 pending: None,
             })
@@ -232,8 +234,15 @@ fn matrix(native: bool, demanded: bool, snapshot_mode: bool, action_mode: bool, 
             heads::exercise(&mut worker, &mut source, &mut target, &signer);
             return;
         }
-        if batch_mode == 6 {
-            history::exercise(&mut worker, &mut source, &mut target, &project, &signer);
+        if matches!(batch_mode, 6 | 9) {
+            history::exercise(
+                &mut worker,
+                &mut source,
+                &mut target,
+                &project,
+                &signer,
+                batch_mode == 9,
+            );
             return;
         }
         if batch_mode == 5 {
@@ -632,4 +641,9 @@ fn registered_backup_recipe_reopens_archive_after_both_ingests_retire() {
 #[ignore = "explicit native tools; owned synthetic pools only"]
 fn actual_registered_backup_recipe_reopens_archive_after_both_ingests_retire() {
     matrix(true, true, false, false, 8);
+}
+
+#[test]
+fn archived_members_index_before_release_and_missing_producers_hold() {
+    matrix(false, true, false, false, 9);
 }

@@ -215,3 +215,37 @@ availability and fresh survivor proof. Privacy uses only fixed enrolled location
 Adoption requires default-denied registration and explicit index write admission;
 source/profile/hash domains stay readable, with no new dependency or state engine.
 Six producer checklists do not constitute independent or human acceptance.
+
+## Archive membership indexing before working release
+
+Input6503813b12114758645abf13dcb98875382e1586; existing P3
+WP-004/005/006/007/009; REQ-001/002/004/006/007/008/010;
+SPEC-002/003/004/005/007/008/010/011; IF-002/004/005/008/010/012;
+PKG-001/003/004/006. RUST/PROVIDER/INTEGRATION. Allowed: exact archived
+member enumeration, retained-row upserts with saved originals, and opt-in trusted
+history/ordered-driver integration. No native import/deletion, new engine,
+control-grant invention or production enrollment. Entry: published retained tree,
+enrolled producer heads, existing pending namespace and explicit archive-index
+permission. Exit: all distinct archived Objects indexed before working release,
+or a hold preserving working/history/index originals. L0 pins/links/budget;
+L1 malformed bindings, refusals, retry, cumulative lookup and strict checks;
+L2 synthetic committed predecessors -> archive -> index -> working release/read.
+
+Enumerate the exact retained metadata tree once; no payload census. Deduplicate
+Objects deterministically. Each upsert preserves original native producer,
+completed recipe and control grant, changing only retained membership. Save the
+exact root plan before CAS. Slots bind archived source plus original working
+producer/Object, so another archive cannot replace an uncertain original. Old
+versions remain retained. Completed receipts never reselect old roots. Missing
+registration/control custody remains unknown; metadata indexing grants no native
+availability/eviction authority. Existing archive-root and per-row index limits,
+cumulative lookup limits and the outer deadline can hold partial work. Restart
+reuses current exact rows/saved originals; it does not trust a client prefix.
+
+Producer review (same author, not independent approval): identity binds exact
+archive source, member/Object and sole upsert while preserving original wire
+identities. Recovery saves before CAS and retains partial handles; completed
+historical receipts never reselect. Placement holds missing/unknown producers;
+custody/control are not fabricated by metadata. Privacy uses fixed enrolled
+namespaces and synthetic fixtures. Adoption keeps the flag default-denied/omitted
+and preserves previous policy hashes; P2-P6 acceptance gates remain OPEN.

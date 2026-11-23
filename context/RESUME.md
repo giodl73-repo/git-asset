@@ -7,7 +7,7 @@ renders or deployment on resume. Foundation qualification uses synthetic fixture
 
 Owned lane: feat/trusted-native-placement, draft PR74, based on
 feat/source-generation-use/PR73. Current refinement input is
-6da98cf7ecc381b0a057e3addb3771cbd31860ab. Derive later committed source and its
+6503813b12114758645abf13dcb98875382e1586. Derive later committed source and its
 hosted run; a prior pending run is not qualification of the next head.
 
 ## Series state
@@ -124,8 +124,23 @@ workspace Clippy, standalone annex-publish, fmt, L0/pins/branding/diff pass; exa
 source/log/test-binary pins stay external. Parent6da98cf passed hosted45084189472;
 derive the new head's own run.
 
-Next: new-golden/archive-index and initial owner producer admission
-and stale ordinary-index recovery; do not mistake recorded completion for custody. Remaining full gates:
+Current refinement: opt-in archive membership indexing before working release.
+Signed actions.archive_index connects exact retained-tree enumeration to original
+producer rows, saving ArchiveIndex root plans before CAS. Only retained membership
+changes; no completion/control/byte custody is invented. Missing target/producer,
+stale originals, denied admission and budgets hold working predecessors. Existing
+policy hashes stay unchanged when disabled. Ordered placement requires the flag.
+Qualification logs/pins are external archive-index-*; derive final source/CI.
+Eight driver/eight interface/thirteen worker/two pending/eight index tests pass,
+including missing-producer holds and cold ArchiveIndex reopen. Strict workspace
+all-feature/all-target Clippy, standalone annex-publish and fmt pass. Final
+source pins/L0/branding/diff remain recorded separately; parent6503813 passed
+hosted45087332687. A new head requires its own hosted qualification.
+Ordinary/bare native renamed-definition (shared bytes) placement/retry/read passes.
+It does not qualify initial different-byte producer admission or control handoff.
+
+Next: initial owner producer admission, retained control handoff and stale
+ordinary-index recovery; do not mistake recorded completion for custody. Remaining full gates:
 owner publication/archival orchestration, unexplained-loss/deprecated backup
 repair, full HTTP/account/TLS, measured workload/journal lifetime, P2 mixed-authority
 handoff, P4 consumer acceptance, P5 RC and P6 private owner cutover. No final

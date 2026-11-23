@@ -5,12 +5,14 @@ use git_asset_core::identity;
 use git_asset_store::{placement::Cursor, source_claims::Version};
 use std::time::{Duration, Instant};
 
+pub mod indexing;
 pub struct Pass<'a> {
     pub cursor: Option<&'a Cursor>,
     pub budget: &'a super::super::placement::Budget,
     pub records: &'a mut Namespace,
     pub metadata: &'a mut MetadataStore,
     pub apply: bool,
+    pub index: Option<indexing::Target<'a>>,
 }
 #[derive(Serialize)]
 pub struct Outcome {
@@ -19,6 +21,7 @@ pub struct Outcome {
     pub plan: Option<Digest>,
     pub saved: Option<Saved>,
     pub release: Option<archive::Report>,
+    pub indexing: Option<indexing::Report>,
     pub state: &'static str,
     pub hold: Option<batch::Failure>,
 }
@@ -68,7 +71,7 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
     }
     pub fn reconcile_history(
         &mut self,
-        pass: Pass<'_>,
+        mut pass: Pass<'_>,
         mut now: impl FnMut() -> Result<u64, AdmissionError>,
     ) -> Result<Report, Error> {
         pass.budget.validate().map_err(Error::Admission)?;
@@ -203,6 +206,7 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
                 plan: None,
                 saved: None,
                 release: None,
+                indexing: None,
                 state: "held",
                 hold: None,
             };
@@ -284,6 +288,33 @@ impl<R: CommittedSource + ?Sized> Execution<'_, R> {
                     return Err(e);
                 }
                 outcome.state = "archived";
+                if self
+                    .policy
+                    .actions
+                    .as_ref()
+                    .is_some_and(|a| a.archive_index)
+                {
+                    let target = pass.index.as_mut().ok_or(publication::Error::Unsupported)?;
+                    let indexed = self.index_archive(
+                        indexing::Pass {
+                            profile: &p,
+                            archive: &loaded,
+                            namespace: target.namespace,
+                            actions: target.actions,
+                            nodes: pass.metadata,
+                            observer: &mut observer,
+                            current: &current,
+                            started: start,
+                            budget: pass.budget,
+                        },
+                        &mut now,
+                    );
+                    outcome.hold = indexed.hold.clone();
+                    outcome.indexing = Some(indexed);
+                    if outcome.hold.is_some() {
+                        return Ok(());
+                    }
+                }
                 if p.allow_release {
                     let mut read = pass
                         .metadata

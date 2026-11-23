@@ -250,7 +250,7 @@ adoption stay separate from synthetic component qualification.
 ## Run bounded ordered placement
 
 Use placement_apply only after individual phase previews and explicit admission
-of actions.orchestration plus every stage's existing permissions. Both producer
+of actions.orchestration and actions.archive_index plus every stage's permissions. Both producer
 heads must admit writes; pending/history namespaces, history publish/release,
 copy/backup/handoff, registration, reacquisition and eviction must already be
 enrolled. Missing prerequisites refuse before execution. No service is installed.
@@ -276,3 +276,25 @@ never asserts whole-storage convergence, independent hardware custody, every
 project's readiness, or permission to retire caller scratch. storage_converged
 stays unknown. Full HTTP/account/TLS, new-golden/archive-index orchestration,
 stale ordinary-index replan, scale/lifetime and owner acceptance remain OPEN.
+
+## Index archived members before working release
+
+Enable signed actions.archive_index for history_apply; placement_apply requires
+it. Supply the existing retained producer namespace and native pending namespace
+from the fixed private profile. The SDK surface is history::Pass.index with
+history::indexing::Target; no event-supplied records or provider paths are accepted.
+
+After publishing the exact archive tree, the worker enumerates metadata members
+once, deduplicates Objects, and changes only each registered retained membership.
+Original producer, completed publication and control grant remain unchanged.
+ArchiveIndex originals are saved before expected-baseline index CAS. Missing
+producers, denied writes, stale originals and budget failures preserve the working
+predecessor; only a fully indexed root reaches working release. Retry reuses exact
+current rows and saved originals without a new native import or implicit replan.
+Bounded indexing metrics, last Saved/receipt and explicit holds accompany history
+outcomes. This is metadata linkage, not native availability or eviction authority.
+
+Synthetic qualification includes missing-target holds, a committed renamed
+same-byte definition, ordinary/bare placement retry and surviving-byte reopen.
+Different-byte initial producer admission, retained control handoff, stale ordinary
+index recovery, full HTTP, scale/lifetime and owner acceptance remain separate.

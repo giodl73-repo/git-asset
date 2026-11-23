@@ -228,6 +228,34 @@ fn dispatch_storage(
             &storage.source.metadata_minimum,
         )
         .map_err(|_| github::Error::Unavailable)?;
+        let archive_index = storage
+            .policy
+            .actions
+            .as_ref()
+            .is_some_and(|a| a.archive_index);
+        let mut index_namespace = if archive_index {
+            let head = &storage
+                .policy
+                .producer_heads
+                .as_ref()
+                .ok_or(github::Error::Trust)?
+                .source;
+            Some(
+                Namespace::open(&head.root, &head.minimum)
+                    .map_err(|_| github::Error::Unavailable)?,
+            )
+        } else {
+            None
+        };
+        let mut action_namespace = if archive_index {
+            let pending = storage.pending.as_ref().ok_or(github::Error::Trust)?;
+            Some(
+                Namespace::open(&pending.root, &pending.minimum)
+                    .map_err(|_| github::Error::Unavailable)?,
+            )
+        } else {
+            None
+        };
         let mut namespace = Namespace::open(&profile.namespace.root, &profile.namespace.minimum)
             .map_err(|_| github::Error::Unavailable)?;
         let mut metadata = MetadataStore::open(&profile.metadata_root, &profile.metadata_minimum)
@@ -248,6 +276,12 @@ fn dispatch_storage(
         }
         .reconcile_history(
             native::history::Pass {
+                index: match (index_namespace.as_mut(), action_namespace.as_mut()) {
+                    (Some(namespace), Some(actions)) => {
+                        Some(native::history::indexing::Target { namespace, actions })
+                    }
+                    _ => None,
+                },
                 cursor: cursor.as_ref(),
                 budget,
                 records: &mut records,

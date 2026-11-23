@@ -139,6 +139,7 @@ impl State {
                 backup: false,
                 registration: false,
                 orchestration: false,
+                archive_index: false,
                 history: None,
                 pending: Some(pending_scope),
             }),
