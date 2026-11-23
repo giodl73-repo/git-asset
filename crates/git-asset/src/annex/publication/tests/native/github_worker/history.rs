@@ -78,7 +78,49 @@ pub(super) fn exercise(
     if indexed {
         let old = policy.producers.take().unwrap();
         let mut retained = heads::register(m, old.source, "archive-retained").head;
-        let working = heads::register(f, old.destination, "archive-working").head;
+        let mut working = heads::register(f, old.destination, "archive-working").head;
+        working.profile.scope.allow_store = true;
+        let golden = publish_golden(f);
+        let mut ns = Namespace::open(&working.root, &working.minimum).unwrap();
+        let mut nodes =
+            MetadataStore::open(&f.root.join("metadata"), f.metadata.checkpoint()).unwrap();
+        let baseline = ns
+            .source(&working.profile.scope.prefix)
+            .unwrap()
+            .unwrap()
+            .current;
+        use crate::annex::producer_index::update::initial;
+        let mut target = initial::Target {
+            profile: &working.profile,
+            namespace: &mut ns,
+            nodes: &mut nodes,
+        };
+        let mut publisher = f.publisher();
+        let plan = initial::prepare(
+            &mut target,
+            baseline.as_ref(),
+            &golden,
+            &mut publisher,
+            &mut f.resources(),
+        )
+        .unwrap()
+        .unwrap();
+        let plan = crate::annex::producer_index::update::Plan::from_json(&plan.to_json().unwrap())
+            .unwrap();
+        let receipt = initial::apply(
+            &mut target,
+            &plan,
+            &golden,
+            &mut publisher,
+            &mut f.resources(),
+            || Ok(()),
+        )
+        .unwrap();
+        assert_eq!(receipt.current, Some(true));
+        let mut read = publisher.reopen(&golden, &mut f.resources()).unwrap();
+        let mut bytes = Vec::new();
+        read.read_to_end(&mut bytes).unwrap();
+        assert_eq!(bytes, b"synthetic version 2");
         retained.profile.scope.allow_store = true;
         indexed_target = Some(Namespace::open(&retained.root, &retained.minimum).unwrap());
         policy.producer_heads = Some(github::native::producers::Heads {
@@ -514,4 +556,62 @@ pub(super) fn exercise(
         assert!(!path.exists());
         fs::rename(offline, path).unwrap();
     }
+}
+
+fn publish_golden(f: &mut Fixture) -> Plan {
+    use crate::annex::control;
+    let bytes = b"synthetic version 2";
+    let mut request = f.plan.request.clone();
+    request.operation = k("publish-golden");
+    request.expected_revision = f.namespaces[0]
+        .source(&request.source)
+        .unwrap()
+        .unwrap()
+        .revision;
+    request.candidate.object = Object::from_bytes(bytes);
+    fs::write(
+        f.root
+            .join("input/objects")
+            .join(request.candidate.object.sha256.as_str()),
+        bytes,
+    )
+    .unwrap();
+    let mut nodes = MetadataStore::open(&f.root.join("metadata"), f.metadata.checkpoint()).unwrap();
+    let selection = freeze(&request, &mut nodes, TreeLimits::default()).unwrap();
+    nodes.finish().unwrap();
+    f.metadata = nodes.finished_reader().unwrap();
+    let profile = f.control_profile.as_ref().unwrap();
+    let store = LocalStore::open(&profile.root).unwrap();
+    let mut ledger = CapacityLedger::open(&profile.ledger, &profile.minimum).unwrap();
+    let control_request =
+        control::initial_request(&request.candidate.object, profile.owner.clone()).unwrap();
+    let publication = git_asset_store::accounted::plan_bound(
+        &store,
+        &control_request,
+        control::writer_context(&f.profile, &request).unwrap(),
+    )
+    .unwrap();
+    let job = f.plan.control.as_ref().unwrap().plan.job.clone();
+    let document = control::document(&request.candidate.object).unwrap();
+    git_asset_store::accounted::publish_accounted(
+        &mut ledger,
+        &store,
+        &job,
+        &publication,
+        &mut Cursor::new(document),
+    )
+    .unwrap();
+    let golden = Plan::controlled(
+        &f.profile,
+        request,
+        selection,
+        f.plan.admission.clone(),
+        profile,
+        control::Plan { publication, job },
+    )
+    .unwrap();
+    let old = std::mem::replace(&mut f.plan, golden.clone());
+    retirement::publish(f);
+    f.plan = old;
+    golden
 }

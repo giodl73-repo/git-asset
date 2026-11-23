@@ -283,3 +283,8 @@ Distinct Git selection fixture, input b0418b0. Existing archive-index controls
 apply. With distinct later Git Objects, recover the registered predecessor from
 the retained pool while the working repository is offline. Missing producers
 still hold. L0 pins/diff, L1 focused/strict, L2 synthetic native historical read.
+
+Golden publication fixture, input60b3a5f. Existing owner/archival controls and
+synthetic scope apply. Publish distinct new bytes in the working pool, register
+against its enrolled index, select that Object through Git, and verify both the
+working golden bytes and the separate historical retained read. L0/L1/L2 as above.
