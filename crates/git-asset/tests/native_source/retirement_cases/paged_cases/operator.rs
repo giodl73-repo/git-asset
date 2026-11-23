@@ -37,7 +37,14 @@ fn native_cli_selection_reaches_storage_operator_and_preserves_shared_bytes() {
     let storage =
         std::env::var_os("GIT_ASSET_PAGED_CLI").expect("explicit fresh storage executable");
     let native_cli = OsStr::new(env!("CARGO_BIN_EXE_git-asset-retirement"));
-    let f = Setup::new(17);
+    // The fixture recipe converts six ASCII sample values into two RGB pixels.
+    fn render(samples: &[u8]) -> Vec<u8> {
+        assert_eq!(samples.len(), 6);
+        [b"P6\n2 1\n255\n".as_slice(), samples].concat()
+    }
+    let rendered = render(b"shared");
+    let render_object = Object::from_bytes(&rendered);
+    let f = Setup::from_fixture(17, fixture_with_output(&rendered));
     let root = f.temp.path();
     let mut native_profile = json!({"schema":"tig.native-paged-profile.design-1",
         "enrollment":f.enrollment,"allow_stage":true,
@@ -125,11 +132,14 @@ fn native_cli_selection_reaches_storage_operator_and_preserves_shared_bytes() {
         .reference()
         .clone();
     let mut copies = Vec::new();
-    for name in ["shared", "unique"] {
+    for (name, bytes) in [
+        ("shared", b"shared".as_slice()),
+        ("render", rendered.as_slice()),
+    ] {
         let publication = Request {
             operation: key(&format!("publish-{name}")),
             owner: key("owner"),
-            object: Object::from_bytes(name.as_bytes()),
+            object: Object::from_bytes(bytes),
             required: AckLevel::ProcessRestart,
         };
         let plan = accounted::plan(&store, &publication).unwrap();
@@ -138,7 +148,7 @@ fn native_cli_selection_reaches_storage_operator_and_preserves_shared_bytes() {
             &store,
             &job,
             &plan,
-            &mut std::io::Cursor::new(name.as_bytes()),
+            &mut std::io::Cursor::new(bytes),
         )
         .unwrap();
         let grant = retention::plan(
@@ -246,7 +256,7 @@ fn native_cli_selection_reaches_storage_operator_and_preserves_shared_bytes() {
     let first = invoke(&storage, root, &["paged", "apply"], &profile, decision);
     assert_eq!(first["phase"], "intent");
     assert_eq!(first["completed_pages"], 8);
-    assert!(store.read_object(&Object::from_bytes(b"unique")).is_ok());
+    assert!(store.read_object(&render_object).is_ok());
     let mut done = first;
     for _ in 0..32 {
         done = invoke(&storage, root, &["paged", "resume"], &profile, decision);
@@ -258,11 +268,14 @@ fn native_cli_selection_reaches_storage_operator_and_preserves_shared_bytes() {
     assert!(done["completed_pages"].as_u64().unwrap() > 16);
     assert_eq!(done["historical_deleted_actions"], 1);
     assert!(matches!(
-        store.read_object(&Object::from_bytes(b"unique")),
+        store.read_object(&render_object),
         Err(git_asset_store::Error::AuthorizedAbsence)
     ));
     assert_eq!(done["effects"][0]["receipt"]["observed"], "absent");
-    assert_eq!(done["effects"][0]["receipt"]["logical_bytes_removed"], 6);
+    assert_eq!(
+        done["effects"][0]["receipt"]["logical_bytes_removed"],
+        render_object.bytes
+    );
     let mut bytes = Vec::new();
     store
         .read_object(&Object::from_bytes(b"shared"))
@@ -270,6 +283,7 @@ fn native_cli_selection_reaches_storage_operator_and_preserves_shared_bytes() {
         .read_to_end(&mut bytes)
         .unwrap();
     assert_eq!(bytes, b"shared");
+    assert_eq!(Object::from_bytes(&render(&bytes)), render_object);
     let current = Namespace::open(&root.join("namespace"), &before).unwrap();
     assert_ne!(current.checkpoint(), before);
     let status = invoke(&storage, root, &["paged", "status"], &profile, decision);

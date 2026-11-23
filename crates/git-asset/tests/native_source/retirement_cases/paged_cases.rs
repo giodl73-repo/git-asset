@@ -118,7 +118,9 @@ struct Setup {
 }
 impl Setup {
     fn new(count: usize) -> Self {
-        let (f, mut snapshot) = fixture();
+        Self::from_fixture(count, fixture())
+    }
+    fn from_fixture(count: usize, (f, mut snapshot): (Fixture, AssetSnapshot)) -> Self {
         let temp = tempfile::tempdir().unwrap();
         let mut metadata = metadata(&temp.path().join("metadata"));
         let names = roots(&snapshot);
