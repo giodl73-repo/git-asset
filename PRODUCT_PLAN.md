@@ -38,6 +38,13 @@ merge-driven placement, eviction/restore; per-project acceptance and rollback.
 | **P6: project cutover and official use** / private projects | After P5. Reuse one procedure for every project; enrollments/evidence remain private. | Current/historical coverage, large-binary restore, jobs, independent backups and reversible bindings. Preserve legacy names/obligations; mixed authorities require P2's qualified handoff or stay isolated/non-pruning. Owner accepts each project; unknown entries stay unadopted. Promote the same accepted RC bytes to official release after gates pass. |
 
 Dependencies: PR70 -> P1 -> P2 -> P3; PR70 -> P4; P3/P4 -> P5 -> P6.
+
+The separate [issue75 tool/preview sequence](docs/TOOL-PREVIEW-HANDOFF-PLAN.md)
+maps U4's proposed registry, exact launch, guarded media, candidate/observation
+bridge and browser acceptance. REEL owns its production board and can ship a
+standalone read-only view while U4 progresses. This extension does not turn
+storage replacement or production profile adoption into a visual-board gate,
+and does not silently expand the P1-P6 release acceptance scope.
 P6 is a project-owned change set. Freeze candidate bytes before any production
 switch; final release promotes those bytes. Linux CI does not qualify native
 Windows APIs. Close implementation, verification, validation, trace and review
