@@ -160,44 +160,6 @@ pub fn run(config: &Config, project: &str, root: &Path) -> Result<Value> {
     )
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn enrolled_walk_counts_two_names_as_one_allocation() {
-        let test = tempfile::tempdir().unwrap();
-        let root = test.path().join("store");
-        fs::create_dir(&root).unwrap();
-        fs::write(root.join("original"), b"synthetic allocated bytes").unwrap();
-        fs::hard_link(root.join("original"), root.join("alias")).unwrap();
-        let profile = test.path().join("profile.json");
-        fs::write(&profile, serde_json::to_vec(&json!({
-            "schema":"tig.asset-resolver-profile.experimental-1",
-            "git_executable":"unused","repository":"unused","commit":"unused",
-            "records":[],"definitions":[],
-            "byte_source":{"places":[{"root":root,"layout":"flat"}],"required":"cooperative-immutable"}
-        })).unwrap()).unwrap();
-        let config: Config = serde_json::from_value(json!({
-            "schema":"tig.catalogue-enrollment.experimental-1",
-            "projects":[{"id":"sample","label":"Synthetic store","profile":profile,
-                "storage":{"schema":"tig.catalogue-storage.experimental-1","encoding":"json","max_decoded_bytes":1024,
-                    "places":[{"label":"Working","place_index":0,"live_probe":true}]}}]
-        })).unwrap();
-        let measured = run(&config, "sample", &root).unwrap();
-        assert_eq!(measured["all_entries_accounted_for"], true);
-        assert_eq!(measured["counts"]["files"], 2);
-        assert_eq!(measured["counts"]["linked_paths"], 2);
-        assert_eq!(measured["counts"]["unique_files"], 1);
-        assert_eq!(
-            measured["counts"]["linked_file_allocated_bytes"],
-            measured["counts"]["unique_allocated_bytes"]
-        );
-        assert_eq!(measured["payloads_read"], 0);
-        assert_eq!(measured["removal_authorized"], false);
-    }
-}
-
 /// Named bindings in one exact snapshot. Allocation is assigned once per file.
 pub fn selection_usage(config: &Config, project: &str, commit: &str, root: &Path) -> Result<Value> {
     let enrollment = config
@@ -341,4 +303,42 @@ pub fn selection_usage(config: &Config, project: &str, commit: &str, root: &Path
         "cache_root":root,"classes":classes,"named_refresh":refresh,"payloads_read":0,
         "complete_consumer_coverage":false,"unused_bytes":null,"removal_authorized":false}),
     )
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn enrolled_walk_counts_two_names_as_one_allocation() {
+        let test = tempfile::tempdir().unwrap();
+        let root = test.path().join("store");
+        fs::create_dir(&root).unwrap();
+        fs::write(root.join("original"), b"synthetic allocated bytes").unwrap();
+        fs::hard_link(root.join("original"), root.join("alias")).unwrap();
+        let profile = test.path().join("profile.json");
+        fs::write(&profile, serde_json::to_vec(&json!({
+            "schema":"tig.asset-resolver-profile.experimental-1",
+            "git_executable":"unused","repository":"unused","commit":"unused",
+            "records":[],"definitions":[],
+            "byte_source":{"places":[{"root":root,"layout":"flat"}],"required":"cooperative-immutable"}
+        })).unwrap()).unwrap();
+        let config: Config = serde_json::from_value(json!({
+            "schema":"tig.catalogue-enrollment.experimental-1",
+            "projects":[{"id":"sample","label":"Synthetic store","profile":profile,
+                "storage":{"schema":"tig.catalogue-storage.experimental-1","encoding":"json","max_decoded_bytes":1024,
+                    "places":[{"label":"Working","place_index":0,"live_probe":true}]}}]
+        })).unwrap();
+        let measured = run(&config, "sample", &root).unwrap();
+        assert_eq!(measured["all_entries_accounted_for"], true);
+        assert_eq!(measured["counts"]["files"], 2);
+        assert_eq!(measured["counts"]["linked_paths"], 2);
+        assert_eq!(measured["counts"]["unique_files"], 1);
+        assert_eq!(
+            measured["counts"]["linked_file_allocated_bytes"],
+            measured["counts"]["unique_allocated_bytes"]
+        );
+        assert_eq!(measured["payloads_read"], 0);
+        assert_eq!(measured["removal_authorized"], false);
+    }
 }

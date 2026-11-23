@@ -138,7 +138,7 @@
   {"path":"crates/git-asset/src/catalogue/shared.rs","bytes":7822,"sha256":"4e2d3fcd0b9393728a07c825d1082cbb0f45226f2222c4a597f2c194f931b5d8"},
   {"path":"crates/git-asset/src/catalogue/storage.rs","bytes":24515,"sha256":"1fde0d41374ec257a1c7a251790db246f33c714b79f387fde01837e378dee0ff"},
   {"path":"crates/git-asset/src/catalogue/storage/global.rs","bytes":14793,"sha256":"c7b12446fba3e23948e64790065f5e70f8d71b05984a6d9fa82dfc1d8cc71842"},
-  {"path":"crates/git-asset/src/catalogue/storage/inventory.rs","bytes":13497,"sha256":"bb55f4dd76443567afff6186083a5948a916827a798b06feff5e2054ad702c44"},
+  {"path":"crates/git-asset/src/catalogue/storage/inventory.rs","bytes":13497,"sha256":"adada42877c37ea60c84c2890118bc735457eb24a10c2a36e67cee9dd6c090f3"},
   {"path":"crates/git-asset/src/catalogue/storage/nested.rs","bytes":34278,"sha256":"42b164e5a691a988fce06f48b67bdedd0e7ac96b703ff924977657e96fd36662"},
   {"path":"crates/git-asset/src/catalogue/storage/objects.rs","bytes":46221,"sha256":"c36ad64d06746a8b0565b36c1a4d51ffaa08d8be33f5d96c3079e2209257d3f0"},
   {"path":"crates/git-asset/src/catalogue/storage/probe.rs","bytes":13985,"sha256":"48c74f2c9fa3771dc63eb8e06b854f3bc7425d5969112d148904c20308398bc8"},
