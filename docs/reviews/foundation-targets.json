@@ -69,7 +69,7 @@
   {"path":"crates/git-asset/src/annex/publication/tests.rs","bytes":11480,"sha256":"fe163ca70eb55bc7efae9791ad9ad289984493ef0b047dec8a3f21d432b59f38"},
   {"path":"crates/git-asset/src/annex/publication/tests/native.rs","bytes":40008,"sha256":"3be1a0db38ba42d093eef0146077afd271cef2f6e75b09e70b23af9585a08f0b"},
   {"path":"crates/git-asset/src/annex/publication/tests/native/control.rs","bytes":23493,"sha256":"c43a42ea535a5da5d477e9ceed2359af909913006762c932fd869e13a819cb01"},
-  {"path":"crates/git-asset/src/annex/publication/tests/native/control/eviction.rs","bytes":28889,"sha256":"9fd0583fb6dc9c3122243eb101f1a0f679e0ae6c25f07cc59ca1703738624f52"},
+  {"path":"crates/git-asset/src/annex/publication/tests/native/control/eviction.rs","bytes":29926,"sha256":"9d3e40266704b43d4bd7a0cc32b36f2899b932b41ebd67277c788a5543f1e37a"},
   {"path":"crates/git-asset/src/annex/publication/tests/native/control/eviction/cli.rs","bytes":7105,"sha256":"643e1fd4eb071aee3c64742291c22c89046208600f3a9f205d832252c5c4092c"},
   {"path":"crates/git-asset/src/annex/publication/tests/native/control/eviction/pipeline.rs","bytes":2180,"sha256":"043f4ce7bbe7e56bbf6d008065942ecd1d1eadc78c902ae19eae33a542b29aa4"},
   {"path":"crates/git-asset/src/annex/publication/tests/native/control/eviction/process.rs","bytes":3604,"sha256":"98ef3b81a044b38c80c270a572d128d8979b52748a840aab6ae03dee8bc8cba4"},
