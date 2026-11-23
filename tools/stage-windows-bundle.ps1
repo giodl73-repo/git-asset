@@ -99,28 +99,34 @@ $manifest = @($files | Sort-Object | ForEach-Object {
 if ($Archive) {
     $entries = @($files) + 'preflight-manifest.json'
     $paths = @($entries | ForEach-Object { Join-Path $Stage $_ })
-    Compress-Archive -LiteralPath $paths -DestinationPath $Archive
-    $zip = [IO.Compression.ZipFile]::OpenRead($Archive)
+    $pending = Join-Path (Split-Path -Parent $Archive) ("git-asset-" + [Guid]::NewGuid() + ".partial.zip")
     try {
-        if ($zip.Entries.Count -ne $entries.Count) { throw 'ZIP entry count differs from staging.' }
-        foreach ($name in $entries) {
-            $entry = $zip.GetEntry($name)
-            $staged = Join-Path $Stage $name
-            if (!$entry -or $entry.Length -ne (Get-Item -LiteralPath $staged).Length) {
-                throw "ZIP entry differs in length: $name"
-            }
-            $stream = $entry.Open()
-            try {
-                $actual = [Convert]::ToHexString([Security.Cryptography.SHA256]::HashData($stream))
-                if ($actual -ne (Get-FileHash -LiteralPath $staged).Hash) {
-                    throw "ZIP entry differs in content: $name"
+        Compress-Archive -LiteralPath $paths -DestinationPath $pending
+        $zip = [IO.Compression.ZipFile]::OpenRead($pending)
+        try {
+            if ($zip.Entries.Count -ne $entries.Count) { throw 'ZIP entry count differs from staging.' }
+            foreach ($name in $entries) {
+                $entry = $zip.GetEntry($name)
+                $staged = Join-Path $Stage $name
+                if (!$entry -or $entry.Length -ne (Get-Item -LiteralPath $staged).Length) {
+                    throw "ZIP entry differs in length: $name"
                 }
-            } finally {
-                $stream.Dispose()
+                $stream = $entry.Open()
+                try {
+                    $actual = [Convert]::ToHexString([Security.Cryptography.SHA256]::HashData($stream))
+                    if ($actual -ne (Get-FileHash -LiteralPath $staged).Hash) {
+                        throw "ZIP entry differs in content: $name"
+                    }
+                } finally {
+                    $stream.Dispose()
+                }
             }
+        } finally {
+            $zip.Dispose()
         }
+        [IO.File]::Move($pending, $Archive)
     } finally {
-        $zip.Dispose()
+        if (Test-Path -LiteralPath $pending) { Remove-Item -LiteralPath $pending }
     }
     Get-FileHash -LiteralPath $Archive
 }
