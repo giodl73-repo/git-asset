@@ -126,6 +126,8 @@ planning. Caches shared with older tools require a qualified writer handoff.
 
 ## Move old versions off the working disk
 
+Verify the required copies on J: and M: and recheck project and job demands before removing an F: copy. See the [candidate discovery workflow](https://github.com/giodl73-repo/git-asset/issues/78) and [legacy cache handoff](https://github.com/giodl73-repo/git-asset/issues/77).
+
 The current command surfaces are below. `PROFILE`, `REQUEST`, `PLAN` and
 `PLACEMENT_PROFILE` stand for explicitly admitted absolute file paths outside the
 repository; discovery does not create them. These are existing **experimental
