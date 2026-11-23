@@ -62,7 +62,7 @@ fn run() -> Result<(), String> {
         #[cfg(all(windows, feature = "annex-read"))]
         {
             let [_, action, profile, request, journal] = args.as_slice() else {
-                return Err("demotion-run requires verify|apply PROFILE REQUEST JOURNAL".into());
+                return Err("demotion-run requires verify|apply PROFILE REQUEST JOURNAL or status PROFILE REQUEST RESULT".into());
             };
             let report = demotion_provider::run(
                 action,

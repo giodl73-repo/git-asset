@@ -125,6 +125,10 @@ request against the pinned drive report before starting the provider.
 request and its original apply journal. An uncertain outcome requires inspection
 of that journal before retry. The provider still performs live checks and writes
 the authoritative result. Git-asset validates the returned request and plan IDs.
+Use `demotion-run status PROFILE REQUEST RESULT` with an explicit result file
+from the pinned journal. It checks the immutable request stamp and receipt
+without running the provider or reading payloads. A missing receipt leaves
+the outcome uncertain. A valid receipt reports historical effects only.
 
 The ordinary demotion provider requires a keeper. Final retirement of a
 rebuildable render has its own execution and approval path.

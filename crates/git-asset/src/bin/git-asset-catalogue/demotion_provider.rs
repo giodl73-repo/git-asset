@@ -1,7 +1,7 @@
 use git_asset_core::Digest;
 use process_wrap::tokio::{CommandWrap, JobObject, KillOnDrop};
 use serde::Deserialize;
-use serde_json::Value;
+use serde_json::{Value, json};
 use std::{
     collections::BTreeMap,
     fs::{File, OpenOptions},
@@ -59,29 +59,25 @@ pub(super) fn run(
     action: &str,
     profile: &Path,
     request: &Path,
-    journal: &Path,
+    target: &Path,
 ) -> Result<Value, String> {
+    let status = action == "status";
     let apply = match action {
-        "verify" => false,
+        "verify" | "status" => false,
         "apply" => true,
-        _ => return Err("Expected verify or apply".into()),
+        _ => return Err("Expected verify, apply or status".into()),
     };
     let (_profile_hold, profile_raw) = guarded_file(profile, 65536)?;
     let profile: Profile =
         serde_json::from_slice(&profile_raw).map_err(|_| "Invalid provider profile")?;
     if profile.schema != "git-asset.reel-demotion-provider.experimental-1"
         || !profile.project_root.is_absolute()
-        || !journal.is_absolute()
-        || profile.journal != journal
+        || !profile.journal.is_absolute()
+        || (!status && profile.journal != target)
         || (apply && !profile.allow_apply)
     {
         return Err("Provider profile does not admit this operation".into());
     }
-    let (_executable_hold, executable) = guarded_file(&profile.executable, 128 * 1024 * 1024)?;
-    if Digest::blob(&executable) != profile.executable_sha256 {
-        return Err("Provider executable pin mismatch".into());
-    }
-    drop(executable);
     let (_request_hold, request_raw) = guarded_file(request, 256 * 1024)?;
     if Digest::blob(&request_raw) != profile.request_sha256 {
         return Err("Provider request pin mismatch".into());
@@ -94,6 +90,15 @@ pub(super) fn run(
     }
     drop(drive_raw);
     let objects = super::demotion::validate_prepared(&profile.drive_report, &document)?;
+    let plan = &document["plan_sha256"];
+    if status {
+        return inspect_saved(&profile, target, plan, &objects);
+    }
+    let (_executable_hold, executable) = guarded_file(&profile.executable, 128 * 1024 * 1024)?;
+    if Digest::blob(&executable) != profile.executable_sha256 {
+        return Err("Provider executable pin mismatch".into());
+    }
+    drop(executable);
     let seconds = document["max_seconds"]
         .as_u64()
         .filter(|n| (1..=3600).contains(n))
@@ -103,17 +108,9 @@ pub(super) fn run(
         .build()
         .map_err(|_| "Cannot start provider runtime")?;
     let result = runtime
-        .block_on(execute(&profile, request, journal, apply, seconds))
+        .block_on(execute(&profile, request, target, apply, seconds))
         .and_then(|raw| serde_json::from_slice::<Value>(&raw).ok())
-        .filter(|result| {
-            result["schema"] == "reel.asset-demotion-result.v1"
-                && result["apply"] == apply
-                && result["request_sha256"] == profile.request_sha256.as_str()
-                && result["plan_sha256"] == document["plan_sha256"]
-                && result["last_copy_retired"] == false
-                && result["archive_probed"] == false
-                && exact_results(result, &objects, apply)
-        });
+        .filter(|result| matches_receipt(result, &profile.request_sha256, plan, &objects, apply));
     result.ok_or_else(|| {
         if apply {
             "Provider outcome uncertain; inspect the original journal before retrying".into()
@@ -121,6 +118,56 @@ pub(super) fn run(
             "Provider verification did not complete; inspect the original journal".into()
         }
     })
+}
+
+fn inspect_saved(
+    profile: &Profile,
+    result_path: &Path,
+    plan: &Value,
+    objects: &BTreeMap<String, u64>,
+) -> Result<Value, String> {
+    if result_path.parent() != Some(profile.journal.as_path())
+        || result_path
+            .file_name()
+            .and_then(|s| s.to_str())
+            .is_none_or(|name| !name.starts_with("result-"))
+    {
+        return Err("Select a result file in the pinned original journal".into());
+    }
+    let (_stamp_hold, stamp_raw) = guarded_file(&profile.journal.join("request.json"), 65536)?;
+    let stamp: Value =
+        serde_json::from_slice(&stamp_raw).map_err(|_| "Malformed journal request stamp")?;
+    let apply = stamp["apply"].as_bool().ok_or("Missing journal action")?;
+    if stamp["request_sha256"] != profile.request_sha256.as_str() || stamp["plan_sha256"] != *plan {
+        return Err("Journal request stamp conflicts with pinned request".into());
+    }
+    let (_result_hold, result_raw) = guarded_file(result_path, 1024 * 1024)?;
+    let result: Value =
+        serde_json::from_slice(&result_raw).map_err(|_| "Malformed provider receipt")?;
+    if !matches_receipt(&result, &profile.request_sha256, plan, objects, apply) {
+        return Err("Receipt conflicts with pinned request or journal action".into());
+    }
+    Ok(json!({
+        "schema":"git-asset.reel-demotion-status.experimental-1","historical_receipt":result,
+        "receipt_sha256":Digest::blob(&result_raw),"current_storage_checked":false,
+        "removal_authorized":false
+    }))
+}
+
+fn matches_receipt(
+    result: &Value,
+    request: &Digest,
+    plan: &Value,
+    objects: &BTreeMap<String, u64>,
+    apply: bool,
+) -> bool {
+    result["schema"] == "reel.asset-demotion-result.v1"
+        && result["apply"] == apply
+        && result["request_sha256"] == request.as_str()
+        && result["plan_sha256"] == *plan
+        && result["last_copy_retired"] == false
+        && result["archive_probed"] == false
+        && exact_results(result, objects, apply)
 }
 
 fn exact_results(report: &Value, expected: &BTreeMap<String, u64>, apply: bool) -> bool {
