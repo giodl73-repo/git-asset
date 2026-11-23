@@ -318,6 +318,12 @@ fn actual_native_ordinary_and_bare_reads_are_exact_local_and_guarded() {
         p.configuration = Object::from_bytes(&fs::read(&cfg).unwrap());
         let before = p.configuration.clone();
         let mut reader = Reader::new(p.clone()).unwrap();
+        assert_eq!(reader.observe(&object).unwrap(), object.bytes);
+        assert_eq!(reader.verification_bytes(), 0);
+        assert!(matches!(
+            reader.observe(&Object::from_bytes(b"absent")),
+            Err(Error::Missing)
+        ));
         let mut held = reader.open(&object).unwrap();
         let mut bytes = vec![];
         held.read_to_end(&mut bytes).unwrap();

@@ -84,7 +84,7 @@
   {"path":"crates/git-asset/src/annex/retirement/planning/execution.rs","bytes":20539,"sha256":"32f2b6e400ff68e92c41751aea7e31e499b02004597583feac2e5431165672ac"},
   {"path":"crates/git-asset/src/annex/snapshot.rs","bytes":5042,"sha256":"373d8bb58acf9fefd81f49c7e537035cac97b916007181bad9b19fd92ef5db2e"},
   {"path":"crates/git-asset/src/annex/snapshot/tests.rs","bytes":10092,"sha256":"52380c0e862e87a481124399a365cee47ab0a911a2665d63c4a53aaffde0f9e9"},
-  {"path":"crates/git-asset/src/annex/tests.rs","bytes":15521,"sha256":"4e8d60d71d62b55e7adc1de1c6a9180dd56e920f5e464ce232c293a410375dde"},
+  {"path":"crates/git-asset/src/annex/tests.rs","bytes":15771,"sha256":"094553794f5234516d9c17c607335ba998f58b362c8cc16374a09b26d333dd02"},
   {"path":"crates/git-asset/src/annex/tests/managed_tests.rs","bytes":9241,"sha256":"ba9b515b2868314929ab93e815480ada9e8d7cc64b7eeac6114443c5f06acd3d"},
   {"path":"crates/git-asset/src/bin/git-asset-catalogue.rs","bytes":4349,"sha256":"48aa45d5e0fc74573ba60f3304cf085889f58b0570967b2c7231aab19d8fe0d1"},
   {"path":"crates/git-asset/src/bin/git-asset-graph.rs","bytes":11308,"sha256":"f5eaf18ce5ba3bd51103b03f8d04a58cce1ca0283aa13ccd99a5a0a913499385"},
