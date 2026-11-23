@@ -14,6 +14,15 @@ capacity and intent/completion machinery; bounded existing storage CLI extension
 synthetic fake/native/crash fixtures. No new cache engine/journal, final-copy
 loss, remote provider, renderer, automatic activation or production migration.
 
+## Catalogue subject handoff
+
+Input ad50bb3 (issue #78). The read-only catalogue row supplies a
+`reviewed_object` for the optional native plan request field of the same name.
+The CLI matches its hash and byte length against the retained snapshot and
+both admitted publication plans before opening their stores. A mismatch is
+`stale`. Requests that already pin the snapshot and omit the field remain
+readable. The handoff carries no cache authority, replay token or custody proof.
+
 ## Required implementation seams
 
 - Factor the existing per-object LocalStore lifecycle/retirement mechanism for

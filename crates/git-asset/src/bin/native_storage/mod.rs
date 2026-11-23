@@ -28,7 +28,7 @@ fn describe() -> Value {
         "available":cfg!(feature="annex-publish"),"experimental":true,
         "operations":["plan PROFILE REQUEST","status PROFILE SAVED_PLAN",
             "apply PROFILE SAVED_PLAN","resume PROFILE SAVED_PLAN","cancel PROFILE SAVED_PLAN"],
-        "profile_request_bytes":65536,"saved_plan_response_bytes":131072,
+        "optional_reviewed_object":true,"profile_request_bytes":65536,"saved_plan_response_bytes":131072,
         "canonical_plan_bytes":65536,"initializes_providers":false,
         "automatic_operations":false,"mixed_legacy_supported":false,
         "mutations_default_enabled":false,"production_qualified":false})

@@ -43,8 +43,10 @@ impl Client {
         assert!(data.len() <= 65536);
         fs::write(&profile, data).unwrap();
         let request = f.root.join("cli-request.json");
-        fs::write(&request,serde_json::to_vec(&json!({"schema":"git-asset.native-storage-request.experimental-1",
-            "operation":"native-eviction","snapshot":pin,"grant":plan.metadata_plan().request().keepers[0].grant})).unwrap()).unwrap();
+        let request_body = json!({"schema":"git-asset.native-storage-request.experimental-1",
+            "operation":"native-eviction","snapshot":pin,"grant":plan.metadata_plan().request().keepers[0].grant,
+            "reviewed_object":pin.object});
+        fs::write(&request, serde_json::to_vec(&request_body).unwrap()).unwrap();
         let this = Self {
             exe,
             profile,
@@ -56,6 +58,14 @@ impl Client {
             serde_json::to_value(plan.id().unwrap()).unwrap()
         );
         assert_eq!(out["removal_authority"], false);
+        let mut stale = request_body;
+        stale["reviewed_object"]["bytes"] = json!(pin.object.bytes.saturating_add(1));
+        let stale_request = f.root.join("cli-stale-review.json");
+        fs::write(&stale_request, serde_json::to_vec(&stale).unwrap()).unwrap();
+        assert_eq!(
+            this.invoke("plan", &this.profile, &stale_request, false)["code"],
+            "stale"
+        );
         fs::write(&this.saved, serde_json::to_vec(&out).unwrap()).unwrap();
         // CLI-only mutation permissions default false, independent of sealed owner policy.
         let mut denied = value;

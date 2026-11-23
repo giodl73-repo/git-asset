@@ -1484,6 +1484,7 @@ fn native_catalogue_refresh_review_and_verify() {
     let row = &review["items"][0];
     assert_eq!(row["sha256"], object.sha256.as_str());
     assert_eq!(row["copies"][0]["hard_links"], 2);
+    assert_eq!(row["eviction_review"]["reviewed_object"], json!(object));
     assert_eq!(row["eviction_review"]["single_path_reclaim_estimate"], 0);
     assert_eq!(review["removal_authorized"], false);
     let (selected, reader) = c

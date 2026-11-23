@@ -278,6 +278,7 @@ impl Catalogue {
             });
             row["eviction_review"] = json!({
                 "state":state,"older_copy_proposed":older,
+                "reviewed_object":{"sha256":row["sha256"],"bytes":row["bytes"]},
                 "holds":review["holds"],"other_copy_listed":overlap,
                 "archive_bytes_verified":false,"reclaimable_bytes":null,
                 "single_path_reclaim_estimate":linked.then_some(0)
