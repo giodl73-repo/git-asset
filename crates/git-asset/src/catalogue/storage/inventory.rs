@@ -186,3 +186,147 @@ mod tests {
         assert_eq!(measured["removal_authorized"], false);
     }
 }
+
+/// Named bindings in one exact snapshot. Allocation is assigned once per file.
+pub fn selection_usage(config: Config, project: &str, commit: &str, root: &Path) -> Result<Value> {
+    let enrollment = config
+        .projects
+        .into_iter()
+        .find(|entry| entry.id == project)
+        .ok_or("Project not enrolled")?;
+    // Use the same named, bounded refresh as the ordinary catalogue.
+    let config = Config {
+        schema: "tig.catalogue-enrollment.experimental-1".into(),
+        projects: vec![enrollment],
+        default_project: None,
+        storage_domains: vec![],
+        teaching: None,
+    };
+    let mut catalogue = Catalogue::load(config)?;
+    let refresh = catalogue.observe_registered(project, commit, "")?;
+    let loaded = catalogue
+        .projects
+        .remove(project)
+        .ok_or("Project unavailable")?;
+    let cache = loaded
+        .profile
+        .byte_source
+        .as_ref()
+        .ok_or("No cache locations")?;
+    let place = loaded
+        .enrollment
+        .storage
+        .as_ref()
+        .ok_or("No storage admission")?
+        .places
+        .iter()
+        .find(|place| {
+            place.live_probe
+                && cache
+                    .places
+                    .get(place.place_index)
+                    .is_some_and(|p| p.root == root)
+        })
+        .ok_or("Cache is not enrolled for live observation")?;
+    let observation = loaded.storage.as_ref().ok_or("No named observation")?;
+    // Lower priority first. A live selection always wins a shared reference.
+    let mut classes = BTreeMap::<String, usize>::new();
+    for asset in loaded.snapshot.selected_records() {
+        let terminal = matches!(
+            value(asset)
+                .pointer("/status/lifecycle")
+                .and_then(Value::as_str),
+            Some("deprecated" | "retired")
+        );
+        if let Ok(object) = asset.selected() {
+            let rank = if terminal { 0 } else { 3 };
+            classes
+                .entry(object.sha256.as_str().to_owned())
+                .and_modify(|c| *c = (*c).max(rank))
+                .or_insert(rank);
+        }
+        for binding in asset.stream_bindings() {
+            let rank = if terminal { 0 } else { 1 };
+            classes
+                .entry(binding.object.sha256.as_str().to_owned())
+                .and_modify(|c| *c = (*c).max(rank))
+                .or_insert(rank);
+        }
+    }
+    let mut allocations = BTreeMap::<(u32, u64), (usize, u64)>::new();
+    let mut missing_metadata = [0_u64; 4];
+    let mut observed_paths = [0_u64; 4];
+    for entry in &observation.entries {
+        let Some(copy) = entry
+            .row
+            .copies
+            .iter()
+            .find(|copy| copy.tier == place.place_index)
+        else {
+            continue;
+        };
+        let Some(mut rank) = classes.get(&entry.row.sha256).copied() else {
+            continue;
+        };
+        if rank == 1 && entry.row.noncurrent_reference && !entry.row.required_by_current_version {
+            rank = 2;
+        }
+        observed_paths[rank] += 1;
+        let digest = git_asset_core::Digest::parse(&entry.row.sha256)
+            .map_err(|_| "Invalid object digest")?;
+        let location = &cache.places[place.place_index];
+        let path = location.layout.object_path(root, &digest);
+        let exact = fs::OpenOptions::new()
+            .access_mode(0x80)
+            .share_mode(7)
+            .custom_flags(0x0020_0000)
+            .open(path)
+            .and_then(|file| {
+                let (volume, index, _) = git_asset_windows_process::storage::file_identity(&file)?;
+                if file.metadata()?.len() != copy.bytes
+                    || !copy.descriptor_size_matches.unwrap_or(false)
+                {
+                    return Err(std::io::Error::other("Object length changed"));
+                }
+                let allocated = file.allocated_size()?;
+                Ok(((volume, index), allocated))
+            });
+        let Ok((identity, allocated)) = exact else {
+            missing_metadata[rank] += 1;
+            continue;
+        };
+        allocations
+            .entry(identity)
+            .and_modify(|entry| {
+                entry.0 = entry.0.max(rank);
+                entry.1 = entry.1.max(allocated);
+            })
+            .or_insert((rank, allocated));
+    }
+    let mut bytes = [0_u64; 4];
+    let mut files = [0_u64; 4];
+    for (rank, allocated) in allocations.into_values() {
+        bytes[rank] = bytes[rank]
+            .checked_add(allocated)
+            .ok_or("Allocation overflow")?;
+        files[rank] += 1;
+    }
+    let classes: Vec<_> = [
+        "explicitly_deprecated",
+        "other_direct_bindings",
+        "declared_previous_revision",
+        "directly_selected",
+    ]
+    .into_iter()
+    .enumerate()
+    .map(|(i, class)| {
+        json!({"class":class,"allocated_bytes":bytes[i],"physical_files":files[i],
+            "observed_paths":observed_paths[i],"unmeasured_paths":missing_metadata[i]})
+    })
+    .collect();
+    Ok(
+        json!({"schema":"git-asset.selection-usage.experimental-1","project":project,"snapshot":commit,
+        "cache_root":root,"classes":classes,"named_refresh":refresh,"payloads_read":0,
+        "complete_consumer_coverage":false,"unused_bytes":null,"removal_authorized":false}),
+    )
+}

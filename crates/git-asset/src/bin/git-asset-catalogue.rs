@@ -24,12 +24,40 @@ fn run() -> Result<(), String> {
     if args.len() < 2
         || !matches!(
             args[0].as_str(),
-            "check" | "serve" | "shared" | "references" | "eviction-report" | "cache-inventory"
+            "check"
+                | "serve"
+                | "shared"
+                | "references"
+                | "eviction-report"
+                | "cache-inventory"
+                | "selection-usage"
         )
     {
-        return Err("usage: git-asset-catalogue check ENROLLMENT | serve ENROLLMENT [PORT] | shared ENROLLMENT LEFT RIGHT NEW_REPORT [CATEGORY] | references ENROLLMENT SHA256 NEW_REPORT [PROJECT] [OFFSET] | eviction-report ENROLLMENT PROJECT COMMIT CACHE_ROOT NEW_REPORT | cache-inventory ENROLLMENT PROJECT CACHE_ROOT NEW_REPORT".into());
+        return Err("usage: git-asset-catalogue check ENROLLMENT | serve ENROLLMENT [PORT] | shared ENROLLMENT LEFT RIGHT NEW_REPORT [CATEGORY] | references ENROLLMENT SHA256 NEW_REPORT [PROJECT] [OFFSET] | eviction-report ENROLLMENT PROJECT COMMIT CACHE_ROOT NEW_REPORT | cache-inventory ENROLLMENT PROJECT CACHE_ROOT NEW_REPORT | selection-usage ENROLLMENT PROJECT COMMIT CACHE_ROOT NEW_REPORT".into());
     }
     let config = Config::load(Path::new(&args[1]))?;
+    if args[0] == "selection-usage" {
+        #[cfg(all(windows, feature = "annex-read"))]
+        {
+            if args.len() != 6 || !Path::new(&args[5]).is_absolute() {
+                return Err(
+                    "selection-usage requires ENROLLMENT PROJECT COMMIT CACHE_ROOT NEW_REPORT"
+                        .into(),
+                );
+            }
+            let report = git_asset::catalogue::storage::inventory::selection_usage(
+                config,
+                &args[2],
+                &args[3],
+                Path::new(&args[4]),
+            )?;
+            save(&report, &args[5])?;
+            println!("{report}");
+            return Ok(());
+        }
+        #[cfg(not(all(windows, feature = "annex-read")))]
+        return Err("selection-usage requires Windows file identity support".into());
+    }
     if args[0] == "cache-inventory" {
         #[cfg(all(windows, feature = "annex-read"))]
         {

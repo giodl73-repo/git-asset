@@ -167,3 +167,10 @@ stops at two million entries or fifteen minutes. Excluded/unreadable
 entries and exhausted budgets mark the observation incomplete. The walk
 does not check Git selection, retention, current jobs or reclamation
 authorization and does not run on catalogue startup.
+
+`git asset catalogue selection-usage ENROLLMENT PROJECT COMMIT CACHE_ROOT NEW_REPORT`
+reports physical allocation in named, size-matching objects at the exact
+enrolled snapshot. It separates directly selected objects, declared previous
+revisions, other direct bindings and explicit retirement. Current selection
+takes precedence when an exact object has multiple bindings. Missing nested
+and job coverage does not imply unused bytes.
