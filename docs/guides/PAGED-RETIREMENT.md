@@ -185,6 +185,9 @@ and the trusted ledger minimum. The command verifies up to 32 distinct
 objects under the requested byte budget, capped at 1 TiB. Results identify
 the exact grants observed. The caller must establish that the list covers
 the complete rebuild closure and separately prove the accepted rebuild standard.
+The local verifier can refuse a slow read as `retained_input_stale`. The byte
+ceiling is an admission limit; large-file verification still needs qualification.
+A corrupt, missing or released input requires investigation or replacement custody.
 
 The project adapter must supply the exact old release and replacement commit,
 a trusted classification of the old asset as a derived render, the supersession

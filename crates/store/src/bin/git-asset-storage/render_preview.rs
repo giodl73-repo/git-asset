@@ -1,9 +1,11 @@
 use super::{Result, document, report};
 use git_asset_core::{Digest, LogicalPath, Object};
 use git_asset_store::{
+    Error as StoreError,
     ledger::{CapacityLedger, Checkpoint},
     local::LocalStore,
-    retention::{self, RetentionGrant},
+    replica::ReplicaError,
+    retention::{self, RetentionError, RetentionGrant},
 };
 use serde::Deserialize;
 use serde_json::json;
@@ -80,8 +82,7 @@ fn verify_inputs(request: InputRequest) -> Result<Vec<u8>> {
     let mut rows = Vec::new();
     for input in request.inputs {
         let grant = input.grant.to_json().map_err(|_| "invalid_grant")?;
-        let replica = retention::verify(&mut ledger, &store, &input.grant)
-            .map_err(|_| "retained_input_unverified")?;
+        let replica = retention::verify(&mut ledger, &store, &input.grant).map_err(input_error)?;
         verified.push(replica);
         rows.push(json!({"object":input.object,"grant_digest":Digest::blob(&grant)}));
     }
@@ -90,6 +91,29 @@ fn verify_inputs(request: InputRequest) -> Result<Vec<u8>> {
         "store":request.store_identity,"verified_inputs":rows,
         "closure_complete":false,"removal_authority":false
     }))
+}
+
+fn input_error(error: RetentionError) -> &'static str {
+    match error {
+        RetentionError::Store(error) | RetentionError::Replica(ReplicaError::Store(error)) => {
+            match error {
+                StoreError::Integrity | StoreError::CorruptRecord => "retained_input_corrupt",
+                StoreError::MissingAcknowledgedObject | StoreError::AuthorizedAbsence => {
+                    "retained_input_missing"
+                }
+                StoreError::Busy => "retained_input_busy",
+                StoreError::Unsupported => "retained_input_unsupported",
+                StoreError::NeedsRecovery => "retained_input_needs_recovery",
+                _ => "retained_input_unverified",
+            }
+        }
+        RetentionError::Replica(ReplicaError::Stale) => "retained_input_stale",
+        RetentionError::Replica(ReplicaError::MissingCompletion) => "retained_input_missing",
+        RetentionError::Released => "input_grant_released",
+        RetentionError::NotSettled => "input_grant_not_settled",
+        RetentionError::InvalidPlan => "invalid_grant",
+        _ => "retained_input_unverified",
+    }
 }
 
 #[derive(Deserialize)]

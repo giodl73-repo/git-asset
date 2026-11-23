@@ -98,7 +98,7 @@ fn render_inputs_require_exact_settled_retention() {
     assert!(!refused.status.success());
     assert_eq!(
         serde_json::from_slice::<Value>(&refused.stdout).unwrap()["code"],
-        "retained_input_unverified"
+        "retained_input_corrupt"
     );
     assert_eq!(fs::read(payload).unwrap(), corrupt);
 }
