@@ -262,6 +262,15 @@ impl Host {
                 },
             ),
             "/api/projects" => Ok(c.summaries()),
+            "/api/storage/eviction-preview" => c.cache_eviction_preview(
+                get("cache"),
+                if get("offset").is_empty() {
+                    0
+                } else {
+                    get("offset").parse().map_err(|_| "Invalid offset")?
+                },
+                get("basis"),
+            ),
             "/api/storage/batch-preview" => c.object_batch_preview(
                 get("project"),
                 get("selection"),

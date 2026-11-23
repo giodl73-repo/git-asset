@@ -89,6 +89,17 @@ limits, consent, simulated clock and provider boundary. Advanced synthetic
 deletion/publication lessons are not permission to operate live caches. No single
 enrollment or build automatically enables every optional provider or experiment.
 
+## Review a cache for eviction
+
+1. In **Objects**, select an observed cache such as the sample's working cache and choose **Review this cache for eviction**. The review uses recorded observations across all enrolled projects.
+2. Read the decision and holds for each exact hash. **Keep: current declared use** identifies a current reference. **Check archive copy** identifies an older copy with a matching listing elsewhere. **Unknown: keep for now** means the recorded evidence cannot support a candidate decision. Use **Inspect references** to see the declared consumers.
+3. For a candidate, choose **Verify bytes at …** to read the listed archive copy and verify its hash and length. A failed read leaves the copy unverified. A successful read establishes byte integrity at that check. Independent retained custody still requires its own proof.
+4. Check the reclaim estimate before planning capacity. If other hard links exist, removing one path is estimated to free zero bytes. With insufficient physical evidence, reclaim remains unknown. Use **Next review page** to continue on the same evidence basis. If that basis changes, start the review again.
+
+The viewer does not authorize or perform eviction. See the [native eviction
+guide](NATIVE-EVICTION.md) for explicitly enrolled participating pools and the
+requirements for protected execution.
+
 ## Review boundaries
 
 This is a metadata/library and recorded-lifecycle review. Media previews/playback,
