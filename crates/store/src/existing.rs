@@ -62,7 +62,7 @@ pub enum Protection {
     CooperativeFileLock,
 }
 
-#[derive(Clone, Copy, Debug, Deserialize)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 #[serde(default, deny_unknown_fields)]
 pub struct Limits {
     pub object_bytes: u64,

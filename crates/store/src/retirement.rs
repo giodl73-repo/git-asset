@@ -798,6 +798,37 @@ pub struct ReacquisitionPlan {
     capacity: Digest,
 }
 impl ReacquisitionPlan {
+    /// Verify this new birth follows the exact completed retirement supplied by an adapter.
+    /// Read-only chain validation; grants no publication or external-byte authority.
+    pub fn validate_retirement(&self, store: &LocalStore, retired: &Plan) -> Result<()> {
+        self.validate(store)?;
+        retired.validate(store)?;
+        let expected = retired
+            .birth
+            .reacquired(lifecycle::digest(&self.previous)?, self.publication.clone())?;
+        if self.previous.cancelled
+            || self.capacity != retired.request.capacity
+            || lifecycle::digest(&self.birth)? != lifecycle::digest(&expected)?
+        {
+            return Err(Error::InvalidPlan);
+        }
+        let intent = store
+            .retirement_intent(&retired.publication.object, retired.birth.index)?
+            .ok_or(Error::InvalidPlan)?;
+        intent.validate(store, &retired.birth)?;
+        if lifecycle::digest(&intent.plan)? != retired.id()? {
+            return Err(Error::InvalidPlan);
+        }
+        self.previous.validate(&intent)?;
+        let completed = store
+            .retirement_done(&retired.publication.object, retired.birth.index)?
+            .ok_or(Error::InvalidPlan)?;
+        completed.validate(&intent)?;
+        if lifecycle::digest(&completed)? != lifecycle::digest(&self.previous)? {
+            return Err(Error::InvalidPlan);
+        }
+        Ok(())
+    }
     /// Exact incarnation-bound publication for adapters reopening this reacquisition.
     /// This accessor grants no permission to restore external provider bytes.
     pub fn payload_plan(&self) -> &PublicationPlan {

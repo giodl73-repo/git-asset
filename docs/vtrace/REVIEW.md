@@ -60,3 +60,7 @@ EVID-145: [copy producer lenses](../../specs/ANNEX-RETAINED-COPY.md#evid-145-pro
 EVID-146: snapshot/fence seam only; full P2 six-role native/provider review OPEN.
 Native writer connection: [producer dispositions](../../specs/ANNEX-PROTECTED-EVICTION.md#native-control-sdk-checkpoint).
 No native deletion, independent review or production acceptance is claimed.
+
+Archive-index producer lenses: [exact controls/dispositions](../../specs/NATIVE-PRODUCER-ROOTS.md#archive-membership-indexing-before-working-release).
+Saved originals, exact sole-row bindings, partial holds and default-denied policy
+are reviewed separately from byte custody and human/independent acceptance.

@@ -14,6 +14,9 @@ struct Control {
     keeper: retirement::Keeper,
     plan: control::Plan,
 }
+pub(super) fn enable(f: &mut Fixture, native_tools: bool) {
+    Control::build(f, native_tools);
+}
 impl Control {
     fn new(f: &mut Fixture) -> Self {
         Self::build(f, false)

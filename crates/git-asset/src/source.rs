@@ -1,4 +1,5 @@
 //! Bounded extraction from exact Git views and explicit immutable proposals.
+pub mod annex;
 #[cfg(feature = "assets")]
 pub mod native;
 pub mod proposal;
@@ -196,6 +197,7 @@ pub struct Binding {
 }
 #[derive(Clone, Debug)]
 pub struct Extraction {
+    native_annex: bool,
     checkpoint: Checkpoint,
     scope: Scope,
     bindings: Vec<Binding>,
@@ -226,7 +228,12 @@ impl Extraction {
             View::Index => serde_json::json!({"kind":"index"}),
             View::Commit(id) => serde_json::json!({"kind":"commit","oid":id.as_str()}),
         };
-        let value = serde_json::json!({"schema":"tig.git-selection.design-1","view":view,"listing":self.checkpoint.listing,"scope":self.scope.prefixes().map(|p|p.as_str()).collect::<Vec<_>>()});
+        let schema = if self.native_annex {
+            "git-asset.annex-selection.experimental-1"
+        } else {
+            "tig.git-selection.design-1"
+        };
+        let value = serde_json::json!({"schema":schema,"view":view,"listing":self.checkpoint.listing,"scope":self.scope.prefixes().map(|p|p.as_str()).collect::<Vec<_>>()});
         git_asset_core::identity::canonical_json(&value)
             .map(|bytes| Digest::blob(&bytes))
             .map_err(|_| Error::Budget)
@@ -674,6 +681,18 @@ impl Repository {
         Ok(result)
     }
     pub fn extract(&self, snapshot: &Snapshot, scope: Scope) -> Result<Extraction> {
+        self.extract_format(snapshot, scope, false)
+    }
+    /// Explicit native-annex metadata; never follows a link or reads payloads.
+    pub fn extract_annex(&self, snapshot: &Snapshot, scope: Scope) -> Result<Extraction> {
+        self.extract_format(snapshot, scope, true)
+    }
+    fn extract_format(
+        &self,
+        snapshot: &Snapshot,
+        scope: Scope,
+        native: bool,
+    ) -> Result<Extraction> {
         if snapshot.enrollment != self.enrollment {
             return Err(Error::Invalid);
         }
@@ -687,11 +706,14 @@ impl Repository {
         }
         let ids = selected
             .iter()
-            .filter(|e| matches!(e.mode.as_str(), "100644" | "100755"))
+            .filter(|e| {
+                matches!(e.mode.as_str(), "100644" | "100755") || (native && e.mode == "120000")
+            })
             .map(|e| e.oid.clone())
             .collect();
         let blobs = self.blobs(ids)?;
         let mut out = Extraction {
+            native_annex: native,
             checkpoint: snapshot.checkpoint.clone(),
             scope,
             bindings: Vec::new(),
@@ -713,7 +735,7 @@ impl Repository {
                 issue(IssueKind::InvalidPath);
                 continue;
             };
-            if !matches!(e.mode.as_str(), "100644" | "100755") {
+            if !matches!(e.mode.as_str(), "100644" | "100755") && !(native && e.mode == "120000") {
                 issue(IssueKind::UnsupportedMode);
                 continue;
             }
@@ -721,11 +743,17 @@ impl Repository {
                 issue(IssueKind::MissingBlob);
                 continue;
             };
-            let Ok(pointer) = Pointer::parse(bytes) else {
+            let parsed = if native {
+                annex::pointer(&path, &e.mode, bytes)
+            } else {
+                Pointer::parse(bytes)
+                    .map(|p| p.object().clone())
+                    .map_err(|_| Error::Invalid)
+            };
+            let Ok(object) = parsed else {
                 issue(IssueKind::NotPointer);
                 continue;
             };
-            let object = pointer.object().clone();
             if sizes
                 .insert(object.sha256.clone(), object.bytes)
                 .is_some_and(|n| n != object.bytes)

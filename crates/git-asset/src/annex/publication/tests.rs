@@ -9,6 +9,7 @@ use git_asset_store::{
 use std::{io::Cursor, path::Path};
 #[cfg(windows)]
 mod native;
+mod producer_index;
 fn k(s: &str) -> Key {
     Key::parse(s).unwrap()
 }

@@ -11,6 +11,33 @@ pub struct Source<'a> {
     pub client: &'a Client,
     pub trust: &'a Trust,
 }
+/// Explicit native-annex interpretation; existing Source stays unchanged.
+pub struct AnnexSource<'a> {
+    pub client: &'a Client,
+    pub trust: &'a Trust,
+}
+impl CommittedSource for AnnexSource<'_> {
+    fn named_commit(&self, name: &str) -> lifecycle::Result<GitId> {
+        Source {
+            client: self.client,
+            trust: self.trust,
+        }
+        .named_commit(name)
+    }
+    fn flat_capture(
+        &self,
+        commit: GitId,
+        scope: &[LogicalPath],
+        budget: &Budget,
+    ) -> lifecycle::Result<FlatCapture> {
+        Source {
+            client: self.client,
+            trust: self.trust,
+        }
+        .capture_format(commit, scope, budget, true)
+        .map_err(mapped)
+    }
+}
 fn mapped(error: Error) -> lifecycle::Error {
     match error {
         Error::Budget => lifecycle::Error::Budget,
@@ -85,9 +112,14 @@ impl Work<'_> {
         }
         Ok(entries.clone())
     }
-    fn blob(&mut self, entry: &serde_json::Value) -> Result<(GitId, Object)> {
+    fn blob(
+        &mut self,
+        entry: &serde_json::Value,
+        native_path: Option<&LogicalPath>,
+    ) -> Result<(GitId, Object)> {
         if entry["type"].as_str() != Some("blob")
-            || !matches!(entry["mode"].as_str(), Some("100644" | "100755"))
+            || (!matches!(entry["mode"].as_str(), Some("100644" | "100755"))
+                && !(native_path.is_some() && entry["mode"].as_str() == Some("120000")))
         {
             return Err(Error::Invalid);
         }
@@ -114,8 +146,16 @@ impl Work<'_> {
             return Err(Error::Invalid);
         }
         oid.verify_blob(&raw).map_err(|_| Error::Signature)?;
-        let pointer = Pointer::parse(&raw).map_err(|_| Error::Invalid)?;
-        Ok((oid, pointer.object().clone()))
+        let object = if let Some(path) = native_path {
+            crate::source::annex::pointer(path, entry["mode"].as_str().ok_or(Error::Invalid)?, &raw)
+                .map_err(|_| Error::Invalid)?
+        } else {
+            Pointer::parse(&raw)
+                .map_err(|_| Error::Invalid)?
+                .object()
+                .clone()
+        };
+        Ok((oid, object))
     }
 }
 impl CommittedSource for Source<'_> {
@@ -140,6 +180,15 @@ impl Source<'_> {
         commit: GitId,
         scope: &[LogicalPath],
         budget: &Budget,
+    ) -> Result<FlatCapture> {
+        self.capture_format(commit, scope, budget, false)
+    }
+    fn capture_format(
+        &self,
+        commit: GitId,
+        scope: &[LogicalPath],
+        budget: &Budget,
+        native: bool,
     ) -> Result<FlatCapture> {
         self.trust.id()?;
         if scope.is_empty()
@@ -208,8 +257,8 @@ impl Source<'_> {
                         if bindings.len() >= budget.entries as usize {
                             return Err(Error::Budget);
                         }
-                        let (oid, object) = work.blob(&entry)?;
                         let logical = LogicalPath::parse(&logical).map_err(|_| Error::Invalid)?;
+                        let (oid, object) = work.blob(&entry, native.then_some(&logical))?;
                         if bindings.insert(logical.clone(), object).is_some() {
                             return Err(Error::Invalid);
                         }
@@ -223,7 +272,11 @@ impl Source<'_> {
         // independent private adoption rather than pretending identical context.
         let listing = identity::canonical_json(
             &serde_json::to_value(&(
-                "tig.github-flat-listing.design-1",
+                if native {
+                    "git-asset.github-annex-listing.experimental-1"
+                } else {
+                    "tig.github-flat-listing.design-1"
+                },
                 &self.trust.repository_id,
                 commit.as_str(),
                 scope,
@@ -320,6 +373,66 @@ mod tests {
             json!({"sha":oid,"encoding":"base64","size":pointer.len(),"content":STANDARD.encode(pointer)}),
         ];
         (commit, object, r)
+    }
+    #[test]
+    fn explicit_annex_source_verifies_native_blob_modes_and_keeps_legacy_source_separate() {
+        use sha1::{Digest as _, Sha1};
+        for locked in [false, true] {
+            let (commit, object, mut responses) = responses();
+            let key = format!("SHA256E-s{}--{}.wav", object.bytes, object.sha256.as_str());
+            let raw = if locked {
+                format!("../.git/annex/objects/aBc/D2e/{key}/{key}")
+            } else {
+                format!("/annex/objects/{key}\n")
+            }
+            .into_bytes();
+            let mut hash = Sha1::new();
+            hash.update(format!("blob {}\0", raw.len()).as_bytes());
+            hash.update(&raw);
+            let oid = hash
+                .finalize()
+                .iter()
+                .map(|b| format!("{b:02x}"))
+                .collect::<String>();
+            responses[2]["tree"][0]["mode"] = json!(if locked { "120000" } else { "100644" });
+            responses[2]["tree"][0]["sha"] = json!(oid);
+            responses[2]["tree"][0]["size"] = json!(raw.len());
+            responses[3] = json!({"sha":oid,"encoding":"base64","size":raw.len(),"content":STANDARD.encode(&raw)});
+            let (client, server) = peer(responses.clone());
+            let trust = trust();
+            let source = AnnexSource {
+                client: &client,
+                trust: &trust,
+            };
+            let result = source
+                .flat_capture(
+                    commit.clone(),
+                    &[LogicalPath::parse("assets").unwrap()],
+                    &budget(),
+                )
+                .unwrap();
+            assert_eq!(
+                result.bindings[&LogicalPath::parse("assets/one.bin").unwrap()],
+                object
+            );
+            let requests = server.join().unwrap();
+            assert_eq!(requests.len(), 4);
+            assert!(!requests.iter().any(|r| r.contains(&"d".repeat(40))));
+            if locked {
+                responses.truncate(3);
+            }
+            let (client, server) = peer(responses);
+            let source = Source {
+                client: &client,
+                trust: &trust,
+            };
+            assert!(
+                source
+                    .flat_capture(commit, &[LogicalPath::parse("assets").unwrap()], &budget())
+                    .is_err()
+            );
+            assert_eq!(server.join().unwrap().len(), if locked { 3 } else { 4 });
+        }
     }
     #[test]
     fn bounded_explicit_pointer_scope_verifies_blob_and_never_opens_excluded_payload() {

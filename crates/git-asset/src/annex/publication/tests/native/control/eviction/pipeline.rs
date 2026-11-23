@@ -1,6 +1,194 @@
 //! Copy must consume the acknowledged source, not another fixture input.
 use super::*;
 use crate::annex::replication;
+mod index;
+mod pending;
+pub(super) fn restore(
+    f: &mut Fixture,
+    keeper: &mut Fixture,
+    owner: &OwnerProfile,
+    evicted: &NativePlan,
+    old: &Plan,
+) -> Plan {
+    use crate::annex::publication::restore;
+    let profile = f.profile.clone();
+    let control = f.control_profile.as_ref().unwrap().clone();
+    let limits = Fixture::limits();
+    let mut namespace =
+        Namespace::open(&f.root.join("namespace-0"), &f.namespaces[0].checkpoint()).unwrap();
+    let mut metadata =
+        MetadataStore::open(&f.root.join("metadata"), f.metadata.checkpoint()).unwrap();
+    let mut denied = profile.clone();
+    denied.allow_publish = false;
+    let operations = || restore::Operations {
+        native: k("restore-native-sdk"),
+        control: k("restore-control-sdk"),
+        source: k("asset"),
+    };
+    assert_eq!(
+        restore::prepare(
+            &mut restore::Context {
+                profile: &denied,
+                control: &control,
+                retirement: owner,
+                namespace: &mut namespace,
+                metadata: &mut metadata,
+                limits: &limits
+            },
+            restore::Original {
+                eviction: evicted,
+                publication: old
+            },
+            operations()
+        )
+        .err(),
+        Some(Error::Denied)
+    );
+    let plan = restore::prepare(
+        &mut restore::Context {
+            profile: &profile,
+            control: &control,
+            retirement: owner,
+            namespace: &mut namespace,
+            metadata: &mut metadata,
+            limits: &limits,
+        },
+        restore::Original {
+            eviction: evicted,
+            publication: old,
+        },
+        operations(),
+    )
+    .unwrap();
+    assert_eq!(plan.publication().candidate(), old.candidate());
+    let raw = plan.to_json().unwrap();
+    let mut actions = pending::Harness::new(f, "restore-actions");
+    let native_saved = actions.save(crate::annex::pending::Action {
+        operation: crate::annex::pending::Operation::Restore(Box::new(
+            crate::annex::pending::RestoreAction {
+                eviction: evicted.clone(),
+                restore: plan.clone(),
+            },
+        )),
+        working: old.clone(),
+        retained: keeper.plan.clone(),
+    });
+    let path = f.root.join("saved-restore-plan");
+    let mut saved = fs::File::create_new(&path).unwrap();
+    std::io::Write::write_all(&mut saved, &raw).unwrap();
+    saved.sync_all().unwrap();
+    assert!(
+        restore::Plan::from_json(
+            &serde_json::to_vec_pretty(&serde_json::from_slice::<serde_json::Value>(&raw).unwrap())
+                .unwrap()
+        )
+        .is_err()
+    );
+    f.metadata = MetadataReader::open(&f.root.join("metadata"), &metadata.checkpoint()).unwrap();
+    fs::remove_file(
+        f.root
+            .join("input/objects")
+            .join(old.candidate().object.sha256.as_str()),
+    )
+    .unwrap();
+    let mut input = crate::annex::managed::Reader::new(keeper.profile.pool.clone()).unwrap();
+    let result = restore::apply(
+        &mut restore::Context {
+            profile: &profile,
+            control: &control,
+            retirement: owner,
+            namespace: &mut namespace,
+            metadata: &mut metadata,
+            limits: &limits,
+        },
+        restore::Original {
+            eviction: evicted,
+            publication: old,
+        },
+        &plan,
+        &mut f.resources(),
+        &mut input,
+        |stage| {
+            if matches!(stage, restore::Stage::ControlReady) {
+                Err(Error::Denied)
+            } else {
+                Ok(())
+            }
+        },
+    );
+    assert_eq!(result.err(), Some(Error::Denied));
+    let reopened = restore::Plan::from_json(&fs::read(path).unwrap()).unwrap();
+    #[cfg(feature = "github")]
+    let mut restored = super::trusted::State::named(
+        f,
+        keeper,
+        owner,
+        "worker-native-project",
+        "worker-native-main",
+        old.candidate().object.clone(),
+    )
+    .saved_native(
+        f,
+        &actions.scope,
+        &native_saved,
+        &mut actions.namespace,
+        &mut restore::Context {
+            profile: &profile,
+            control: &control,
+            retirement: owner,
+            namespace: &mut namespace,
+            metadata: &mut metadata,
+            limits: &limits,
+        },
+    );
+    #[cfg(not(feature = "github"))]
+    let mut restored = restore::apply(
+        &mut restore::Context {
+            profile: &profile,
+            control: &control,
+            retirement: owner,
+            namespace: &mut namespace,
+            metadata: &mut metadata,
+            limits: &limits,
+        },
+        restore::Original {
+            eviction: evicted,
+            publication: old,
+        },
+        &reopened,
+        &mut f.resources(),
+        &mut input,
+        |_| Ok(()),
+    )
+    .unwrap();
+    let mut bytes = Vec::new();
+    restored.read_to_end(&mut bytes).unwrap();
+    drop(restored);
+    assert_eq!(Object::from_bytes(&bytes), old.candidate().object);
+    let checkpoint = f.namespaces[0].checkpoint();
+    let again = restore::resume(
+        &mut restore::Context {
+            profile: &profile,
+            control: &control,
+            retirement: owner,
+            namespace: &mut namespace,
+            metadata: &mut metadata,
+            limits: &limits,
+        },
+        restore::Original {
+            eviction: evicted,
+            publication: old,
+        },
+        &reopened,
+        &mut f.resources(),
+        |_| Ok(()),
+    )
+    .unwrap();
+    drop(again);
+    assert_eq!(checkpoint, f.namespaces[0].checkpoint());
+    index::exercise(f, keeper, owner, evicted, old, &reopened);
+    reopened.publication().clone()
+}
 pub(super) fn copy(source: &mut Fixture, keeper: &mut Fixture, owner: &OwnerProfile, bytes: &[u8]) {
     source.refresh();
     keeper.refresh();

@@ -1,4 +1,7 @@
 //! Explicit foreground loopback receiver; never an automatic service installer.
+#[cfg(feature = "annex-publish")]
+#[path = "trigger/native.rs"]
+mod native;
 #[path = "lifecycle/profiles.rs"]
 mod profiles;
 use git_asset::{
@@ -68,9 +71,33 @@ fn read(path: &Path, cap: u64) -> github::Result<Vec<u8>> {
         }
     }
     let mut bytes = Vec::new();
-    fs::File::open(path)
-        .map_err(|_| github::Error::Unavailable)?
-        .take(cap + 1)
+    let mut options = fs::OpenOptions::new();
+    options.read(true);
+    #[cfg(windows)]
+    {
+        use std::os::windows::fs::OpenOptionsExt;
+        options.share_mode(1).custom_flags(0x00200000);
+    }
+    let file = options.open(path).map_err(|_| github::Error::Unavailable)?;
+    let current = file.metadata().map_err(|_| github::Error::Unavailable)?;
+    if !current.is_file() || current.len() > cap {
+        return Err(github::Error::Invalid);
+    }
+    #[cfg(windows)]
+    {
+        use std::os::windows::fs::MetadataExt;
+        if current.file_attributes() & 0x400 != 0 {
+            return Err(github::Error::Invalid);
+        }
+    }
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        if metadata.dev() != current.dev() || metadata.ino() != current.ino() {
+            return Err(github::Error::Invalid);
+        }
+    }
+    file.take(cap + 1)
         .read_to_end(&mut bytes)
         .map_err(|_| github::Error::Unavailable)?;
     if bytes.len() as u64 > cap {
@@ -97,7 +124,14 @@ fn dispatch(
     if !profile.allow_selection {
         return Err(github::Error::Disabled);
     }
-    let storage: profiles::Storage = parse(&read(&profile.placement_profile, 65536)?)?;
+    let bytes = read(&profile.placement_profile, 65536)?;
+    let document: Value = parse(&bytes)?;
+    #[cfg(feature = "annex-publish")]
+    if document["schema"] == native::SCHEMA {
+        return native::dispatch(profile, client, &proof, cursor, document);
+    }
+    let storage: profiles::Storage =
+        serde_json::from_value(document).map_err(|_| github::Error::Invalid)?;
     if storage.schema != "tig.placement-profile.design-1"
         || storage.providers.len() != storage.config.providers.len()
         || storage.namespaces.len() != storage.config.namespaces.len()
@@ -206,7 +240,7 @@ fn run() -> github::Result<()> {
     let args = std::env::args_os().skip(1).collect::<Vec<_>>();
     if args.len() == 1 && args[0] == "describe" {
         return output(
-            &json!({"schema":"tig.github-receiver-interface.design-1","operations":["describe","serve PROFILE"],"profile_schema":"tig.github-receiver.design-1","path":"/v1/reconcile","method":"POST","request_schema":"tig.github-request.design-1","loopback_only":true,"default_receive":false,"default_selection":false,"installs_service":false,"executes_repository_code":false,"request_authority":"signed_oidc_plus_private_enrollment","convergence":"complete_same_basis_pass"}),
+            &json!({"schema":"tig.github-receiver-interface.design-1","operations":["describe","serve PROFILE"],"profile_schema":"tig.github-receiver.design-1","path":"/v1/reconcile","method":"POST","request_schema":"tig.github-request.design-1","loopback_only":true,"default_receive":false,"default_selection":false,"installs_service":false,"executes_repository_code":false,"request_authority":"signed_oidc_plus_private_enrollment","convergence":"complete_same_basis_pass","native_copy_reconciliation":cfg!(feature="annex-publish"),"native_producer_head_resolution":cfg!(feature="annex-publish"),"native_storage_schema":"git-asset.native-receiver-placement.experimental-1","native_storage_convergence":null,"native_storage_phases":if cfg!(feature="annex-publish") { json!(["copy","history_preview","history_apply","eviction_preview","eviction_apply","restore_preview","restore_apply","restore_replan","registration_preview","registration_apply","placement_apply"]) } else { json!([]) },"native_payload_supported":cfg!(all(feature="annex-publish",windows))}),
         );
     }
     if args.len() != 2 || args[0] != "serve" {
@@ -282,5 +316,26 @@ fn main() {
             &json!({"schema":"tig.github-receiver-response.design-1","ok":false,"code":error}),
         );
         std::process::exit(1);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn private_documents_are_bounded_regular_files_without_leaf_links() {
+        let root = tempfile::tempdir().unwrap();
+        assert_eq!(read(Path::new("relative"), 32), Err(github::Error::Invalid));
+        assert_eq!(read(root.path(), 32), Err(github::Error::Invalid));
+        let path = root.path().join("profile");
+        fs::write(&path, b"{\"schema\":\"test\"}").unwrap();
+        assert_eq!(read(&path, 32).unwrap(), b"{\"schema\":\"test\"}");
+        assert_eq!(read(&path, 1), Err(github::Error::Invalid));
+        #[cfg(unix)]
+        {
+            let link = root.path().join("link");
+            std::os::unix::fs::symlink(&path, &link).unwrap();
+            assert_eq!(read(&link, 32), Err(github::Error::Invalid));
+        }
     }
 }

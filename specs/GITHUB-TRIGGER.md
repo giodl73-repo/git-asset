@@ -148,6 +148,10 @@ External TLS ingress, rate admission and OS separation remain adoption gates.
 
 ## Evidence and remaining gates
 
+The optional native copy receiver is qualified separately under
+[NATIVE-RECEIVER](NATIVE-RECEIVER.md); the existing local/LFS route remains.
+Its bounded copy reports do not claim complete placement convergence.
+
 L0: fmt, portable validator/pins, diff and six producer lenses. L1: locked default/
 all-feature workspace, strict Clippy, standalone Git without network/typed features,
 and adversarial signed-token/source/coordinator vectors. L2: independently generated

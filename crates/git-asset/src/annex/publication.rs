@@ -24,6 +24,10 @@ use std::{
     path::PathBuf,
     time::{Duration, Instant},
 };
+pub mod handoff;
+pub mod restore;
+mod retained;
+pub use retained::Retained;
 mod staging;
 #[cfg(test)]
 mod tests;
@@ -217,7 +221,7 @@ impl Budget {
         Ok(())
     }
 }
-#[derive(Clone, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Profile {
     pub pool: managed::Profile,
@@ -444,6 +448,22 @@ impl Plan {
     }
     pub fn candidate(&self) -> &Candidate {
         &self.request.candidate
+    }
+    /// Metadata-only original witness/accounting progress. This does not verify
+    /// native bytes, current protection or physical incarnation; never custody.
+    pub fn progress(
+        &self,
+        witness: &LocalStore,
+        ledger: &mut CapacityLedger,
+    ) -> Result<upload_witness::State> {
+        if witness.identity() != &self.admission.witness
+            || ledger.identity() != &self.admission.capacity
+        {
+            return Err(Error::Stale);
+        }
+        Ok(self
+            .packet(witness)?
+            .inspect(witness, ledger, &self.admission.job)?)
     }
     fn scope(&self) -> Result<Digest> {
         digest(&(&self.pool, &self.request.operation))
@@ -676,6 +696,17 @@ struct Observed {
     charged: Option<u64>,
     control: Option<control::Use>,
 }
+/// Fresh publication state with its native byte/roster/control guards still held.
+/// This is an observation, not a durable retention claim or a Ready publication.
+pub struct Observation {
+    observed: Observed,
+    _completion: Option<upload_witness::Completed>,
+}
+impl Observation {
+    pub fn status(&self) -> &Status {
+        &self.observed.status
+    }
+}
 impl Publisher {
     pub fn new(profile: Profile) -> Result<Self> {
         Self::build(profile, None)
@@ -863,6 +894,25 @@ impl Publisher {
     /// Exact read-only state and fresh bytes; never reconstructs missing evidence.
     pub fn status(&mut self, p: &Plan, r: &mut Resources<'_>) -> Result<Status> {
         Ok(self.observe(p, r)?.status)
+    }
+    /// Like status, but keeps the verified bytes and original settled witness open.
+    /// Callers must separately protect their current desired generation; an old
+    /// ingest claim can be retired even when original completion remains valid.
+    pub fn observe_guarded(&mut self, p: &Plan, r: &mut Resources<'_>) -> Result<Observation> {
+        let observed = self.observe(p, r)?;
+        let completion =
+            if observed.status.historical_completion && observed.status.accounting_settled {
+                Some(
+                    p.packet(r.witness)?
+                        .reopen(r.witness, r.ledger, &p.admission.job)?,
+                )
+            } else {
+                None
+            };
+        Ok(Observation {
+            observed,
+            _completion: completion,
+        })
     }
     fn ready(p: &Plan, r: &mut Resources<'_>, observed: Observed) -> Result<Ready> {
         Self::protected(p, r.namespace)?;

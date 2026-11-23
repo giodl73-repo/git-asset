@@ -3,12 +3,18 @@ use git_asset_core::{Digest, Object};
 use git_asset_store::existing::{
     self, ByteSource, Limits, ProviderPath, ReadCache, RequiredProtection, VerifiedRead,
 };
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::path::{Component, Path, PathBuf};
 #[cfg(feature = "annex-publish")]
 pub mod control;
+#[cfg(feature = "annex-publish")]
+pub mod history;
 pub mod managed;
+#[cfg(feature = "annex-publish")]
+pub mod pending;
 mod process;
+#[cfg(feature = "annex-publish")]
+pub mod producer_index;
 #[cfg(feature = "annex-publish")]
 pub mod publication;
 #[cfg(feature = "annex-publish")]
@@ -20,7 +26,7 @@ pub mod snapshot;
 #[cfg(test)]
 mod tests;
 
-#[derive(Clone, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Profile {
     pub git: PathBuf,

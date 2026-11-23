@@ -78,7 +78,7 @@ pub struct Budget {
     pub millis: u64,
 }
 impl Budget {
-    fn validate(&self) -> Result<()> {
+    pub(crate) fn validate(&self) -> Result<()> {
         if self.entries == 0
             || self.entries > 32768
             || self.nodes == 0
@@ -112,7 +112,7 @@ impl Budget {
             read_bytes: 512 * 1024 * 1024,
         }
     }
-    fn timed(&self, start: Instant) -> Result<()> {
+    pub(crate) fn timed(&self, start: Instant) -> Result<()> {
         if start.elapsed() >= Duration::from_millis(self.millis) {
             Err(Error::Budget)
         } else {
@@ -334,7 +334,42 @@ pub struct Execution<'a, R: CommittedSource + ?Sized = Repository> {
     pub metadata: &'a mut MetadataStore,
     pub allow_selection: bool,
 }
+/// Admission/current-ref failure versus unavailable scoped generation fencing.
+#[derive(Debug, PartialEq, Eq)]
+pub enum CurrentUseError {
+    Selection(Error),
+    Protection(source_claims::admission::source_use::UseError),
+}
+impl std::fmt::Display for CurrentUseError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+impl std::error::Error for CurrentUseError {}
 impl<R: CommittedSource + ?Sized> Execution<'_, R> {
+    /// Pin the exact admitted generation for bounded provider work. No selection,
+    /// byte custody or removal authority is created. The Git ref is sampled on
+    /// both sides of acquisition; callers must recheck it between effects.
+    /// Drop releases this live guard; durable source obligations remain intact.
+    pub fn hold_current(
+        &mut self,
+        p: &Plan,
+    ) -> std::result::Result<source_claims::admission::source_use::Use, CurrentUseError> {
+        let check = |e| CurrentUseError::Selection(e);
+        self.admit(p).map_err(check)?;
+        self.require_current(&p.commit).map_err(check)?;
+        let source = self.source().map_err(check)?;
+        let version = source.current.as_ref().ok_or(check(Error::Stale))?;
+        if version.selection != p.selection {
+            return Err(check(Error::Stale));
+        }
+        let held = self
+            .namespace
+            .source_use(&p.source, &p.owner, source.revision, version)
+            .map_err(CurrentUseError::Protection)?;
+        self.require_current(&p.commit).map_err(check)?;
+        Ok(held)
+    }
     fn check(&self) -> Result<()> {
         check_enrollment(self.enrollment, self.namespace)
     }

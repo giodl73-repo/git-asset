@@ -261,6 +261,27 @@ use the Rust project API. Python checker scripts are development tooling.
 The [roadmap](../PRODUCT_PLAN.md), [adoption gates](CONSUMER-ADOPTION.md) and
 [evidence register](vtrace/EVIDENCE.md) describe outstanding system obligations.
 
+Native producer declarations use an immutable, asset-side Tree through
+`annex::producer_index::Index` (annex-publish). Exact object lookup and root-bound
+pages share traversal/record read budgets, preserving original publication plans
+and optional exact retained snapshots. This performs no cache scan or payload
+read. A declaration is not current custody or eviction authority; the existing
+native publisher/controller verifies those separately. See
+[contract and fixtures](../specs/NATIVE-PRODUCER-INDEX.md). The
+[native receiver](NATIVE-RECEIVER.md) now routes authenticated commits to bounded
+copy reconciliation over fixed index roots, including dry run and held original
+publication recovery. Separately authorized [backup](../specs/TRUSTED-NATIVE-BACKUP.md)
+reverses the same copier/profiles to establish retained custody from working ingress
+before handoff. Durable handoff and registered eviction preview/apply are
+configured receiver phases; complete merge-driven acceptance remains open.
+
+[Original-action recovery](NATIVE-ACTION-RECOVERY.md) stores complete frozen
+handoff/eviction plans and both producer recipes in the existing metadata store,
+with metadata-only source retention. Durable SDK entries load that original
+before calling the qualified worker; no new journal or removal authority is
+introduced. The receiver composes saved handoff and registered eviction phases;
+safe stale-plan replacement and full transport qualification remain open.
+
 ## Storage orchestration entry
 
 The experimental git-asset-store::orchestration module binds a bounded exact plan to
@@ -275,3 +296,35 @@ enrolled journals and resolves admitted flat byte-binding roots through existing
 Tree/NodeStore ports. It joins current/pending/predecessor demands with owner and
 kind provenance; missing/opaque/changing scope remains a bounded gap. Its View
 adapter keeps complete protection false. See [scope and limits](../specs/PROTECTION-DEMAND-SNAPSHOT.md).
+
+Historical-root metadata archival is an experimental SDK component under
+[its contract](../specs/HISTORICAL-ROOT-ARCHIVE.md). It mirrors an exact historical
+tree and origin record into an existing retained metadata provider, adopts
+retained/record claims, and revision-fences release of that old working obligation.
+It preserves current selection and reports media custody as unknown. Existing
+native keeper/protection checks still govern physical eviction. See the
+[SDK/receiver guide](HISTORICAL-ROOTS.md). Authenticated history preview/apply
+pages compose this metadata-only lifecycle; producer advancement and full HTTP/
+project qualification remain open.
+
+Producer index updates use existing Tree edits, MetadataStore finish/readback and
+atomic metadata-only namespace selection. They preserve old roots, baseline-fence
+writers and recover original receipts without rolling back a newer head.
+Historical archives can rebind a row's retained membership while preserving the
+original publication recipe. This grants no media custody or eviction authority;
+receiver policy adoption remains explicit. See
+[producer-root lifecycle](NATIVE-PRODUCER-ROOTS.md).
+
+Signed native producer_heads can explicitly enroll metadata index source slots
+instead of static roots. Copy/eviction holds both current index generations,
+reports their exact pins and includes them in continuation identity. Owner index
+updates no longer require trust reenrollment per edit; binding/permission changes
+still do. There is no asset-latest fallback or index writer in a request. See the
+[head consumer contract](../specs/NATIVE-PRODUCER-ROOTS.md#explicitly-enrolled-head-consumers).
+
+Producer records can retain one completed copy/backup recipe alongside the original
+registration. Historical references can then advance without losing the exact
+native receipt lineage. Completion/settlement inspection is metadata-only; every
+consumer still verifies fresh bytes and keeps original uncertainty checks. Ordinary
+root updates cannot clear or replace the recorded recipe. See
+[recipe registration](NATIVE-PRODUCER-ROOTS.md#record-the-recipe-that-actually-completed).

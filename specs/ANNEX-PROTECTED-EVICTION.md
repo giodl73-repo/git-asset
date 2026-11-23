@@ -1,5 +1,8 @@
 # P2: participating native ordinary eviction
 
+The additive [controlled restoration SDK](NATIVE-RESTORE.md) composes completed
+eviction with the existing reacquisition engine; unexplained byte loss stays held.
+
 Inputa61cb94c9e9eb351025f059ca5c5a645035934a0 (PR71 dependency).
 WP-003/004/006/007/008/009/015/016; REQ-001..010;
 SPEC-002/003/004/005/006/007/008/009/011/013/014;

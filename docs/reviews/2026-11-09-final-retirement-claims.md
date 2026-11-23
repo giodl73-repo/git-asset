@@ -1,16 +1,6 @@
 # Final-retirement claims: historical producer record
 
-Implementation89d260ee80df004756e93318e621d6676f68c928; input59174b1.
-[Contract](../../specs/FINAL-RETIREMENT.md) retains controls and L0/L1/L2.
-The full completed review is preserved below; this stub pays source budget.
-Bounded content-scope clearance/strong ancestry/all-class fences passed focused,
-actual exit/SQLite restore/vector, regression/old-reader, both workspace/500k,
-strict Clippy/standalone/L0 checks. Full attempts and FC-01..06 are in the record.
-Six producer lenses gave scoped pass_with_risk, not independent/human approval.
-Clearance grants no custody, retention release or deletion. Hosted exact-head,
-VAL-002/003/004, FR-06..15 and all destructive/native/handoff/production/human/
-full-product gates remain OPEN. No new cache engine or live operation.
+Completed component review retained in [immutable source](https://github.com/giodl73-repo/git-asset/blob/352f17cd3ce1c8339475d4a392d1bf22672720e9/docs/reviews/2026-11-09-final-retirement-claims.md).
 
-[Full immutable record](https://github.com/giodl73-repo/git-asset/blob/0e30be2a0eadcb842cfa4c3f778595137bd56f7c/docs/reviews/2026-11-09-final-retirement-claims.md)
-
-Original SHA256: b3fc11cdba25801b5709b5e743b4c1576d54fca0592316da9af8bec48b20bf01.
+LF SHA-256: `078ec04e0957cc8e4162b50f2d69ad5d9440a0ac1950557e36e0887fadfca6e9`.
+Current contracts and adoption gates remain in specs/ and docs/CONSUMER-ADOPTION.md.

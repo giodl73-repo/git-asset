@@ -3,6 +3,8 @@ mod cli;
 mod pipeline;
 mod process;
 mod race;
+#[cfg(feature = "github")]
+mod trusted;
 use super::*;
 use crate::annex::retirement::Assessor;
 use crate::annex::retirement::planning::{
@@ -46,6 +48,16 @@ fn actual_native_eviction_retained_restore_and_stale_replay() {
     matrix(false, false, false);
 }
 fn matrix(exits: bool, races: bool, copies: bool) {
+    matrix_mode(exits, races, copies, false);
+}
+fn matrix_mode(exits: bool, races: bool, copies: bool, trusted: bool) {
+    matrix_profile(exits, races, copies, trusted, 0);
+}
+fn matrix_profile(exits: bool, races: bool, copies: bool, trusted: bool, batch: u8) {
+    let scheduled_restore = matches!(batch, 4..=6);
+    let scheduled_replan = batch == 5;
+    let scheduled_cycle = batch == 6;
+    let batch = if scheduled_restore { 0 } else { batch };
     let git: PathBuf = std::env::var_os("GIT_ASSET_TEST_GIT_EXE").unwrap().into();
     let annex: PathBuf = std::env::var_os("GIT_ASSET_TEST_ANNEX_EXE").unwrap().into();
     let path = std::env::split_paths(&std::env::var_os("GIT_ASSET_TEST_ANNEX_PATH").unwrap())
@@ -66,6 +78,9 @@ fn matrix(exits: bool, races: bool, copies: bool) {
         (false, Cut::AfterRemoval),
         (true, Cut::AfterRemoval),
     ] {
+        if trusted && (bare || cut != Cut::None) {
+            continue;
+        }
         if (exits && cut == Cut::None)
             || (races && cut != Cut::BeforeEffect)
             || (copies && cut != Cut::None)
@@ -82,17 +97,19 @@ fn matrix(exits: bool, races: bool, copies: bool) {
             }
         );
         let bytes = vec![91; 256 * 1024];
-        let mut f = Fixture::build_in(
+        let mut f = Fixture::build_setup(
             &bytes,
             Some((git.clone(), annex.clone(), path.clone())),
             bare,
             Some(&source_root),
+            trusted || copies,
         );
-        let mut backup = Fixture::build_in(
+        let mut backup = Fixture::build_setup(
             &bytes,
             Some((git.clone(), annex.clone(), path.clone())),
             !bare,
             Some(&keeper_root),
+            scheduled_cycle,
         );
         let keeper_control = Control::build(&mut backup, true);
         let source_native = crate::annex::Reader::new(f.profile.pool.pool.clone())
@@ -166,6 +183,8 @@ fn matrix(exits: bool, races: bool, copies: bool) {
         )
         .unwrap()
         .grant;
+        #[cfg(feature = "github")]
+        let mut trusted_state = trusted.then(|| trusted::State::new(&mut f, &backup, &policy));
         super::super::retirement::settle(&mut f);
         f.refresh();
         let mut prior_assessment = Assessor::new(f.profile.pool.clone())
@@ -426,7 +445,24 @@ fn matrix(exits: bool, races: bool, copies: bool) {
             )
             .unwrap();
         assert_eq!(public_preview.id().unwrap(), planned.id().unwrap());
-        let cli = cli::Client::new(&f, &backup, &policy, &planned, &pin);
+        #[cfg(feature = "github")]
+        if batch != 0 {
+            trusted_state.as_mut().unwrap().execute_batch(
+                &mut f,
+                &mut backup,
+                &planned,
+                batch == 2,
+                batch == 3,
+            );
+            continue;
+        }
+        #[cfg(not(feature = "github"))]
+        let _ = batch;
+        let cli = if trusted {
+            None
+        } else {
+            cli::Client::new(&f, &backup, &policy, &planned, &pin)
+        };
         let result = if exits {
             if races {
                 cli.as_ref()
@@ -459,6 +495,22 @@ fn matrix(exits: bool, races: bool, copies: bool) {
                     .unwrap();
                 assert_eq!(Object::from_bytes(&source_bytes), object);
                 Ok(cli.call("apply", true)["report"].clone())
+            } else if cut == Cut::None && trusted {
+                #[cfg(feature = "github")]
+                {
+                    Ok(
+                        serde_json::to_value(trusted_state.as_mut().unwrap().execute(
+                            &mut f,
+                            &mut backup,
+                            &planned,
+                        ))
+                        .unwrap(),
+                    )
+                }
+                #[cfg(not(feature = "github"))]
+                {
+                    unreachable!("trusted fixture requires github")
+                }
             } else if cut == Cut::None {
                 controller
                     .apply(
@@ -716,70 +768,97 @@ fn matrix(exits: bool, races: bool, copies: bool) {
         assert_eq!(retained_bytes, bytes);
 
         // Restore uses a new native request and an explicit new control incarnation.
-        let mut request = old_native.request.clone();
-        request.operation = k("restore-native-version");
-        request.expected_revision = f.namespaces[0]
-            .source(&k("asset"))
-            .unwrap()
-            .unwrap()
-            .revision;
-        let mut metadata =
-            MetadataStore::open(&f.root.join("metadata"), f.metadata.checkpoint()).unwrap();
-        let frozen = freeze(&request, &mut metadata, TreeLimits::default()).unwrap();
-        let checkpoint = metadata.finish().unwrap();
-        drop(metadata);
-        f.metadata = MetadataReader::open(&f.root.join("metadata"), &checkpoint).unwrap();
-        let mut control_request = source_control.plan.publication.request().clone();
-        control_request.operation = k("restore-control-version");
-        let reacquire = retirement::plan_reacquisition(
-            &source_control.store,
-            &retired,
-            control_request,
-            control::writer_context(&f.profile, &request).unwrap(),
-        )
-        .unwrap();
-        retirement::Reacquisition {
-            store: &source_control.store,
-            ledger: &mut source_control.ledger,
-            job: &source_control.job,
-        }
-        .apply(
-            &reacquire,
-            &reacquire.authorize().unwrap(),
-            &mut Cursor::new(control::document(&object).unwrap()),
-        )
-        .unwrap();
-        let restored_control = control::Plan {
-            publication: reacquire.payload_plan().clone(),
-            job: source_control.job.clone(),
-        };
-        f.plan = Plan::controlled(
-            &f.profile,
-            request,
-            frozen,
-            old_native.admission.clone(),
-            f.control_profile.as_ref().unwrap(),
-            restored_control,
-        )
-        .unwrap();
-        // Make original input unavailable: restore consumes the retained native bytes.
-        fs::remove_file(f.root.join("input/objects").join(object.sha256.as_str())).unwrap();
-        let plan = f.plan.clone();
-        f.refresh();
-        f.ledger = CapacityLedger::open(
-            &f.root.join("ledger"),
-            &policy.runtime.as_ref().unwrap().effect.minimum,
-        )
-        .unwrap();
-        let mut publisher = f.publisher();
-        let mut input = crate::annex::managed::Reader::new(backup.profile.pool.clone()).unwrap();
-        let mut restored = publisher
-            .apply(&plan, &mut f.resources(), &mut input)
+        if scheduled_restore {
+            #[cfg(feature = "github")]
+            {
+                f.plan = trusted::State::named(
+                    &mut f,
+                    &backup,
+                    &policy,
+                    "restore-pass-project",
+                    "restore-pass-main",
+                    object.clone(),
+                )
+                .restore_pass(
+                    &mut f,
+                    &mut backup,
+                    &policy,
+                    &planned,
+                    &old_native,
+                    (scheduled_replan, scheduled_cycle),
+                );
+            }
+            #[cfg(not(feature = "github"))]
+            panic!("scheduled restoration needs github");
+        } else if copies {
+            f.plan = pipeline::restore(&mut f, &mut backup, &policy, &planned, &old_native);
+        } else {
+            let mut request = old_native.request.clone();
+            request.operation = k("restore-native-version");
+            request.expected_revision = f.namespaces[0]
+                .source(&k("asset"))
+                .unwrap()
+                .unwrap()
+                .revision;
+            let mut metadata =
+                MetadataStore::open(&f.root.join("metadata"), f.metadata.checkpoint()).unwrap();
+            let frozen = freeze(&request, &mut metadata, TreeLimits::default()).unwrap();
+            let checkpoint = metadata.finish().unwrap();
+            drop(metadata);
+            f.metadata = MetadataReader::open(&f.root.join("metadata"), &checkpoint).unwrap();
+            let mut control_request = source_control.plan.publication.request().clone();
+            control_request.operation = k("restore-control-version");
+            let reacquire = retirement::plan_reacquisition(
+                &source_control.store,
+                &retired,
+                control_request,
+                control::writer_context(&f.profile, &request).unwrap(),
+            )
             .unwrap();
-        let mut actual = Vec::new();
-        restored.read_to_end(&mut actual).unwrap();
-        assert_eq!(actual, bytes);
-        drop(restored);
+            retirement::Reacquisition {
+                store: &source_control.store,
+                ledger: &mut source_control.ledger,
+                job: &source_control.job,
+            }
+            .apply(
+                &reacquire,
+                &reacquire.authorize().unwrap(),
+                &mut Cursor::new(control::document(&object).unwrap()),
+            )
+            .unwrap();
+            let restored_control = control::Plan {
+                publication: reacquire.payload_plan().clone(),
+                job: source_control.job.clone(),
+            };
+            f.plan = Plan::controlled(
+                &f.profile,
+                request,
+                frozen,
+                old_native.admission.clone(),
+                f.control_profile.as_ref().unwrap(),
+                restored_control,
+            )
+            .unwrap();
+            // Make original input unavailable: restore consumes the retained native bytes.
+            fs::remove_file(f.root.join("input/objects").join(object.sha256.as_str())).unwrap();
+            let plan = f.plan.clone();
+            f.refresh();
+            f.ledger = CapacityLedger::open(
+                &f.root.join("ledger"),
+                &policy.runtime.as_ref().unwrap().effect.minimum,
+            )
+            .unwrap();
+            let mut publisher = f.publisher();
+            let mut input =
+                crate::annex::managed::Reader::new(backup.profile.pool.clone()).unwrap();
+            let mut restored = publisher
+                .apply(&plan, &mut f.resources(), &mut input)
+                .unwrap();
+            let mut actual = Vec::new();
+            restored.read_to_end(&mut actual).unwrap();
+            assert_eq!(actual, bytes);
+            drop(restored);
+        }
         // Old completion is explicitly historical, and cannot remove this same-hash birth.
         let historical = controller
             .resume(
@@ -831,4 +910,53 @@ fn actual_native_executor_fences_conflicts_and_allows_unrelated_metadata() {
 fn actual_native_controlled_copy_retained_eviction_and_restore_pipeline() {
     assert!(std::env::var_os("GIT_ASSET_TEST_FRONT_DOOR_EXE").is_some());
     matrix(false, false, true);
+}
+
+#[cfg(feature = "github")]
+#[test]
+#[ignore = "explicit native tools and distinct owned volumes; bounded restore scheduler"]
+fn actual_restore_pass_preview_apply_and_new_head_retry() {
+    matrix_profile(false, false, true, false, 4);
+}
+
+#[cfg(feature = "github")]
+#[test]
+#[ignore = "explicit native tools and distinct synthetic volumes only"]
+fn actual_trusted_git_eviction_rechecks_expiry_after_custody() {
+    matrix_mode(false, false, false, true);
+}
+
+#[cfg(feature = "github")]
+#[test]
+#[ignore = "explicit native tools and distinct synthetic volumes only"]
+fn actual_registered_eviction_preview_protection_expiry_and_saved_replay() {
+    matrix_profile(false, false, false, true, 1);
+}
+
+#[cfg(feature = "github")]
+#[test]
+#[ignore = "explicit native tools and distinct synthetic volumes only"]
+fn actual_registered_eviction_uncertain_saved_intent_never_repeats_removal() {
+    matrix_profile(false, false, false, true, 2);
+}
+
+#[cfg(feature = "github")]
+#[test]
+#[ignore = "explicit native tools and distinct synthetic volumes only"]
+fn actual_named_producer_heads_eviction_protection_expiry_and_saved_replay() {
+    matrix_profile(false, false, false, true, 3);
+}
+
+#[cfg(feature = "github")]
+#[test]
+#[ignore = "explicit native tools and distinct owned volumes; retained stale index successor"]
+fn actual_restore_replan_preserves_original_and_never_reimports() {
+    matrix_profile(false, false, true, false, 5);
+}
+
+#[cfg(feature = "github")]
+#[test]
+#[ignore = "explicit native tools and distinct owned volumes; ordered enrolled revert flow"]
+fn actual_ordered_placement_restores_revert_before_copy_history_and_eviction() {
+    matrix_profile(false, false, true, false, 6);
 }

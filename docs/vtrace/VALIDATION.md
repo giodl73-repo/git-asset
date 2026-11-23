@@ -601,3 +601,9 @@ enrollment. Full curriculum, physical custody and human acceptance remain open.
 EVID-145: synthetic retained copy/reopen; no native pruning or production acceptance.
 
 EVID-146: exact shared-root metadata only, not bytes/pruning/production.
+
+Archive-index validation uses synthetic committed historical definitions and
+owned ordinary/bare native pools. Same bytes across a renamed definition exercise
+metadata archival before working release; absent producer evidence leaves the
+working predecessor protected. This does not validate different-byte initial
+admission, retained control handoff, scale, HTTP or project-owner acceptance.

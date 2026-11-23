@@ -224,6 +224,39 @@ fn receiver_cli_discovery_and_default_disabled_startup_never_open_machine_roots(
     assert_eq!(described["default_receive"], false);
     assert_eq!(described["loopback_only"], true);
     assert_eq!(described["installs_service"], false);
+    assert_eq!(
+        described["native_copy_reconciliation"],
+        cfg!(feature = "annex-publish")
+    );
+    assert_eq!(
+        described["native_producer_head_resolution"],
+        cfg!(feature = "annex-publish")
+    );
+    assert!(described["native_storage_convergence"].is_null());
+    assert_eq!(
+        described["native_storage_phases"],
+        if cfg!(feature = "annex-publish") {
+            json!([
+                "copy",
+                "history_preview",
+                "history_apply",
+                "eviction_preview",
+                "eviction_apply",
+                "restore_preview",
+                "restore_apply",
+                "restore_replan",
+                "registration_preview",
+                "registration_apply",
+                "placement_apply"
+            ])
+        } else {
+            json!([])
+        }
+    );
+    assert_eq!(
+        described["native_payload_supported"],
+        cfg!(all(feature = "annex-publish", windows))
+    );
     let mut f = Fixture::new();
     let key = |s: &str| Key::parse(s).unwrap();
     let places = Places {
