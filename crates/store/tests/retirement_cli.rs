@@ -88,6 +88,19 @@ fn render_inputs_require_exact_settled_retention() {
         serde_json::from_slice::<Value>(&refused.stdout).unwrap()["code"],
         "input_budget"
     );
+    request["max_bytes"] = json!(f.publication.object.bytes);
+    let payload = root
+        .join("backup/objects")
+        .join(f.publication.object.sha256.as_str());
+    let corrupt = vec![b'x'; usize::try_from(f.publication.object.bytes).unwrap()];
+    fs::write(&payload, &corrupt).unwrap();
+    let refused = run(&request);
+    assert!(!refused.status.success());
+    assert_eq!(
+        serde_json::from_slice::<Value>(&refused.stdout).unwrap()["code"],
+        "retained_input_unverified"
+    );
+    assert_eq!(fs::read(payload).unwrap(), corrupt);
 }
 struct Fixture {
     root: tempfile::TempDir,
