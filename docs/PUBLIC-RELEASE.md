@@ -48,6 +48,43 @@ The public snapshot needs no historical scanner exception. The original private
 history's exact prose false positive remains a private audit concern, not a public
 path/rule suppression. Security reporting is described in [SECURITY.md](../SECURITY.md).
 
+## Windows packaging preflight
+
+From a clean Windows checkout, pass its full commit and two absolute paths
+outside the checkout. The staging directory must be new.
+
+```powershell
+pwsh -NoProfile -File tools/stage-windows-bundle.ps1 -Commit COMMIT -TargetDirectory BUILD_PATH -Stage STAGE_PATH
+```
+
+Add `-Archive ABSOLUTE_NEW_ZIP` to create a ZIP, verify each archive entry
+against staging, and print the ZIP checksum.
+
+The locked release build stages the front door and all advertised companion
+executables. The manifest records the source, available native storage surface
+and file checksums. The script checks dispatch without opening any cache. Git,
+git-annex and other external tools are installed separately.
+
+For a local upgrade rehearsal, unpack each bundle into a separate directory
+and match the files to its manifest. Start a fresh shell outside either bundle,
+put the baseline directory first on that shell's `PATH`, and run:
+
+```powershell
+(Get-Command git-asset.exe).Source
+git asset describe
+git asset catalogue check ABSOLUTE_SYNTHETIC_ENROLLMENT
+```
+
+Repeat with the newer directory first, then restore the baseline order and
+repeat again. Check that the executable path and advertised capabilities match
+the intended bundle and that the same catalogue opens read-only. Keep the
+baseline bundle and its manifest available. Production rollback also requires
+the original enrollment, protection and unfinished-operation evidence.
+
+P5 qualification still requires distribution notices, clean-machine execution,
+the setup and rollback rehearsal, and accepted upstream P3/P4 inputs. See the
+[roadmap](../PRODUCT_PLAN.md).
+
 ## Future publication boundaries
 
 Before moving a private source/hosting surface into public view, obtain explicit
