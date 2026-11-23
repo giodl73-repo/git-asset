@@ -8,12 +8,15 @@ $ErrorActionPreference = 'Stop'
 if (!$IsWindows) { throw 'This preflight builds Windows executables.' }
 
 $source = Split-Path -Parent $PSScriptRoot
-$head = git -C $source rev-parse HEAD
-if ($LASTEXITCODE -ne 0 -or $Commit -cnotmatch '^[0-9a-f]{40}$' -or $head -cne $Commit) {
-    throw 'Pass the exact checked-out source commit.'
+function Confirm-Source {
+    $head = git -C $source rev-parse HEAD
+    if ($LASTEXITCODE -ne 0 -or $Commit -cnotmatch '^[0-9a-f]{40}$' -or $head -cne $Commit) {
+        throw 'Pass the exact checked-out source commit.'
+    }
+    $changes = git -C $source status --porcelain
+    if ($LASTEXITCODE -ne 0 -or $changes) { throw 'The source checkout must be clean.' }
 }
-$changes = git -C $source status --porcelain
-if ($LASTEXITCODE -ne 0 -or $changes) { throw 'The source checkout must be clean.' }
+Confirm-Source
 
 foreach ($path in @($TargetDirectory, $Stage)) {
     if (![IO.Path]::IsPathFullyQualified($path)) { throw 'Use absolute output paths.' }
@@ -32,6 +35,7 @@ try {
     Pop-Location
 }
 
+Confirm-Source
 $binaries = Join-Path $TargetDirectory 'release'
 $front = Join-Path $binaries 'git-asset.exe'
 $surface = & $front describe | ConvertFrom-Json
