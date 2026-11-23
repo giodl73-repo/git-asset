@@ -20,6 +20,8 @@ captures exact source protection, owner registration, archive index and
 release fencing qualification. Current fixture adds authenticated transfer of
 Git-selected working bytes to the retained pool before historical release.
 
+Local HTTP-to-annex and [hosted issuer qualification](https://github.com/giodl73-repo/git-asset/actions/runs/45119397190) passed at 6932a30. Hosted project-storage execution remains open.
+
 The receiver supports explicit saved registration and archive index successors. Full HTTP,
 scale, mixed-authority handoff, consumer acceptance and rollout remain open.
 
