@@ -162,6 +162,30 @@ fn fixture() -> (tempfile::TempDir, Profile, Object, PathBuf) {
 }
 #[cfg(windows)]
 #[test]
+fn native_observation_does_not_verify_equal_length_payloads() {
+    let (_root, profile, object, file) = fixture();
+    let mut reader = Reader::new(profile).unwrap();
+    fs::write(file, vec![0; object.bytes as usize]).unwrap();
+    assert_eq!(reader.observe(&object).unwrap(), object.bytes);
+    assert_eq!(reader.verification_bytes(), 0);
+    assert!(matches!(
+        reader.open(&object),
+        Err(Error::Bytes(existing::Error::Integrity))
+    ));
+}
+
+#[cfg(windows)]
+#[test]
+fn native_observation_reports_missing_after_location_is_resolved() {
+    let (_root, profile, object, path) = fixture();
+    fs::remove_file(path).unwrap();
+    let mut reader = Reader::new(profile).unwrap();
+    assert!(matches!(reader.observe(&object), Err(Error::Missing)));
+    assert_eq!(reader.verification_bytes(), 0);
+}
+
+#[cfg(windows)]
+#[test]
 fn exact_bytes_are_guarded_without_global_info_or_mutating_commands() {
     let (root, p, object, path) = fixture();
     let mut reader = Reader::new(p).unwrap();
@@ -304,6 +328,12 @@ fn actual_native_ordinary_and_bare_reads_are_exact_local_and_guarded() {
         p.configuration = Object::from_bytes(&fs::read(&cfg).unwrap());
         let before = p.configuration.clone();
         let mut reader = Reader::new(p.clone()).unwrap();
+        assert_eq!(reader.observe(&object).unwrap(), object.bytes);
+        assert_eq!(reader.verification_bytes(), 0);
+        assert!(matches!(
+            reader.observe(&Object::from_bytes(b"absent")),
+            Err(Error::Missing)
+        ));
         let mut held = reader.open(&object).unwrap();
         let mut bytes = vec![];
         held.read_to_end(&mut bytes).unwrap();

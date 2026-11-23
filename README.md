@@ -206,18 +206,27 @@ checks; a sizing worksheet grants no deletion authority.
 
 ## Try the public sample
 
-Create a two-project review workspace, then check and serve its catalogue:
+Start with a synthetic catalogue and two projects. You can try it without
+enrolling your storage or touching your project's assets.
+
+- **Windows preview:** Open a successful [Windows bundle workflow run](https://github.com/giodl73-repo/git-asset/actions/workflows/qualify-windows-bundle.yml).
+  Download and extract its `git-asset-windows-preflight` artifact, then extract
+  the ZIP inside. Put the directory containing `git-asset.exe` and its companion
+  executables on PATH alongside Git. The preview commands below need Git and
+  the bundle. This sample uses no git-annex repository.
+- **Build from source:** Use the [development setup](docs/DEVELOPMENT.md), then
+  run `cargo build --locked -p git-asset --features schema --bins` and put the
+  resulting binaries on PATH.
+
+In a new terminal, replace `NEW_SAMPLE` with a new absolute directory whose
+parent exists. Quote the path if it contains spaces.
 
 ```text
-cargo run -p git-asset --features schema --bin git-asset-sample --locked -- rehearse-review NEW_SAMPLE
-cargo run -p git-asset --features schema --bin git-asset-catalogue --locked -- check NEW_SAMPLE/catalogue.json
-cargo run -p git-asset --features schema --bin git-asset-catalogue --locked -- serve NEW_SAMPLE/catalogue.json 8801
+git asset describe
+git asset sample rehearse-review NEW_SAMPLE
+git asset catalogue check NEW_SAMPLE/catalogue.json
+git asset catalogue serve NEW_SAMPLE/catalogue.json 8801
 ```
-
-Use the [development setup](docs/DEVELOPMENT.md) for external build/temp roots.
-Replace `NEW_SAMPLE` with a new absolute path outside Git checkouts; its parent
-must exist. With service binaries on PATH, generation is also
-`git asset sample rehearse-review NEW_SAMPLE`.
 
 Open `http://127.0.0.1:8801`. Compare intro-v2 and recovery-v1 projects, find their
 shared 25-byte asset, and step through eleven recovery lessons. These use tiny

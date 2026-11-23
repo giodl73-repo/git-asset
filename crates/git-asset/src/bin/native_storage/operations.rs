@@ -7,7 +7,7 @@ use git_asset::annex::{
     self,
     retirement::planning::{self, Controller, Nodes, Sources},
 };
-use git_asset_core::{Digest, identity};
+use git_asset_core::{Digest, Object, identity};
 use git_asset_store::{
     Key, accounted, ledger::CapacityLedger, local::LocalStore, retention::RetentionGrant,
 };
@@ -23,6 +23,8 @@ struct Request {
     operation: Key,
     snapshot: annex::snapshot::Snapshot,
     grant: RetentionGrant,
+    #[serde(default)]
+    reviewed_object: Option<Object>,
 }
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -168,6 +170,13 @@ pub(super) fn run(args: &[OsString]) -> Result<Value> {
         let request: Request = profile::parse(&profile::raw(Path::new(&args[2]), 65536)?)?;
         if request.schema != REQUEST {
             return Err("unsupported");
+        }
+        if let Some(reviewed) = &request.reviewed_object
+            && (reviewed != &request.snapshot.object
+                || reviewed != &p.source.plan.candidate().object
+                || reviewed != &p.keeper.plan.candidate().object)
+        {
+            return Err("stale");
         }
         return fresh(&p, Some(request), None);
     }

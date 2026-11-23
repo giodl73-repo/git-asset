@@ -23,6 +23,9 @@ pub struct Place {
     pub report_tier: Option<usize>,
     #[serde(default)]
     pub live_probe: bool,
+    #[cfg(feature = "annex-read")]
+    #[serde(default)]
+    pub annex: Option<crate::annex::Profile>,
 }
 #[derive(Clone, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -75,12 +78,21 @@ pub fn validate(p: &Profile) -> Result<()> {
     {
         return Err("Invalid storage enrollment or budgets".into());
     }
+    #[cfg(feature = "annex-read")]
+    for place in &p.places {
+        if let Some(native) = &place.annex {
+            crate::annex::Reader::new(native.clone())
+                .map_err(|_| "Invalid native cache enrollment")?;
+        }
+    }
+    let mut slots = BTreeSet::new();
     let mut labels = BTreeSet::new();
     let mut tiers = BTreeSet::new();
     for place in &p.places {
         if place.label.is_empty()
             || place.label.len() > 120
             || place.place_index > 15
+            || !slots.insert(place.place_index)
             || !labels.insert(&place.label)
             || place.report_tier.is_some_and(|n| !tiers.insert(n))
         {

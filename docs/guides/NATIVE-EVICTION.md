@@ -70,15 +70,20 @@ verified keeper location, and reviewed project snapshots. These identify the
 candidate and the evidence used to review it. An archive byte check alone
 does not establish retained custody.
 
-The catalogue's direct byte checks use explicitly enrolled Flat, Git LFS, or
-REEL CAS layouts. For an ordinary or bare Git-annex repository, use the native
-provider's verification. Do not enroll its internal annex object directory as
-a Flat cache or treat a legacy alias as a second retained copy.
+For ordinary or bare Git-annex stores, use the catalogue's explicitly enrolled
+native cache place. **Verify bytes at …** verifies the named native copy through
+that provider. A legacy alias can share the same underlying file and does not
+establish independent retention.
 
 The native planner takes a private profile with the original source and keeper
-publication plans. Use the candidate hash and length to match both originals,
-then supply the keeper's exact retained snapshot and retention grant. The
-catalogue does not currently generate these planning inputs. If the originals,
+publication plans. Open **Native plan request field** on the catalogue candidate
+and copy its JSON into the request as `reviewed_object`. In API output the
+descriptor is `eviction_review.reviewed_object`; use `reviewed_object_json` for
+a verbatim copy from JavaScript. Then supply the keeper's exact retained
+snapshot and retention grant. The CLI refuses a mismatch against either
+original plan or the snapshot before opening stores. The descriptor binds
+content identity and length. Runtime placement and removal authority come from
+the private profile and revalidated proofs. If the originals,
 snapshot, grant, or writer authority cannot be established, leave the candidate
 held. Never substitute a different snapshot or keeper for a saved plan.
 

@@ -134,10 +134,37 @@ impl Catalogue {
         let mut snapshots = BTreeMap::new();
         for (id, p) in &self.projects {
             snapshots.insert(id.clone(), p.commit.clone());
-            let Some(reader) = &p.profile.byte_source else {
-                continue;
-            };
-            for (index, location) in reader.places.iter().enumerate() {
+            let locations = p.profile.byte_source.iter().flat_map(|reader| {
+                reader
+                    .places
+                    .iter()
+                    .enumerate()
+                    .map(|(index, place)| (index, &place.root, format!("{:?}", place.layout)))
+            });
+            #[cfg(feature = "annex-read")]
+            let locations = locations
+                .filter(|(index, _, _)| {
+                    !p.enrollment
+                        .storage
+                        .iter()
+                        .flat_map(|s| &s.places)
+                        .any(|place| place.place_index == *index && place.annex.is_some())
+                })
+                .chain(
+                    p.enrollment
+                        .storage
+                        .iter()
+                        .flat_map(|s| &s.places)
+                        .filter_map(|place| {
+                            let native = place.annex.as_ref()?;
+                            Some((
+                                place.place_index,
+                                &native.repository,
+                                format!("annex:{}:{}", native.uuid, native.bare),
+                            ))
+                        }),
+                );
+            for (index, root, provider) in locations {
                 let may_resolve = measure
                     && p.enrollment.storage.as_ref().is_some_and(|s| {
                         s.places
@@ -147,15 +174,15 @@ impl Catalogue {
                     && self
                         .storage_domains
                         .iter()
-                        .any(|d| d.live_probe && contains(&d.root, &location.root));
+                        .any(|d| d.live_probe && contains(&d.root, root));
                 let resolved = if may_resolve {
-                    std::fs::canonicalize(&location.root).ok()
+                    std::fs::canonicalize(root).ok()
                 } else {
                     None
                 };
-                let effective_root = resolved.as_deref().unwrap_or(&location.root);
+                let effective_root = resolved.as_deref().unwrap_or(root);
                 // Exact provider locator, not a claim that different roots are independent.
-                let key = format!("{}|{:?}", normalize(effective_root), location.layout);
+                let key = format!("{}|{provider}", normalize(effective_root));
                 locators.insert((id.clone(), index), key.clone());
                 let domain = self
                     .storage_domains
@@ -164,7 +191,7 @@ impl Catalogue {
                     .max_by_key(|d| normalize(&d.root).len())
                     .map(|d| d.id.clone());
                 let cache = caches.entry(key.clone()).or_insert_with(|| Cache {
-                    root: location.root.to_string_lossy().into_owned(),
+                    root: root.to_string_lossy().into_owned(),
                     resolved_root: resolved.clone(),
                     domain: domain.clone(),
                     ..Cache::default()
