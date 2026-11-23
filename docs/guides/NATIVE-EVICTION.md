@@ -62,6 +62,25 @@ The ordinary/bare synthetic native fixture exercises the SDK preview, fresh
 apply, readonly status, historical resume, cancellation and retained restore.
 No cache operations run on startup, help or construction.
 
+## Qualify one existing cache scope
+
+Start with one enrolled root and one provider-owned area. Review object-store
+eviction and owned job/staging cleanup separately. Record the following in a
+private operational record.
+
+| Evidence | What the owner checks |
+| --- | --- |
+| Scope and identities | Record project, enrolled cache and area, provider/store identity, device, and writer epoch. Include other roots or worktrees that can address the same representation. |
+| Writer coverage | Account for services, scheduled tasks, interactive tools and restarted or paused processes. Record the effect boundary that prevents each former writer from mutating the admitted area. A profile declaration alone does not establish this. |
+| Work and recovery | Reconcile active jobs, reservations and unsettled operations against their authoritative ledger and owner. For scratch, prove that the exact directory belongs to the closed operation and that no retry or outstanding handoff depends on it. Time since modification is inventory evidence only. |
+| Retained data | For working-copy eviction, verify the independent keeper and retention under the current authority. For scratch, trace acknowledged outputs to their retained receipts before considering cleanup. |
+| Qualification evidence | Exercise an old actor resuming, a new claim, an alias, and a replaced object or scratch identity. Save the exact scope and evidence used for the decision. Unresolved rows hold that scope. |
+
+The native controller currently accepts namespace-owned, unshared backing.
+An owner record documents the checks for a future handoff; it cannot enable
+mixed legacy execution. A separately enrolled namespace-owned scope can qualify
+on its own evidence while shared scopes remain under review.
+
 ## From cache review to a saved plan
 
 Start with [the catalogue cache review](CATALOGUE-REVIEW.md#review-a-cache-for-eviction).
@@ -131,3 +150,63 @@ fails after an operation, inspect the original saved plan; do not assume rollbac
 Status opens no metadata writer or keeper payload. Cancellation needs surviving
 source bytes, not an online keeper. Historical resume uses existing lifecycle
 requirements; unavailable required metadata/custody still holds reconciliation.
+
+## Archive one existing cache object
+
+`git asset storage archive describe` discovers the Windows command. Prepare an
+absolute private JSON request with schema
+`git-asset.cache-archive-request.experimental-1`, exact `object` (SHA-256 and
+bytes), `source` and `archive` (`root` and `layout` for each), and
+`minimum_free_bytes`. Use existing, distinct cache roots.
+
+1. `git asset storage archive plan REQUEST` verifies the source and reports a
+   plan digest. It creates no directories or files.
+2. `git asset storage archive apply REQUEST EXPECTED_PLAN` rechecks the exact
+   request, checks available capacity, and publishes without overwriting.
+3. `git asset storage archive status REQUEST` verifies the exact archive copy
+   without rereading the source. Keep the JSON report with the original request.
+   Retry with the same request and plan after checking an uncertain outcome.
+
+Verified readback proves the named archive copy at the time of the check.
+The report does not establish durable retention, writer handoff or removal
+authority. Keep the original working copies until those checks pass.
+
+For a drive-level inventory, run
+`git asset catalogue eviction-report ENROLLMENT PROJECT COMMIT CACHE_ROOT NEW_REPORT`.
+It refreshes named metadata at the exact enrolled commit, counts all observed
+objects in the selected cache, and writes its largest 100 rows to a new report.
+The single-link allocation bucket is a verification queue. The report keeps
+safe reclaim unknown while current protection and independently retained
+custody remain unverified.
+
+`git asset catalogue cache-inventory ENROLLMENT PROJECT CACHE_ROOT NEW_REPORT`
+explicitly walks one existing live-probe cache on Windows. It reads file
+metadata only, reports physical allocation once per hard-linked file and
+stops at two million entries or fifteen minutes. Excluded/unreadable
+entries and exhausted budgets mark the observation incomplete. The walk
+does not check Git selection, retention, current jobs or reclamation
+authorization and does not run on catalogue startup.
+
+`git asset catalogue selection-usage ENROLLMENT PROJECT COMMIT CACHE_ROOT NEW_REPORT`
+reports physical allocation in named, size-matching objects at the exact
+enrolled snapshot. It separates directly selected objects, declared previous
+revisions, other direct bindings and explicit retirement. Current selection
+takes precedence when an exact object has multiple bindings. Missing nested
+and job coverage does not imply unused bytes.
+
+`git asset storage archive estimate MANIFEST` accepts a private, bounded JSON
+document with schema `git-asset.cache-archive-estimate.experimental-1`,
+`archive` (root and layout) and an `objects` array of exact SHA-256 and byte
+length pairs. It measures free space on that volume and checks only named
+object paths. Matching length does not prove integrity. Additional logical
+bytes exclude uncertain paths and allocation overhead.
+
+For one report per enrolled Windows cache root, run
+`git asset catalogue drive-report ENROLLMENT PROJECT COMMIT CACHE_ROOT NEW_REPORT`.
+Use the full commit ID and a new absolute output path. The JSON includes the
+physical cache inventory by area, allocation by named selection class, and
+the eviction review with candidate states and the largest observed items.
+The three observations overlap and can see concurrent changes. Use the
+inventory for allocation totals, including distinct allocation of files with multiple hard links. A file can have a link outside the scanned root. Use the eviction review to choose which
+candidates to verify. Safe reclaim stays unknown until execution prerequisites
+are established. The report does not open payloads or remove cache files.

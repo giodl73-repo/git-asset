@@ -146,3 +146,15 @@ absent cache birth. Required destinations keep explicit final reacquisition;
 provider formats and removal authority remain unchanged. The private helper and
 13 focused SDK entries/3 actual exits are implemented and strictly checked; broad
 profiles/source/artifact/hosted and full acceptance remain separate gates.
+
+## Explicit cache-to-archive byte copy
+
+Input 6a3fdf1. Uses the placement controls above and the existing verified copy
+and guarded local readers. Entry is one exact object, two existing cache roots,
+and explicit apply of the request digest. Preview opens no writer. Destination
+layout determines the named object path; a same-root or nested root selection,
+a conflicting destination, or insufficient observed capacity refuses.
+Application retains the source and reopens the published archive object.
+L0 format/pins/structure; L1 locked command tests and Clippy; L2 named synthetic
+cache-to-archive and same-request retry. This is point-in-time byte integrity.
+Existing retention, writer fencing and physical eviction require their own proof.

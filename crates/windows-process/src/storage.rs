@@ -57,6 +57,11 @@ fn hash(domain: &[u8], bytes: &[u8]) -> [u8; 32] {
 }
 /// Query a named regular file handle. Reparse points are outside this view.
 pub fn hard_links(file: &File) -> io::Result<u64> {
+    file_identity(file).map(|(_, _, links)| links)
+}
+
+/// Volume serial, file index and link count from one ordinary Windows file.
+pub fn file_identity(file: &File) -> io::Result<(u32, u64, u64)> {
     use windows_sys::Win32::Storage::FileSystem::{
         BY_HANDLE_FILE_INFORMATION, FILE_ATTRIBUTE_DIRECTORY, FILE_ATTRIBUTE_REPARSE_POINT,
         GetFileInformationByHandle,
@@ -71,7 +76,12 @@ pub fn hard_links(file: &File) -> io::Result<u64> {
     {
         return Err(unsupported());
     }
-    Ok(u64::from(info.nNumberOfLinks))
+    let index = (u64::from(info.nFileIndexHigh) << 32) | u64::from(info.nFileIndexLow);
+    Ok((
+        info.dwVolumeSerialNumber,
+        index,
+        u64::from(info.nNumberOfLinks),
+    ))
 }
 
 fn volume_name(directory: &File) -> io::Result<String> {

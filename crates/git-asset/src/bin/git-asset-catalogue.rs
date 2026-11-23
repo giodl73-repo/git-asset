@@ -19,17 +19,140 @@ fn save(report: &serde_json::Value, path: &str) -> Result<(), String> {
         .and_then(|_| file.sync_all())
         .map_err(|_| "Cannot finish report; partial output is not evidence".into())
 }
+fn eviction_report(
+    catalogue: &mut Catalogue,
+    project: &str,
+    commit: &str,
+    root: &Path,
+) -> Result<serde_json::Value, String> {
+    let refresh = catalogue.observe_registered(project, commit, "")?;
+    let storage = catalogue.global_storage("", "", true, 0)?;
+    let candidates = storage["caches"]
+        .as_array()
+        .ok_or("Cache locations unavailable")?;
+    let mut matched = candidates
+        .iter()
+        .filter(|c| c["root"].as_str().is_some_and(|s| Path::new(s) == root));
+    let cache = matched.next().ok_or("Cache root is not enrolled")?;
+    if matched.next().is_some() {
+        return Err("Cache root names multiple provider locations".into());
+    }
+    let id = cache["review_cache"]
+        .as_str()
+        .ok_or("Cache identity unavailable")?;
+    let review = catalogue.cache_eviction_preview(id, 0, "")?;
+    let volume = storage["domains"]
+        .as_array()
+        .and_then(|d| d.iter().find(|d| d["id"] == cache["domain"]));
+    let summary = serde_json::json!({"project":project,"snapshot":commit,"cache":root,
+            "observed_objects":review["total"],"observed_file_bytes":review["stored_file_bytes"],
+            "free_bytes":volume.map(|d| &d["free"]),"reclaim_by_state":review["reclaim_summary"],
+            "safe_reclaimable_bytes":null,"removal_authorized":false,"refresh":refresh});
+    let report = serde_json::json!({"summary":summary,"basis":review["page_basis"],"snapshots":review["snapshots"],"largest_observed":review["items"]});
+    Ok(report)
+}
 fn run() -> Result<(), String> {
     let args: Vec<_> = std::env::args().skip(1).collect();
     if args.len() < 2
         || !matches!(
             args[0].as_str(),
-            "check" | "serve" | "shared" | "references"
+            "check"
+                | "serve"
+                | "shared"
+                | "references"
+                | "eviction-report"
+                | "cache-inventory"
+                | "selection-usage"
+                | "drive-report"
         )
     {
-        return Err("usage: git-asset-catalogue check ENROLLMENT | serve ENROLLMENT [PORT] | shared ENROLLMENT LEFT RIGHT NEW_REPORT [CATEGORY] | references ENROLLMENT SHA256 NEW_REPORT [PROJECT] [OFFSET]".into());
+        return Err("usage: git-asset-catalogue check ENROLLMENT | serve ENROLLMENT [PORT] | shared ENROLLMENT LEFT RIGHT NEW_REPORT [CATEGORY] | references ENROLLMENT SHA256 NEW_REPORT [PROJECT] [OFFSET] | eviction-report ENROLLMENT PROJECT COMMIT CACHE_ROOT NEW_REPORT | cache-inventory ENROLLMENT PROJECT CACHE_ROOT NEW_REPORT | selection-usage|drive-report ENROLLMENT PROJECT COMMIT CACHE_ROOT NEW_REPORT".into());
     }
     let config = Config::load(Path::new(&args[1]))?;
+    if args[0] == "drive-report" {
+        #[cfg(all(windows, feature = "annex-read"))]
+        {
+            if args.len() != 6 || !Path::new(&args[5]).is_absolute() {
+                return Err(
+                    "drive-report requires ENROLLMENT PROJECT COMMIT CACHE_ROOT NEW_REPORT".into(),
+                );
+            }
+            let root = Path::new(&args[4]);
+            let inventory = git_asset::catalogue::storage::inventory::run(&config, &args[2], root)?;
+            let selection = git_asset::catalogue::storage::inventory::selection_usage(
+                &config, &args[2], &args[3], root,
+            )?;
+            let (eviction, eviction_error) = match Catalogue::load(config)
+                .and_then(|mut catalogue| eviction_report(&mut catalogue, &args[2], &args[3], root))
+            {
+                Ok(review) => (Some(review), None),
+                Err(error) => (None, Some(error)),
+            };
+            let report = serde_json::json!({
+                "schema":"git-asset.drive-report.experimental-1", "eviction_review":eviction,
+                "eviction_review_error":eviction_error,
+                "inventory":inventory,"selection_usage":selection,
+                "observations_overlap":true,"atomic_observation":false,
+                "safe_reclaim_bytes":null,"removal_authorized":false
+            });
+            save(&report, &args[5])?;
+            println!(
+                "{}",
+                serde_json::json!({
+                    "report":args[5],"allocated_bytes":inventory["counts"]["unique_allocated_bytes"],
+                    "all_inventory_entries_accounted_for":inventory["all_entries_accounted_for"],
+                    "eviction_review_available":eviction.is_some(),
+                    "safe_reclaim_bytes":null
+                })
+            );
+            return Ok(());
+        }
+        #[cfg(not(all(windows, feature = "annex-read")))]
+        return Err("drive-report requires Windows file identity support".into());
+    }
+    if args[0] == "selection-usage" {
+        #[cfg(all(windows, feature = "annex-read"))]
+        {
+            if args.len() != 6 || !Path::new(&args[5]).is_absolute() {
+                return Err(
+                    "selection-usage requires ENROLLMENT PROJECT COMMIT CACHE_ROOT NEW_REPORT"
+                        .into(),
+                );
+            }
+            let report = git_asset::catalogue::storage::inventory::selection_usage(
+                &config,
+                &args[2],
+                &args[3],
+                Path::new(&args[4]),
+            )?;
+            save(&report, &args[5])?;
+            println!("{report}");
+            return Ok(());
+        }
+        #[cfg(not(all(windows, feature = "annex-read")))]
+        return Err("selection-usage requires Windows file identity support".into());
+    }
+    if args[0] == "cache-inventory" {
+        #[cfg(all(windows, feature = "annex-read"))]
+        {
+            if args.len() != 5 {
+                return Err(
+                    "cache-inventory requires project, absolute cache root and new report path"
+                        .into(),
+                );
+            }
+            let report = git_asset::catalogue::storage::inventory::run(
+                &config,
+                &args[2],
+                Path::new(&args[3]),
+            )?;
+            save(&report, &args[4])?;
+            println!("{report}");
+            return Ok(());
+        }
+        #[cfg(not(all(windows, feature = "annex-read")))]
+        return Err("cache-inventory requires Windows file identity support".into());
+    }
     if args[0] == "shared" {
         if !(5..=6).contains(&args.len()) || !Path::new(&args[4]).is_absolute() {
             return Err("shared requires enrollment, two project IDs and an absolute new report path; category is optional".into());
@@ -78,7 +201,19 @@ fn run() -> Result<(), String> {
             config.projects.len()
         );
     }
-    let catalogue = Catalogue::load(config)?;
+    let mut catalogue = Catalogue::load(config)?;
+    if args[0] == "eviction-report" {
+        if args.len() != 6
+            || !Path::new(&args[4]).is_absolute()
+            || !Path::new(&args[5]).is_absolute()
+        {
+            return Err("eviction-report requires project, exact commit, absolute cache root and new report path".into());
+        }
+        let report = eviction_report(&mut catalogue, &args[2], &args[3], Path::new(&args[4]))?;
+        save(&report, &args[5])?;
+        println!("{}", report["summary"]);
+        return Ok(());
+    }
     if args[0] == "check" {
         if args.len() != 2 {
             return Err("check requires one enrollment".into());
