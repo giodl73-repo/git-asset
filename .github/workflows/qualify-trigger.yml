@@ -65,3 +65,48 @@ jobs:
           $result = $LASTEXITCODE
           Remove-Item Env:GIT_ASSET_REAL_GITHUB_OIDC
           exit $result
+  windows-native-copy:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: windows-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+    env:
+      CARGO_INCREMENTAL: '0'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec
+      - name: Qualify authenticated loopback copy with pinned Git-annex
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $hash = '6fd4dacc072476df20c79ae270418c40d5d2502bff31b4f017b4ceb52a2e7f9c'
+          $root = Join-Path $env:RUNNER_TEMP 'git-asset-native-copy'
+          New-Item -ItemType Directory -Path $root | Out-Null
+          $installer = Join-Path $root 'git-annex-installer.exe'
+          $url = "https://archive.org/download/git-annex-builds/SHA256E-s38971822--$hash.exe"
+          curl.exe --fail --location --silent --show-error --max-time 180 --output $installer $url
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if ((Get-Item -LiteralPath $installer).Length -ne 38971822 -or
+              (Get-FileHash -LiteralPath $installer).Hash -ne $hash) {
+            throw 'The Windows Git-annex 10.20261113 installer does not match the pin'
+          }
+          $runtime = Join-Path $root 'runtime'
+          $extractor = Join-Path $env:ProgramFiles '7-Zip\7z.exe'
+          & $extractor x $installer "-o$runtime" -y | Out-Null
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $git = Get-Command git.exe -CommandType Application | Select-Object -First 1
+          $gitBin = Split-Path -Parent $git.Source
+          $gitUsr = Join-Path (Split-Path -Parent $gitBin) 'usr\bin'
+          $annexBin = Join-Path $runtime 'usr\bin'
+          $env:GIT_ASSET_TEST_GIT_EXE = $git.Source
+          $env:GIT_ASSET_TEST_ANNEX_EXE = Join-Path $annexBin 'git-annex.exe'
+          $env:GIT_ASSET_TEST_ANNEX_PATH = "$annexBin;$gitBin;$gitUsr"
+          $env:CARGO_TARGET_DIR = Join-Path $root 'build'
+          $env:TEMP = $root
+          $env:TMP = $root
+          cargo test --locked -p git-asset --all-features --lib actual_authenticated_native_copy_reopens_original_after_head_advance -- --ignored --nocapture
+          exit $LASTEXITCODE
