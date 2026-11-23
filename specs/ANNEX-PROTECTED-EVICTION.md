@@ -496,3 +496,8 @@ creative selection unchanged. L0 pins/docs/limits; L1 strict compilation/annex;
 L2 actual bounded publication/readback followed by original exit/cancel recovery.
 This does not prove legacy actor or epoch migration. No production behavior,
 new journal/cache engine or live enrollment is permitted.
+
+Issue77 alias test, input94865c0. Existing P2 WP-004/007, REQ-004/006/007,
+SPEC-004/007/008, IF-004/008, PKG-003/004. PROVIDER/INTEGRATION.
+L0 pins/diff, L1 locked tests and strict Rust checks, L2 Windows synthetic
+hard-link access in both directions. Keeper guard only, no source handoff.
