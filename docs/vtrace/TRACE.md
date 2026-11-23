@@ -101,48 +101,8 @@ source and byte guards, immutable saved actions and expected-baseline index CAS.
 [Restore controls](../../specs/NATIVE-RESTORE.md) distinguish component qualification
 from HTTP, scale, mixed-authority and project-owner gates, which remain OPEN.
 
-Explicit stale-index successor -> fenced restore::prepare_replan -> sealed original
-binding -> pending-source expected-version CAS retaining all predecessors ->
-authenticated saved apply. Fixture obligations: unchanged-head refusal, stale
-ordinary apply, denied save, exact retry, parent conflict, no native reimport,
-fresh-process old/new reopen and completed/historical original preservation.
-[Controls/review](../../specs/NATIVE-RESTORE.md#explicit-stale-index-successor).
-Native ordinary/bare and four fresh-process reopens pass, including stale,
-competing and denied successor cases. Two pending/eight index tests pass before
-field-shorthand-only cleanup; strict final-source Clippy/standalone/fmt pass.
-Interface/worker regressions precede argument-bundle-only cleanup. Source/log pins
-remain external restore-replan-source.json. Full intended-use/owner gates stay OPEN.
-
-
-Completed-publication recording -> native::batch::registration plus existing
-ordinary root updater and RegisterWorking/Retained pending bodies -> fixed signed
-permission and side, current head/closure, real completion evidence, saved sole
-upsert before CAS. Joined synthetic/native backup -> registration -> archive/read
-fixtures include preview, denied writer, stale cursor, duplicate and cold Saved
-reopen. [Controls/review](../../specs/NATIVE-PRODUCER-ROOTS.md#authenticated-completed-publication-registration).
-Joined inert/actual-native cases pass for retained backup/archive/read and
-working copy/history-rebind reuse. Eight interface, twelve worker, two pending
-and eight index regressions pass; final working-fixture replacement has its own
-focused/native and strict-source checks. Clippy/standalone/fmt, L0/pins/branding/
-diff pass. Exact source/log/test-binary evidence remains external in
-publication-registration-source.json. Full merge-stage orchestration, stale
-ordinary-index replan, initial producer admission, HTTP/scale and owner acceptance
-remain OPEN.
-
-
-Ordered native coordination -> pipeline fixed stages plus placement_apply ->
-default-denied signed orchestration, all original stage gates, shared aggregate
-work/time limits and last-report preservation. Callback frames must match exact
-policy/provenance/current selection; nonadvancing/fresh-root cursors stop. There
-is no client prefix proof or new durable engine. [Controls](../../specs/NATIVE-RECEIVER.md#bounded-ordered-placement-driver).
-Eight coordinator cases and actual ordinary/bare enrolled-revert composition
-pass, with two rounds and old-eviction replay; history has no remaining
-predecessors and eviction sees current-required bytes. Eight interface/twelve
-worker/two pending/eight index regressions pass before fixture range-pattern-only
-cleanup. Final strict/source qualification remains external ordered-placement-*.
-Ordered-pass completion is not storage convergence. Full HTTP, new-golden
-archive/index admission, scale/lifetime and owner gates remain OPEN.
-
+Restore successor, completed publication registration and ordered placement
+qualification remain in the [prior trace](https://github.com/giodl73-repo/git-asset/blob/66f4ab6b49321f6836106a56161469c441b4c6a4/docs/vtrace/TRACE.md).
 
 Exact archive membership -> Loaded::members -> history::indexing -> saved
 ArchiveIndex sole-row plan -> expected-baseline retained index CAS -> working

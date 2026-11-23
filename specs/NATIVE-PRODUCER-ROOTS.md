@@ -297,3 +297,12 @@ L1 worker/strict checks, L2 synthetic native backup and historical reopen.
 Golden handoff fixture, input7e6bbcd. Same controls and synthetic scope.
 Qualify saved custody handoff after authenticated backup, and exact retry
 with original receipt. L0 pins/diff, L1 locked/strict, L2 native byte reopen.
+
+Ordinary single-row successor, input66f4ab6. Existing WP-004/005/006/007/009,
+REQ-001/002/004/006/007/008/010, SPEC-002/003/004/005/007/008/010/011,
+IF-002/004/005/008/010/012 and PKG-001/003/004/006. RUST/PROVIDER/INTEGRATION.
+Enter with an ordinary exact saved plan and the later enrolled index head.
+Exit with a caller-persisted successor proposal or refusal. Check completion
+first, require a strictly later quiescent head, and preserve the unchanged
+baseline record and exact proposed row. No media IO or implicit replan.
+L0 reviewed pins/diff, L1 stale/conflict/receipt checks, L2 synthetic only.

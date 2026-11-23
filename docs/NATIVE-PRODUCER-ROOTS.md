@@ -31,6 +31,11 @@ and source transactions; it does not transfer or remove media.
    `status`/`apply`. Completed work returns its historical receipt without selecting
    its old root again. Permission can be disabled for this read-only recovery.
 
+For an unfinished one-row plan whose head advanced, call `prepare_successor`
+with the original plan. Preserve both plans before applying the successor.
+If the row already matches, there is no edit. A changed row requires review.
+Use `status` to recover a completed original.
+
 Old versions remain predecessor obligations and old index roots remain readable.
 The API has no removal, expiry cleanup or metadata-forgetting operation. Root
 history and protection traversal remain subject to existing namespace bounds;

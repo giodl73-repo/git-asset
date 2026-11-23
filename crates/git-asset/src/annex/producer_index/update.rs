@@ -369,6 +369,70 @@ pub fn status(
     let receipt = ns.selection_status(&selection)?;
     Ok(receipt.map(|r| report(p, plan, &selection, ns, r, None)))
 }
+/// Prepare a successor for a stale, unfinished one-row ordinary edit.
+pub fn prepare_successor(
+    p: &Profile,
+    original: &Plan,
+    ns: &mut Namespace,
+    nodes: &mut MetadataStore,
+) -> Result<Option<Plan>> {
+    if original.schema != "git-asset.producer-root-update.experimental-1" {
+        return Err(Error::Unsupported);
+    }
+    let [(object, raw)] = original.records.as_slice() else {
+        return Err(Error::Unsupported);
+    };
+    // Once the later revision has been observed, the original CAS can no
+    // longer complete. Read its receipt after that observation.
+    let state = p.state(ns)?;
+    if status(p, original, ns, nodes)?.is_some() {
+        return Err(Error::Conflict);
+    }
+    if state.pending.is_some() || state.revision <= original.revision {
+        return Err(Error::Stale);
+    }
+    let current = state.current.ok_or(Error::ProtectionLost)?;
+    let mut meter = Meter {
+        nodes,
+        used: RefCell::new(TreeMetrics::default()),
+        cap: limits(p),
+        start: Instant::now(),
+        millis: p.limits.millis,
+    };
+    let (record, _) = Index::from_root(original.root.clone()).get(object, &mut meter, limits(p))?;
+    let record = record.ok_or(Error::Missing)?;
+    if record.metadata_object()? != *raw {
+        return Err(Error::Integrity);
+    }
+    let previous = match &original.expected {
+        Some(base) => {
+            Tree::from_root(base.selection.root.clone())
+                .get(&key(object)?, &mut meter, limits(p))?
+                .0
+        }
+        None => None,
+    };
+    let found = Tree::from_root(current.selection.root.clone())
+        .get(&key(object)?, &mut meter, limits(p))?
+        .0;
+    if found == Some(raw.clone()) {
+        return Ok(None);
+    }
+    if found != previous {
+        return Err(Error::Conflict);
+    }
+    meter.timed()?;
+    prepare(
+        p,
+        Some(&current),
+        &[Change {
+            expected_record: previous,
+            record,
+        }],
+        ns,
+        meter.nodes,
+    )
+}
 /// Persist the original Plan in caller-owned durable evidence before invoking.
 pub fn apply(
     p: &Profile,

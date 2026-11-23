@@ -584,3 +584,52 @@ fn an_empty_initial_index_is_explicit_and_repeating_it_is_a_noop() {
     );
     assert_eq!(checkpoint, f.namespace.checkpoint());
 }
+
+#[test]
+fn stale_single_row_plan_can_be_rebased_after_an_unrelated_insert() {
+    let mut f = Fixture::new();
+    let row = f.row("original");
+    let original = f.prepare(&[roots::Change {
+        expected_record: None,
+        record: row.clone(),
+    }]);
+    let other = f.row("unrelated");
+    let competing = f.prepare(&[roots::Change {
+        expected_record: None,
+        record: other.clone(),
+    }]);
+    let advanced = roots::apply(
+        &f.profile,
+        &competing,
+        &mut f.namespace,
+        &mut f.nodes,
+        || Ok(()),
+    )
+    .unwrap();
+    let successor = roots::prepare_successor(&f.profile, &original, &mut f.namespace, &mut f.nodes)
+        .unwrap()
+        .unwrap();
+    assert_eq!(successor.expected(), Some(&advanced.version));
+    let applied = roots::apply(
+        &f.profile,
+        &successor,
+        &mut f.namespace,
+        &mut f.nodes,
+        || Ok(()),
+    )
+    .unwrap();
+    let index = Index::from_root(applied.root);
+    for expected in [row, other] {
+        assert_eq!(
+            index
+                .get(&expected.object, &mut f.nodes, TreeLimits::default())
+                .unwrap()
+                .0,
+            Some(expected)
+        );
+    }
+    assert!(matches!(
+        roots::prepare_successor(&f.profile, &competing, &mut f.namespace, &mut f.nodes),
+        Err(Error::Conflict)
+    ));
+}

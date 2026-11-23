@@ -191,6 +191,7 @@ pub(super) fn exercise(
     if let Some(recipe) = backup_recipe {
         let copy_budget = github::placement::Budget {
             stream_bytes: 1024 * 1024,
+            millis: 300000,
             ..budget
         };
         let report = batch::configured(worker, &policy, &trust, &request)
@@ -209,7 +210,12 @@ pub(super) fn exercise(
             "{}",
             serde_json::to_string(&report).unwrap()
         );
-        let handoff = report.outcomes[0].handoff.as_ref().unwrap();
+        let handoff = report.outcomes[0].handoff.as_ref().unwrap_or_else(|| {
+            panic!(
+                "Missing handoff: {}",
+                serde_json::to_string(&report).unwrap()
+            )
+        });
         assert!(handoff.failure.is_none(), "{:?}", handoff.failure);
         assert!(
             handoff
