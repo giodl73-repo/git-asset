@@ -121,6 +121,16 @@ impl Reader {
         let _configuration = self.admit_repository()?;
         self.open_local(object)
     }
+    /// Observe one exact native object without reading its payload.
+    /// The observed length is not byte integrity or retention evidence.
+    pub fn observe(&mut self, object: &Object) -> Result<u64> {
+        self.preflight(object)?;
+        let _configuration = self.admit_repository()?;
+        let path = self.content_location(object)?;
+        self.data
+            .observe_provider_file(&self.profile.repository, &path, object)
+            .map_err(Error::Bytes)
+    }
     fn preflight(&self, object: &Object) -> Result<()> {
         if !process::supported() {
             return Err(Error::Unsupported);
@@ -256,19 +266,18 @@ impl Reader {
             Err(Error::Unsupported)
         }
     }
-    fn open_local(&mut self, object: &Object) -> Result<VerifiedRead> {
+    fn content_location(&self, object: &Object) -> Result<ProviderPath> {
         let prefix = if self.profile.bare {
             "annex/objects/"
         } else {
             ".git/annex/objects/"
         };
         let key = format!("SHA256-s{}--{}", object.bytes, object.sha256.as_str());
-        let location = process::run(&self.profile, true, &["contentlocation", &key]);
-        let location = match location {
-            Err(Error::Missing) => return Err(Error::Missing),
-            other => other?,
-        };
-        let path = location_path(&location.stdout, prefix, &key)?;
+        let location = process::run(&self.profile, true, &["contentlocation", &key])?;
+        location_path(&location.stdout, prefix, &key)
+    }
+    fn open_local(&mut self, object: &Object) -> Result<VerifiedRead> {
+        let path = self.content_location(object)?;
         // Caller keeps the configuration guard live while acquiring this data guard.
         // Config edits after return cannot mutate/replace the held payload namespace.
         self.data

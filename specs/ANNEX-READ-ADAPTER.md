@@ -90,3 +90,12 @@ additional seconds for termination; an open performs at most three commands.
 
 Synthetic coverage and separate verification/validation/review closure are in
 the [producer record](../docs/reviews/2026-11-20-annex-read-adapter.md).
+
+## Exact object observation
+
+Input 3cdffe4, issue #78. Uses the provider controls above. An admitted reader
+can observe the logical length of a named object under the repository and
+provider path guards. The call consumes request admission. It reads repository
+configuration and object metadata without reading object payload bytes.
+Observation carries no custody, verified hash, allocation, or removal authority.
+A subsequent verified read independently rechecks the repository and object.

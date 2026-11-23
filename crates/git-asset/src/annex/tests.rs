@@ -162,6 +162,20 @@ fn fixture() -> (tempfile::TempDir, Profile, Object, PathBuf) {
 }
 #[cfg(windows)]
 #[test]
+fn native_observation_does_not_verify_equal_length_payloads() {
+    let (_root, profile, object, file) = fixture();
+    let mut reader = Reader::new(profile).unwrap();
+    fs::write(file, vec![0; object.bytes as usize]).unwrap();
+    assert_eq!(reader.observe(&object).unwrap(), object.bytes);
+    assert_eq!(reader.verification_bytes(), 0);
+    assert!(matches!(
+        reader.open(&object),
+        Err(Error::Bytes(existing::Error::Integrity))
+    ));
+}
+
+#[cfg(windows)]
+#[test]
 fn exact_bytes_are_guarded_without_global_info_or_mutating_commands() {
     let (root, p, object, path) = fixture();
     let mut reader = Reader::new(p).unwrap();

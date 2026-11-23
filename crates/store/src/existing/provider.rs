@@ -44,6 +44,32 @@ impl ReadCache {
             false,
         )
     }
+    /// Observe the logical length of a provider file through the existing path guards.
+    /// This consumes request admission and does not read or verify payload bytes.
+    pub fn observe_provider_file(
+        &mut self,
+        root: &Path,
+        path: &ProviderPath,
+        object: &Object,
+    ) -> Result<u64> {
+        if !self.profile.places.is_empty() {
+            return Err(Error::Unsupported);
+        }
+        root_spelling(root)?;
+        let _permit = self.admit(object)?;
+        let path = root.join(path.as_str());
+        let strict = self.profile.required == RequiredProtection::PreventMutation;
+        let _directories = directories(&path, strict)?.ok_or(Error::Missing)?;
+        regular(&fs::symlink_metadata(&path).map_err(map_io)?)?;
+        let file = open_file(&path, strict)?;
+        let metadata = file.metadata().map_err(map_io)?;
+        regular(&metadata)?;
+        if metadata.len() != object.bytes {
+            return Err(Error::Integrity);
+        }
+        Ok(metadata.len())
+    }
+
     /// Open exactly one provider location, without layout guessing or fallback.
     /// Only provider-only instances accept this call; place_index is zero.
     pub fn open_provider_file(
