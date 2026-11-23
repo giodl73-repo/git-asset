@@ -115,4 +115,5 @@ test('cache review carries its evidence basis to the next page',async()=>{
  vm.runInContext("const panel=cacheReviewControl('hot');panel.isConnected=true;$('assets').append(panel)",f.context);
  await f.click('Review this cache for eviction');assert.match(f.get('assets').textContent,/No matching copy listed/);await f.click('Next review page');
  assert.equal(requests(f,'/api/storage/eviction-preview')[1].q.basis,'frozen');
+ assert.match(f.document.activeElement.textContent,/Across enrolled projects/);
 });
