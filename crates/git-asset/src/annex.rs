@@ -129,7 +129,10 @@ impl Reader {
         let path = self.content_location(object)?;
         self.data
             .observe_provider_file(&self.profile.repository, &path, object)
-            .map_err(Error::Bytes)
+            .map_err(|error| match error {
+                existing::Error::Missing => Error::Missing,
+                other => Error::Bytes(other),
+            })
     }
     fn preflight(&self, object: &Object) -> Result<()> {
         if !process::supported() {

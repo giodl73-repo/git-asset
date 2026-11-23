@@ -176,6 +176,16 @@ fn native_observation_does_not_verify_equal_length_payloads() {
 
 #[cfg(windows)]
 #[test]
+fn native_observation_reports_missing_after_location_is_resolved() {
+    let (_root, profile, object, path) = fixture();
+    fs::remove_file(path).unwrap();
+    let mut reader = Reader::new(profile).unwrap();
+    assert!(matches!(reader.observe(&object), Err(Error::Missing)));
+    assert_eq!(reader.verification_bytes(), 0);
+}
+
+#[cfg(windows)]
+#[test]
 fn exact_bytes_are_guarded_without_global_info_or_mutating_commands() {
     let (root, p, object, path) = fixture();
     let mut reader = Reader::new(p).unwrap();

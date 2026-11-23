@@ -60,7 +60,12 @@ impl ReadCache {
         let path = root.join(path.as_str());
         let strict = self.profile.required == RequiredProtection::PreventMutation;
         let _directories = directories(&path, strict)?.ok_or(Error::Missing)?;
-        regular(&fs::symlink_metadata(&path).map_err(map_io)?)?;
+        let before = match fs::symlink_metadata(&path) {
+            Ok(metadata) => metadata,
+            Err(error) if error.kind() == io::ErrorKind::NotFound => return Err(Error::Missing),
+            Err(error) => return Err(map_io(error)),
+        };
+        regular(&before)?;
         let file = open_file(&path, strict)?;
         let metadata = file.metadata().map_err(map_io)?;
         regular(&metadata)?;
