@@ -64,11 +64,28 @@ fn run() -> Result<(), String> {
                 | "cache-inventory"
                 | "selection-usage"
                 | "drive-report"
+                | "selection-changes"
         )
     {
         return Err("usage: git-asset-catalogue check ENROLLMENT | serve ENROLLMENT [PORT] | shared ENROLLMENT LEFT RIGHT NEW_REPORT [CATEGORY] | references ENROLLMENT SHA256 NEW_REPORT [PROJECT] [OFFSET] | eviction-report ENROLLMENT PROJECT COMMIT CACHE_ROOT NEW_REPORT | cache-inventory ENROLLMENT PROJECT CACHE_ROOT NEW_REPORT | selection-usage|drive-report ENROLLMENT PROJECT COMMIT CACHE_ROOT NEW_REPORT".into());
     }
     let config = Config::load(Path::new(&args[1]))?;
+    if args[0] == "selection-changes" {
+        if args.len() != 6 || !Path::new(&args[5]).is_absolute() {
+            return Err(
+                "selection-changes requires ENROLLMENT PROJECT PREDECESSOR REPLACEMENT NEW_REPORT"
+                    .into(),
+            );
+        }
+        let report =
+            git_asset::catalogue::selection_changes(&config, &args[2], &args[3], &args[4])?;
+        save(&report, &args[5])?;
+        println!(
+            "{}",
+            serde_json::json!({"report":args[5],"removal_authorized":false})
+        );
+        return Ok(());
+    }
     if args[0] == "drive-report" {
         #[cfg(all(windows, feature = "annex-read"))]
         {

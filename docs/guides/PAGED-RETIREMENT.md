@@ -155,6 +155,14 @@ Use `inspect`, `subjects` and `actions` to review the resulting decision. These
 commands require explicit enrollment and existing roots. Any future merge
 preview should keep staged metadata separate from production writer authority.
 
+Use `git asset catalogue selection-changes ENROLLMENT PROJECT PREDECESSOR
+REPLACEMENT NEW_REPORT` to derive changed or removed selected objects from
+two exact commits in one enrolled repository. The report refuses more than
+1,024 changes and flags digests still directly selected or stream-bound in
+the replacement snapshot. Other projects, nested bindings, jobs, age and
+rebuild evidence require independent checks. The report grants no retirement
+authority and does not assert that the commits form a particular merge.
+
 Run `git asset storage render-retirement describe` to discover the experimental
 preview interface. Run `git asset storage render-retirement preview REQUEST` against
 a bounded JSON request. Supply `schema` as

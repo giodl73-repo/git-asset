@@ -27,6 +27,34 @@ struct Fixture {
 }
 
 #[test]
+fn selection_changes_uses_exact_commits_and_reports_surviving_alias() {
+    let f = Fixture::new();
+    let repo = f.temp.path().join("alpha");
+    let mut record: Value =
+        serde_json::from_slice(&git(&repo, &["show", "HEAD:records/0.asset"]).stdout).unwrap();
+    let old = record["selected"].clone();
+    let new = Object::from_bytes(b"new render candidate");
+    record["selected"] = json!(new);
+    write(&repo, "records/0.asset", &record);
+    let replacement = commit(&repo);
+    let config = Config::load(&f.config).unwrap();
+    let report =
+        git_asset::catalogue::selection_changes(&config, "alpha", &f.first, &replacement).unwrap();
+    let changes = report["changes"].as_array().unwrap();
+    assert_eq!(changes.len(), 1);
+    assert_eq!(changes[0]["previous_object"], old);
+    assert_eq!(changes[0]["replacement_object"], json!(new));
+    assert_eq!(
+        changes[0]["same_digest_directly_bound_in_replacement"],
+        true
+    );
+    assert_eq!(report["removal_authorized"], false);
+    assert!(
+        git_asset::catalogue::selection_changes(&config, "alpha", "HEAD", &replacement).is_err()
+    );
+}
+
+#[test]
 fn shared_selected_is_exact_deduplicated_scoped_and_payload_free() {
     use git_asset::catalogue::shared::compare;
     let f = Fixture::new();
