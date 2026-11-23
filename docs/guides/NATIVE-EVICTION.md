@@ -76,8 +76,10 @@ that provider. A legacy alias can share the same underlying file and does not
 establish independent retention.
 
 The native planner takes a private profile with the original source and keeper
-publication plans. Copy the review row's `eviction_review.reviewed_object`
-into the request as `reviewed_object`, then supply the keeper's exact retained
+publication plans. Open **Native plan request field** on the catalogue candidate
+and copy its JSON into the request as `reviewed_object`. In API output the
+descriptor is `eviction_review.reviewed_object`; use `reviewed_object_json` for
+a verbatim copy from JavaScript. Then supply the keeper's exact retained
 snapshot and retention grant. The CLI refuses a mismatch against either
 original plan or the snapshot before opening stores. The descriptor binds
 content identity and length. Runtime placement and removal authority come from

@@ -69,6 +69,15 @@ function cacheReviewControl(cache){
      entry.append(node('p','muted','Recorded hard links: removing one path is estimated to free no space.'));
 
     if(review.state==='verify_candidate'){
+     const handoff=node('details');
+     handoff.append(node('summary','','Native plan request field'));
+     const descriptor=node('textarea','mono');
+     descriptor.readOnly=true;
+     descriptor.rows=3;
+     descriptor.setAttribute('aria-label','Reviewed object JSON');
+     descriptor.value=review.reviewed_object_json;
+     handoff.append(node('p','muted','Paste this into the reviewed_object field. A plan also needs the owner profile and retained custody evidence.'),descriptor);
+     entry.append(handoff);
      for(const copy of item.copies.filter(copy=>copy.cache_id!==cache&&copy.bytes===item.bytes)){
       const location=objectCache(copy.cache_id,page);
       const verify=node('button','button secondary','Verify bytes at '+(location?.label||'listed cache'));

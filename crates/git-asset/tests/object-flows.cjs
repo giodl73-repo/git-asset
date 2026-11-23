@@ -124,3 +124,20 @@ test('cache review carries its evidence basis to the next page',async()=>{
  assert.equal(f.state().tab,'References & versions');
  assert.match(f.text(),/Atlas .*Boreal/);
 });
+
+test('candidate review exposes the verbatim planning descriptor without reading bytes',async()=>{
+ const f=catalogueFixture({objectMode:true});await objects(f);
+ const item=f.reply('/api/storage/objects',{}).items[0];
+ const descriptor='{"bytes":9007199254740993,"sha256":"'+item.sha256+'"}';
+ f.override('/api/storage/eviction-preview',()=>({
+  items:[{...item,eviction_review:{state:'verify_candidate',holds:[],reviewed_object_json:descriptor}}],
+  caches:[],next_offset:null,
+ }));
+ vm.runInContext("const panel=cacheReviewControl('hot');panel.isConnected=true;$('assets').append(panel)",f.context);
+ await f.click('Review this cache for eviction');
+ const field=f.nodes().find(e=>e.getAttribute('aria-label')==='Reviewed object JSON');
+ assert.ok(field);
+ assert.equal(field.readOnly,true);
+ assert.equal(field.value,descriptor);
+ assert.equal(requests(f,'/api/storage/verify-copy').length,0);
+});

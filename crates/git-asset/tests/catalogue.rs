@@ -1485,6 +1485,10 @@ fn native_catalogue_refresh_review_and_verify() {
     assert_eq!(row["sha256"], object.sha256.as_str());
     assert_eq!(row["copies"][0]["hard_links"], 2);
     assert_eq!(row["eviction_review"]["reviewed_object"], json!(object));
+    let handoff = row["eviction_review"]["reviewed_object_json"]
+        .as_str()
+        .unwrap();
+    assert_eq!(serde_json::from_str::<Object>(handoff).unwrap(), object);
     assert_eq!(row["eviction_review"]["single_path_reclaim_estimate"], 0);
     assert_eq!(review["removal_authorized"], false);
     let (selected, reader) = c

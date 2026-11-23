@@ -276,9 +276,11 @@ impl Catalogue {
                         && copy["hard_links"].as_u64().is_some_and(|links| links > 1)
                 })
             });
+            let reviewed_object = json!({"sha256":row["sha256"],"bytes":row["bytes"]});
             row["eviction_review"] = json!({
                 "state":state,"older_copy_proposed":older,
-                "reviewed_object":{"sha256":row["sha256"],"bytes":row["bytes"]},
+                "reviewed_object":reviewed_object,
+                "reviewed_object_json":reviewed_object.to_string(),
                 "holds":review["holds"],"other_copy_listed":overlap,
                 "archive_bytes_verified":false,"reclaimable_bytes":null,
                 "single_path_reclaim_estimate":linked.then_some(0)
