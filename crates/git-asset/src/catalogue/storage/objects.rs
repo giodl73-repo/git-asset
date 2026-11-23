@@ -104,6 +104,29 @@ pub(super) fn cache_id(key: &str) -> String {
         .as_str()
         .to_owned()
 }
+pub enum CopyReader {
+    Existing(ByteProfile),
+    #[cfg(feature = "annex-read")]
+    Annex(Box<crate::annex::Profile>),
+}
+impl CopyReader {
+    pub fn verify(self, object: Object) -> Result<Value> {
+        match self {
+            Self::Existing(profile) => super::super::verify(object, profile),
+            #[cfg(feature = "annex-read")]
+            Self::Annex(profile) => {
+                let mut reader = crate::annex::Reader::new(*profile)
+                    .map_err(|error| format!("Native reader enrollment: {error}"))?;
+                let held = reader
+                    .open(&object)
+                    .map_err(|error| format!("Native byte check: {error}"))?;
+                Ok(
+                    json!({"object":held.object(),"verified":true,"place_index":held.place_index(),"protection":held.protection(),"independent_custody_verified":false,"authorizes_eviction":false}),
+                )
+            }
+        }
+    }
+}
 impl Catalogue {
     pub fn object_copy_request(
         &self,
@@ -112,6 +135,21 @@ impl Catalogue {
         cache: &str,
         basis: &str,
     ) -> Result<(Object, ByteProfile)> {
+        let (object, reader) = self.storage_copy_request(project, sha, cache, basis)?;
+        match reader {
+            CopyReader::Existing(profile) => Ok((object, profile)),
+            #[cfg(feature = "annex-read")]
+            CopyReader::Annex(_) => Err("Native cache requires storage_copy_request".into()),
+        }
+    }
+
+    pub fn storage_copy_request(
+        &self,
+        project: &str,
+        sha: &str,
+        cache: &str,
+        basis: &str,
+    ) -> Result<(Object, CopyReader)> {
         let d = self.object_inventory(&Query {
             project,
             kind: "",
@@ -141,13 +179,31 @@ impl Catalogue {
                 continue;
             }
             let p = &self.projects[&id];
-            if !p.enrollment.storage.as_ref().is_some_and(|s| {
-                s.places
-                    .iter()
-                    .any(|p| p.place_index == place && p.live_probe)
-            }) {
+            let Some(enrolled) = p
+                .enrollment
+                .storage
+                .iter()
+                .flat_map(|s| &s.places)
+                .find(|enrolled| enrolled.place_index == place && enrolled.live_probe)
+            else {
                 continue;
+            };
+            let object: Object = serde_json::from_value(json!({"sha256":sha,"bytes":row["bytes"]}))
+                .map_err(|_| "Invalid object")?;
+            #[cfg(feature = "annex-read")]
+            if let Some(native) = &enrolled.annex {
+                if !row["copies"].as_array().is_some_and(|copies| {
+                    copies
+                        .iter()
+                        .any(|copy| copy["cache_id"] == cache && copy["bytes"] == row["bytes"])
+                }) {
+                    return Err(
+                        "No matching native copy in the review; refresh observed copies".into(),
+                    );
+                }
+                return Ok((object, CopyReader::Annex(Box::new(native.clone()))));
             }
+            let place = enrolled.place_index;
             if let Some(reader) = &p.profile.byte_source {
                 let mut reader = reader.clone();
                 let place = reader
@@ -156,10 +212,7 @@ impl Catalogue {
                     .ok_or("Unknown byte location")?
                     .clone();
                 reader.places = vec![place];
-                let object: Object =
-                    serde_json::from_value(json!({"sha256":sha,"bytes":row["bytes"]}))
-                        .map_err(|_| "Invalid object")?;
-                return Ok((object, reader));
+                return Ok((object, CopyReader::Existing(reader)));
             }
         }
         Err("Cache is not enrolled for explicit live verification".into())

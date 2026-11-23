@@ -136,9 +136,6 @@ impl Config {
         }
         for p in &config.projects {
             works::validate(&p.collections)?;
-            if let Some(s) = &p.storage {
-                storage::validate(s)?;
-            }
             if !token(&p.id)
                 || !ids.insert(&p.id)
                 || p.label.is_empty()
@@ -237,6 +234,9 @@ pub struct Project {
 }
 impl Project {
     pub fn open(enrollment: Enrollment) -> Result<Self> {
+        if let Some(storage) = &enrollment.storage {
+            storage::validate(storage)?;
+        }
         let profile: ResolverProfile = read(&enrollment.profile, 65536)?;
         if profile.schema != "tig.asset-resolver-profile.experimental-1" {
             return Err("Unsupported resolver profile".into());

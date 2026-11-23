@@ -99,3 +99,20 @@ provider path guards. The call consumes request admission. It reads repository
 configuration and object metadata without reading object payload bytes.
 Observation carries no custody, verified hash, allocation, or removal authority.
 A subsequent verified read independently rechecks the repository and object.
+
+## Catalogue storage slots
+
+Input cbd1fc9, issue #78. Uses the same provider controls. Entry is an explicit
+catalogue storage place with a private inline `annex` reader profile and
+`live_probe: true`. Slots are unique. A native place supplies the locator for
+its slot. It keeps its own native profile and does not replace the resolver's
+legacy byte source for previews, nested manifests or retained inventory.
+
+Named refresh checks the declared snapshot objects under the place's reader
+limits and the catalogue refresh budget. A subprocess may need its bounded
+termination window before the refresh returns. On errors other than exact
+absence the refresh fails and preserves existing observations. Opening the
+catalogue only admits the profile. A native observation records content length,
+with allocation, hard links and reclaim still unknown. The existing explicit
+copy verification route reopens and hashes the selected exact copy. Both
+operations remain read-only and grant no retained custody or removal authority.
