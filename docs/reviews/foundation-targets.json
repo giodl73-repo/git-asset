@@ -491,7 +491,7 @@
   {"path":"docs/guides/HELD-COPY-FOLLOWUP.md","bytes":4909,"sha256":"0c9a9454ba63c5f92dbe4cc082187d7cce26b3299c0e59f78e4aac83ccf2323c"},
   {"path":"docs/guides/HISTORY-COMMAND.md","bytes":3055,"sha256":"7754d5821a4cff0170e729987370fff317256f1744350c05a0c0e9fc5c9ce4f9"},
   {"path":"docs/guides/LOOKUP-AND-LFS.md","bytes":3468,"sha256":"4308eed405ac3943604630a52182ecbd96b6a03300789e9f87567d3017740ac9"},
-  {"path":"docs/guides/NATIVE-EVICTION.md","bytes":14150,"sha256":"a9490b99c0cefa8504690ff74068b017c213bdf7944e1c1159eb46b46ff2cc9c"},
+  {"path":"docs/guides/NATIVE-EVICTION.md","bytes":15571,"sha256":"d11a652ec46ed4675c9546cf4893deb8d182662b856c256e3db80f8e218f39cc"},
   {"path":"docs/guides/NATIVE-PAGED-RETIREMENT.md","bytes":3016,"sha256":"000b48c50dbe571ba2b39c2e8309c012069bff4e3658d20c94838ed13e39a0d4"},
   {"path":"docs/guides/NATIVE-RETIREMENT.md","bytes":4366,"sha256":"b6095f24c50187120c8dc0bb310f6f59af89d6686be578e4890645375d10a225"},
   {"path":"docs/guides/PAGED-OPERATOR.md","bytes":5104,"sha256":"71a6312754a267d4cafc8dcec16bfe990d7234ddf9f3d79fee8f91b433415cbe"},

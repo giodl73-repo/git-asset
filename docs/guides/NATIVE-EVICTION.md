@@ -81,6 +81,30 @@ An owner record documents the checks for a future handoff; it cannot enable
 mixed legacy execution. A separately enrolled namespace-owned scope can qualify
 on its own evidence while shared scopes remain under review.
 
+### Existing reel-cas caches
+
+The inventory identifies `reel-cas` as an existing byte layout. Its
+redundant-copy provider candidate is REEL's `tier-demote`. The provider
+takes an owner-scoped request, a pinned tier plan, a bounded set of SHA-256
+identities, and an owned operation journal. Its preview and apply use the
+same request. Use the original journal to reconcile an interrupted apply.
+
+A git-asset handoff must match SHA-256 and byte length in both reports and
+confirm that the provider's configured source is the enrolled cache being
+reviewed. Keep provider executable, control roots, policy, tier plan, consumer
+roster, and journal bindings in private enrollment. The catalogue report is
+candidate evidence only. The provider must recheck live protection, exact
+source identity, source aliases and independent custody before any removal.
+Leave the provider's off-by-default bypass options disabled in the initial
+pilot. Preserve the provider's completion receipt and measure source allocation
+separately from changes in total volume free space.
+
+Before enabling the handoff, test the pinned Windows executable on a synthetic
+cache with changed scope, a new job, a corrupt keeper, an unknown hard link
+and a process interruption. Then qualify one owner-scoped production batch.
+The ordinary demotion provider requires a keeper. Final retirement of a
+rebuildable render has its own execution and approval path.
+
 ## From cache review to a saved plan
 
 Start with [the catalogue cache review](CATALOGUE-REVIEW.md#review-a-cache-for-eviction).
