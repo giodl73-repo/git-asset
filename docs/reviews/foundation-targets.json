@@ -445,7 +445,7 @@
   {"path":"crates/store/tests/metadata_copy_cli.rs","bytes":6162,"sha256":"c87436f5b8f0506b84837de02b9598225eee79b38e1ebe1938e0beca3d9fcbd0"},
   {"path":"crates/store/tests/metadata_staged_tree.rs","bytes":2528,"sha256":"e9ebd0a2d0687e0d193ddc6860afefd9349c7d2c7656aabf8de47aefa354e9bf"},
   {"path":"crates/store/tests/publication.rs","bytes":16182,"sha256":"13c4100a0e4e1f6425ae3b103befda3b70a358fa6bbf5df4e51ef648ae751ca7"},
-  {"path":"crates/store/tests/retirement_cli.rs","bytes":24923,"sha256":"7d73b12e7ba88bdde050773dc0dd3d704a0e0289d78b3adba27dd1a42a593679"},
+  {"path":"crates/store/tests/retirement_cli.rs","bytes":25202,"sha256":"f5ca9cb45df0dd58fee09feac4bfebb6bbec796ec0af35c4c729b8328c879d43"},
   {"path":"crates/store/tests/s3_publication.rs","bytes":27410,"sha256":"c931de66c63ec149c4c2fe12918cbe4d8011678ee0395318edd1a2b592f12c25"},
   {"path":"crates/store/tests/source_claims.rs","bytes":48919,"sha256":"7fda5ad706635141131b9a9493cd1e14248482012cc680472029a3e680188585"},
   {"path":"crates/store/tests/source_observation_cli.rs","bytes":16727,"sha256":"dade4a1c22af0479c6d703260afeef1059d340ff4f6821967b26d6dfc4095018"},

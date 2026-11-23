@@ -98,9 +98,9 @@ fn input_error(error: RetentionError) -> &'static str {
         RetentionError::Store(error) | RetentionError::Replica(ReplicaError::Store(error)) => {
             match error {
                 StoreError::Integrity | StoreError::CorruptRecord => "retained_input_corrupt",
-                StoreError::MissingAcknowledgedObject | StoreError::AuthorizedAbsence => {
-                    "retained_input_missing"
-                }
+                StoreError::MissingAcknowledgedObject
+                | StoreError::AuthorizedAbsence
+                | StoreError::Io(std::io::ErrorKind::NotFound, _) => "retained_input_missing",
                 StoreError::Busy => "retained_input_busy",
                 StoreError::Unsupported => "retained_input_unsupported",
                 StoreError::NeedsRecovery => "retained_input_needs_recovery",

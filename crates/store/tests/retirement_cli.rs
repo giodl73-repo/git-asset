@@ -100,7 +100,14 @@ fn render_inputs_require_exact_settled_retention() {
         serde_json::from_slice::<Value>(&refused.stdout).unwrap()["code"],
         "retained_input_corrupt"
     );
-    assert_eq!(fs::read(payload).unwrap(), corrupt);
+    assert_eq!(fs::read(&payload).unwrap(), corrupt);
+    fs::rename(payload, root.join("displaced-fixture-payload")).unwrap();
+    let refused = run(&request);
+    assert!(!refused.status.success());
+    assert_eq!(
+        serde_json::from_slice::<Value>(&refused.stdout).unwrap()["code"],
+        "retained_input_missing"
+    );
 }
 struct Fixture {
     root: tempfile::TempDir,
