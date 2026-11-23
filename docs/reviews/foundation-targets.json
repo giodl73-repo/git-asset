@@ -159,7 +159,7 @@
   {"path":"crates/git-asset/src/catalogue/web/review.js","bytes":8257,"sha256":"f8c37301e65bb34af794314e62bddfb3fecb6b2feed8a2c9b175050d0f838bef"},
   {"path":"crates/git-asset/src/catalogue/web/shared.js","bytes":5263,"sha256":"50a7ad324a9997233b1a789959507470c728945f828b91f6e6cd4a60719da8a5"},
   {"path":"crates/git-asset/src/catalogue/web/storage-global.js","bytes":8091,"sha256":"f6b5212fe68eacb0aba943b16e895b217a24b58c9ed0a561d31e54ae9f0ca52b"},
-  {"path":"crates/git-asset/src/catalogue/web/storage-objects.js","bytes":30358,"sha256":"9ad59cc574d0860661c1f2776a69c7f929accf0bcf0c00025af65d54907e2d72"},
+  {"path":"crates/git-asset/src/catalogue/web/storage-objects.js","bytes":30353,"sha256":"1e6debbddc2549e4a21e08ec0e98a88f6bb57a8428a39f1a5a3aa58becaae2e0"},
   {"path":"crates/git-asset/src/catalogue/web/storage.js","bytes":14035,"sha256":"48d2e407f4a888598b72611c396bac9327e1c6d1606c908461f6a911f5f5961c"},
   {"path":"crates/git-asset/src/catalogue/web/works.js","bytes":12899,"sha256":"87c6ea8218e94da5b05b7af1e95f55423b64d4876c53f95da30083754a7da817"},
   {"path":"crates/git-asset/src/catalogue/works.rs","bytes":20437,"sha256":"a8e59b6c9c546e89dd8721226e96014139333b9842e20609e41c3c81332dfc55"},

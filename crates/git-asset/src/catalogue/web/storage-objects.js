@@ -47,7 +47,7 @@ function cacheReviewControl(cache){
   try{
    const page=await api('/api/storage/eviction-preview',{cache,offset,basis});
    if(generation!==state.generation||!panel.isConnected)return;
-   const summary=node('p','muted','Across enrolled projects. Reclaim is unknown. Older writers must be fenced before removal.');
+   const summary=node('p','muted','Across enrolled projects. Older versions may still be needed. Reclaim is unknown.');
    summary.tabIndex=-1;
    results.replaceChildren(summary);
    summary.focus();
@@ -61,7 +61,7 @@ function cacheReviewControl(cache){
     references.onclick=()=>openManagedObject(item,'References & versions','');
     entry.append(references);
     if(review.state==='unknown'){
-     if(!review.older_copy_proposed)entry.append(node('p','muted','No eligible older copy proposed by the recorded versions and policy.'));
+     if(!review.older_copy_proposed)entry.append(node('p','muted','No older copy identified for review by the recorded versions and policy.'));
      if(!review.other_copy_listed)entry.append(node('p','muted','No matching copy listed at another location.'));
     }
     review.holds.forEach(reason=>entry.append(node('p','muted',reason)));
