@@ -65,3 +65,15 @@ Producer roles: identity preserves canonical old records; recovery retains exact
 predecessors/receipts; placement/custody adds no authority; privacy adds no paths
 or credentials; adoption keeps native/HTTP/owner acceptance separate. L0 pins and
 budget plus L1/L2 source-qualified fixtures are mandatory, not waived by allowance.
+
+2026-11-22 controlled allowance, input f12a1634a8833f822edf2a78b4df75a2b3851538:
+tracked main source totals8,388,156 bytes,452 bytes below its8MiB ceiling.
+The authored issue75 interface audit/PR plan and reviewed target pins need more
+room. Reuse the finite8.25MiB source allowance already reviewed in the P3 lane,
+so the independent U4 review can land on main without a storage dependency.
+This is source/documentation only:128KiB/file, binary/private/runtime exclusions
+and all metadata, journal, payload, response, admission and cache limits remain.
+WP-000/015/016; DOCS/UI/PROVIDER/INTEGRATION. Six producer checks: identity/wire
+unchanged; placement/custody limits intact; original recovery unaffected; no
+private/generated source; explicit source pins; independent acceptance OPEN.
+L0 source/links/pins/branding/diff proves this bounded documentation change only.

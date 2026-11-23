@@ -1219,281 +1219,31 @@ metadata expiry, large-file and journal continuation gates remain required.
 
 ## EVID-093: bounded local placement and committed-ref composition
 
-Input a6783814c22c5d1de01a95fb026f05e8bd8c400b; implementation
-74327391d8c53e3fe9295ba5a19c3a34b7dbe985. Scope/controls/entry/exit and
-GIT/PROVIDER L0/L1/L2: [PLACEMENT-RECONCILIATION](../../specs/PLACEMENT-RECONCILIATION.md).
-Generic git-asset-store requirements/pages reuse existing accounted publication,
-retention/handoff, managed retirement/cancellation/reacquisition and scoped
-all-namespace/provider fencing. No new persistent journal or event encoding.
-
-Executed local evidence, in external build/temp roots:
-
-- `cargo test -p git-asset-store --lib --all-features --locked placement::tests -- --nocapture`:
-  sixteen entries, including one child helper and one actual process exit after
-  backup publication. Replacement, job-end demotion, shared bytes, backup outage/
-  catch-up, known acknowledged loss, late claim, reader hold with unrelated object
-  progress, renewed-demand cancellation, original publication recovery, bounded
-  streaming, untracked managed-copy refusal, pagination and provider-order reuse.
-- `cargo test -p git-asset-store --lib --locked source_claims::admission::tests::placement_requirements -- --nocapture`:
-  two new projection/aggregate-budget cases. Current/history precedence is projected
-  without commands; incomplete closure holds and namespaces share one work budget.
-- `cargo test -p git-asset --test lifecycle --all-features --locked -- --nocapture`:
-  twelve actual Git/CLI entries, including three added operator composition cases.
-  A real merge to main copies/retains/demotes, a no-op needs no original source,
-  and revert reacquires exact old bytes. Private permissions default disabled;
-  source-profile drift and stale cursors refuse. Final default lifecycle also
-  passes all twelve entries.
-- Broad locked default and all-feature workspace suites pass. The default broad
-  build preceded final focused corrections; the successful all-feature broad
-  build preceded the last deterministic-keeper ordering correction. Final default
-  and all-feature store library runs each pass 262 active entries, with two ignored
-  qualifiers, after that correction. The last reader-progress assertions were
-  followed by all sixteen placement entries. Final strict all-feature/all-target
-  workspace Clippy, standalone Git check, fmt, validator/pins and diff checks pass.
-- `cargo build --workspace --all-features --bins --locked`, then explicit
-  `retirement::tests::explicit_cli_pending_cancellation_qualification -- --ignored --exact`
-  with the fresh GIT_ASSET_RETIREMENT_CLI succeeds. Clean pinned inputd81cabe rebuilt
-  git-asset-source separately; explicit
-  `source_claims::admission::tests::baseline_cli_replays_atomic_pairs_without_format_migration -- --ignored --exact`
-  with GIT_ASSET_BASELINE_SOURCE_CLI succeeds. Ordinary ignored entries are not proof.
-
-Review corrected cancellation effect reporting and deterministic keeper selection
-across provider reordering; a new fixture's unsupported bare managed publication
-was replaced with actual accounted publication. Failures were fixed and rerun.
-Serialized page requirements are recomputed before admission/current convergence;
-page success cannot claim complete selection convergence. Logical unlink and
-pre-unlink allocation remain distinct from free-space reclaim and total hash IO.
-
-All data, repositories, providers and faults are synthetic. This qualifies bounded
-local process-restart composition, not native failure-domain independence, power
-loss, authenticated external triggers, full branch/draft/index/native coverage,
-unattended partial cleanup, offline enrollment, aggregate verification IO, large
-files, sustained journal continuation, final deletion or metadata expiry. Hosted
-current-head checks and user/live adoption remain separate. Full requirements,
-VAL outcomes and the remaining roadmap milestones stay open.
+[Original qualification record](https://github.com/giodl73-repo/git-asset/blob/662f59868cbe90a7c73b2e16fe968146e787cd7d/docs/vtrace/EVIDENCE.md#evid-093-bounded-local-placement-and-committed-ref-composition).
 
 ## EVID-094: Trusted GitHub intake and bounded placement coordination
 
-Input1c253ea, implementation503adca and issuer-time correctionb3aced0.
-Controls/scope/entry/exit: specs/GITHUB-TRIGGER.md. This evidence separates
-implementation, local verification, hosted issuer compatibility, synthetic
-intended-use rehearsal and producer review. It closes no full work package.
-
-- Sixteen optional GitHub library cases cover independent HTTP/JWKS credentials,
-  immutable repository/ref checks, bounded complete pointer capture, blob identity,
-  atomic selection, strict intake, actual signed HTTP/three temporary stores,
-  expiry/observed clock rollback, source outage, post-copy drift, multiple pages,
-  page exhaustion and duplicate reuse with zero repeated streaming.
-- Eight independently OpenSSL-signed authentication/CLI cases cover JOSE/key/claim
-  substitution, wrong identities/events/workflows, duplicate JSON, expiry, issuer
-  backdated not-before, immutable reusable workflow and disabled/public-listener
-  refusal. Thirteen actual Git/lifecycle cases retain the prior behavior and add
-  exact local listing/root/context compatibility through CommittedSource.
-- Final all-feature git-asset library/authentication/lifecycle suites pass after
-  the time correction. Default workspace, strict all-feature/all-target workspace
-  Clippy in a fresh target, standalone Git, fmt, 70 shipped Node/client flows and
-  three restore-helper tests pass. Both ignored cross-artifact qualifiers were
-  explicitly executed successfully using the current retirement CLI and pinned
-  pre-pair reader. The ordinary ignored entries remain non-evidence.
-- Hosted live-issuer run42546575041 atb3aced0 passes: actual GitHub OIDC signature,
-  fixed-origin JWKS/current API metadata and actual foreground receiver reconcile
-  a random absent scope in fresh temporary stores. Objects, streamed bytes and
-  effects are zero. This proves that narrow issuer/API/intake compatibility only;
-  nonempty byte behavior is proven separately by the synthetic signed fixture.
-
-The isolated all-feature workspace rerun passes, including the 500000-binding
-metadata case, before the final issuer-time correction; the final all-feature
-git-asset library (37 entries), authentication (eight) and Git/lifecycle (thirteen)
-run after that correction passes. Other runtime packages are unchanged by it.
-Earlier failures were not waived: one shared-target focused build replaced a CLI
-during a broad test run, and stale local compiler metadata required fresh isolated
-targets. No overlapping builds ran against the successful broad test target.
-Hosted validation first exposed fixture line-ending pins, then the real issuer
-exposed an invalid not-before/issued-at coupling. Canonical fixture pins and
-independent JWT time checks corrected those issues; signed regression cases and
-the live issuer run pass. Hosted run42546580318 atb3aced0 passes Linux and secrets;
-Windows remains pending. A later documentation closeout needs its own current-head
-check. The bearer is never copied into reports, source, logs or argv.
-
-Full lifecycle/native coverage, external TLS/OS/rate isolation, real payload
-provider custody, large files, offline enrollment, unattended private-partial
-recovery, authority migration, operational lifetime, bulk final deletion and
-metadata expiry remain required. No service/consumer/cache is installed or
-enrolled, and no full VAL outcome or independent/human acceptance is claimed.
+[Original qualification record](https://github.com/giodl73-repo/git-asset/blob/662f59868cbe90a7c73b2e16fe968146e787cd7d/docs/vtrace/EVIDENCE.md#evid-094-trusted-github-intake-and-bounded-placement-coordination).
 
 ## EVID-095: Staged-index draft protection and ordinary placement
 
-Input195bd0a, implementation51dd2b2. Controls/scope/entry/exit and GIT/PROVIDER
-L0/L1/L2: specs/INDEX-LIFECYCLE.md. Implementation, verification, synthetic
-intended-use rehearsal, trace and producer review remain distinct.
-
-Fifteen focused entries pass (fourteen active cases plus one child helper), with
-two actual abrupt exits after metadata verification and source adoption. Cases
-cover staged versus unstaged bytes, base/ours/theirs protection without a merged
-selection, resolved-stage history, linked-worktree independence, canonical plans,
-scope budgets, foreign owner/worktree/policy/class, disabled apply/copy, stale
-plans and Git drift before/after admission. Metadata interruption/reopen and
-offline status preserve exact acknowledged state. No Git index/worktree is written
-by the implementation. The helper's ordinary no-op entry is not abrupt-exit proof;
-the parent explicitly launches it and verifies exit73 at both requested stages.
-
-Actual git-asset-lifecycle index CLI -> three temporary providers copies working and
-retained bytes, keeps prior bytes working for an enrolled active job, then moves
-those prior bytes to history/backup after owner job withdrawal during a no-op
-index reconciliation. Old bytes are read back through the protected reader;
-duplicate reconciliation streams zero bytes. Bad/missing storage binding holds
-before draft adoption and does not initialize a root. Default copy permissions
-permit desired-selection acknowledgement while correctly reporting pending
-placement and no copies. Bare capture is never a custody acknowledgement.
-
-Locked default and all-feature workspace suites pass in separate isolated targets,
-including the 500000-binding metadata case and all fifteen new entries. Strict
-all-feature/all-target workspace Clippy, standalone Git, fmt, 70 shipped Node
-flows, three restore-helper cases and portable structure/link/budget/pin/diff
-checks pass. Both ignored artifact qualifiers execute successfully: current
-retirement CLI pending cancellation and pinned pre-pair source reader replay.
-No source journal bytes changed and no ignored row alone earns executed credit.
-Hosted run42549064931 at51dd2b2 passes Linux/secrets; Windows and later closeout
-current-head checks remain pending and separate.
-
-Early test failures were corrected: the protected-membership helper now unwraps
-the API result and checks None rather than interpreting errors as protection;
-the synthetic byte seed uses the existing Flat layout resolver, and actual byte
-readback uses ObjectRead. No provider/admission invariant was weakened.
-
-All repositories, jobs, providers and bytes are synthetic. Assigned repository/
-worktree IDs and private root bindings are operator authority, not automatic
-discovery or a hostile-filesystem/restore proof. Automatic branch rename/withdrawal,
-commit/draft settlement, private overlays/native coverage, real custody/large files,
-operational continuation, authority migration, bulk final deletion, metadata expiry
-and user acceptance remain open. No full requirement or VAL outcome is closed.
+[Original qualification record](https://github.com/giodl73-repo/git-asset/blob/662f59868cbe90a7c73b2e16fe968146e787cd7d/docs/vtrace/EVIDENCE.md#evid-095-staged-index-draft-protection-and-ordinary-placement).
 
 ## EVID-096: Owned source settlement and conditional admission
 
-Input9c2a29f, implementation51c5acc. SOURCE-SETTLEMENT.md names controls,
-scope, entry/exit and GIT/PROVIDER L0/L1/L2. Twelve new settlement entries include
-one helper and two actual abrupt exits before/after withdrawal. All 27 combined
-index/settlement entries (two helpers/four actual exits), thirteen committed-ref
-cases and 38 all-feature Git library cases pass. Three new admission cases bring
-that focused suite to 31 active entries plus one ignored artifact qualifier.
-Changed witness during tree IO refuses, unrelated sources progress, malformed
-conditions hold and historical replay never withdraws a later reactivation.
-
-Actual CLI fixtures adopt staged pointers and a committed successor, settle the
-draft, end a branch, preserve an active job, then demote old working bytes after
-job end on no-op catch-up. Backup/history readback verifies exact bytes; retries
-stream zero new bytes. Missing metadata, unadopted/conflicted stage, ref failure/
-reappearance, condition drift, disabled permission and offline status stay distinct.
-A signed HTTP request with a withdrawn git-asset source and unchanged GitHub ref reports
-pending rather than false convergence. Shared private preflight validates roots
-before mutation; committed/index completion also checks current admitted selection.
-
-Locked default/all-feature workspace suites pass in isolated targets, including
-large metadata scale. Strict all-feature/all-target workspace Clippy, standalone
-Git, fmt, 70 shipped Node flows, three restore helpers and portable L0 pass.
-Both ignored artifact qualifiers execute explicitly. The pre-pair reader fixture
-now reads conditional Withdraw state and acknowledges all three existing command
-receipts (Prepare/Adopt/Withdraw). This test-only extension and explicit backup
-byte-readback assertion followed broad suites; exact qualifiers/readback and final
-strict Clippy pass afterwards. No runtime code changed after implementation51c5acc.
-
-Hosted issuer run42553357798 at51c5acc passes actual foreground empty-scope
-intake/current API with zero payload operations. Hosted run42553510977 passes
-Linux/secrets; Windows and later closeout head remain pending. This is not live
-TLS ingress/OS isolation or actual provider custody. Review uses six producer
-lenses, not independent people. The source/docs ceiling grows to 6 MiB with
-unchanged per-file/media/runtime restrictions; no runtime storage cap changes.
-
-Full event routing, durable rename/controller revocation, native/private closure,
-real provider/large-file/authority/lifetime, bulk final deletion, metadata expiry
-and user acceptance remain open. Historical obligations are preserved; no full
-requirement, VAL outcome, production adoption or whole-plan completion is claimed.
+[Original qualification record](https://github.com/giodl73-repo/git-asset/blob/662f59868cbe90a7c73b2e16fe968146e787cd7d/docs/vtrace/EVIDENCE.md#evid-096-owned-source-settlement-and-conditional-admission).
 
 ## EVID-097: Exact retained-subset claim handoff
 
-Input63f2c96, implementation2fecfab/corrective002a850. RETAINED-SUBSET.md and
-../reviews/2026-11-09-retained-subset.md name controls and scope. Fourteen new
-subset library entries include a helper and an explicitly executed old-reader
-qualifier; four new admission cases and two actual CLI cases qualify atomic
-historical survivor protection and exact original owner retirement. Focused
-source claims pass 48 active entries/two ordinarily ignored qualifiers; both
-qualifiers are separately executed and pass. Six new actual child exits, changed
-witness/original, same-hash alias/foreign job, missing/corrupt metadata, full-root
-and sparse 4,096-binding cases preserve survivors or hold. The actual old reader
-observes the atomic triplet state and recovers the final Retire receipt.
-
-Final focused CLI, strict all-feature/all-target workspace Clippy, standalone Git,
-fmt, 70 Node and three restore tests pass. Corrected locked default/all-feature
-workspace suites pass in separate targets, including both 500,000-binding runs.
-The explicit fresh-artifact retirement CLI cancellation qualifier also passes.
-Hosted exact closeout-head checks remain separate; corrective002a850 has Linux/
-secrets success and Windows in progress at observation. No payload IO, full bulk selector,
-last-copy deletion, native/private coverage, metadata expiry, authority/lifetime,
-actual provider adoption or user acceptance is established. Six roles are producer
-lenses, not independent review. Full requirements and the complete goal remain open.
+[Original qualification record](https://github.com/giodl73-repo/git-asset/blob/662f59868cbe90a7c73b2e16fe968146e787cd7d/docs/vtrace/EVIDENCE.md#evid-097-exact-retained-subset-claim-handoff).
 
 ## EVID-098: Content-wide live claim clearance for final retirement
 
-Input59174b1; implementation89d260e. FINAL-RETIREMENT.md defines the full
-remaining protocol separately from current final_retirement::claims. Thirteen
-focused entries (one child helper/one actual exit) pass: all four source classes
-and three roles, current/history sharing, another namespace/owner, ordinary M
-surplus despite an F job, exact rosters/minima, unknown/corrupt closure, budgets,
-marker drift and partial-lock cleanup. Actual restored SQLite history loses an
-acknowledged target claim but fails the stronger admitted minimum; a forged hash
-also refuses. Known minima do not prove absence of every globally unseen rollback.
-
-Final-runtime locked default/all-feature workspace suites pass in separate
-external targets, including both 500,000-binding runs. Forty-eight active
-source-claim regressions and both explicitly executed pinned old-reader qualifiers
-pass. The independent ASCII/Python canonical/hashlib vector and final focused
-thirteen entries are explicitly qualified after runtime changes; final strict
-workspace all-feature/all-target Clippy, standalone Git, fmt and portable L0 pass.
-The explicit ordinary-retirement CLI cancellation qualifier passes against the
-fresh final-runtime all-feature binary, independently of ordinarily ignored tests.
-No frontend script changed or new Node/restore evidence is claimed for this slice.
-Hosted exact implementation/closeout-head qualification remains separate.
-
-../reviews/2026-11-09-final-retirement-claims.md records six producer lenses,
-synthetic validation and residual gates. Clearance owns live namespace fences,
-not a provider fence or removal/grant-release authority. No new provider/journal
-format, final unlink, owner grant release, bulk age/native/category selector,
-intent/cancellation executor, capacity reclaim, metadata expiry or user acceptance
-is implemented. FR-06..15 and the complete plan remain open.
+[Original qualification record](https://github.com/giodl73-repo/git-asset/blob/662f59868cbe90a7c73b2e16fe968146e787cd7d/docs/vtrace/EVIDENCE.md#evid-098-content-wide-live-claim-clearance-for-final-retirement).
 
 ## EVID-099: Bounded explicit local final retirement and reacquisition
 
-Input273e639; implementation9f5e8c0. FINAL-PROVIDER.md adds a fresh design-8
-LocalStore and distinct portable contract, exact single-owner grant release,
-immutable intent/release/terminal, cancellation and explicit final reacquisition.
-Existing accounted publication, ledgers and scoped namespace/provider fences are
-reused. Historical outcome, current unverified presence and removal authority
-are separate; read-only status adds no commands and grants no authority.
-
-Thirteen focused entries pass (one helper, nine actual abrupt exits), including
-pre/post-release cancellation, new/foreign grants, metadata reservation refusal,
-late clock expiry/rollback, missing evidence, same-hash/new-retention survival and
-public placement refusal until explicit final reacquisition followed by convergence.
-Eleven independent ASCII/Python canonical/hashlib cases pin new framing. Explicit
-pre-final CLI manifest refusal passes with an accepted legacy control; CI builds
-pinned273e639 rather than treating an ignored test entry as proof.
-
-Final-runtime locked default/all-feature workspace suites pass in separate external
-targets, including both 500,000-binding metadata runs. Strict all-feature/all-target
-workspace Clippy, standalone Git, fmt, L0 and diff checks pass. Explicit fresh
-ordinary-retirement CLI cancellation passes. First all-feature failure was an
-S3 per-round-winner assertion: twenty unchanged races pass; a held-reader fixture
-now proves both-Busy then explicit serial convergence. All fifteen corrected S3
-entries and the full final-runtime all-feature rerun pass. Original response codes
-were not captured; no fairness or automatic-retry guarantee is inferred.
-
-../reviews/2026-11-09-final-provider.md separates verification, synthetic validation,
-trace and six producer lenses. No runtime code changed after9f5e8c0. Source event
-bytes and legacy formats remain; pre-pair artifact, frontend and restore evidence
-is historical, not newly rerun locally. Hosted exact-head checks, native clock/
-authority/provider/large-file/restore, bulk age/category/native selection and
-consent/source settlement, metadata lifetime/continuation and human acceptance
-remain open. The full goal is not complete; no live stores or upgrades were used.
+[Original qualification record](https://github.com/giodl73-repo/git-asset/blob/662f59868cbe90a7c73b2e16fe968146e787cd7d/docs/vtrace/EVIDENCE.md#evid-099-bounded-explicit-local-final-retirement-and-reacquisition).
 
 ## EVID-123: git-asset product rename
 
