@@ -30,7 +30,10 @@ actors, independently admitted unshared direct backing, distinct failure domains
 actual distinct device observations and exactly one retained keeper. Stronger
 quorums cannot be silently reduced. The source's actual configuration must seal
 the exact policy/runtime before original publication. Mixed legacy actors are
-unsupported until the separate owner-side epoch/handoff protocol is qualified.
+held pending a qualified [existing-cache handoff](../../specs/ANNEX-PROTECTED-EVICTION.md#existing-cache-handoff-requirements).
+A listed or byte-verified backup alone does not establish that handoff. If
+`git asset storage native describe` reports `mixed_legacy_supported: false`,
+use the catalogue to inspect copies and keep removal held.
 
 Save `Plan::to_json()` and its ID outside Git with operational evidence. Reopen
 with `Plan::from_json()` (canonical, at most64KiB), preserving original producer
