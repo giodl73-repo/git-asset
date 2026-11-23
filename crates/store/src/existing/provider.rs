@@ -45,13 +45,24 @@ impl ReadCache {
         )
     }
     /// Observe the logical length of a provider file through the existing path guards.
-    /// This consumes request admission and does not read or verify payload bytes.
     pub fn observe_provider_file(
         &mut self,
         root: &Path,
         path: &ProviderPath,
         object: &Object,
     ) -> Result<u64> {
+        self.with_provider_metadata(root, path, object, |_, length| length)
+    }
+
+    /// Inspect metadata while the provider path and regular file guards are held.
+    /// This method consumes request admission without verifying payload bytes.
+    pub fn with_provider_metadata<T>(
+        &mut self,
+        root: &Path,
+        path: &ProviderPath,
+        object: &Object,
+        inspect: impl FnOnce(&File, u64) -> T,
+    ) -> Result<T> {
         if !self.profile.places.is_empty() {
             return Err(Error::Unsupported);
         }
@@ -72,7 +83,7 @@ impl ReadCache {
         if metadata.len() != object.bytes {
             return Err(Error::Integrity);
         }
-        Ok(metadata.len())
+        Ok(inspect(&file, metadata.len()))
     }
 
     /// Open exactly one provider location, without layout guessing or fallback.

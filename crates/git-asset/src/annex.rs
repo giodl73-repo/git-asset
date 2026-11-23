@@ -59,6 +59,13 @@ impl std::fmt::Display for Error {
 impl std::error::Error for Error {}
 pub type Result<T> = std::result::Result<T, Error>;
 
+/// Local metadata from one exact copy. This does not verify or retain it.
+pub struct CopyObservation {
+    pub bytes: u64,
+    pub allocated_bytes: Option<u64>,
+    pub hard_links: Option<u64>,
+}
+
 pub struct Reader {
     profile: Profile,
     metadata: ReadCache,
@@ -124,11 +131,25 @@ impl Reader {
     /// Observe one exact native object without reading its payload.
     /// The observed length is not byte integrity or retention evidence.
     pub fn observe(&mut self, object: &Object) -> Result<u64> {
+        Ok(self.observe_copy(object)?.bytes)
+    }
+    /// Observe metadata for one admitted local copy without reading its payload.
+    pub fn observe_copy(&mut self, object: &Object) -> Result<CopyObservation> {
         self.preflight(object)?;
         let _configuration = self.admit_repository()?;
         let path = self.content_location(object)?;
         self.data
-            .observe_provider_file(&self.profile.repository, &path, object)
+            .with_provider_metadata(&self.profile.repository, &path, object, |file, bytes| {
+                #[cfg(windows)]
+                let hard_links = git_asset_windows_process::storage::hard_links(file).ok();
+                #[cfg(not(windows))]
+                let hard_links = None;
+                CopyObservation {
+                    bytes,
+                    allocated_bytes: fs2::FileExt::allocated_size(file).ok(),
+                    hard_links,
+                }
+            })
             .map_err(|error| match error {
                 existing::Error::Missing => Error::Missing,
                 other => Error::Bytes(other),

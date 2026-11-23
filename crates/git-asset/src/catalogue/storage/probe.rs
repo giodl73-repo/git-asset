@@ -231,19 +231,19 @@ impl Catalogue {
                             .map_err(|_| "Invalid digest")?,
                         bytes: entry.row.bytes.unwrap(),
                     };
-                    let observation = reader.observe(&object);
+                    let observation = reader.observe_copy(&object);
                     if started.elapsed() >= probe_budget {
                         return Err(
                             "Named-object refresh time budget exceeded; old view preserved".into(),
                         );
                     }
                     match observation {
-                        Ok(bytes) => entry.row.copies.push(Copy {
+                        Ok(copy) => entry.row.copies.push(Copy {
                             tier: place.place_index,
-                            bytes,
-                            allocated_bytes: None,
+                            bytes: copy.bytes,
+                            allocated_bytes: copy.allocated_bytes,
                             physical_id: None,
-                            hard_links: None,
+                            hard_links: copy.hard_links,
                             other_hard_links: None,
                             descriptor_size_matches: Some(true),
                         }),

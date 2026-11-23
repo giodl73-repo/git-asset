@@ -1454,6 +1454,8 @@ fn native_catalogue_refresh_review_and_verify() {
     fs::write(&source, bytes).unwrap();
     let key = format!("SHA256-s{}--{}", object.bytes, object.sha256.as_str());
     run(&annex_tool, &["setkey", &key, source.to_str().unwrap()]);
+    let content = run(&annex_tool, &["contentlocation", &key]);
+    fs::hard_link(store.join(content), root.join("alias")).unwrap();
     let uuid = run(&git_tool, &["config", "--local", "--get", "annex.uuid"]);
     let configuration = Object::from_bytes(&fs::read(store.join("config")).unwrap());
     let tools = std::env::split_paths(&path).collect::<Vec<_>>();
@@ -1481,6 +1483,8 @@ fn native_catalogue_refresh_review_and_verify() {
     let review = c.cache_eviction_preview(cache, 0, "").unwrap();
     let row = &review["items"][0];
     assert_eq!(row["sha256"], object.sha256.as_str());
+    assert_eq!(row["copies"][0]["hard_links"], 2);
+    assert_eq!(row["eviction_review"]["single_path_reclaim_estimate"], 0);
     assert_eq!(review["removal_authorized"], false);
     let (selected, reader) = c
         .storage_copy_request(

@@ -112,7 +112,9 @@ Named refresh checks the declared snapshot objects under the place's reader
 limits and the catalogue refresh budget. A subprocess may need its bounded
 termination window before the refresh returns. On errors other than exact
 absence the refresh fails and preserves existing observations. Opening the
-catalogue only admits the profile. A native observation records content length,
-with allocation, hard links and reclaim still unknown. The existing explicit
+catalogue only admits the profile. A native observation records content length
+and, when Windows reports them from the guarded handle, allocated bytes and
+hard-link count. An observed alias supports a zero single-path reclaim estimate.
+A missing link count or a sole link leaves reclaim unknown. The existing explicit
 copy verification route reopens and hashes the selected exact copy. Both
 operations remain read-only and grant no retained custody or removal authority.
