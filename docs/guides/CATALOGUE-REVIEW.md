@@ -90,8 +90,10 @@ enrollment or build automatically enables every optional provider or experiment.
 
 ## Review a cache for eviction
 
-1. Open **Storage**, find the sample's working cache under **Cache locations**,
-   and choose **Review this cache for eviction**. You can reach the same review
+1. Open **Objects · placement & versions** for **Intro sample · current v2** and
+   choose **Refresh observed copies**. In **Storage → Cache locations**, choose
+   **Review this cache for eviction** on the location ending in `review-working`. It contains
+   a synthetic v1 copy whose placement preference is the History cache. You can reach the same review
    from **Objects** by filtering to an observed cache. The review uses recorded
    observations across all enrolled projects. If a drive or review button is
    absent, check whether the exact cache is enrolled and has observations.

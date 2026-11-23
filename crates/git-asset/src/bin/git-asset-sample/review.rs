@@ -18,7 +18,9 @@ pub(super) fn run(requested: &Path) -> Result<Value> {
     ] {
         eprintln!("Preparing {id} rehearsal ({checkpoints} checkpoints)…");
         let child = root.join(id);
-        let result = Demo::new(&child, mode)?.run(mode)?;
+        let demo = Demo::new(&child, mode)?;
+        let original = demo.objects["original"].clone();
+        let result = demo.run(mode)?;
         if result["completed_checkpoints"] != checkpoints {
             return Err("review rehearsal checkpoint mismatch".into());
         }
@@ -32,6 +34,9 @@ pub(super) fn run(requested: &Path) -> Result<Value> {
             .remove(0);
         project["id"] = json!(id);
         project["label"] = json!(label);
+        if id == "intro" {
+            enroll_older_working_copy(&root, &child, &original, &mut project)?;
+        }
         projects.push(project);
         if id == "recovery" {
             teaching = enrollment["teaching"].take();
@@ -58,4 +63,38 @@ pub(super) fn run(requested: &Path) -> Result<Value> {
         "viewer_started":false,"complete_course":false});
     save(&root.join("review.json"), &result)?;
     Ok(result)
+}
+
+fn enroll_older_working_copy(
+    root: &Path,
+    child: &Path,
+    original: &Object,
+    project: &mut Value,
+) -> Result<()> {
+    let duplicate = root.join("review-working");
+    let destination = Layout::Flat.object_path(&duplicate, &original.sha256);
+    let archived = Layout::Flat.object_path(&child.join("history"), &original.sha256);
+    let bytes = fs::read(archived)?;
+    if Object::from_bytes(&bytes) != *original {
+        return Err("review archive bytes do not match the original descriptor".into());
+    }
+    fs::create_dir_all(destination.parent().ok_or("invalid fixture destination")?)?;
+    fs::write(destination, bytes)?;
+
+    let mut profile = identity::parse_json(&fs::read(child.join("resolver.json"))?)?;
+    profile["byte_source"]["places"]
+        .as_array_mut()
+        .ok_or("fixture byte places missing")?
+        .push(json!({"root":duplicate,"layout":"flat"}));
+    let profile_path = root.join("intro-review-resolver.json");
+    save(&profile_path, &profile)?;
+    project["profile"] = json!(profile_path);
+    let storage = &mut project["storage"];
+    storage["places"]
+        .as_array_mut()
+        .ok_or("fixture storage places missing")?
+        .push(json!({"label":"Working review example","place_index":3,"live_probe":true}));
+    storage["placement_rules"] = json!([{"id":"retained-series","label":"Keep previous series in History",
+        "pattern":"^work/series$","usages":["previous-revision"],"place_index":1}]);
+    Ok(())
 }
