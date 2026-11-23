@@ -81,6 +81,58 @@ An owner record documents the checks for a future handoff; it cannot enable
 mixed legacy execution. A separately enrolled namespace-owned scope can qualify
 on its own evidence while shared scopes remain under review.
 
+### Existing reel-cas caches
+
+The inventory identifies `reel-cas` as an existing byte layout. Its
+redundant-copy provider candidate is REEL's `tier-demote`. The provider
+takes an owner-scoped request, a pinned tier plan, a bounded set of SHA-256
+identities, and an owned operation journal. Its preview and apply use the
+same request. Use the original journal to reconcile an interrupted apply.
+
+A git-asset handoff must match SHA-256 and byte length in both reports and
+confirm that the provider's configured source is the enrolled cache being
+reviewed. Keep provider executable, control roots, policy, tier plan, consumer
+roster, and journal bindings in private enrollment. The catalogue report is
+candidate evidence only. The provider must recheck live protection, exact
+source identity, source aliases and independent custody before any removal.
+Leave the provider's off-by-default bypass options disabled in the initial
+pilot. Preserve the provider's completion receipt and measure source allocation
+separately from changes in total volume free space.
+
+Before enabling the handoff, test the pinned Windows executable on a synthetic
+cache with changed scope, a new job, a corrupt keeper, an unknown hard link
+and a process interruption. Then qualify one owner-scoped production batch.
+Run `git asset catalogue demotion-match DRIVE_REPORT PROVIDER_POLICY PROVIDER_PLAN NEW_REPORT`
+with absolute paths to saved evidence. It compares the bounded drive-report
+page against the provider's ordinary demotion proposals and records input digests.
+The provider plan is limited to 32 MiB for this matcher. Use provider verification
+with current controls before relying on any match.
+
+Then use `git asset catalogue demotion-prepare DRIVE_REPORT OWNER_REQUEST NEW_REQUEST`
+to check a privately supplied ordinary demotion request. The request names the
+exact objects, provider policy and plan, consumer roster, and verification budgets.
+The command rechecks the match and writes a new request without widening the
+batch. Use that same request with the provider's verification and apply commands.
+
+On Windows with provider-process support, invoke the fixed REEL command through
+`git asset catalogue demotion-run verify PROFILE REQUEST JOURNAL`. The private
+profile schema is `git-asset.reel-demotion-provider.experimental-1`. It pins
+`executable`, `executable_sha256`, `project_root`, `journal` and
+`request_sha256`, plus `drive_report` and `drive_report_sha256`. Use absolute
+paths in owner-controlled directories. The launcher rechecks the prepared
+request against the pinned drive report before starting the provider.
+`allow_apply` defaults to false. An explicitly admitted `apply` uses the pinned
+request and its original apply journal. An uncertain outcome requires inspection
+of that journal before retry. The provider still performs live checks and writes
+the authoritative result. Git-asset validates the returned request and plan IDs.
+Use `demotion-run status PROFILE REQUEST RESULT` with an explicit result file
+from the pinned journal. It checks the immutable request stamp and receipt
+without running the provider or reading payloads. A missing receipt leaves
+the outcome uncertain. A valid receipt reports historical effects only.
+
+The ordinary demotion provider requires a keeper. Final retirement of a
+rebuildable render has its own execution and approval path.
+
 ## From cache review to a saved plan
 
 Start with [the catalogue cache review](CATALOGUE-REVIEW.md#review-a-cache-for-eviction).

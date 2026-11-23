@@ -1,6 +1,11 @@
 //! Explicit local application launch; no setup, hydration or automatic deletion.
 use git_asset::catalogue::{Catalogue, Config};
 use std::{path::Path, process::ExitCode};
+#[path = "git-asset-catalogue/demotion.rs"]
+mod demotion;
+#[cfg(all(windows, feature = "annex-read"))]
+#[path = "git-asset-catalogue/demotion_provider.rs"]
+mod demotion_provider;
 fn save(report: &serde_json::Value, path: &str) -> Result<(), String> {
     use std::io::Write;
     if !Path::new(path).is_absolute() {
@@ -53,6 +58,60 @@ fn eviction_report(
 }
 fn run() -> Result<(), String> {
     let args: Vec<_> = std::env::args().skip(1).collect();
+    if args.first().is_some_and(|action| action == "demotion-run") {
+        #[cfg(all(windows, feature = "annex-read"))]
+        {
+            let [_, action, profile, request, journal] = args.as_slice() else {
+                return Err("demotion-run requires verify|apply PROFILE REQUEST JOURNAL or status PROFILE REQUEST RESULT".into());
+            };
+            let report = demotion_provider::run(
+                action,
+                Path::new(profile),
+                Path::new(request),
+                Path::new(journal),
+            )?;
+            println!("{report}");
+            return Ok(());
+        }
+        #[cfg(not(all(windows, feature = "annex-read")))]
+        return Err("demotion-run requires Windows provider-process support".into());
+    }
+    if args
+        .first()
+        .is_some_and(|action| action == "demotion-prepare")
+    {
+        let [_, drive, request, output] = args.as_slice() else {
+            return Err("demotion-prepare requires DRIVE_REPORT OWNER_REQUEST NEW_REQUEST".into());
+        };
+        let request = demotion::prepare(Path::new(drive), Path::new(request))?;
+        save(&request, output)?;
+        println!(
+            "{}",
+            serde_json::json!({
+                "request":output,"objects":request["sha256s"].as_array().map_or(0, Vec::len),
+                "removal_authorized":false
+            })
+        );
+        return Ok(());
+    }
+    if args
+        .first()
+        .is_some_and(|action| action == "demotion-match")
+    {
+        let [_, drive, policy, plan, output] = args.as_slice() else {
+            return Err(
+                "demotion-match requires DRIVE_REPORT PROVIDER_POLICY PROVIDER_PLAN NEW_REPORT"
+                    .into(),
+            );
+        };
+        let report = demotion::compare(Path::new(drive), Path::new(policy), Path::new(plan))?;
+        save(&report, output)?;
+        println!(
+            "{}",
+            serde_json::json!({"report":output,"matched":report["matched"],"removal_authorized":false})
+        );
+        return Ok(());
+    }
     if args.len() < 2
         || !matches!(
             args[0].as_str(),
