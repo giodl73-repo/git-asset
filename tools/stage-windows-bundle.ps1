@@ -29,6 +29,10 @@ if (Test-Path -LiteralPath $Stage) { throw 'Use a new staging directory.' }
 
 Push-Location $source
 try {
+    $rustc = rustc -vV
+    if ($LASTEXITCODE -ne 0 -or !$rustc) { throw 'Cannot record the Rust compiler identity.' }
+    $cargo = cargo --version
+    if ($LASTEXITCODE -ne 0 -or !$cargo) { throw 'Cannot record the Cargo version.' }
     cargo build --target-dir $TargetDirectory --release --workspace --all-features --bins --locked
     if ($LASTEXITCODE -ne 0) { throw 'Locked workspace build failed.' }
 } finally {
@@ -76,6 +80,8 @@ $manifest = @($files | Sort-Object | ForEach-Object {
     schema = 'git-asset.windows-bundle-preflight.experimental-1'
     source_commit = $Commit
     version = $surface.version
+    rustc = @($rustc)
+    cargo = $cargo
     frontend_schema = $surface.schema
     native_storage_available = ($surface.native_storage_available -eq $true)
     files = $manifest
