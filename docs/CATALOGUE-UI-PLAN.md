@@ -71,7 +71,7 @@ work/object/consumer return flows remain covered.
 | Work view | Owner-admitted collections, current-state counts, facets and nested files | Implemented; generic fixtures and producer-run browser tasks qualified, not independent acceptance |
 | U2 | Full production/delivery histories, profile explanations and snapshot comparisons | Partial: registered versions/files and bounded declared-version comparison implemented; full production/delivery/profile explanations remain open |
 | U3 | Inventory/delta, working-set, custody and measured allocation views | Named object/preferences/copy review, guarded verification and global capacity implemented; coverage and work/version comparison implemented; full custody and eviction remain open |
-| U4 | Fenced handoff to enrolled authoring tools | Open |
+| U4 | Fenced handoff to enrolled authoring tools | Open; [issue75 audit and four-PR sequence](TOOL-PREVIEW-HANDOFF-PLAN.md) |
 
 Also open: previews/playback, interactive enrollment, native/WASM parity and
 portable Git/LFS-only presentation adapters. External authoring editors remain
