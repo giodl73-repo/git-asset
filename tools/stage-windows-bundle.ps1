@@ -1,7 +1,8 @@
 param(
     [Parameter(Mandatory)][string] $Commit,
     [Parameter(Mandatory)][string] $TargetDirectory,
-    [Parameter(Mandatory)][string] $Stage
+    [Parameter(Mandatory)][string] $Stage,
+    [string] $Archive
 )
 
 $ErrorActionPreference = 'Stop'
@@ -18,7 +19,7 @@ function Confirm-Source {
 }
 Confirm-Source
 
-foreach ($path in @($TargetDirectory, $Stage)) {
+foreach ($path in @($TargetDirectory, $Stage, $Archive) | Where-Object { $_ }) {
     if (![IO.Path]::IsPathFullyQualified($path)) { throw 'Use absolute output paths.' }
     $relative = [IO.Path]::GetRelativePath($source, [IO.Path]::GetFullPath($path))
     if ($relative -ne '..' -and !$relative.StartsWith('..\') -and ![IO.Path]::IsPathFullyQualified($relative)) {
@@ -26,6 +27,14 @@ foreach ($path in @($TargetDirectory, $Stage)) {
     }
 }
 if (Test-Path -LiteralPath $Stage) { throw 'Use a new staging directory.' }
+if ($Archive) {
+    $parent = Split-Path -Parent $Archive
+    if ([IO.Path]::GetExtension($Archive) -ne '.zip' -or (Test-Path -LiteralPath $Archive) -or
+        !(Test-Path -LiteralPath $parent -PathType Container)) {
+        throw 'Use a new ZIP path in an existing directory.'
+    }
+}
+
 
 Push-Location $source
 try {
@@ -86,3 +95,32 @@ $manifest = @($files | Sort-Object | ForEach-Object {
     native_storage_available = ($surface.native_storage_available -eq $true)
     files = $manifest
 } | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $Stage 'preflight-manifest.json') -Encoding utf8
+
+if ($Archive) {
+    $entries = @($files) + 'preflight-manifest.json'
+    $paths = @($entries | ForEach-Object { Join-Path $Stage $_ })
+    Compress-Archive -LiteralPath $paths -DestinationPath $Archive
+    $zip = [IO.Compression.ZipFile]::OpenRead($Archive)
+    try {
+        if ($zip.Entries.Count -ne $entries.Count) { throw 'ZIP entry count differs from staging.' }
+        foreach ($name in $entries) {
+            $entry = $zip.GetEntry($name)
+            $staged = Join-Path $Stage $name
+            if (!$entry -or $entry.Length -ne (Get-Item -LiteralPath $staged).Length) {
+                throw "ZIP entry differs in length: $name"
+            }
+            $stream = $entry.Open()
+            try {
+                $actual = [Convert]::ToHexString([Security.Cryptography.SHA256]::HashData($stream))
+                if ($actual -ne (Get-FileHash -LiteralPath $staged).Hash) {
+                    throw "ZIP entry differs in content: $name"
+                }
+            } finally {
+                $stream.Dispose()
+            }
+        }
+    } finally {
+        $zip.Dispose()
+    }
+    Get-FileHash -LiteralPath $Archive
+}

@@ -57,6 +57,9 @@ outside the checkout. The staging directory must be new.
 pwsh -NoProfile -File tools/stage-windows-bundle.ps1 -Commit COMMIT -TargetDirectory BUILD_PATH -Stage STAGE_PATH
 ```
 
+Add `-Archive ABSOLUTE_NEW_ZIP` to create a ZIP, verify each archive entry
+against staging, and print the ZIP checksum.
+
 The locked release build stages the front door and all advertised companion
 executables. The manifest records the source, available native storage surface
 and file checksums. The script checks dispatch without opening any cache. Git,
