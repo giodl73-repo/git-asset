@@ -437,7 +437,7 @@
     {"path":"docs/DEVELOPMENT.md","bytes":4029,"sha256":"ae5150f93f6ea5c353fe255db514e7524cf9e8e8a76bf5e8439f622374ef4082"},
     {"path":"docs/INTAKE.md","bytes":839,"sha256":"928968d3d1eb3116493c21cc79766cf837feb23c71affb0d9be45410aea7a276"},
     {"path":"docs/META-OPERATIONS.md","bytes":4302,"sha256":"1c0b17afe9ca902c34740511747de65f7884da3f384bf651343cb7ba939db0d1"},
-    {"path":"docs/PUBLIC-RELEASE.md","bytes":4378,"sha256":"a8bcbd45304aa7b494763f1e70e5a7e1f14cab8683e5f5d24299759f1b3ee793"},
+    {"path":"docs/PUBLIC-RELEASE.md","bytes":5108,"sha256":"1f0bde4ec644cc9d61752fbf1c08f073ea20abe4cea64df10b66994abfadf511"},
     {"path":"docs/SAFETY-PROMISE.md","bytes":3684,"sha256":"327a105c993b8c1f7add508d32f1843a9acdcefd77cb1a507a3cc20becdc3a20"},
     {"path":"docs/SOURCE-BUDGET.md","bytes":2434,"sha256":"61e90e8194cbe029d49703a0f8e545eca1faf78aed02ad97cd76058288b05c41"},
     {"path":"docs/TEAM-OVERVIEW.md","bytes":3797,"sha256":"47df4ec9e8376e82c2daaada4c24ea39360edb02f1ba7b0af2ed65255403285c"},
