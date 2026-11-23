@@ -57,6 +57,11 @@ fn selection_changes_uses_exact_commits_and_reports_surviving_alias() {
     assert_eq!(changes.len(), 1);
     assert_eq!(changes[0]["previous_object"], old);
     assert_eq!(changes[0]["replacement_object"], json!(new));
+    assert_eq!(changes[0]["previous_record"]["id"], "asset/0");
+    assert_ne!(
+        changes[0]["previous_record"],
+        changes[0]["replacement_record"]
+    );
     assert_eq!(
         changes[0]["same_digest_directly_bound_in_replacement"],
         true

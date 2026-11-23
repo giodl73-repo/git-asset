@@ -47,7 +47,7 @@ pub fn selection_changes(
     let current = Project::capture(&profile, replacement)?;
     let current_by_id: BTreeMap<_, _> = current
         .selected_records()
-        .map(|record| (&record.reference().id, record.selected().ok()))
+        .map(|record| (&record.reference().id, record))
         .collect();
     let current_objects: BTreeSet<_> = current
         .selected_records()
@@ -67,7 +67,8 @@ pub fn selection_changes(
             continue;
         };
         let asset = &record.reference().id;
-        let new_object = current_by_id.get(asset).copied().flatten();
+        let new_record = current_by_id.get(asset).copied();
+        let new_object = new_record.and_then(|record| record.selected().ok());
         if new_object == Some(object) {
             continue;
         }
@@ -76,6 +77,8 @@ pub fn selection_changes(
         }
         rows.push(json!({
             "asset":asset,"previous_object":object,"replacement_object":new_object,
+            "previous_record":record.reference(),
+            "replacement_record":new_record.map(Resolved::reference),
             "same_digest_directly_bound_in_replacement":current_objects.contains(&object.sha256)
         }));
     }
