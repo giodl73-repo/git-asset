@@ -108,6 +108,12 @@ page against the provider's ordinary demotion proposals and records input digest
 The provider plan is limited to 32 MiB for this matcher. Use provider verification
 with current controls before relying on any match.
 
+Then use `git asset catalogue demotion-prepare DRIVE_REPORT OWNER_REQUEST NEW_REQUEST`
+to check a privately supplied ordinary demotion request. The request names the
+exact objects, provider policy and plan, consumer roster, and verification budgets.
+The command rechecks the match and writes a new request without widening the
+batch. Use that same request with the provider's verification and apply commands.
+
 The ordinary demotion provider requires a keeper. Final retirement of a
 rebuildable render has its own execution and approval path.
 

@@ -1,6 +1,11 @@
 use git_asset_core::{Digest, Object};
 use serde_json::{Value, json};
-use std::{collections::BTreeMap, fs::File, io::Read, path::Path};
+use std::{
+    collections::{BTreeMap, BTreeSet},
+    fs::File,
+    io::Read,
+    path::Path,
+};
 
 fn read(path: &Path, limit: u64) -> Result<(Value, Digest), String> {
     if !path.is_absolute() {
@@ -25,6 +30,86 @@ pub(super) fn compare(drive: &Path, policy: &Path, plan: &Path) -> Result<Value,
     report["drive_report_digest"] = json!(drive_digest);
     report["provider_plan_digest"] = json!(plan_digest);
     Ok(report)
+}
+
+pub(super) fn prepare(drive: &Path, request_path: &Path) -> Result<Value, String> {
+    let (request, _) = read(request_path, 256 * 1024)?;
+    let policy = request["policy"].as_str().ok_or("Missing request policy")?;
+    let plan = request["plan"].as_str().ok_or("Missing request plan")?;
+    let matched = compare(drive, Path::new(policy), Path::new(plan))?;
+    check_request(&request, &matched)?;
+    Ok(request)
+}
+
+fn check_request(request: &Value, matched: &Value) -> Result<(), String> {
+    if request["schema"] != "reel.asset-demotion-request.v1"
+        || request["plan_sha256"] != matched["provider_plan_sha256"]
+        || request["consumer_scope"] != "all-managed-cache-consumers"
+        || !request["retained_tier"].is_null()
+        || !request["verified_cold_index"].is_null()
+        || !request["transition"].is_null()
+        || request
+            .get("source_alias_namespaces")
+            .is_some_and(|v| v.as_array().is_none_or(|a| !a.is_empty()))
+        || [
+            "allow_same_volume_copies",
+            "allow_independent_source_copies",
+            "allow_live_admissions",
+            "history_fallback_to_archive",
+            "archive_outputs",
+        ]
+        .iter()
+        .any(|key| request.get(key).is_some_and(|v| v != false))
+    {
+        return Err("Request does not match the ordinary retained-copy profile".into());
+    }
+    let roots = request["consumer_roots"]
+        .as_array()
+        .ok_or("Missing consumer roster")?;
+    if roots.is_empty()
+        || roots
+            .iter()
+            .any(|root| root.as_str().is_none_or(|p| !Path::new(p).is_absolute()))
+    {
+        return Err("Consumer roster requires explicit absolute roots".into());
+    }
+    let candidates: BTreeMap<_, _> = matched["objects"]
+        .as_array()
+        .ok_or("Missing matched objects")?
+        .iter()
+        .filter_map(|object| Some((object["sha256"].as_str()?, object["bytes"].as_u64()?)))
+        .collect();
+    let requested = request["sha256s"]
+        .as_array()
+        .ok_or("Missing requested objects")?;
+    if requested.is_empty() || requested.len() > 100 {
+        return Err("Choose 1 to 100 matched objects".into());
+    }
+    let mut seen = BTreeSet::new();
+    let mut bytes = 0u64;
+    for hash in requested {
+        let hash = hash.as_str().ok_or("Invalid requested digest")?;
+        let length = candidates
+            .get(hash)
+            .ok_or("Requested object is outside the matching evidence")?;
+        if !seen.insert(hash) {
+            return Err("Duplicate requested object".into());
+        }
+        bytes = length
+            .checked_mul(2)
+            .and_then(|n| bytes.checked_add(n))
+            .ok_or("Verification byte overflow")?;
+    }
+    if request["max_verify_bytes"]
+        .as_u64()
+        .is_none_or(|n| n == 0 || n < bytes)
+        || request["max_seconds"]
+            .as_u64()
+            .is_none_or(|n| !(1..=3600).contains(&n))
+    {
+        return Err("Invalid verification budget".into());
+    }
+    Ok(())
 }
 
 fn match_candidates(
@@ -150,6 +235,18 @@ mod tests {
         let matched = match_candidates(&drive, &policy, &digest, &plan).unwrap();
         assert_eq!(matched["objects"], json!([object]));
         assert_eq!(matched["removal_authorized"], false);
+        let mut request = json!({
+            "schema":"reel.asset-demotion-request.v1",
+            "plan_sha256":plan["plan_sha256"],
+            "consumer_scope":"all-managed-cache-consumers","consumer_roots":[root],
+            "sha256s":[object.sha256],"max_verify_bytes":object.bytes * 2,"max_seconds":60
+        });
+        check_request(&request, &matched).unwrap();
+        request["sha256s"] = json!([Digest::blob(b"outside review")]);
+        assert!(check_request(&request, &matched).is_err());
+        request["sha256s"] = json!([object.sha256]);
+        request["allow_same_volume_copies"] = json!(true);
+        assert!(check_request(&request, &matched).is_err());
         plan["objects"][0]["bytes"] = json!(object.bytes + 1);
         assert!(match_candidates(&drive, &policy, &digest, &plan).is_err());
         plan["objects"][0]["bytes"] = json!(object.bytes);

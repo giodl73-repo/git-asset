@@ -57,6 +57,24 @@ fn run() -> Result<(), String> {
     let args: Vec<_> = std::env::args().skip(1).collect();
     if args
         .first()
+        .is_some_and(|action| action == "demotion-prepare")
+    {
+        let [_, drive, request, output] = args.as_slice() else {
+            return Err("demotion-prepare requires DRIVE_REPORT OWNER_REQUEST NEW_REQUEST".into());
+        };
+        let request = demotion::prepare(Path::new(drive), Path::new(request))?;
+        save(&request, output)?;
+        println!(
+            "{}",
+            serde_json::json!({
+                "request":output,"objects":request["sha256s"].as_array().map_or(0, Vec::len),
+                "removal_authorized":false
+            })
+        );
+        return Ok(());
+    }
+    if args
+        .first()
         .is_some_and(|action| action == "demotion-match")
     {
         let [_, drive, policy, plan, output] = args.as_slice() else {
