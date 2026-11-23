@@ -81,6 +81,22 @@ An owner record documents the checks for a future handoff; it cannot enable
 mixed legacy execution. A separately enrolled namespace-owned scope can qualify
 on its own evidence while shared scopes remain under review.
 
+### Owned job staging
+
+On Windows, `git asset catalogue scratch-run verify PROFILE JOB_PROFILE` invokes
+the pinned REEL workspace-retirement provider for one exact job. The private
+`git-asset.reel-scratch-provider.experimental-1` profile supplies `executable`,
+`executable_sha256`, `job_profile_sha256`, `cache_root`, `workspace`, and
+`max_millis`. Paths are absolute. The workspace must resolve under
+`staging/caminos` in the admitted cache. The provider's original job profile
+supplies the retained result and coordination bindings.
+
+Only explicit `apply` with `allow_apply: true` can remove the workspace.
+The provider holds active reservations, unknown ownership and missing retained
+proof. Preserve the original profile and transaction for a retry. The receipt
+reports logical workspace bytes. Physical reclaim stays unknown, and shared
+cache objects remain outside this operation.
+
 ### Existing reel-cas caches
 
 The inventory identifies `reel-cas` as an existing byte layout. Its
