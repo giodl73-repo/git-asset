@@ -62,6 +62,21 @@ The ordinary/bare synthetic native fixture exercises the SDK preview, fresh
 apply, readonly status, historical resume, cancellation and retained restore.
 No cache operations run on startup, help or construction.
 
+## From cache review to a saved plan
+
+Start with [the catalogue cache review](CATALOGUE-REVIEW.md#review-a-cache-for-eviction).
+Keep the candidate's exact SHA-256, byte length, selected source cache,
+verified keeper location, and reviewed project snapshots. These identify the
+candidate and the evidence used to review it. An archive byte check alone
+does not establish retained custody.
+
+The native planner takes a private profile with the original source and keeper
+publication plans. Use the candidate hash and length to match both originals,
+then supply the keeper's exact retained snapshot and retention grant. The
+catalogue does not currently generate these planning inputs. If the originals,
+snapshot, grant, or writer authority cannot be established, leave the candidate
+held. Never substitute a different snapshot or keeper for a saved plan.
+
 ## Explicit storage commands
 
 Build the facade with `annex-publish`; discovery/help also work without it and
